@@ -7,7 +7,7 @@ export default function Landing() {
       <h1 className="text-4xl mb-6 font-bold">PhotoBooth Online</h1>
       <button
         className="bg-blue-500 px-6 py-3 rounded-full text-lg hover:bg-blue-600"
-        onClick={() => navigate('/paket')}>
+        onClick={() => navigate('/payment')}>
         Mulai Sekarang
       </button>
     </div>
