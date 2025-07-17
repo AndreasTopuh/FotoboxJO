@@ -1,15 +1,14 @@
-const express = require('express');
-const cors = require('cors');
-const app = express();
+// server.js
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import paymentRoutes from './routes/payment.js';
 
-require('dotenv').config();
+dotenv.config();
+const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static('uploads'));
+app.use('/payment', paymentRoutes);
 
-// routes
-app.use('/api/payment', require('./routes/payment'));
-app.use('/api/email', require('./routes/email'));
-
-app.listen(5000, () => console.log('Server running on port 5000'));
+app.listen(5000, () => console.log('Server jalan di port 5000'));
