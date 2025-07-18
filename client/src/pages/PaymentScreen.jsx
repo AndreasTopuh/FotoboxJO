@@ -6,6 +6,18 @@ export default function PaymentScreen() {
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(300); // 5 menit
 
+useEffect(() => {
+  const script = document.createElement('script');
+  script.src = 'https://app.sandbox.midtrans.com/snap/snap.js';
+  script.setAttribute('data-client-key', 'Mid-client-goJFIu1ThRtMKfAe');
+  script.async = true;
+  document.body.appendChild(script);
+
+  return () => {
+    document.body.removeChild(script);
+  };
+}, []);
+
   useEffect(() => {
     // Countdown timer
     const interval = setInterval(() => {
@@ -21,7 +33,7 @@ export default function PaymentScreen() {
   const fetchSnapToken = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/payment/create', {
+      const res = await fetch('https://fce723fc0b76.ngrok-free.app/payment/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: 15000 }),
@@ -32,7 +44,7 @@ export default function PaymentScreen() {
       // Inject Snap
       window.snap.pay(data.token, {
         onSuccess: async function () {
-          const check = await fetch('http://localhost:5000/payment/status/' + data.order_id);
+          const check = await fetch('https://fce723fc0b76.ngrok-free.app/payment/status/' + data.order_id);
           const result = await check.json();
           if (result.status === 'settlement') {
             window.location.href = '/frame';
