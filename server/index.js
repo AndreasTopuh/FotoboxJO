@@ -6,7 +6,7 @@ const path = require('path');
 
 const app = express();
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://gofotobox.online'],
+  origin: ['http://localhost:5173', 'https://gofotobox.online/'],
   methods: ['GET', 'POST'],
   credentials: true,
 }));
