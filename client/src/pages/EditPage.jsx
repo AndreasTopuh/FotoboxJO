@@ -99,7 +99,7 @@ export default function EditPage() {
             const dataUrl = canvas.toDataURL('image/png', 1.0); // High quality
             const link = document.createElement('a');
             link.href = dataUrl;
-            link.download = 'photobooth-strip.png';
+            link.download = 'photo-strip.png'; // Updated filename
             link.click();
           }
         };
