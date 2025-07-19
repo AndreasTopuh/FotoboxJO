@@ -38,3 +38,5 @@ router.post('/create', async (req, res) => {
     res.status(500).json({ error: 'Gagal membuat transaksi QRIS' });
   }
 });
+
+module.exports = router;
