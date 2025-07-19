@@ -70,7 +70,7 @@ useEffect(() => {
   };
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center bg-gray-100">
+    <div className="h-screen flex flex-col items-center justify-center">
       <h1 className="text-3xl font-bold mb-4 text-gray-800">Selesaikan Pembayaran</h1>
       <p className="mb-2 text-lg text-gray-600">Jumlah: <strong>Rp15.000</strong></p>
       <p className="mb-4 text-sm text-red-600">Batas waktu pembayaran: {Math.floor(timer / 60)}:{String(timer % 60).padStart(2, '0')}</p>
