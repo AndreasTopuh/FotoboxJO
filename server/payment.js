@@ -24,13 +24,17 @@ router.post('/create', async (req, res) => {
 
   try {
     const chargeResponse = await core.charge(parameter);
+    console.log('🧾 Midtrans QRIS response:', JSON.stringify(chargeResponse, null, 2));
+
+    const qrUrl = chargeResponse.actions?.find(a => a.name === 'generate-qr-code')?.url || chargeResponse.qr_url;
+
     orders[orderId] = { status: 'pending' };
     res.json({
-      qr_url: chargeResponse.actions?.find(a => a.name === 'generate-qr-code')?.url || chargeResponse.qr_url,
+      qr_url: qrUrl,
       order_id: orderId,
     });
   } catch (err) {
-    console.error(err.message);
+    console.error('🔥 Gagal membuat transaksi QRIS:', err);
     res.status(500).json({ error: 'Gagal membuat transaksi QRIS' });
   }
 });
