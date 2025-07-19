@@ -133,7 +133,7 @@ export default function CameraSession() {
                   />
                   <button
                     onClick={() => retake(i)}
-                    className="absolute top-1 right-1 bg-white rounded-full shadow z-10 p-1"
+                    className="absolute top-1 right-1"
                     title="Ulangi Foto"
                   >
                     <img src={RetakeIcon} alt="Retake" className="w-5 h-5" />
