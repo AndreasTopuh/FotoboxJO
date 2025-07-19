@@ -7,7 +7,7 @@ export default function Landing() {
       {/* Container Tengah */}
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
         {/* Ilustrasi dan Teks */}
-        <div className="text-4xl lg:text-5xl xl:text-6xl font-extrabold drop-shadow-lg">
+        <div className="text-4xl lg:text-5xl xl:text-6xl font-extrabold drop-shadow-lg mb-8">
           FotoboxJO
         </div>
         {/* Tombol */}
