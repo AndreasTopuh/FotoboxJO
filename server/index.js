@@ -11,6 +11,9 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json());
+
+//halo
+
 app.use('/payment', paymentRoutes);
 
 app.use(express.static(path.join(__dirname, '../client/dist')));
