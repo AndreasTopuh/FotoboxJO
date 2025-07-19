@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import RetakeIcon from '../assets/retake.svg';
 
 export default function CameraSession() {
@@ -12,11 +13,14 @@ export default function CameraSession() {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [step, setStep] = useState('idle');
   const [expired, setExpired] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-      videoRef.current.srcObject = stream;
-    }).catch(() => alert('Kamera gagal diakses'));
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        videoRef.current.srcObject = stream;
+      })
+      .catch(() => alert('Kamera gagal diakses'));
   }, []);
 
   useEffect(() => {
@@ -76,28 +80,30 @@ export default function CameraSession() {
     setStep('countdown');
   };
 
+  const handleNext = () => {
+    if (step === 'done' && !expired) {
+      navigate('/edit', { state: { photos, frame: parseInt(urlParams.get('frame')) || 0 } });
+    }
+  };
+
   return (
     <>
-      {/* Kamera utama */}
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center">
         <video ref={videoRef} autoPlay className="rounded-lg w-96 max-w-full shadow-lg border-4 border-white" />
-
         {step === 'countdown' && (
           <div className="absolute text-white text-7xl font-bold bg-black bg-opacity-60 px-8 py-3 rounded-full mt-[-100px]">
             {timer}
           </div>
         )}
-
         {expired && (
           <div className="absolute top-10 bg-red-600 text-white px-6 py-3 rounded-xl shadow-lg text-xl animate-pulse">
             ⏳ Waktumu sudah habis!
           </div>
         )}
-
         <div className="mt-4">
           {step === 'idle' || step === 'done' ? (
             <button
-              onClick={step === 'done' ? () => window.location.href = "/edit" : startSession}
+              onClick={step === 'done' ? handleNext : startSession}
               className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 text-lg rounded-full shadow-lg"
               disabled={expired}
             >
@@ -105,15 +111,11 @@ export default function CameraSession() {
             </button>
           ) : null}
         </div>
-
         <div className="mt-2 text-gray-800 font-semibold">
           Sisa waktu: {Math.floor(globalTimer / 60)}:{String(globalTimer % 60).padStart(2, '0')}
         </div>
-
         <canvas ref={canvasRef} className="hidden" />
       </div>
-
-      {/* PREVIEW Checkerboard */}
       <div className="absolute right-10 top-1/2 -translate-y-1/2 p-4">
         <h2 className="text-white text-xl font-bold mb-3 text-center drop-shadow">Preview</h2>
         <div className="grid grid-cols-2 gap-2 bg-white p-3 rounded-lg border-4 border-blue-900 shadow-lg w-[270px]">
