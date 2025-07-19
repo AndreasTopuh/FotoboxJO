@@ -5,7 +5,7 @@ export default function CameraSession() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const urlParams = new URLSearchParams(window.location.search);
-  const photoCount = parseInt(urlParams.get('photos')) || 6;
+  const photoCount = parseInt(urlParams.get('photos')) || 4;
   const [photos, setPhotos] = useState(Array(photoCount).fill(null));
   const [timer, setTimer] = useState(3);
   const [globalTimer, setGlobalTimer] = useState(420);
@@ -76,9 +76,11 @@ export default function CameraSession() {
     setStep('countdown');
   };
 
+  const gridLayout = photoCount === 8 ? 'grid-cols-2 grid-rows-4' : photoCount === 6 ? 'grid-cols-2 grid-rows-3' : 'grid-cols-2 grid-rows-2';
+
   return (
     <>
-      {/* Kamera utama */}
+      {/* Kamera & tombol */}
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center">
         <video ref={videoRef} autoPlay className="rounded-lg w-96 max-w-full shadow-lg border-4 border-white" />
 
@@ -106,46 +108,50 @@ export default function CameraSession() {
           ) : null}
         </div>
 
-        <div className="mt-2 text-gray-800 font-semibold">
+        <div className="mt-2 text-gray-700 font-semibold">
           Sisa waktu: {Math.floor(globalTimer / 60)}:{String(globalTimer % 60).padStart(2, '0')}
         </div>
 
         <canvas ref={canvasRef} className="hidden" />
       </div>
 
-      {/* PREVIEW Checkerboard */}
-      <div className="absolute right-10 top-1/2 -translate-y-1/2 p-4">
-        <h2 className="text-white text-xl font-bold mb-3 text-center drop-shadow">Preview</h2>
-        <div className="grid grid-cols-2 gap-2 bg-white p-3 rounded-lg border-4 border-blue-900 shadow-lg w-[270px]">
+      {/* Preview */}
+      <div className="absolute right-6 top-1/2 -translate-y-1/2 w-72 p-4 bg-transparent">
+        <h2 className="text-xl font-bold mb-3 text-center text-white drop-shadow">Preview</h2>
+        <div className={`grid ${gridLayout} gap-2`}>
           {photos.map((photo, i) => (
-            <div
-              key={i}
-              className={`relative w-[110px] h-[110px] flex items-center justify-center rounded-lg border-2 ${
-                i % 2 === 0 ? 'bg-blue-200' : 'bg-white'
-              }`}
-            >
+            <div key={i} className="relative">
               {photo ? (
                 <>
-                  <img
-                    src={photo}
-                    alt={`Foto ${i + 1}`}
-                    className="absolute inset-0 w-full h-full object-cover rounded-lg z-0"
-                  />
+                  <img src={photo} alt={`Foto ${i + 1}`} className="rounded-lg border-2 border-white shadow w-full h-full object-cover" />
                   <button
                     onClick={() => retake(i)}
-                    className="absolute top-1 right-1 bg-white rounded-full shadow z-10 p-1"
+                    className="absolute top-1 right-1 bg-white rounded-full shadow p-1"
                     title="Ulangi Foto"
                   >
                     <img src={RetakeIcon} alt="Retake" className="w-5 h-5" />
                   </button>
                 </>
               ) : (
-                <span className="text-sm text-blue-900 font-semibold z-10">Slot {i + 1}</span>
+                <div className="aspect-square w-full bg-blue-400 opacity-40 rounded-lg border-4 border-white" />
               )}
             </div>
           ))}
         </div>
       </div>
+
+      {/* ICON STYLE */}
+      <style>
+        {`
+          .material-symbols-outlined {
+            font-variation-settings:
+              'FILL' 0,
+              'wght' 400,
+              'GRAD' 0,
+              'opsz' 24;
+          }
+        `}
+      </style>
     </>
   );
 }
