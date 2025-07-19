@@ -81,7 +81,6 @@ useEffect(() => {
       >
         {loading ? 'Memuat...' : 'Lanjutkan ke Pembayaran'}
       </button>
-      <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="Mid-client-goJFIu1ThRtMKfAe"></script>
     </div>
   );
 }

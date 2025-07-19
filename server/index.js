@@ -5,7 +5,11 @@ const paymentRoutes = require('./payment');
 const path = require('path');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://fotoboxjo.online'],
+  methods: ['GET', 'POST'],
+  credentials: true,
+}));
 app.use(express.json());
 app.use('/payment', paymentRoutes);
 
