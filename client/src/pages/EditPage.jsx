@@ -72,7 +72,7 @@ export default function EditPage() {
     }
   };
 
-  const handlePrint = () => {
+  const handleDownload = () => {
     if (previewRef.current && photos.length) {
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
@@ -184,7 +184,7 @@ export default function EditPage() {
               </div>
               <div className="flex space-x-2">
                 <button
-                  onClick={handlePrint}
+                  onClick={handleDownload}
                   className="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded"
                 >
                   Print
