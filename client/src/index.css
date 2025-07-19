@@ -116,3 +116,59 @@ button:focus-visible {
 .main-button:hover {
   background-color: #db2777;
 }
+
+
+@keyframes bounceScale {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-bounceScale {
+  animation: bounceScale 0.5s ease-in-out;
+}
+
+@media only screen and (max-width: 768px) {
+  .camera-container {
+    flex-direction: column;
+  }
+
+  #photoContainer {
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .photo {
+    width: 100px;
+    height: 110.9px;
+  }
+}
+
+@media only screen and (max-width: 540px) {
+  .camera-container {
+    flex-direction: column;
+  }
+
+  #photoContainer {
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .photo {
+    width: 100px;
+    height: 110.9px;
+  }
+}
