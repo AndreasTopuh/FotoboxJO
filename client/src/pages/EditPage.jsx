@@ -96,7 +96,7 @@ export default function EditPage() {
         img.src = photo;
         img.onload = () => {
           ctx.drawImage(img, col * photoWidth, row * photoHeight, photoWidth, photoHeight);
-          // Add stickers (simplified; adjust based on actual sticker positions)
+          // Add stickers
           const stickers = previewRef.current.getElementsByTagName('img');
           for (let sticker of stickers) {
             if (sticker.src.includes('/frame/stickers/')) {
@@ -110,19 +110,21 @@ export default function EditPage() {
             }
           }
           if (index === photos.length - 1) {
-            // Trigger print after last image
-            const printWindow = window.open('', '', 'width=' + widthPx + ',height=' + heightPx);
-            printWindow.document.write('<img src="' + canvas.toDataURL('image/png') + '" style="width:100%;height:100%;">');
-            printWindow.document.close();
-            printWindow.print();
-            printWindow.close();
+            // Trigger download after last image
+            const dataUrl = canvas.toDataURL('image/png'); // Default quality
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = 'photobooth-strip.png';
+            link.click();
           }
         };
       });
     }
   };
 
-
+  const handleNext = () => {
+    navigate('/'); // Adjust to desired next page
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -187,9 +189,14 @@ export default function EditPage() {
                   onClick={handleDownload}
                   className="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded"
                 >
-                  Print
+                  Download
                 </button>
-
+                <button
+                  onClick={handleNext}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                >
+                  Lanjut
+                </button>
               </div>
             </div>
           </div>
