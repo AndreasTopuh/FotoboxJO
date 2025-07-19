@@ -33,7 +33,7 @@ useEffect(() => {
   const fetchSnapToken = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://gofotobox.online/payment/create', {
+      const res = await fetch('https://gofotobox.online/payment/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: 15000 }),
@@ -44,7 +44,7 @@ useEffect(() => {
       // Inject Snap
       window.snap.pay(data.token, {
         onSuccess: async function () {
-          const check = await fetch('http://gofotobox.online/payment/status/' + data.order_id);
+          const check = await fetch('https://gofotobox.online/payment/status/' + data.order_id);
           const result = await check.json();
           if (result.status === 'settlement') {
             window.location.href = '/frame';
