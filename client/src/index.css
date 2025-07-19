@@ -70,3 +70,49 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Add to client/index.css */
+#photoPreview {
+  min-height: 400px;
+  position: relative;
+}
+
+.custom-main {
+  padding: 20px;
+}
+
+.customization-container {
+  padding: 20px;
+}
+
+.custom-heading {
+  font-size: 1.875rem;
+  font-weight: 700;
+}
+
+.options-label {
+  font-size: 1.25rem;
+}
+
+.custom-buttons-container {
+  gap: 1rem;
+}
+
+.stickers-container button {
+  padding: 0.5rem 1rem;
+  background-color: #e5e7eb;
+  color: #1f2937;
+}
+
+.stickers-container button:hover {
+  background-color: #d1d5db;
+}
+
+.main-button {
+  padding: 0.75rem 1.5rem;
+  background-color: #ec4899;
+}
+
+.main-button:hover {
+  background-color: #db2777;
+}
