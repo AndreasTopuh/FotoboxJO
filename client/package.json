@@ -12,6 +12,7 @@
   "dependencies": {
     "20": "^3.1.9",
     "axios": "^1.10.0",
+    "html2canvas": "^1.4.1",
     "midtrans-client": "^1.4.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
