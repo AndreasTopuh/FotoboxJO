@@ -1,12 +1,12 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
+import html2canvas from 'html2canvas'; // Import html2canvas
 
 export default function EditPage() {
   const { state } = useLocation();
   const { photos, frame } = state || { photos: [], frame: 0 };
   const navigate = useNavigate();
   const previewRef = useRef(null);
-  const canvasRef = useRef(null);
 
   useEffect(() => {
     if (photos.length) {
@@ -23,6 +23,7 @@ export default function EditPage() {
           const img = document.createElement('img');
           img.src = photos[i];
           img.className = 'absolute inset-0 w-full h-full object-cover rounded-lg z-0';
+          img.crossOrigin = 'anonymous'; // Ensure CORS for external images
           div.appendChild(img);
         } else {
           div.innerHTML = '<span className="text-sm text-blue-900 font-semibold z-10">Slot</span>';
@@ -42,7 +43,7 @@ export default function EditPage() {
   const addSticker = (stickerName, position) => {
     if (previewRef.current) {
       const sticker = document.createElement('img');
-      sticker.src = `/frame/stickers/${stickerName}`;
+      sticker.src = `/assets/stickers/${stickerName}`;
       sticker.style.width = '50px';
       sticker.style.position = 'absolute';
       switch (position) {
@@ -68,56 +69,23 @@ export default function EditPage() {
           sticker.style.transform = 'translate(-50%, -50%)';
       }
       sticker.style.cursor = 'move';
+      sticker.crossOrigin = 'anonymous'; // Ensure CORS for external images
       previewRef.current.appendChild(sticker);
     }
   };
 
   const handleDownload = () => {
     if (previewRef.current && photos.length) {
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
-      // Convert cm to px (assuming 96 DPI: 1 cm = 37.8 px)
-      const widthPx = 2 * 37.8; // 2 cm
-      const heightPx = 6 * 37.8; // 6 cm
-      canvas.width = widthPx;
-      canvas.height = heightPx;
-
-      // Draw background color
-      ctx.fillStyle = previewRef.current.style.backgroundColor || '#4B2E2E';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Draw each photo in a 2x3 grid, scaled to fit
-      const photoWidth = widthPx / 2; // 2 columns
-      const photoHeight = heightPx / 3; // 3 rows
-      photos.forEach((photo, index) => {
-        const row = Math.floor(index / 2);
-        const col = index % 2;
-        const img = new Image();
-        img.src = photo;
-        img.onload = () => {
-          ctx.drawImage(img, col * photoWidth, row * photoHeight, photoWidth, photoHeight);
-          // Add stickers
-          const stickers = previewRef.current.getElementsByTagName('img');
-          for (let sticker of stickers) {
-            if (sticker.src.includes('/frame/stickers/')) {
-              const stickerImg = new Image();
-              stickerImg.src = sticker.src;
-              stickerImg.onload = () => {
-                const posX = parseFloat(sticker.style.left || '0') * (widthPx / 220) || 0;
-                const posY = parseFloat(sticker.style.top || '0') * (heightPx / 660) || 0;
-                ctx.drawImage(stickerImg, posX, posY, 50 * (widthPx / 220), 50 * (heightPx / 660));
-              };
-            }
-          }
-          if (index === photos.length - 1) {
-            // Trigger download after last image
-            const dataUrl = canvas.toDataURL('image/png'); // Default quality
-            const link = document.createElement('a');
-            link.href = dataUrl;
-            link.download = 'photobooth-strip.png';
-            link.click();
-          }
-        };
+      html2canvas(previewRef.current, {
+        useCORS: true, // Handle cross-origin images
+        allowTaint: false, // Prevent tainted canvas
+        backgroundColor: null, // Transparent background if needed
+        scale: 2, // Higher quality (optional, adjust as needed)
+      }).then((canvas) => {
+        const link = document.createElement('a');
+        link.download = 'photobooth-strip.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
       });
     }
   };
@@ -129,80 +97,82 @@ export default function EditPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <main id="main-section" className="flex-grow flex items-center justify-center p-4">
-        <section className="flex w-full max-w-6xl">
-          <div className="w-1/2 p-4">
-            <h2 className="text-xl font-bold mb-4">Tambahkan Sticker</h2>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                onClick={() => addSticker('balerinaCappuccino3.png', 'top-left')}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
-              >
-                Balerina
-              </button>
-              <button
-                onClick={() => addSticker('bunny1.png', 'top-right')}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
-              >
-                Bunny
-              </button>
-              <button
-                onClick={() => addSticker('doggyWhite1.png', 'bottom-left')}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
-              >
-                Dog
-              </button>
-              <button
-                onClick={() => addSticker('love.png', 'bottom-right')}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
-              >
-                Love
-              </button>
-              <button
-                onClick={() => addSticker('pearl2.png', 'top-left')}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
-              >
-                Pearl
-              </button>
+        <section className="custom-main flex flex-col items-center w-full max-w-6xl">
+          {photos.length === 0 ? (
+            <div className="text-center text-white text-xl">
+              No photos available. Please capture photos first!
             </div>
-          </div>
-          <div className="w-1/2 p-4">
-            <h2 className="text-xl font-bold mb-4">Preview</h2>
-            <div
-              id="photoPreview"
-              ref={previewRef}
-              className="flex items-center justify-center p-4 bg-[#4B2E2E] rounded-lg shadow-lg"
-              style={{ minHeight: '330px', width: '220px', position: 'relative' }} // Adjusted for 2x3
-            />
-            <div className="mt-4 flex justify-between">
-              <div>
-                <h3 className="text-lg mb-2">Frame Color</h3>
-                <input
-                  type="color"
-                  id="colorPicker"
-                  className="w-12 h-12 cursor-pointer"
-                  onChange={(e) => applyColor(e.target.value)}
-                  defaultValue="#4B2E2E"
-                />
+          ) : (
+            <>
+              <div
+                id="photoPreview"
+                ref={previewRef}
+                className="flex items-center justify-center p-4 bg-[#4B2E2E] rounded-lg shadow-lg"
+                style={{ minHeight: '330px', width: '220px', position: 'relative' }}
+              />
+              <div className="customization-container mt-6 w-full max-w-md">
+                <h1 className="custom-heading text-3xl font-bold text-center mb-6">customize your photo</h1>
+                <div>
+                  <div className="custom-options-container">
+                    <h3 className="options-label text-xl mb-4">Frame Color</h3>
+                    <div className="custom-buttons-container flex flex-wrap gap-2 mb-6">
+                      <input
+                        type="color"
+                        className="w-10 h-10 cursor-pointer"
+                        onChange={(e) => applyColor(e.target.value)}
+                        defaultValue="#4B2E2E"
+                      />
+                      {['#FF69B4', '#00B7EB', '#FFFF00', '#98FF98', '#800080', '#4B2E2E', '#FF0000', '#FFFFFF', '#000000'].map((color) => (
+                        <button
+                          key={color}
+                          onClick={() => applyColor(color)}
+                          className="buttonFrames w-10 h-10 rounded-full"
+                          style={{ backgroundColor: color }}
+                        ></button>
+                      ))}
+                    </div>
+                    <h3 className="options-label text-xl mb-4">Stickers</h3>
+                    <div className="custom-buttons-container stickers-container flex flex-wrap gap-2">
+                      {[
+                        { id: 'noneSticker', src: 'noneShape.png', alt: 'None' },
+                        { id: 'bunnySticker', src: 'bunny1.png', alt: 'Bunny' },
+                        { id: 'luckySticker', src: 'lucky1.png', alt: 'Lucky' },
+                        { id: 'kissSticker', src: 'kiss1.png', alt: 'Kiss' },
+                        { id: 'sweetSticker', src: 'sweet1.png', alt: 'Sweet' },
+                        { id: 'ribbonSticker', src: 'ribbon1.png', alt: 'Ribbon' },
+                        { id: 'sparkleSticker', src: 'sparkle2.png', alt: 'Sparkle' },
+                        { id: 'pearlSticker', src: 'pearl2.png', alt: 'Pearl' },
+                      ].map((sticker, index) => (
+                        <button
+                          key={sticker.id}
+                          onClick={() => addSticker(sticker.src, ['top-left', 'top-right', 'bottom-left', 'bottom-right'][index % 4])}
+                          className="buttonStickers w-10 h-10"
+                        >
+                          <img src={`/assets/stickers/${sticker.src}`} alt={sticker.alt} className="w-full h-full" />
+                        </button>
+                      ))}
+                    </div>
+                    <div className="custom-buttons-holder mt-6 text-center">
+                      <button
+                        onClick={handleDownload}
+                        className="main-button download-button-design bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-full shadow-lg"
+                      >
+                        Download
+                      </button>
+                      <button
+                        onClick={handleNext}
+                        className="main-button bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full shadow-lg ml-4"
+                      >
+                        Lanjut
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="flex space-x-2">
-                <button
-                  onClick={handleDownload}
-                  className="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded"
-                >
-                  Download
-                </button>
-                <button
-                  onClick={handleNext}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-                >
-                  Lanjut
-                </button>
-              </div>
-            </div>
-          </div>
+            </>
+          )}
         </section>
       </main>
-      <canvas ref={canvasRef} style={{ display: 'none' }} />
     </div>
   );
 }
