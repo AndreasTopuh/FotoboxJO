@@ -1,8 +1,8 @@
 const frames = [
-  '/frame/finalframe1.png',
-  '/frame/finalframe2.png',
-  '/frame/finalframe3.png',
-  '/frame/finalframe4.png',
+  '/frame/frame1.png',
+  '/frame/frame2.png',
+  '/frame/frame3.png',
+  '/frame/frame4.png',
 ];
 
 const descriptions = [
@@ -12,7 +12,7 @@ const descriptions = [
   '4x take foto, durasi 7 menit.',
 ];
 
-const photoCounts = [8, 6, 4, 4];
+const photoCounts = [6, 8, 6, 4];
 
 export default function FrameSelect() {
   return (
