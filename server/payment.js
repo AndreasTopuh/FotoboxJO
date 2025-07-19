@@ -33,7 +33,6 @@ router.post('/create', async (req, res) => {
   }
 });
 
-// Endpoint callback dari Midtrans (pakai ngrok)
 router.post('/notification', async (req, res) => {
   const notif = req.body;
   const orderId = notif.order_id;
@@ -48,7 +47,6 @@ router.post('/notification', async (req, res) => {
   res.sendStatus(200);
 });
 
-// Endpoint untuk cek status
 router.get('/status/:orderId', (req, res) => {
   const status = orders[req.params.orderId]?.status || 'not_found';
   res.json({ status });
