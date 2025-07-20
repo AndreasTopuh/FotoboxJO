@@ -21,7 +21,7 @@ export default function FrameTemplate() {
         </div>
         <div className="w-full md:w-1/2">
           <img
-            src="/frame/layout/framelayout1/frame1layout1.png"
+            src="/frame/layout/frameLayout1/frame1layout1.png"
             alt="Selected Template"
             className="w-full max-w-md mx-auto border-4 border-purple-500 rounded-lg"
           />
