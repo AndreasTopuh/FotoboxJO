@@ -3,12 +3,14 @@ import { useLocation, useNavigate } from 'react-router-dom';
 export default function FrameTemplate() {
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
-  const layout = urlParams.get('layout');
+  const layout = urlParams.get('layout'); // Original layout from FrameSelect
   const photoCount = parseInt(urlParams.get('photos')) || 2;
   const navigate = useNavigate();
 
   const handleContinue = () => {
-    navigate(`/camera?layout=${layout}&photos=${photoCount}`);
+    // Override layout with the selected frame
+    const selectedFrame = '/frame/layout/frameLayout1/frame1layout1.png'; // Hardcoded for now
+    navigate(`/camera?layout=${encodeURIComponent(selectedFrame)}&photos=${photoCount}`);
   };
 
   return (
