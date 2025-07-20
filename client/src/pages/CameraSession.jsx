@@ -7,7 +7,7 @@ export default function CameraSession() {
   const flashRef = useRef(null);
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
-  const layout = urlParams.get('layout') || '/frame/layout/frameLayout1/frame1layout1.png'; // Fallback
+  const layout = urlParams.get('layout') || '/frame/layout/frameLayout1/frame1layout1.png'; // Fallback to correct frame
   const photoCount = parseInt(urlParams.get('photos')) || 2;
   const [photos, setPhotos] = useState(Array(photoCount).fill(null));
   const [timer, setTimer] = useState(3);
@@ -54,11 +54,11 @@ export default function CameraSession() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
 
-      // Adjust photo positions based on the frame's design (e.g., two areas in frame1layout1.png)
+      // Define photo areas based on frame design (adjust these coordinates to match the third image)
       const photoWidth = 338; // Fit within borders
-      const photoHeight = 267; // Half height adjusted
-      const xOffset = 20; // Left offset
-      const yOffsets = [20, 280]; // Example y-offsets for two photo areas (adjust based on image)
+      const photoHeight = 267; // Half height
+      const xOffset = 20;
+      const yOffsets = [20, 280]; // Example: top and bottom halves (adjust based on third image)
 
       if (isMirrored) {
         ctx.scale(-1, 1);
@@ -178,24 +178,31 @@ export default function CameraSession() {
               <img src="/assets/fullScreen3.png" className="w-8 h-8" alt="full screen" />
             </button>
           </div>
-          <div id="photoContainer" className="flex flex-col md:flex-row gap-2 items-center justify-center w-full md:w-auto">
-            {photos.map((photo, i) => (
-              <div key={i} className="relative w-[189px] h-[283.5px]">
-                {photo && (
+          <div id="photoContainer" className="flex items-center justify-center w-full md:w-auto">
+            <div className="relative w-[378px] h-[567px]">
+              <img
+                src={layout}
+                alt="Frame Template"
+                className="w-full h-full object-contain"
+              />
+              {photos.map((photo, i) => (
+                photo ? (
                   <img
+                    key={i}
                     src={photo}
-                    alt={`Photo ${i + 1}`}
-                    className="w-full h-full object-cover rounded-xl border-2 border-black"
-                    style={{ position: 'absolute', top: 0, left: 0 }}
+                    alt={`Preview ${i + 1}`}
+                    className="absolute w-[338px] h-[267px] object-cover border-2 border-black"
+                    style={{ top: i === 0 ? '20px' : '280px', left: '20px' }} // Adjust based on third image
                   />
-                )}
-                <img
-                  src={layout}
-                  alt="Frame Template"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            ))}
+                ) : (
+                  <div
+                    key={i}
+                    className="absolute bg-gray-300 opacity-50"
+                    style={{ width: '338px', height: '267px', top: i === 0 ? '20px' : '280px', left: '20px' }} // Placeholder
+                  />
+                )
+              ))}
+            </div>
           </div>
         </section>
         <div className="startBtn-container flex flex-col items-center mt-4">
