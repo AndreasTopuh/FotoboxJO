@@ -7,6 +7,7 @@ export default function CameraSession() {
   const flashRef = useRef(null);
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
+  const layout = urlParams.get('layout');
   const photoCount = parseInt(urlParams.get('photos')) || 2;
   const [photos, setPhotos] = useState(Array(photoCount).fill(null));
   const [timer, setTimer] = useState(3);
@@ -57,7 +58,6 @@ export default function CameraSession() {
     }
     const data = canvas.toDataURL('image/png');
 
-    // Flash effect
     flashRef.current.style.opacity = '1';
     setTimeout(() => {
       flashRef.current.style.opacity = '0';
@@ -86,7 +86,7 @@ export default function CameraSession() {
 
   const handleDone = () => {
     if (step === 'done') {
-      navigate('/edit', { state: { photos } });
+      navigate('/edit', { state: { photos, layout } });
     }
   };
 
@@ -164,12 +164,21 @@ export default function CameraSession() {
           </div>
           <div id="photoContainer" className="flex flex-col md:flex-row gap-2 items-center justify-center w-full md:w-auto">
             {photos.map((photo, i) => (
-              <img
-                key={i}
-                src={photo || '/assets/placeholder.png'}
-                alt={`Photo ${i + 1}`}
-                className="w-[100px] h-[110.9px] object-cover rounded-xl border-2 border-black"
-              />
+              <div key={i} className="relative w-[100px] h-[110.9px]">
+                {photo && (
+                  <img
+                    src={photo}
+                    alt={`Photo ${i + 1}`}
+                    className="w-full h-full object-cover rounded-xl border-2 border-black"
+                    style={{ position: 'absolute', top: 0, left: 0 }}
+                  />
+                )}
+                <img
+                  src={layout}
+                  alt="Frame Template"
+                  className="w-full h-full object-contain"
+                />
+              </div>
             ))}
           </div>
         </section>
@@ -206,9 +215,15 @@ export default function CameraSession() {
             <button
               onClick={handleDone}
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-lg"
-              disabled={step !== 'done'}
             >
               DONE
+            </button>
+            <button
+              onClick={startSession}
+              className="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg shadow-lg text-sm"
+              disabled={step === 'idle'}
+            >
+              Retake
             </button>
           </div>
         </div>
