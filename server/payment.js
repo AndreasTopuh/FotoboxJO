@@ -14,9 +14,8 @@ const orders = {};
 
 router.post('/create', async (req, res) => {
   const orderId = 'ORDER-' + Date.now();
-  const amount = req.body.amount || 15000; // Default to Rp15,000 if not provided
+  const amount = req.body.amount || 15000;
 
-  // Validate amount
   if (amount <= 0) {
     return res.status(400).json({ error: 'Jumlah pembayaran harus lebih dari 0' });
   }
@@ -26,11 +25,6 @@ router.post('/create', async (req, res) => {
     transaction_details: {
       order_id: orderId,
       gross_amount: amount,
-    },
-    customer_details: {
-      // Optional: Add customer details if available
-      // email: req.body.email,
-      // first_name: req.body.name,
     },
   };
 
@@ -44,7 +38,6 @@ router.post('/create', async (req, res) => {
       throw new Error('QR URL not found in response');
     }
 
-    // Store order status
     orders[orderId] = { status: 'pending', amount, created_at: new Date() };
     res.json({
       qr_url: qrUrl,
@@ -68,9 +61,7 @@ router.get('/status/:orderId', async (req, res) => {
     const statusResponse = await core.transaction.status(orderId);
     const transactionStatus = statusResponse.transaction_status;
 
-    // Update order status in memory
     orders[orderId].status = transactionStatus;
-
     res.json({
       status: transactionStatus,
       order_id: orderId,
@@ -83,8 +74,8 @@ router.get('/status/:orderId', async (req, res) => {
   }
 });
 
-// Optional: Webhook handler for Midtrans notifications
-router.post('/webhook', (req, res) => {
+// Webhook handler for Midtrans notification
+router.post('/payment/notification', (req, res) => {
   const payload = req.body;
 
   if (payload && payload.order_id && payload.transaction_status) {
@@ -93,7 +84,7 @@ router.post('/webhook', (req, res) => {
     orders[orderId].status = payload.transaction_status;
 
     console.log(`🔔 Webhook received for order ${orderId}: ${payload.transaction_status}`);
-    res.status(200).json({ message: 'Webhook received' });
+    res.status(200).json({ message: 'Webhook received' }); // Respond with 200 OK
   } else {
     res.status(400).json({ error: 'Invalid webhook payload' });
   }

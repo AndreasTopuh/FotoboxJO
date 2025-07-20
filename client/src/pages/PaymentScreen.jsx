@@ -13,7 +13,7 @@ export default function PaymentScreen() {
       setTimer((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
-          setStatus('expired'); // Set status to expired if timer runs out
+          setStatus('expired');
           return 0;
         }
         return prev - 1;
@@ -28,19 +28,21 @@ export default function PaymentScreen() {
       checkInterval = setInterval(async () => {
         try {
           const res = await fetch(`https://gofotobox.online/payment/status/${orderId}`);
+          if (!res.ok) throw new Error('Network response was not ok');
           const data = await res.json();
           setStatus(data.status);
 
           if (data.status === 'settlement') {
             setShowModal(true);
-            clearInterval(checkInterval); // Stop checking once settled
+            clearInterval(checkInterval);
           } else if (data.status === 'expired') {
-            clearInterval(checkInterval); // Stop checking if expired
+            clearInterval(checkInterval);
           }
         } catch (err) {
           console.error('Error checking status:', err);
+          setStatus('error'); // Set error status if fetch fails
         }
-      }, 5000); // Check every 5 seconds
+      }, 2000); // Reduced to 2 seconds for faster updates
     }
     return () => checkInterval && clearInterval(checkInterval);
   }, [orderId]);
@@ -53,10 +55,11 @@ export default function PaymentScreen() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: 15000 }),
       });
+      if (!res.ok) throw new Error('Failed to create payment');
       const data = await res.json();
       setQrUrl(data.qr_url);
       setOrderId(data.order_id);
-      setStatus('pending'); // Set initial status
+      setStatus('pending');
     } catch (err) {
       console.error('Error fetching QR:', err);
       setStatus('error');
@@ -69,6 +72,7 @@ export default function PaymentScreen() {
     if (!orderId) return;
     try {
       const res = await fetch(`https://gofotobox.online/payment/status/${orderId}`);
+      if (!res.ok) throw new Error('Network response was not ok');
       const data = await res.json();
       setStatus(data.status);
 
@@ -124,6 +128,9 @@ export default function PaymentScreen() {
               >
                 {loading ? 'Memuat...' : 'Buat Ulang QR'}
               </button>
+            )}
+            {status === 'error' && (
+              <p className="text-red-600 text-sm mt-2">Gagal memeriksa status. Coba lagi.</p>
             )}
           </div>
         ) : (
