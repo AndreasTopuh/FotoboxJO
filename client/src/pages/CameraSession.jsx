@@ -45,7 +45,7 @@ export default function CameraSession() {
     const video = videoRef.current;
     const ctx = canvas.getContext('2d');
 
-    canvas.width = 378;
+    canvas.width = 378; // 10cm x 15cm at 96dpi
     canvas.height = 567;
 
     const frame = new Image();
@@ -54,17 +54,18 @@ export default function CameraSession() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
 
-      const photoWidth = 338;
-      const photoHeight = 267;
-      const xOffset = 20;
-      const yOffset = index === 0 ? 20 : 280;
+      // Adjust photo positions based on the frame's design (e.g., two areas in frame1layout1.png)
+      const photoWidth = 338; // Fit within borders
+      const photoHeight = 267; // Half height adjusted
+      const xOffset = 20; // Left offset
+      const yOffsets = [20, 280]; // Example y-offsets for two photo areas (adjust based on image)
 
       if (isMirrored) {
         ctx.scale(-1, 1);
         ctx.translate(-canvas.width, 0);
       }
       ctx.filter = filter === 'none' ? 'none' : filter;
-      ctx.drawImage(video, 0, 0, photoWidth, photoHeight, xOffset, yOffset, photoWidth, photoHeight);
+      ctx.drawImage(video, 0, 0, photoWidth, photoHeight, xOffset, yOffsets[index], photoWidth, photoHeight);
       if (isMirrored) {
         ctx.setTransform(1, 0, 0, 1, 0, 0);
       }

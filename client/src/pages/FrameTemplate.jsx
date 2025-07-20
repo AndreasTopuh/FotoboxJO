@@ -3,13 +3,29 @@ import { useLocation, useNavigate } from 'react-router-dom';
 export default function FrameTemplate() {
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
-  const layout = urlParams.get('layout'); // Original layout from FrameSelect
+  const layout = urlParams.get('layout'); // e.g., /frame/layout/finallayout1.png
   const photoCount = parseInt(urlParams.get('photos')) || 2;
   const navigate = useNavigate();
 
   const handleContinue = () => {
-    // Override layout with the selected frame
-    const selectedFrame = '/frame/layout/frameLayout1/frame1layout1.png'; // Hardcoded frame
+    // Map the layout to the correct frame based on photo count
+    let selectedFrame;
+    switch (photoCount) {
+      case 2:
+        selectedFrame = '/frame/layout/frameLayout1/frame1layout1.png'; // Frame for 2 photos
+        break;
+      case 4:
+        selectedFrame = '/frame/layout/frameLayout2/frame2layout1.png'; // Example for 4 photos
+        break;
+      case 6:
+        selectedFrame = '/frame/layout/frameLayout3/frame3layout1.png'; // Example for 6 photos
+        break;
+      case 8:
+        selectedFrame = '/frame/layout/frameLayout4/frame4layout1.png'; // Example for 8 photos
+        break;
+      default:
+        selectedFrame = '/frame/layout/frameLayout1/frame1layout1.png'; // Default to 2-photo frame
+    }
     console.log('Navigating to camera with layout:', selectedFrame); // Debug log
     navigate(`/camera?layout=${encodeURIComponent(selectedFrame)}&photos=${photoCount}`);
   };
@@ -23,7 +39,7 @@ export default function FrameTemplate() {
         </div>
         <div className="w-full md:w-1/2">
           <img
-            src="/frame/layout/frameLayout1/frame1layout1.png"
+            src={photoCount === 2 ? '/frame/layout/frameLayout1/frame1layout1.png' : layout}
             alt="Selected Template"
             className="w-full max-w-md mx-auto border-4 border-purple-500 rounded-lg"
           />
