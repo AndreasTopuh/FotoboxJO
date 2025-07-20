@@ -13,6 +13,7 @@ export default function PaymentScreen() {
       setTimer((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
+          setStatus('expired'); // Set status to expired if timer runs out
           return 0;
         }
         return prev - 1;
@@ -22,22 +23,26 @@ export default function PaymentScreen() {
   }, []);
 
   useEffect(() => {
-    const checkInterval = setInterval(async () => {
-      if (!orderId) return;
-      try {
-        const res = await fetch(`https://gofotobox.online/payment/status/${orderId}`);
-        const data = await res.json();
-        setStatus(data.status);
+    let checkInterval;
+    if (orderId) {
+      checkInterval = setInterval(async () => {
+        try {
+          const res = await fetch(`https://gofotobox.online/payment/status/${orderId}`);
+          const data = await res.json();
+          setStatus(data.status);
 
-        if (data.status === 'settlement') {
-          setShowModal(true);
-          clearInterval(checkInterval); // Stop checking once settled
+          if (data.status === 'settlement') {
+            setShowModal(true);
+            clearInterval(checkInterval); // Stop checking once settled
+          } else if (data.status === 'expired') {
+            clearInterval(checkInterval); // Stop checking if expired
+          }
+        } catch (err) {
+          console.error('Error checking status:', err);
         }
-      } catch (err) {
-        console.error(err);
-      }
-    }, 5000);
-    return () => clearInterval(checkInterval);
+      }, 5000); // Check every 5 seconds
+    }
+    return () => checkInterval && clearInterval(checkInterval);
   }, [orderId]);
 
   const createQRISPayment = async () => {
@@ -51,10 +56,30 @@ export default function PaymentScreen() {
       const data = await res.json();
       setQrUrl(data.qr_url);
       setOrderId(data.order_id);
+      setStatus('pending'); // Set initial status
     } catch (err) {
       console.error('Error fetching QR:', err);
+      setStatus('error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const checkPaymentStatus = async () => {
+    if (!orderId) return;
+    try {
+      const res = await fetch(`https://gofotobox.online/payment/status/${orderId}`);
+      const data = await res.json();
+      setStatus(data.status);
+
+      if (data.status === 'settlement') {
+        setShowModal(true);
+      } else if (data.status === 'expired') {
+        alert('Pembayaran telah kadaluarsa. Silakan coba lagi.');
+      }
+    } catch (err) {
+      console.error('Error checking status:', err);
+      alert('Gagal memeriksa status pembayaran.');
     }
   };
 
@@ -64,47 +89,52 @@ export default function PaymentScreen() {
   };
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center bg-gradient-to-r from-[#FF8679] via-[#F2AAAE] to-[#F6D3AD]">
-      <div className="text-center max-w-lg mx-auto px-4 py-6 bg-white rounded-xl shadow-2xl border border-gray-200">
-        <h1 className="text-3xl font-bold mb-4 text-gray-800">Selesaikan Pembayaran</h1>
+    <div className="h-screen flex items-center justify-center bg-gradient-to-r from-[#FF8679] via-[#F2AAAE] to-[#F6D3AD]">
+      <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200 max-w-md mx-auto">
+        <h1 className="text-2xl font-bold mb-4 text-gray-800">Selesaikan Pembayaran</h1>
         <p className="mb-2 text-lg text-gray-600">Jumlah: <strong>Rp15.000</strong></p>
-        <p className="mb-6 text-sm text-red-600">Batas waktu pembayaran: {Math.floor(timer / 60)}:{String(timer % 60).padStart(2, '0')}</p>
+        <p className="mb-4 text-sm text-red-600">
+          Batas waktu pembayaran: {Math.floor(timer / 60)}:{String(timer % 60).padStart(2, '0')}
+        </p>
 
         {qrUrl ? (
-          <div className="mb-6 p-4 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg shadow-inner">
-            <img
-              src={qrUrl}
-              alt="QR Code Pembayaran"
-              className="w-72 h-72 mx-auto rounded-md border-2 border-white"
-            />
-            <p className="mt-2 text-sm text-gray-500">Scan kode QR menggunakan aplikasi e-wallet kamu</p>
-            <p className="mt-2 text-sm text-blue-600">Status: {status || 'Menunggu Pembayaran'}</p>
+          <div className="text-center">
+            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4">
+              <img
+                src={qrUrl}
+                alt="QR Code Pembayaran"
+                className="w-64 h-64 mx-auto rounded-md border-2 border-white"
+              />
+              <p className="mt-2 text-sm text-gray-500">
+                Scan kode QR menggunakan aplikasi e-wallet kamu
+              </p>
+            </div>
+            <p className="mb-4 text-sm text-blue-600">Status: {status || 'Menunggu Pembayaran'}</p>
+            <button
+              onClick={checkPaymentStatus}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg mr-2"
+            >
+              Periksa Status
+            </button>
+            {status === 'expired' && (
+              <button
+                onClick={createQRISPayment}
+                disabled={loading}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+              >
+                {loading ? 'Memuat...' : 'Buat Ulang QR'}
+              </button>
+            )}
           </div>
         ) : (
           <button
             onClick={createQRISPayment}
             disabled={loading || timer <= 0}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition disabled:opacity-50 w-full mb-4"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg w-full transition disabled:opacity-50"
           >
             {loading ? 'Memuat QR...' : 'Buat Kode QR Pembayaran'}
           </button>
         )}
-
-        {/* Payment Options (Placeholder - Style like the image) */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <button className="bg-white p-2 rounded-lg shadow-md hover:bg-gray-100">
-            <img src="/path/to/qris-icon.png" alt="QRIS" className="w-12 h-12 mx-auto" />
-            <p className="text-xs text-gray-700 mt-1">QR Code</p>
-          </button>
-          <button className="bg-white p-2 rounded-lg shadow-md hover:bg-gray-100">
-            <img src="/path/to/bni-icon.png" alt="BNI" className="w-12 h-12 mx-auto" />
-            <p className="text-xs text-gray-700 mt-1">BNI</p>
-          </button>
-          <button className="bg-white p-2 rounded-lg shadow-md hover:bg-gray-100">
-            <img src="/path/to/gopay-icon.png" alt="Gopay" className="w-12 h-12 mx-auto" />
-            <p className="text-xs text-gray-700 mt-1">Gopay</p>
-          </button>
-        </div>
       </div>
 
       {/* Success Modal */}
