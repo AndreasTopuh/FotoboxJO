@@ -14,9 +14,9 @@ export default function EditPage() {
       preview.innerHTML = '';
       const container = document.createElement('div');
       container.className = 'relative p-4 rounded-lg border-4 border-black';
-      container.style.width = '378px'; // 10cm x 15cm at 96dpi
+      container.style.width = '378px';
       container.style.height = '567px';
-      container.style.backgroundImage = `url(${layout})`; // Should be frame1layout1.png
+      container.style.backgroundImage = `url(${layout})`;
       container.style.backgroundSize = 'contain';
       container.style.backgroundRepeat = 'no-repeat';
       container.style.backgroundPosition = 'center';
@@ -27,10 +27,9 @@ export default function EditPage() {
         img.className = `w-full h-full object-cover absolute top-0 left-0`;
         container.appendChild(img);
 
-        // Add sticker placeholders at corners for each photo's frame
         ['top-left', 'top-right', 'bottom-left', 'bottom-right'].forEach(pos => {
           const stickerKey = `${i}-${pos}`;
-          const sticker = stickers[stickerKey] || '/frame/stickers/love.png'; // Default to 'love'
+          const sticker = stickers[stickerKey] || '/frame/stickers/love.png';
           const stickerImg = document.createElement('img');
           stickerImg.src = sticker;
           stickerImg.className = 'w-12 absolute cursor-pointer';
@@ -74,11 +73,7 @@ export default function EditPage() {
   return (
     <main id="main-section" className="flex flex-col items-center p-4 min-h-screen bg-gradient-to-r from-[#FF8679] via-[#F2AAAE] to-[#F6D3AD]">
       <section className="custom-main flex flex-col md:flex-row gap-6 w-full max-w-6xl">
-        <div
-          id="photoPreview"
-          ref={previewRef}
-          className="flex items-center justify-center p-4 rounded-lg shadow-lg relative"
-        />
+        <div id="photoPreview" ref={previewRef} className="flex items-center justify-center p-4 rounded-lg shadow-lg relative" />
         <div className="customization-container w-full max-w-md">
           <h1 className="custom-heading text-3xl font-bold text-center mb-6 text-gray-800">Customize your photo</h1>
           <div className="custom-options-container">

@@ -7,7 +7,7 @@ export default function CameraSession() {
   const flashRef = useRef(null);
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
-  const layout = urlParams.get('layout') || '/frame/layout/frameLayout1/frame1layout1.png'; // Explicitly set to frame
+  const layout = urlParams.get('layout') || '/frame/layout/frameLayout1/frame1layout1.png'; // Fallback
   const photoCount = parseInt(urlParams.get('photos')) || 2;
   const [photos, setPhotos] = useState(Array(photoCount).fill(null));
   const [timer, setTimer] = useState(3);
@@ -25,7 +25,7 @@ export default function CameraSession() {
       })
       .catch(() => alert('Kamera gagal diakses'));
     return () => {
-      if (videoRef.current && videoRefObject) {
+      if (videoRef.current && videoRef.current.srcObject) {
         videoRef.current.srcObject.getTracks().forEach(track => track.stop());
       }
     };
@@ -45,22 +45,19 @@ export default function CameraSession() {
     const video = videoRef.current;
     const ctx = canvas.getContext('2d');
 
-    // Set canvas size to 10cm x 15cm (378px x 567px at 96dpi)
     canvas.width = 378;
     canvas.height = 567;
 
-    // Load frame as background
     const frame = new Image();
-    frame.src = layout; // Should be /frame/layout/frameLayout1/frame1layout1.png
+    frame.src = layout;
     frame.onload = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
 
-      // Define photo box positions based on frame design (adjust these coordinates)
-      const photoWidth = 338; // Slightly less than full width to fit within borders
-      const photoHeight = 267; // Half height adjusted for borders
-      const xOffset = 20; // Left offset from frame edge
-      const yOffset = index === 0 ? 20 : 280; // Top and bottom offsets (adjust based on white boxes)
+      const photoWidth = 338;
+      const photoHeight = 267;
+      const xOffset = 20;
+      const yOffset = index === 0 ? 20 : 280;
 
       if (isMirrored) {
         ctx.scale(-1, 1);
@@ -73,7 +70,6 @@ export default function CameraSession() {
       }
       ctx.filter = 'none';
 
-      // Get the composited image
       const data = canvas.toDataURL('image/png');
       flashRef.current.style.opacity = '1';
       setTimeout(() => {
@@ -93,7 +89,7 @@ export default function CameraSession() {
         setStep('done');
       }
     };
-    frame.onerror = () => console.error('Failed to load frame:', layout); // Debug loading issue
+    frame.onerror = () => console.error('Failed to load frame:', layout);
   };
 
   const startSession = () => {
