@@ -7,7 +7,7 @@ export default function CameraSession() {
   const flashRef = useRef(null);
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
-  const layout = urlParams.get('layout') || '/frame/layout/frameLayout1/frame1layout1.png'; // Correct frame path
+  const layout = urlParams.get('layout') || '/frame/layout/frameLayout1/frame1layout1.png'; // Explicitly set to frame
   const photoCount = parseInt(urlParams.get('photos')) || 2;
   const [photos, setPhotos] = useState(Array(photoCount).fill(null));
   const [timer, setTimer] = useState(3);
@@ -25,7 +25,7 @@ export default function CameraSession() {
       })
       .catch(() => alert('Kamera gagal diakses'));
     return () => {
-      if (videoRef.current && videoRef.current.srcObject) {
+      if (videoRef.current && videoRefObject) {
         videoRef.current.srcObject.getTracks().forEach(track => track.stop());
       }
     };
@@ -51,7 +51,7 @@ export default function CameraSession() {
 
     // Load frame as background
     const frame = new Image();
-    frame.src = layout; // Ensure this is frame1layout1.png
+    frame.src = layout; // Should be /frame/layout/frameLayout1/frame1layout1.png
     frame.onload = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
@@ -93,6 +93,7 @@ export default function CameraSession() {
         setStep('done');
       }
     };
+    frame.onerror = () => console.error('Failed to load frame:', layout); // Debug loading issue
   };
 
   const startSession = () => {
