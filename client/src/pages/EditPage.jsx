@@ -24,7 +24,9 @@ export default function EditPage() {
       photos.forEach((photo, i) => {
         const img = document.createElement('img');
         img.src = photo;
-        img.className = `w-full h-full object-cover absolute top-0 left-0`;
+        img.className = `absolute w-[338px] h-[267px] object-cover border-2 border-black`;
+        img.style.top = i === 0 ? '20px' : '280px'; // Adjust based on fourth image
+        img.style.left = '20px';
         container.appendChild(img);
 
         ['top-left', 'top-right', 'bottom-left', 'bottom-right'].forEach(pos => {
