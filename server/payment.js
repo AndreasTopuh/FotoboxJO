@@ -2,54 +2,101 @@ const express = require('express');
 const router = express.Router();
 const midtransClient = require('midtrans-client');
 
-const snap = new midtransClient.Snap({
-  isProduction: false,
+// Initialize Midtrans Core API
+const core = new midtransClient.CoreApi({
+  isProduction: false, // Set to true for production
   serverKey: process.env.MIDTRANS_SERVER_KEY,
+  clientKey: process.env.MIDTRANS_CLIENT_KEY,
 });
 
+// In-memory storage for orders (replace with a database in production)
 const orders = {};
 
 router.post('/create', async (req, res) => {
   const orderId = 'ORDER-' + Date.now();
-  const amount = req.body.amount || 15000;
+  const amount = req.body.amount || 15000; // Default to Rp15,000 if not provided
+
+  // Validate amount
+  if (amount <= 0) {
+    return res.status(400).json({ error: 'Jumlah pembayaran harus lebih dari 0' });
+  }
 
   const parameter = {
+    payment_type: 'qris',
     transaction_details: {
       order_id: orderId,
       gross_amount: amount,
     },
-    credit_card: {
-      secure: true,
+    customer_details: {
+      // Optional: Add customer details if available
+      // email: req.body.email,
+      // first_name: req.body.name,
     },
   };
 
   try {
-    const transaction = await snap.createTransaction(parameter);
-    orders[orderId] = { status: 'pending' };
-    res.json({ token: transaction.token, order_id: orderId });
+    const chargeResponse = await core.charge(parameter);
+    console.log('🧾 Midtrans QRIS response:', JSON.stringify(chargeResponse, null, 2));
+
+    const qrUrl = chargeResponse.actions?.find(a => a.name === 'generate-qr-code')?.url || chargeResponse.qr_url;
+
+    if (!qrUrl) {
+      throw new Error('QR URL not found in response');
+    }
+
+    // Store order status
+    orders[orderId] = { status: 'pending', amount, created_at: new Date() };
+    res.json({
+      qr_url: qrUrl,
+      order_id: orderId,
+    });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Gagal membuat transaksi' });
+    console.error('🔥 Gagal membuat transaksi QRIS:', err.message);
+    res.status(500).json({ error: 'Gagal membuat transaksi QRIS', details: err.message });
   }
 });
 
-router.post('/notification', async (req, res) => {
-  const notif = req.body;
-  const orderId = notif.order_id;
-  const transactionStatus = notif.transaction_status;
+router.get('/status/:orderId', async (req, res) => {
+  const orderId = req.params.orderId;
+  const order = orders[orderId];
 
-  console.log('Notifikasi masuk:', notif);
+  if (!order) {
+    return res.status(404).json({ error: 'Order not found' });
+  }
 
-  if (orders[orderId]) {
+  try {
+    const statusResponse = await core.transaction.status(orderId);
+    const transactionStatus = statusResponse.transaction_status;
+
+    // Update order status in memory
     orders[orderId].status = transactionStatus;
-  }
 
-  res.sendStatus(200);
+    res.json({
+      status: transactionStatus,
+      order_id: orderId,
+      amount: order.amount,
+      updated_at: new Date(),
+    });
+  } catch (err) {
+    console.error('🔥 Error checking status:', err.message);
+    res.status(500).json({ error: 'Gagal memeriksa status pembayaran', details: err.message });
+  }
 });
 
-router.get('/status/:orderId', (req, res) => {
-  const status = orders[req.params.orderId]?.status || 'not_found';
-  res.json({ status });
+// Optional: Webhook handler for Midtrans notifications
+router.post('/webhook', (req, res) => {
+  const payload = req.body;
+
+  if (payload && payload.order_id && payload.transaction_status) {
+    const orderId = payload.order_id;
+    orders[orderId] = orders[orderId] || { status: 'pending' };
+    orders[orderId].status = payload.transaction_status;
+
+    console.log(`🔔 Webhook received for order ${orderId}: ${payload.transaction_status}`);
+    res.status(200).json({ message: 'Webhook received' });
+  } else {
+    res.status(400).json({ error: 'Invalid webhook payload' });
+  }
 });
 
 module.exports = router;
