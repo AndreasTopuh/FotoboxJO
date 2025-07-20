@@ -7,7 +7,7 @@ export default function CameraSession() {
   const flashRef = useRef(null);
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
-  const layout = urlParams.get('layout') || '/frame/layout/frameLayout1/frame1layout1.png'; // Default layout
+  const layout = urlParams.get('layout') || '/frame/layout/frameLayout1/frame1layout1.png'; // Correct frame path
   const photoCount = parseInt(urlParams.get('photos')) || 2;
   const [photos, setPhotos] = useState(Array(photoCount).fill(null));
   const [timer, setTimer] = useState(3);
@@ -56,13 +56,17 @@ export default function CameraSession() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
 
-      // Capture video frame
+      // Capture and resize video frame to fit the photo box
+      const photoWidth = 378; // Full width of the frame
+      const photoHeight = 283.5; // Half height for two photos
+      const yOffset = index === 0 ? 0 : 283.5; // Top or bottom half
+
       if (isMirrored) {
         ctx.scale(-1, 1);
         ctx.translate(-canvas.width, 0);
       }
       ctx.filter = filter === 'none' ? 'none' : filter;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(video, 0, 0, photoWidth, photoHeight, 0, yOffset, photoWidth, photoHeight);
       if (isMirrored) {
         ctx.setTransform(1, 0, 0, 1, 0, 0);
       }
