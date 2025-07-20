@@ -7,7 +7,7 @@ export default function CameraSession() {
   const flashRef = useRef(null);
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
-  const layout = urlParams.get('layout');
+  const layout = urlParams.get('layout') || '/frame/layout/frameLayout1/frame1layout1.png'; // Default layout
   const photoCount = parseInt(urlParams.get('photos')) || 2;
   const [photos, setPhotos] = useState(Array(photoCount).fill(null));
   const [timer, setTimer] = useState(3);
@@ -43,38 +43,51 @@ export default function CameraSession() {
   const capturePhoto = (index) => {
     const canvas = canvasRef.current;
     const video = videoRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
     const ctx = canvas.getContext('2d');
-    if (isMirrored) {
-      ctx.scale(-1, 1);
-      ctx.translate(-canvas.width, 0);
-    }
-    ctx.filter = filter === 'none' ? 'none' : filter;
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    ctx.filter = 'none';
-    if (isMirrored) {
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-    }
-    const data = canvas.toDataURL('image/png');
 
-    flashRef.current.style.opacity = '1';
-    setTimeout(() => {
-      flashRef.current.style.opacity = '0';
-    }, 200);
+    // Set canvas size to 10cm x 15cm (378px x 567px at 96dpi)
+    canvas.width = 378;
+    canvas.height = 567;
 
-    const updated = [...photos];
-    updated[index] = data;
-    setPhotos(updated);
+    // Load frame as background
+    const frame = new Image();
+    frame.src = layout;
+    frame.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
 
-    const nextIdx = updated.findIndex(p => p === null);
-    if (nextIdx !== -1) {
-      setCurrentIdx(nextIdx);
-      setTimer(selectedTimer);
-      setStep('countdown');
-    } else {
-      setStep('done');
-    }
+      // Capture video frame
+      if (isMirrored) {
+        ctx.scale(-1, 1);
+        ctx.translate(-canvas.width, 0);
+      }
+      ctx.filter = filter === 'none' ? 'none' : filter;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      if (isMirrored) {
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+      }
+      ctx.filter = 'none';
+
+      // Get the composited image
+      const data = canvas.toDataURL('image/png');
+      flashRef.current.style.opacity = '1';
+      setTimeout(() => {
+        flashRef.current.style.opacity = '0';
+      }, 200);
+
+      const updated = [...photos];
+      updated[index] = data;
+      setPhotos(updated);
+
+      const nextIdx = updated.findIndex(p => p === null);
+      if (nextIdx !== -1) {
+        setCurrentIdx(nextIdx);
+        setTimer(selectedTimer);
+        setStep('countdown');
+      } else {
+        setStep('done');
+      }
+    };
   };
 
   const startSession = () => {
@@ -164,7 +177,7 @@ export default function CameraSession() {
           </div>
           <div id="photoContainer" className="flex flex-col md:flex-row gap-2 items-center justify-center w-full md:w-auto">
             {photos.map((photo, i) => (
-              <div key={i} className="relative w-[100px] h-[110.9px]">
+              <div key={i} className="relative w-[189px] h-[283.5px]">
                 {photo && (
                   <img
                     src={photo}

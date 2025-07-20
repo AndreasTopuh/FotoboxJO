@@ -13,20 +13,18 @@ export default function EditPage() {
       const preview = previewRef.current;
       preview.innerHTML = '';
       const container = document.createElement('div');
-      container.className = 'flex flex-col gap-2 p-4 rounded-lg border-4 border-black';
+      container.className = 'relative p-4 rounded-lg border-4 border-black';
+      container.style.width = '378px'; // 10cm x 15cm at 96dpi
+      container.style.height = '567px';
       container.style.backgroundImage = `url(${layout})`;
       container.style.backgroundSize = 'contain';
       container.style.backgroundRepeat = 'no-repeat';
       container.style.backgroundPosition = 'center';
-      container.style.width = '300px'; // Adjust based on 10cm x 15cm (e.g., 300px x 450px)
-      container.style.height = '450px';
 
       photos.forEach((photo, i) => {
         const img = document.createElement('img');
         img.src = photo;
-        img.className = `w-[150px] h-[166.35px] object-cover border-2 border-black absolute`;
-        img.style.top = `${i * 50}%`; // Adjust positioning based on layout
-        img.style.left = '25%';
+        img.className = `w-full h-full object-cover absolute top-0 left-0`;
         container.appendChild(img);
 
         // Add sticker placeholders at corners
@@ -35,7 +33,7 @@ export default function EditPage() {
           const sticker = stickers[stickerKey] || '/frame/stickers/love.png'; // Default to 'love'
           const stickerImg = document.createElement('img');
           stickerImg.src = sticker;
-          stickerImg.className = 'w-12 absolute';
+          stickerImg.className = 'w-12 absolute cursor-pointer';
           switch (pos) {
             case 'top-left':
               stickerImg.style.top = '5px';
