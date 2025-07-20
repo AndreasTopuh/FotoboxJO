@@ -70,19 +70,17 @@ useEffect(() => {
   };
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center bg-gray-50">
-      <div className="text-center max-w-md mx-auto px-4">
-        <h1 className="text-3xl font-bold mb-4 text-gray-800">Selesaikan Pembayaran</h1>
-        <p className="mb-2 text-lg text-gray-600">Jumlah: <strong>Rp15.000</strong></p>
-        <p className="mb-4 text-sm text-red-600">Batas waktu pembayaran: {Math.floor(timer / 60)}:{String(timer % 60).padStart(2, '0')}</p>
-        <button
-          onClick={fetchSnapToken}
-          disabled={loading || timer <= 0}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded transition disabled:opacity-50 w-full"
-        >
-          {loading ? 'Memuat...' : 'Lanjutkan ke Pembayaran'}
-        </button>
-      </div>
+    <div className="h-screen flex flex-col items-center justify-center">
+      <h1 className="text-3xl font-bold mb-4 text-gray-800">Selesaikan Pembayaran</h1>
+      <p className="mb-2 text-lg text-gray-600">Jumlah: <strong>Rp15.000</strong></p>
+      <p className="mb-4 text-sm text-red-600">Batas waktu pembayaran: {Math.floor(timer / 60)}:{String(timer % 60).padStart(2, '0')}</p>
+      <button
+        onClick={fetchSnapToken}
+        disabled={loading || timer <= 0}
+        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded transition disabled:opacity-50"
+      >
+        {loading ? 'Memuat...' : 'Lanjutkan ke Pembayaran'}
+      </button>
     </div>
   );
 }
