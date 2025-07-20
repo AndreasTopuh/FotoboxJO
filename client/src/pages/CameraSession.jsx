@@ -51,22 +51,23 @@ export default function CameraSession() {
 
     // Load frame as background
     const frame = new Image();
-    frame.src = layout;
+    frame.src = layout; // Ensure this is frame1layout1.png
     frame.onload = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
 
-      // Capture and resize video frame to fit the photo box
-      const photoWidth = 378; // Full width of the frame
-      const photoHeight = 283.5; // Half height for two photos
-      const yOffset = index === 0 ? 0 : 283.5; // Top or bottom half
+      // Define photo box positions based on frame design (adjust these coordinates)
+      const photoWidth = 338; // Slightly less than full width to fit within borders
+      const photoHeight = 267; // Half height adjusted for borders
+      const xOffset = 20; // Left offset from frame edge
+      const yOffset = index === 0 ? 20 : 280; // Top and bottom offsets (adjust based on white boxes)
 
       if (isMirrored) {
         ctx.scale(-1, 1);
         ctx.translate(-canvas.width, 0);
       }
       ctx.filter = filter === 'none' ? 'none' : filter;
-      ctx.drawImage(video, 0, 0, photoWidth, photoHeight, 0, yOffset, photoWidth, photoHeight);
+      ctx.drawImage(video, 0, 0, photoWidth, photoHeight, xOffset, yOffset, photoWidth, photoHeight);
       if (isMirrored) {
         ctx.setTransform(1, 0, 0, 1, 0, 0);
       }

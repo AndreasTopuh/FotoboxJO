@@ -16,7 +16,7 @@ export default function EditPage() {
       container.className = 'relative p-4 rounded-lg border-4 border-black';
       container.style.width = '378px'; // 10cm x 15cm at 96dpi
       container.style.height = '567px';
-      container.style.backgroundImage = `url(${layout})`;
+      container.style.backgroundImage = `url(${layout})`; // Should be frame1layout1.png
       container.style.backgroundSize = 'contain';
       container.style.backgroundRepeat = 'no-repeat';
       container.style.backgroundPosition = 'center';
