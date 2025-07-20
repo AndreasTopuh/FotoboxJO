@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 
 export default function EditPage() {
   const { state } = useLocation();
-  const { photos = [], layout } = state || {};
+  const { photos = [], layout = '/frame/layout/frameLayout1/frame1layout1.png' } = state || {};
   const navigate = useNavigate();
   const previewRef = useRef(null);
   const [stickers, setStickers] = useState({});
@@ -27,7 +27,7 @@ export default function EditPage() {
         img.className = `w-full h-full object-cover absolute top-0 left-0`;
         container.appendChild(img);
 
-        // Add sticker placeholders at corners
+        // Add sticker placeholders at corners for each photo's frame
         ['top-left', 'top-right', 'bottom-left', 'bottom-right'].forEach(pos => {
           const stickerKey = `${i}-${pos}`;
           const sticker = stickers[stickerKey] || '/frame/stickers/love.png'; // Default to 'love'
