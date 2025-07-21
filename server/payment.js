@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const midtransClient = require('midtrans-client');
 
-const snap = new midtransClient.Snap({
+const core = new midtransClient.CoreApi({
   isProduction: false,
   serverKey: process.env.MIDTRANS_SERVER_KEY,
+  clientKey: process.env.MIDTRANS_CLIENT_KEY,
 });
 
 const orders = {};
@@ -14,42 +15,28 @@ router.post('/create', async (req, res) => {
   const amount = req.body.amount || 15000;
 
   const parameter = {
+    payment_type: 'qris',
     transaction_details: {
       order_id: orderId,
       gross_amount: amount,
     },
-    credit_card: {
-      secure: true,
-    },
   };
 
   try {
-    const transaction = await snap.createTransaction(parameter);
+    const chargeResponse = await core.charge(parameter);
+    console.log('🧾 Midtrans QRIS response:', JSON.stringify(chargeResponse, null, 2));
+
+    const qrUrl = chargeResponse.actions?.find(a => a.name === 'generate-qr-code')?.url || chargeResponse.qr_url;
+
     orders[orderId] = { status: 'pending' };
-    res.json({ token: transaction.token, order_id: orderId });
+    res.json({
+      qr_url: qrUrl,
+      order_id: orderId,
+    });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Gagal membuat transaksi' });
+    console.error('🔥 Gagal membuat transaksi QRIS:', err);
+    res.status(500).json({ error: 'Gagal membuat transaksi QRIS' });
   }
-});
-
-router.post('/notification', async (req, res) => {
-  const notif = req.body;
-  const orderId = notif.order_id;
-  const transactionStatus = notif.transaction_status;
-
-  console.log('Notifikasi masuk:', notif);
-
-  if (orders[orderId]) {
-    orders[orderId].status = transactionStatus;
-  }
-
-  res.sendStatus(200);
-});
-
-router.get('/status/:orderId', (req, res) => {
-  const status = orders[req.params.orderId]?.status || 'not_found';
-  res.json({ status });
 });
 
 module.exports = router;
