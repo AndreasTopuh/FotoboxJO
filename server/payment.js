@@ -11,30 +11,9 @@ const core = new midtransClient.CoreApi({
 const orders = {};
 let logs = []; // 🧠 Untuk menyimpan log sementara
 
-router.post('/notification', async (req, res) => {
-  try {
-    const notification = await core.transaction.notification(req.body);
-    const transactionStatus = notification.transaction_status;
-    const orderId = notification.order_id;
-
-    const log1 = `📩 Menerima notifikasi: ${JSON.stringify(req.body, null, 2)}`;
-    const log2 = `📥 Notifikasi dari Midtrans untuk ${orderId}: ${transactionStatus}`;
-    logs.push(log1, log2);
-    console.log(log1);
-    console.log(log2);
-
-    if (orders[orderId]) {
-      orders[orderId].status = transactionStatus;
-      orders[orderId].updatedAt = Date.now();
-    }
-
-    res.status(200).json({ message: 'Notifikasi diterima' });
-  } catch (err) {
-    const errMsg = '❌ Gagal proses notifikasi: ' + err.message;
-    logs.push(errMsg);
-    console.error(errMsg);
-    res.status(500).json({ error: 'Gagal proses notifikasi' });
-  }
+router.post('/notification', (req, res) => {
+  console.log('[NOTIF] Dapet notifikasi Midtrans:', req.body);
+  res.status(200).send('Notification received');
 });
 
 router.post('/create', async (req, res) => {
