@@ -4,10 +4,10 @@ export default function Landing() {
   const navigate = useNavigate();
 
   return (
-    <div className="w-screen min-h-screen text-white bg-gray-900 overflow-y-scroll snap-y snap-mandatory scroll-smooth">
+    <div className="w-screen min-h-screen text-white overflow-y-scroll snap-y snap-mandatory scroll-smooth">
       {/* Section 1: Headline */}
-      <section className="h-screen flex items-center justify-center snap-start">
-        <div className="w-[90vw] max-w-3xl backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl px-10 py-16 text-center shadow-2xl space-y-8">
+      <section className="h-screen flex items-center justify-center snap-start px-4 text-center">
+        <div className="space-y-8">
           <div className="text-5xl lg:text-6xl font-extrabold drop-shadow-lg">
             FotoboxJO
           </div>
