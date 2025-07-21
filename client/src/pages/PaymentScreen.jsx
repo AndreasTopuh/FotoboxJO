@@ -4,7 +4,7 @@ export default function PaymentScreen() {
   const [qrUrl, setQrUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [orderId, setOrderId] = useState(null);
-  const [timer, setTimer] = useState(300); // 5 menit
+  const [timer, setTimer] = useState(300);
   const [status, setStatus] = useState(null);
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export default function PaymentScreen() {
   };
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center bg-gray-50">
+    <div className="h-screen flex flex-col items-center justify-center">
       <div className="text-center max-w-md mx-auto px-4">
         <h1 className="text-3xl font-bold mb-4 text-gray-800">Selesaikan Pembayaran</h1>
         <p className="mb-2 text-lg text-gray-600">Jumlah: <strong>Rp15.000</strong></p>
