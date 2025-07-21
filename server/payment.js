@@ -9,6 +9,7 @@ const core = new midtransClient.CoreApi({
 });
 
 const orders = {};
+let logs = []; // 🧠 Untuk menyimpan log sementara
 
 router.post('/notification', async (req, res) => {
   try {
@@ -16,11 +17,12 @@ router.post('/notification', async (req, res) => {
     const transactionStatus = notification.transaction_status;
     const orderId = notification.order_id;
 
-    console.log('📩 Menerima notifikasi:', JSON.stringify(req.body, null, 2));
+    const log1 = `📩 Menerima notifikasi: ${JSON.stringify(req.body, null, 2)}`;
+    const log2 = `📥 Notifikasi dari Midtrans untuk ${orderId}: ${transactionStatus}`;
+    logs.push(log1, log2);
+    console.log(log1);
+    console.log(log2);
 
-    console.log(`📥 Notifikasi dari Midtrans untuk ${orderId}:`, transactionStatus);
-
-    // Update order status and add timestamp
     if (orders[orderId]) {
       orders[orderId].status = transactionStatus;
       orders[orderId].updatedAt = Date.now();
@@ -28,7 +30,9 @@ router.post('/notification', async (req, res) => {
 
     res.status(200).json({ message: 'Notifikasi diterima' });
   } catch (err) {
-    console.error('❌ Gagal proses notifikasi:', err);
+    const errMsg = '❌ Gagal proses notifikasi: ' + err.message;
+    logs.push(errMsg);
+    console.error(errMsg);
     res.status(500).json({ error: 'Gagal proses notifikasi' });
   }
 });
@@ -49,30 +53,24 @@ router.post('/create', async (req, res) => {
     parameter.payment_type = 'qris';
   } else if (method === 'bank_transfer') {
     parameter.payment_type = 'bank_transfer';
-    parameter.bank_transfer = {
-      bank: 'bca',
-    };
+    parameter.bank_transfer = { bank: 'bca' };
   } else {
     return res.status(400).json({ error: 'Metode pembayaran tidak valid' });
   }
 
   try {
     const chargeResponse = await core.charge(parameter);
-    console.log('🧾 Midtrans response:', JSON.stringify(chargeResponse, null, 2));
+    const log = '🧾 Midtrans response: ' + JSON.stringify(chargeResponse, null, 2);
+    logs.push(log);
+    console.log(log);
 
-    const responsePayload = {
-      order_id: orderId,
-    };
-
+    const responsePayload = { order_id: orderId };
     if (method === 'qris') {
-      responsePayload.qr_url =
-        chargeResponse.actions?.find((a) => a.name === 'generate-qr-code')?.url ||
-        chargeResponse.qr_url;
+      responsePayload.qr_url = chargeResponse.actions?.find((a) => a.name === 'generate-qr-code')?.url || chargeResponse.qr_url;
     } else if (method === 'bank_transfer') {
       responsePayload.va_number = chargeResponse.va_numbers?.[0]?.va_number || null;
     }
 
-    // Store order details with creation timestamp
     orders[orderId] = {
       status: chargeResponse.transaction_status || 'pending',
       createdAt: Date.now(),
@@ -81,7 +79,9 @@ router.post('/create', async (req, res) => {
 
     res.json(responsePayload);
   } catch (err) {
-    console.error('🔥 Gagal membuat transaksi:', err);
+    const errMsg = '🔥 Gagal membuat transaksi: ' + err.message;
+    logs.push(errMsg);
+    console.error(errMsg);
     res.status(500).json({ error: 'Gagal membuat transaksi' });
   }
 });
@@ -93,23 +93,33 @@ router.get('/status/:orderId', async (req, res) => {
     return res.status(404).json({ error: 'Order tidak ditemukan' });
   }
 
-  // Check if order has expired (5 minutes = 300,000 ms)
   const elapsed = Date.now() - orders[orderId].createdAt;
   if (elapsed > 300000) {
     orders[orderId].status = 'expire';
   }
 
   try {
-    // Optionally, fetch latest status from Midtrans
     const statusResponse = await core.transaction.status(orderId);
     orders[orderId].status = statusResponse.transaction_status;
     orders[orderId].updatedAt = Date.now();
+
+    const log = `📦 Status update dari Midtrans untuk ${orderId}: ${statusResponse.transaction_status}`;
+    logs.push(log);
+    console.log(log);
+
     res.json({ status: statusResponse.transaction_status });
   } catch (err) {
-    console.error('🔥 Gagal cek status:', err);
-    // Return cached status if Midtrans call fails
+    const fallbackLog = `🔥 Gagal cek status dari Midtrans, fallback ke cached status: ${orders[orderId].status}`;
+    logs.push(fallbackLog);
+    console.error(fallbackLog);
     res.json({ status: orders[orderId].status });
   }
+});
+
+// 🔍 Endpoint baru untuk ambil log
+router.get('/log', (req, res) => {
+  res.json({ logs });
+  logs = []; // Kosongkan log setelah diambil agar nggak numpuk
 });
 
 module.exports = router;

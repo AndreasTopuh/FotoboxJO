@@ -234,6 +234,20 @@ const PaymentScreen = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const fetchLogs = async () => {
+      try {
+        const res = await fetch('https://gofotobox.online/payment/log');
+        const data = await res.json();
+        data.logs.forEach(msg => alert(msg)); // ⛳ munculkan log backend sebagai alert
+      } catch (err) {
+        console.error('Gagal ambil log backend:', err);
+      }
+    };
+
+    fetchLogs(); // panggil langsung saat load
+  }, []);
+
   const updateRemainingTime = (startTime) => {
     const now = Date.now();
     const elapsed = Math.floor((now - startTime) / 1000);
