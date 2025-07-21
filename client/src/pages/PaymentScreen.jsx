@@ -7,6 +7,15 @@ export default function PaymentScreen() {
   const [timer, setTimer] = useState(300);
   const [status, setStatus] = useState(null);
 
+  // Ambil orderId dari localStorage saat pertama load
+  useEffect(() => {
+    const savedOrderId = localStorage.getItem('order_id');
+    if (savedOrderId) {
+      setOrderId(savedOrderId);
+    }
+  }, []);
+
+  // Timer countdown
   useEffect(() => {
     const interval = setInterval(() => {
       setTimer((prev) => {
@@ -17,6 +26,7 @@ export default function PaymentScreen() {
     return () => clearInterval(interval);
   }, []);
 
+  // Cek status pembayaran setiap 5 detik
   useEffect(() => {
     const checkInterval = setInterval(async () => {
       if (!orderId) return;
@@ -26,6 +36,7 @@ export default function PaymentScreen() {
         setStatus(data.status);
 
         if (data.status === 'settlement') {
+          localStorage.removeItem('order_id'); // hapus orderId dari localStorage setelah sukses
           window.location.href = '/frame';
         }
       } catch (err) {
@@ -35,6 +46,7 @@ export default function PaymentScreen() {
     return () => clearInterval(checkInterval);
   }, [orderId]);
 
+  // Buat pembayaran baru
   const createQRISPayment = async () => {
     setLoading(true);
     try {
@@ -46,6 +58,7 @@ export default function PaymentScreen() {
       const data = await res.json();
       setQrUrl(data.qr_url);
       setOrderId(data.order_id);
+      localStorage.setItem('order_id', data.order_id); // simpan orderId ke localStorage
     } catch (err) {
       console.error('Error fetching QR:', err);
     } finally {
@@ -58,7 +71,9 @@ export default function PaymentScreen() {
       <div className="text-center max-w-md mx-auto px-4">
         <h1 className="text-3xl font-bold mb-4 text-gray-800">Selesaikan Pembayaran</h1>
         <p className="mb-2 text-lg text-gray-600">Jumlah: <strong>Rp15.000</strong></p>
-        <p className="mb-4 text-sm text-red-600">Batas waktu pembayaran: {Math.floor(timer / 60)}:{String(timer % 60).padStart(2, '0')}</p>
+        <p className="mb-4 text-sm text-red-600">
+          Batas waktu pembayaran: {Math.floor(timer / 60)}:{String(timer % 60).padStart(2, '0')}
+        </p>
 
         {qrUrl ? (
           <>
