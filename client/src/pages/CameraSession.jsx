@@ -21,17 +21,17 @@ export default function CameraSession() {
 
   const getLayoutKey = (path) => {
     const map = {
-      '/frame/layout/finallayout1.png': 'A',
-      '/frame/layout/finallayout2.png': 'B',
-      '/frame/layout/finallayout3.png': 'C',
-      '/frame/layout/finallayout4.png': 'D',
-      '/frame/layout/finallayout5.png': 'E',
-      '/frame/layout/finallayout6.png': 'F',
+      '/frameLayout1/frame1layout1.png': 'A',
+      '/frameLayout2/frame2layout1.png': 'B',
+      '/frameLayout3/frame3layout1.png': 'C',
+      '/frameLayout4/frame4layout1.png': 'D',
+      '/frameLayout5/frame5layout1.png': 'E',
+      '/frameLayout6/frame6layout1.png': 'F',
     };
     return map[path.replace('/frame/layout/', '').replace('.png', '')] || 'A';
   };
 
-  const layoutKey = getLayoutKey(layoutPath.replace('/frame/layout/frameLayout', '').replace('/frame1layout1.png', ''));
+  const layoutKey = getLayoutKey(layoutPath.replace('/frame/layout/', ''));
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true })
@@ -60,8 +60,8 @@ export default function CameraSession() {
     const video = videoRef.current;
     const ctx = canvas.getContext('2d');
 
-    canvas.width = 768; // Match layout width
-    canvas.height = 1152; // Match layout height
+    canvas.width = 768;
+    canvas.height = 1152;
 
     const frame = new Image();
     frame.src = layoutPath;
@@ -191,7 +191,7 @@ export default function CameraSession() {
             </button>
           </div>
           <div id="photoContainer" className="flex items-center justify-center w-full md:w-auto">
-            <div className="relative w-[768px] h-[1152px]">
+            <div id="photoPreview" className="relative w-[768px] h-[1152px]">
               <img
                 src={layoutPath}
                 alt="Frame Template"

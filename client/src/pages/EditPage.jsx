@@ -11,16 +11,14 @@ export default function EditPage() {
 
   const getLayoutKey = (path) => {
     const map = {
-      '/frame/layout/finallayout1.png': 'A',
-      '/frame/layout/finallayout2.png': 'B',
-      '/frame/layout/finallayout3.png': 'C',
-      '/frame/layout/finallayout4.png': 'D',
-      '/frame/layout/finallayout5.png': 'E',
-      '/frame/layout/finallayout6.png': 'F',
+      '/frameLayout1/frame1layout1.png': 'A',
+      '/frameLayout2/frame2layout1.png': 'B',
+      '/frameLayout3/frame3layout1.png': 'C',
+      '/frameLayout4/frame4layout1.png': 'D',
+      '/frameLayout5/frame5layout1.png': 'E',
+      '/frameLayout6/frame6layout1.png': 'F',
     };
-    // Adjust for frame paths
-    const basePath = path.replace('/frame/layout/frameLayout', '').replace('/frameXlayout1.png', '');
-    return map[basePath] || 'A';
+    return map[path.replace('/frame/layout/', '').replace('.png', '')] || 'A';
   };
 
   const layoutKey = getLayoutKey(layout);
@@ -95,7 +93,9 @@ export default function EditPage() {
   return (
     <main id="main-section" className="flex flex-col items-center p-4 min-h-screen bg-gradient-to-r from-[#FF8679] via-[#F2AAAE] to-[#F6D3AD]">
       <section className="custom-main flex flex-col md:flex-row gap-6 w-full max-w-6xl">
-        <div id="photoPreview" ref={previewRef} className="flex items-center justify-center p-4 rounded-lg shadow-lg relative" />
+        <div id="photoPreview" ref={previewRef} className="flex items-center justify-center p-4 rounded-lg shadow-lg relative w-[768px] h-[1152px]">
+          {/* Content managed by useEffect */}
+        </div>
         <div className="customization-container w-full max-w-md">
           <h1 className="custom-heading text-3xl font-bold text-center mb-6 text-gray-800">Customize your photo</h1>
           <div className="custom-options-container">

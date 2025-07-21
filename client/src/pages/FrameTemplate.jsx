@@ -57,11 +57,13 @@ export default function FrameTemplate() {
           <p className="text-lg">Pilih template untuk layout Anda.</p>
         </div>
         <div className="w-full md:w-1/2">
-          <img
-            src={displayFrame()}
-            alt="Selected Template"
-            className="w-full max-w-md mx-auto border-4 border-purple-500 rounded-lg"
-          />
+          <div id="photoPreview" className="relative w-[768px] h-[1152px] mx-auto">
+            <img
+              src={displayFrame()}
+              alt="Selected Template"
+              className="w-full h-full object-contain border-4 border-purple-500 rounded-lg"
+            />
+          </div>
           <button
             onClick={handleContinue}
             className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-lg"
