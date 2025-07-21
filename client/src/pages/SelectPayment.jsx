@@ -8,6 +8,7 @@ export default function SelectPayment() {
   const handleSelectMethod = (method) => {
     setSelectedMethod(method);
     localStorage.setItem('payment_method', method);
+    localStorage.setItem('session_start', Date.now()); // Store session start time
     navigate('/payment');
   };
 
