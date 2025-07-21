@@ -24,7 +24,7 @@
     <meta name="twitter:description"
         content="Take instant photobooth-style photos online. Customize with over 100 frame colors, add stickers and frames, and download high-quality photo strips instantly.">
     <meta name="twitter:image" content="https://www.photobooth-io.cc/assets/home-mockup.png">
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="../../styles.css" />
     <link
         href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&display=swap"
         rel="stylesheet">
@@ -149,12 +149,12 @@
         }
 
         .photo {
-            width: 150px;
-            max-width: 150px;
+            width: 140px;
+            max-width: 140px;
             border: 2px solid black;
             display: block;
             border-radius: 12px;
-            height: 109.76px;
+            height: 76.10px;
             object-fit: cover;
         }
 
@@ -217,6 +217,12 @@
             z-index: 2;
         }
 
+        .canvas-centered {
+            display: flex;
+            flex-direction: column;
+            z-index: 4;
+        }
+
         .startBtn-container {
             display: flex;
             flex-direction: column-reverse;
@@ -241,11 +247,15 @@
                 flex-direction: column;
                 justify-content: center;
                 gap: 20px;
+                width: 100%;
+                /* Ensure it's not constrained */
+                overflow-x: hidden;
+                /* Hide overflow horizontally in the container */
             }
 
             .photo {
                 width: 100px;
-                height: 73.17px;
+                height: 54.36px;
                 display: flex;
                 flex-direction: row;
                 object-fit: cover;
@@ -257,6 +267,17 @@
                 align-items: center;
                 justify-content: center;
                 width: 100%;
+                overflow-x: auto;
+                /* enables horizontal scroll */
+                white-space: nowrap;
+                /* prevents items from wrapping to the next line */
+                gap: 10px;
+                /* optional: adds spacing between items */
+            }
+
+            #photoContainer>* {
+                flex: 0 0 auto;
+                /* prevents items from shrinking or stretching */
             }
         }
 
@@ -268,11 +289,15 @@
                 flex-direction: column;
                 justify-content: center;
                 gap: 20px;
+                width: 100%;
+                /* Ensure it's not constrained */
+                overflow-x: hidden;
+                /* Hide overflow horizontally in the container */
             }
 
             .photo {
                 width: 100px;
-                height: 73.17px;
+                height: 54.36px;
                 display: flex;
                 flex-direction: row;
                 object-fit: cover;
@@ -284,6 +309,17 @@
                 align-items: center;
                 justify-content: center;
                 width: 100%;
+                overflow-x: auto;
+                /* enables horizontal scroll */
+                white-space: nowrap;
+                /* prevents items from wrapping to the next line */
+                gap: 10px;
+                /* optional: adds spacing between items */
+            }
+
+            #photoContainer>* {
+                flex: 0 0 auto;
+                /* prevents items from shrinking or stretching */
             }
         }
     </style>
@@ -295,8 +331,8 @@
     <main id="main-section">
         <div class="canvas-centered">
             <div class="gradientBgCanvas"></div>
-            <p id="progressCounter">0/3</p>
-            <input type="file" id="uploadInput" accept="image/*" multiple style="display: none;">
+            <p id="progressCounter">0/4</p>
+            <input type="file" id="uploadInput" accept="image/*" multiple style="display:none;">
             <div id="add-ons-container">
                 <button id="uploadBtn" class="uploadBtnStyling">
                     <img src="assets/icons/upload-icon.png" class="icons-size" alt="upload image icon">
@@ -343,13 +379,12 @@
                     <button id="doneBtn">DONE</button>
                 </div>
             </div>
-            <div id="photoPreview"></div>
             <!-- <div id="flash"></div> -->
         </div>
     </main>
 
-    <script src="canvas.js"></script>
-    <!-- <script src="main.js"></script> -->
+    <script src="canvas4.js"></script>
+    <script src="main.js"></script>
 </body>
 
 </html>

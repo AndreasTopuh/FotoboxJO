@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
         layoutBtn3.addEventListener('click', (e) => {
             e.preventDefault()
             window.location.href = 'canvas2.html'
-            // alert("Developer is currently working on this! ")
         })
     }
 

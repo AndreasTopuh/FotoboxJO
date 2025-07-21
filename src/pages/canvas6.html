@@ -24,7 +24,7 @@
     <meta name="twitter:description"
         content="Take instant photobooth-style photos online. Customize with over 100 frame colors, add stickers and frames, and download high-quality photo strips instantly.">
     <meta name="twitter:image" content="https://www.photobooth-io.cc/assets/home-mockup.png">
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="../../styles.css" />
     <link
         href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&display=swap"
         rel="stylesheet">
@@ -149,12 +149,12 @@
         }
 
         .photo {
-            width: 140px;
-            max-width: 140px;
+            width: 120px;
+            max-width: 120px;
             border: 2px solid black;
             display: block;
             border-radius: 12px;
-            height: 76.10px;
+            height: 110.88px;
             object-fit: cover;
         }
 
@@ -217,12 +217,6 @@
             z-index: 2;
         }
 
-        .canvas-centered {
-            display: flex;
-            flex-direction: column;
-            z-index: 4;
-        }
-
         .startBtn-container {
             display: flex;
             flex-direction: column-reverse;
@@ -255,7 +249,7 @@
 
             .photo {
                 width: 100px;
-                height: 54.36px;
+                height: 92.4px;
                 display: flex;
                 flex-direction: row;
                 object-fit: cover;
@@ -297,7 +291,7 @@
 
             .photo {
                 width: 100px;
-                height: 54.36px;
+                height: 92.4px;
                 display: flex;
                 flex-direction: row;
                 object-fit: cover;
@@ -331,7 +325,7 @@
     <main id="main-section">
         <div class="canvas-centered">
             <div class="gradientBgCanvas"></div>
-            <p id="progressCounter">0/4</p>
+            <p id="progressCounter">0/6</p>
             <input type="file" id="uploadInput" accept="image/*" multiple style="display:none;">
             <div id="add-ons-container">
                 <button id="uploadBtn" class="uploadBtnStyling">
@@ -383,7 +377,7 @@
         </div>
     </main>
 
-    <script src="canvas4.js"></script>
+    <script src="canvas6.js"></script>
     <script src="main.js"></script>
 </body>
 
