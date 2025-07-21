@@ -64,7 +64,26 @@ export default function PaymentScreen() {
           <>
             <img src={qrUrl} alt="QR Code Pembayaran" className="w-64 h-64 mx-auto my-4 border p-2 bg-white" />
             <p className="text-sm text-gray-500">Scan kode QR menggunakan aplikasi e-wallet kamu</p>
-            <p className="mt-2 text-sm text-blue-600">Status: {status}</p>
+            {status && (
+              <p className={`mt-2 text-sm font-medium ${
+                status === 'settlement' ? 'text-green-600' :
+                status === 'pending' ? 'text-yellow-600' :
+                status === 'expire' || status === 'cancel' || status === 'failure' ? 'text-red-600' :
+                'text-gray-600'
+              }`}>
+                Status: {status === 'settlement'
+                  ? 'Pembayaran Berhasil'
+                  : status === 'pending'
+                  ? 'Menunggu Pembayaran'
+                  : status === 'expire'
+                  ? 'Kadaluarsa'
+                  : status === 'cancel'
+                  ? 'Dibatalkan'
+                  : status === 'failure'
+                  ? 'Gagal'
+                  : status}
+              </p>
+            )}
           </>
         ) : (
           <button
