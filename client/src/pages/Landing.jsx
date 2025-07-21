@@ -10,7 +10,7 @@ export default function Landing() {
         </div>
         <button
           className="bg-pink-400 hover:bg-pink-500 transition px-6 py-3 lg:px-8 lg:py-4 xl:px-10 xl:py-5 rounded-full text-base lg:text-lg xl:text-xl font-semibold shadow-md text-white"
-          onClick={() => navigate('/payment')}>
+          onClick={() => navigate('/selectpayment')}>
           Ketuk Untuk Mulai
         </button>
       </div>
