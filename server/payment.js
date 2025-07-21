@@ -13,29 +13,44 @@ const orders = {};
 router.post('/create', async (req, res) => {
   const orderId = 'ORDER-' + Date.now();
   const amount = req.body.amount || 15000;
+  const method = req.body.method || 'qris';
 
-  const parameter = {
-    payment_type: 'qris',
+  let parameter = {
     transaction_details: {
       order_id: orderId,
       gross_amount: amount,
     },
   };
 
+  if (method === 'qris') {
+    parameter.payment_type = 'qris';
+  } else if (method === 'bank_transfer') {
+    parameter.payment_type = 'bank_transfer';
+    parameter.bank_transfer = {
+      bank: 'bca'
+    };
+  } else {
+    return res.status(400).json({ error: 'Metode pembayaran tidak valid' });
+  }
+
   try {
     const chargeResponse = await core.charge(parameter);
-    console.log('🧾 Midtrans QRIS response:', JSON.stringify(chargeResponse, null, 2));
+    console.log('🧾 Midtrans response:', JSON.stringify(chargeResponse, null, 2));
 
-    const qrUrl = chargeResponse.actions?.find(a => a.name === 'generate-qr-code')?.url || chargeResponse.qr_url;
+    const responsePayload = {
+      order_id: orderId
+    };
 
-    orders[orderId] = { status: 'pending' };
-    res.json({
-      qr_url: qrUrl,
-      order_id: orderId,
-    });
+    if (method === 'qris') {
+      responsePayload.qr_url = chargeResponse.actions?.find(a => a.name === 'generate-qr-code')?.url || chargeResponse.qr_url;
+    } else if (method === 'bank_transfer') {
+      responsePayload.va_number = chargeResponse.va_numbers?.[0]?.va_number || null;
+    }
+
+    res.json(responsePayload);
   } catch (err) {
-    console.error('🔥 Gagal membuat transaksi QRIS:', err);
-    res.status(500).json({ error: 'Gagal membuat transaksi QRIS' });
+    console.error('🔥 Gagal membuat transaksi:', err);
+    res.status(500).json({ error: 'Gagal membuat transaksi' });
   }
 });
 
