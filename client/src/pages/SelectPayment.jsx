@@ -1,29 +1,10 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 export default function SelectPayment() {
   const navigate = useNavigate();
-  const [timer, setTimer] = useState(300); // 5 menit timer
   const [selectedMethod, setSelectedMethod] = useState(null);
 
-  // Mulai timer session
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTimer((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          localStorage.removeItem('payment_method');
-          localStorage.removeItem('session_timer');
-          navigate('/'); // Kembali ke Landing jika waktu habis
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    localStorage.setItem('session_timer', timer);
-    return () => clearInterval(interval);
-  }, [timer, navigate]);
-
-  // Simpan pilihan metode pembayaran dan navigasi ke PaymentScreen
   const handleSelectMethod = (method) => {
     setSelectedMethod(method);
     localStorage.setItem('payment_method', method);
@@ -31,25 +12,25 @@ export default function SelectPayment() {
   };
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center bg-gray-50">
-      <div className="text-center max-w-md mx-auto px-4">
-        <h1 className="text-3xl font-bold mb-4 text-gray-800">Pilih Metode Pembayaran</h1>
-        <p className="mb-2 text-lg text-gray-600">Jumlah: <strong>Rp15.000</strong></p>
-        <p className="mb-4 text-sm text-red-600">
-          Batas waktu pembayaran: {Math.floor(timer / 60)}:{String(timer % 60).padStart(2, '0')}
-        </p>
+    <div className="h-screen w-screen flex items-center justify-center bg-gray-900">
+      <div className="backdrop-blur-md bg-white/10 border border-white/20 text-white rounded-xl p-10 max-w-md w-[90vw] shadow-2xl space-y-6 text-center">
+        <h1 className="text-3xl font-bold">Pilih Metode Pembayaran</h1>
+        <p className="text-lg">Harga layanan Fotobox: <strong className="text-pink-400">Rp15.000</strong></p>
+        <p className="text-sm text-white/70">Silakan pilih metode pembayaran di bawah ini</p>
+
         <div className="flex flex-col gap-4">
           <button
             onClick={() => handleSelectMethod('qris')}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded transition w-full"
+            className="bg-pink-500 hover:bg-pink-600 transition px-6 py-3 rounded-full font-semibold shadow-md"
           >
             Bayar via QRIS
           </button>
+
           <button
             onClick={() => handleSelectMethod('bank_transfer')}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded transition w-full"
+            className="bg-blue-500 hover:bg-blue-600 transition px-6 py-3 rounded-full font-semibold shadow-md"
           >
-            Bayar via Virtual Account Bank
+            Bayar via Virtual Account BCA
           </button>
         </div>
       </div>
