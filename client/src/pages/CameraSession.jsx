@@ -7,6 +7,7 @@ export default function CameraSession() {
   const flashRef = useRef(null);
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
+  const layout = urlParams.get('layout') || '/frame/layout/frameLayout1/frame1layout1.png'; // Fallback to correct frame
   const photoCount = parseInt(urlParams.get('photos')) || 2;
   const [photos, setPhotos] = useState(Array(photoCount).fill(null));
   const [timer, setTimer] = useState(3);
@@ -42,39 +43,54 @@ export default function CameraSession() {
   const capturePhoto = (index) => {
     const canvas = canvasRef.current;
     const video = videoRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
     const ctx = canvas.getContext('2d');
-    if (isMirrored) {
-      ctx.scale(-1, 1);
-      ctx.translate(-canvas.width, 0);
-    }
-    ctx.filter = filter === 'none' ? 'none' : filter;
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    ctx.filter = 'none';
-    if (isMirrored) {
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-    }
-    const data = canvas.toDataURL('image/png');
 
-    // Flash effect
-    flashRef.current.style.opacity = '1';
-    setTimeout(() => {
-      flashRef.current.style.opacity = '0';
-    }, 200);
+    canvas.width = 378; // 10cm x 15cm at 96dpi
+    canvas.height = 567;
 
-    const updated = [...photos];
-    updated[index] = data;
-    setPhotos(updated);
+    const frame = new Image();
+    frame.src = layout;
+    frame.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
 
-    const nextIdx = updated.findIndex(p => p === null);
-    if (nextIdx !== -1) {
-      setCurrentIdx(nextIdx);
-      setTimer(selectedTimer);
-      setStep('countdown');
-    } else {
-      setStep('done');
-    }
+      // Define photo areas based on frame design (adjust these coordinates to match the third image)
+      const photoWidth = 338; // Fit within borders
+      const photoHeight = 267; // Half height
+      const xOffset = 20;
+      const yOffsets = [20, 280]; // Example: top and bottom halves (adjust based on third image)
+
+      if (isMirrored) {
+        ctx.scale(-1, 1);
+        ctx.translate(-canvas.width, 0);
+      }
+      ctx.filter = filter === 'none' ? 'none' : filter;
+      ctx.drawImage(video, 0, 0, photoWidth, photoHeight, xOffset, yOffsets[index], photoWidth, photoHeight);
+      if (isMirrored) {
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+      }
+      ctx.filter = 'none';
+
+      const data = canvas.toDataURL('image/png');
+      flashRef.current.style.opacity = '1';
+      setTimeout(() => {
+        flashRef.current.style.opacity = '0';
+      }, 200);
+
+      const updated = [...photos];
+      updated[index] = data;
+      setPhotos(updated);
+
+      const nextIdx = updated.findIndex(p => p === null);
+      if (nextIdx !== -1) {
+        setCurrentIdx(nextIdx);
+        setTimer(selectedTimer);
+        setStep('countdown');
+      } else {
+        setStep('done');
+      }
+    };
+    frame.onerror = () => console.error('Failed to load frame:', layout);
   };
 
   const startSession = () => {
@@ -86,7 +102,7 @@ export default function CameraSession() {
 
   const handleDone = () => {
     if (step === 'done') {
-      navigate('/edit', { state: { photos } });
+      navigate('/edit', { state: { photos, layout } });
     }
   };
 
@@ -162,15 +178,31 @@ export default function CameraSession() {
               <img src="/assets/fullScreen3.png" className="w-8 h-8" alt="full screen" />
             </button>
           </div>
-          <div id="photoContainer" className="flex flex-col md:flex-row gap-2 items-center justify-center w-full md:w-auto">
-            {photos.map((photo, i) => (
+          <div id="photoContainer" className="flex items-center justify-center w-full md:w-auto">
+            <div className="relative w-[378px] h-[567px]">
               <img
-                key={i}
-                src={photo || '/assets/placeholder.png'}
-                alt={`Photo ${i + 1}`}
-                className="w-[100px] h-[110.9px] object-cover rounded-xl border-2 border-black"
+                src={layout}
+                alt="Frame Template"
+                className="w-full h-full object-contain"
               />
-            ))}
+              {photos.map((photo, i) => (
+                photo ? (
+                  <img
+                    key={i}
+                    src={photo}
+                    alt={`Preview ${i + 1}`}
+                    className="absolute w-[338px] h-[267px] object-cover border-2 border-black"
+                    style={{ top: i === 0 ? '20px' : '280px', left: '20px' }} // Adjust based on third image
+                  />
+                ) : (
+                  <div
+                    key={i}
+                    className="absolute bg-gray-300 opacity-50"
+                    style={{ width: '338px', height: '267px', top: i === 0 ? '20px' : '280px', left: '20px' }} // Placeholder
+                  />
+                )
+              ))}
+            </div>
           </div>
         </section>
         <div className="startBtn-container flex flex-col items-center mt-4">
@@ -206,9 +238,15 @@ export default function CameraSession() {
             <button
               onClick={handleDone}
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-lg"
-              disabled={step !== 'done'}
             >
               DONE
+            </button>
+            <button
+              onClick={startSession}
+              className="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg shadow-lg text-sm"
+              disabled={step === 'idle'}
+            >
+              Retake
             </button>
           </div>
         </div>
