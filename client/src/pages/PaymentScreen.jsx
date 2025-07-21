@@ -4,7 +4,7 @@ export default function PaymentScreen() {
   const [qrUrl, setQrUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [orderId, setOrderId] = useState(null);
-  const [timer, setTimer] = useState(300); // 5 menit
+  const [timer, setTimer] = useState(300);
   const [status, setStatus] = useState(null);
 
   useEffect(() => {
