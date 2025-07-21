@@ -8,8 +8,6 @@ import EditPage from './pages/EditPage';
 import ResultPage from './pages/ResultPage';
 import SelectPayment from './pages/SelectPayment';
 
-
-
 export default function App() {
   return (
     <Router>
