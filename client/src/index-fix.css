@@ -16,7 +16,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
+/* 
 a {
   font-weight: 500;
   color: #646cff;
@@ -81,14 +81,12 @@ button:focus-visible {
   }
 }
 
-/* Custom Styles */
 #photoPreview {
   position: relative;
   width: 768px;
   height: 1152px;
   margin: 0 auto;
   overflow: hidden;
-  /* Prevent overflow of larger images */
 }
 
 .custom-main {
@@ -181,4 +179,4 @@ button:focus-visible {
 #photoPreview img {
   position: relative;
   z-index: 1;
-}
+} */
