@@ -10,6 +10,26 @@ const core = new midtransClient.CoreApi({
 
 const orders = {};
 
+router.post('/notification', async (req, res) => {
+  try {
+    const notification = await core.transaction.notification(req.body);
+    const transactionStatus = notification.transaction_status;
+    const orderId = notification.order_id;
+
+    console.log(`📥 Notifikasi dari Midtrans untuk ${orderId}:`, transactionStatus);
+
+    // Update status order kalau kamu simpan di memory/database
+    if (orders[orderId]) {
+      orders[orderId].status = transactionStatus;
+    }
+
+    res.status(200).json({ message: 'Notifikasi diterima' });
+  } catch (err) {
+    console.error('❌ Gagal proses notifikasi:', err);
+    res.status(500).json({ error: 'Gagal proses notifikasi' });
+  }
+});
+
 router.post('/create', async (req, res) => {
   const orderId = 'ORDER-' + Date.now();
   const amount = req.body.amount || 15000;
