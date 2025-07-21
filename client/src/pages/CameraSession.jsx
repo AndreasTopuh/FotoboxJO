@@ -19,7 +19,6 @@ export default function CameraSession() {
   const [isMirrored, setIsMirrored] = useState(false);
   const navigate = useNavigate();
 
-  // Map layout path to layout key (A, B, C, etc.)
   const getLayoutKey = (path) => {
     const map = {
       '/frame/layout/finallayout1.png': 'A',
@@ -29,10 +28,10 @@ export default function CameraSession() {
       '/frame/layout/finallayout5.png': 'E',
       '/frame/layout/finallayout6.png': 'F',
     };
-    return map[path] || 'A'; // Default to A if not found
+    return map[path.replace('/frame/layout/', '').replace('.png', '')] || 'A';
   };
 
-  const layoutKey = getLayoutKey(layoutPath.replace('/frame/layout/', '').replace('.png', ''));
+  const layoutKey = getLayoutKey(layoutPath.replace('/frame/layout/frameLayout', '').replace('/frame1layout1.png', ''));
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true })
@@ -61,8 +60,8 @@ export default function CameraSession() {
     const video = videoRef.current;
     const ctx = canvas.getContext('2d');
 
-    canvas.width = 768; // Match the total width of the layout
-    canvas.height = 1152; // Match the total height of the layout
+    canvas.width = 768; // Match layout width
+    canvas.height = 1152; // Match layout height
 
     const frame = new Image();
     frame.src = layoutPath;

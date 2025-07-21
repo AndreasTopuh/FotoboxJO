@@ -1,5 +1,3 @@
-import { useLocation, useNavigate } from 'react-router-dom';
-
 const layoutPaths = [
   '/frame/layout/finallayout1.png',
   '/frame/layout/finallayout2.png',
@@ -14,7 +12,7 @@ const descriptions = [
   '4x take foto, durasi 7 menit.',
   '6x take foto, durasi 7 menit.',
   '8x take foto, durasi 7 menit.',
-  '5x take foto, durasi 7 menit.',
+  '5x take foto, durasi 7 menit.', // Updated to 5x
   '4x take foto, durasi 7 menit.',
 ];
 
@@ -28,7 +26,7 @@ export default function FrameSelect() {
         {layoutPaths.map((frame, i) => (
           <a
             key={i}
-            href={`/frametemplate?layout=${frame}&photos=${photoCounts[i]}`}
+            href={`/frametemplate?layout=${encodeURIComponent(frame)}&photos=${photoCounts[i]}`}
             className="flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow-sm md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
           >
             <img

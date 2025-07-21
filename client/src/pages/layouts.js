@@ -1,15 +1,15 @@
 export const layouts = {
-  'A': [ // Layout 1 (finallayout1.png) - 2 photos
+  'A': [ // finallayout1.png - 2 photos
     { x: 64, y: 64, w: 256, h: 320 },
     { x: 448, y: 64, w: 256, h: 320 },
   ],
-  'B': [ // Layout 2 (finallayout2.png) - 4 photos
+  'B': [ // finallayout2.png - 4 photos
     { x: 64, y: 64, w: 256, h: 320 },
     { x: 448, y: 64, w: 256, h: 320 },
     { x: 64, y: 448, w: 256, h: 320 },
     { x: 448, y: 448, w: 256, h: 320 },
   ],
-  'C': [ // Layout 3 (finallayout3.png) - 6 photos
+  'C': [ // finallayout3.png - 6 photos
     { x: 64, y: 64, w: 256, h: 320 },
     { x: 448, y: 64, w: 256, h: 320 },
     { x: 64, y: 448, w: 256, h: 320 },
@@ -17,20 +17,20 @@ export const layouts = {
     { x: 64, y: 832, w: 256, h: 320 },
     { x: 448, y: 832, w: 256, h: 320 },
   ],
-  'D': [ // Layout 4 (finallayout4.png) - 8 photos
+  'D': [ // finallayout4.png - 8 photos
     { x: 64, y: 64, w: 320, h: 320 },
     { x: 448, y: 64, w: 256, h: 320 },
     { x: 64, y: 448, w: 256, h: 320 },
     { x: 448, y: 448, w: 256, h: 320 },
     { x: 448, y: 832, w: 256, h: 320 },
   ],
-  'E': [ // Layout 5 (finallayout5.png) - 5 photos
+  'E': [ // finallayout5.png - 5 photos
     { x: 64, y: 64, w: 320, h: 320 },
     { x: 448, y: 64, w: 256, h: 320 },
     { x: 64, y: 448, w: 320, h: 320 },
     { x: 448, y: 448, w: 256, h: 320 },
   ],
-  'F': [ // Layout 6 (finallayout6.png) - 4 photos
+  'F': [ // finallayout6.png - 4 photos
     { x: 64, y: 64, w: 640, h: 384 },
     { x: 64, y: 512, w: 640, h: 384 },
   ],

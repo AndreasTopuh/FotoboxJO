@@ -18,7 +18,9 @@ export default function EditPage() {
       '/frame/layout/finallayout5.png': 'E',
       '/frame/layout/finallayout6.png': 'F',
     };
-    return map[path.replace('/frame/layout/', '').replace('.png', '')] || 'A';
+    // Adjust for frame paths
+    const basePath = path.replace('/frame/layout/frameLayout', '').replace('/frameXlayout1.png', '');
+    return map[basePath] || 'A';
   };
 
   const layoutKey = getLayoutKey(layout);
