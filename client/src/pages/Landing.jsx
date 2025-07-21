@@ -6,7 +6,7 @@ export default function Landing() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
   const [showPopup, setShowPopup] = useState(true);
-  const correctPassword = 'fotoboxjo123'; // 💡 Ganti ini sesuai keinginan admin
+  const correctPassword = '1386';
 
   const handlePasswordSubmit = () => {
     if (passwordInput === correctPassword) {
@@ -27,7 +27,7 @@ export default function Landing() {
             <h2 className="text-2xl font-bold mb-4">Masukkan Kode Akses</h2>
             <input
               type="password"
-              placeholder="Kode rahasia admin"
+              placeholder=""
               value={passwordInput}
               onChange={(e) => setPasswordInput(e.target.value)}
               className="w-full px-4 py-2 mb-4 border rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
