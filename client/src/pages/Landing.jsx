@@ -4,7 +4,7 @@ export default function Landing() {
   const navigate = useNavigate();
 
   return (
-    <div className="w-screen min-h-screen text-white overflow-y-scroll snap-y snap-mandatory scroll-smooth">
+    <div className="w-screen h-screen text-white overflow-y-scroll snap-y snap-mandatory scroll-smooth">
       {/* Section 1: Headline */}
       <section className="h-screen flex items-center justify-center snap-start px-4 text-center">
         <div className="space-y-8">
@@ -21,7 +21,7 @@ export default function Landing() {
       </section>
 
       {/* Section 2: Deskripsi */}
-      <section className="min-h-screen flex items-center justify-center snap-start px-4">
+      <section className="h-screen flex items-center justify-center snap-start px-4">
         <div className="w-[90vw] max-w-3xl backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl px-10 py-16 text-center shadow-2xl space-y-6">
           <h2 className="text-3xl lg:text-4xl font-bold text-white drop-shadow mb-4">Apa itu FotoboxJO?</h2>
           <p className="text-base lg:text-lg text-white/80 leading-relaxed">
@@ -33,7 +33,7 @@ export default function Landing() {
       </section>
 
       {/* Section 3: Contoh Hasil */}
-      <section className="min-h-screen flex flex-col items-center justify-center snap-start space-y-6 px-4 pb-16">
+      <section className="h-screen flex flex-col items-center justify-center snap-start px-4">
         <div className="w-[90vw] max-w-3xl backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl p-10 text-center shadow-2xl">
           <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">Contoh Hasil Foto</h2>
           <div className="backdrop-blur-sm bg-white/10 border border-white/20 rounded-xl p-4 shadow-md inline-block">
@@ -47,7 +47,7 @@ export default function Landing() {
         </div>
 
         {/* Footer */}
-        <div className="text-sm text-white/60 mt-10">© {new Date().getFullYear()} @GoFotobox</div>
+        <div className="text-sm text-white/60 mt-6">© {new Date().getFullYear()} @GoFotobox</div>
       </section>
     </div>
   );
