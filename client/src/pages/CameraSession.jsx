@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { layouts } from './layouts';
 
 export default function CameraSession() {
   const videoRef = useRef(null);
@@ -7,7 +8,7 @@ export default function CameraSession() {
   const flashRef = useRef(null);
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
-  const layout = urlParams.get('layout') || '/frame/layout/frameLayout1/frame1layout1.png'; // Fallback to correct frame
+  const layoutPath = urlParams.get('layout') || '/frame/layout/frameLayout1/frame1layout1.png';
   const photoCount = parseInt(urlParams.get('photos')) || 2;
   const [photos, setPhotos] = useState(Array(photoCount).fill(null));
   const [timer, setTimer] = useState(3);
@@ -17,6 +18,21 @@ export default function CameraSession() {
   const [filter, setFilter] = useState('none');
   const [isMirrored, setIsMirrored] = useState(false);
   const navigate = useNavigate();
+
+  // Map layout path to layout key (A, B, C, etc.)
+  const getLayoutKey = (path) => {
+    const map = {
+      '/frame/layout/finallayout1.png': 'A',
+      '/frame/layout/finallayout2.png': 'B',
+      '/frame/layout/finallayout3.png': 'C',
+      '/frame/layout/finallayout4.png': 'D',
+      '/frame/layout/finallayout5.png': 'E',
+      '/frame/layout/finallayout6.png': 'F',
+    };
+    return map[path] || 'A'; // Default to A if not found
+  };
+
+  const layoutKey = getLayoutKey(layoutPath.replace('/frame/layout/', '').replace('.png', ''));
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true })
@@ -45,27 +61,24 @@ export default function CameraSession() {
     const video = videoRef.current;
     const ctx = canvas.getContext('2d');
 
-    canvas.width = 378; // 10cm x 15cm at 96dpi
-    canvas.height = 567;
+    canvas.width = 768; // Match the total width of the layout
+    canvas.height = 1152; // Match the total height of the layout
 
     const frame = new Image();
-    frame.src = layout;
+    frame.src = layoutPath;
     frame.onload = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
 
-      // Define photo areas based on frame design (adjust these coordinates to match the third image)
-      const photoWidth = 338; // Fit within borders
-      const photoHeight = 267; // Half height
-      const xOffset = 20;
-      const yOffsets = [20, 280]; // Example: top and bottom halves (adjust based on third image)
+      const layout = layouts[layoutKey];
+      const { x, y, w, h } = layout[index];
 
       if (isMirrored) {
         ctx.scale(-1, 1);
         ctx.translate(-canvas.width, 0);
       }
       ctx.filter = filter === 'none' ? 'none' : filter;
-      ctx.drawImage(video, 0, 0, photoWidth, photoHeight, xOffset, yOffsets[index], photoWidth, photoHeight);
+      ctx.drawImage(video, 0, 0, w, h, x, y, w, h);
       if (isMirrored) {
         ctx.setTransform(1, 0, 0, 1, 0, 0);
       }
@@ -90,7 +103,7 @@ export default function CameraSession() {
         setStep('done');
       }
     };
-    frame.onerror = () => console.error('Failed to load frame:', layout);
+    frame.onerror = () => console.error('Failed to load frame:', layoutPath);
   };
 
   const startSession = () => {
@@ -102,7 +115,7 @@ export default function CameraSession() {
 
   const handleDone = () => {
     if (step === 'done') {
-      navigate('/edit', { state: { photos, layout } });
+      navigate('/edit', { state: { photos, layout: layoutPath } });
     }
   };
 
@@ -179,9 +192,9 @@ export default function CameraSession() {
             </button>
           </div>
           <div id="photoContainer" className="flex items-center justify-center w-full md:w-auto">
-            <div className="relative w-[378px] h-[567px]">
+            <div className="relative w-[768px] h-[1152px]">
               <img
-                src={layout}
+                src={layoutPath}
                 alt="Frame Template"
                 className="w-full h-full object-contain"
               />
@@ -191,14 +204,24 @@ export default function CameraSession() {
                     key={i}
                     src={photo}
                     alt={`Preview ${i + 1}`}
-                    className="absolute w-[338px] h-[267px] object-cover border-2 border-black"
-                    style={{ top: i === 0 ? '20px' : '280px', left: '20px' }} // Adjust based on third image
+                    className="absolute object-cover border-2 border-black"
+                    style={{
+                      width: `${layouts[layoutKey][i].w}px`,
+                      height: `${layouts[layoutKey][i].h}px`,
+                      top: `${layouts[layoutKey][i].y}px`,
+                      left: `${layouts[layoutKey][i].x}px`,
+                    }}
                   />
                 ) : (
                   <div
                     key={i}
                     className="absolute bg-gray-300 opacity-50"
-                    style={{ width: '338px', height: '267px', top: i === 0 ? '20px' : '280px', left: '20px' }} // Placeholder
+                    style={{
+                      width: `${layouts[layoutKey][i].w}px`,
+                      height: `${layouts[layoutKey][i].h}px`,
+                      top: `${layouts[layoutKey][i].y}px`,
+                      left: `${layouts[layoutKey][i].x}px`,
+                    }}
                   />
                 )
               ))}

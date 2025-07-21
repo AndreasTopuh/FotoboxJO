@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
+import { layouts } from './layouts';
 
 export default function EditPage() {
   const { state } = useLocation();
@@ -8,14 +9,28 @@ export default function EditPage() {
   const previewRef = useRef(null);
   const [stickers, setStickers] = useState({});
 
+  const getLayoutKey = (path) => {
+    const map = {
+      '/frame/layout/finallayout1.png': 'A',
+      '/frame/layout/finallayout2.png': 'B',
+      '/frame/layout/finallayout3.png': 'C',
+      '/frame/layout/finallayout4.png': 'D',
+      '/frame/layout/finallayout5.png': 'E',
+      '/frame/layout/finallayout6.png': 'F',
+    };
+    return map[path.replace('/frame/layout/', '').replace('.png', '')] || 'A';
+  };
+
+  const layoutKey = getLayoutKey(layout);
+
   useEffect(() => {
     if (photos.length) {
       const preview = previewRef.current;
       preview.innerHTML = '';
       const container = document.createElement('div');
       container.className = 'relative p-4 rounded-lg border-4 border-black';
-      container.style.width = '378px';
-      container.style.height = '567px';
+      container.style.width = '768px';
+      container.style.height = '1152px';
       container.style.backgroundImage = `url(${layout})`;
       container.style.backgroundSize = 'contain';
       container.style.backgroundRepeat = 'no-repeat';
@@ -24,9 +39,12 @@ export default function EditPage() {
       photos.forEach((photo, i) => {
         const img = document.createElement('img');
         img.src = photo;
-        img.className = `absolute w-[338px] h-[267px] object-cover border-2 border-black`;
-        img.style.top = i === 0 ? '20px' : '280px'; // Adjust based on fourth image
-        img.style.left = '20px';
+        img.className = `absolute object-cover border-2 border-black`;
+        const { x, y, w, h } = layouts[layoutKey][i];
+        img.style.width = `${w}px`;
+        img.style.height = `${h}px`;
+        img.style.top = `${y}px`;
+        img.style.left = `${x}px`;
         container.appendChild(img);
 
         ['top-left', 'top-right', 'bottom-left', 'bottom-right'].forEach(pos => {

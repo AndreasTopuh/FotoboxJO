@@ -8,25 +8,27 @@ export default function FrameTemplate() {
   const navigate = useNavigate();
 
   const handleContinue = () => {
-    // Map the layout to the correct frame based on photo count
     let selectedFrame;
     switch (photoCount) {
       case 2:
-        selectedFrame = '/frame/layout/frameLayout1/frame1layout1.png'; // Frame for 2 photos
+        selectedFrame = '/frame/layout/frameLayout1/frame1layout1.png';
         break;
       case 4:
-        selectedFrame = '/frame/layout/frameLayout2/frame2layout1.png'; // Example for 4 photos
+        selectedFrame = '/frame/layout/frameLayout2/frame2layout1.png';
+        break;
+      case 5:
+        selectedFrame = '/frame/layout/frameLayout5/frame5layout1.png';
         break;
       case 6:
-        selectedFrame = '/frame/layout/frameLayout3/frame3layout1.png'; // Example for 6 photos
+        selectedFrame = '/frame/layout/frameLayout3/frame3layout1.png';
         break;
       case 8:
-        selectedFrame = '/frame/layout/frameLayout4/frame4layout1.png'; // Example for 8 photos
+        selectedFrame = '/frame/layout/frameLayout4/frame4layout1.png';
         break;
       default:
-        selectedFrame = '/frame/layout/frameLayout1/frame1layout1.png'; // Default to 2-photo frame
+        selectedFrame = '/frame/layout/frameLayout1/frame1layout1.png';
     }
-    console.log('Navigating to camera with layout:', selectedFrame); // Debug log
+    console.log('Navigating to camera with layout:', selectedFrame);
     navigate(`/camera?layout=${encodeURIComponent(selectedFrame)}&photos=${photoCount}`);
   };
 
@@ -39,7 +41,7 @@ export default function FrameTemplate() {
         </div>
         <div className="w-full md:w-1/2">
           <img
-            src={photoCount === 2 ? '/frame/layout/frameLayout1/frame1layout1.png' : layout}
+            src={selectedFrame || layout}
             alt="Selected Template"
             className="w-full max-w-md mx-auto border-4 border-purple-500 rounded-lg"
           />

@@ -1,4 +1,4 @@
-const frames = [
+const layoutPaths = [
   '/frame/layout/finallayout1.png',
   '/frame/layout/finallayout2.png',
   '/frame/layout/finallayout3.png',
@@ -12,18 +12,18 @@ const descriptions = [
   '4x take foto, durasi 7 menit.',
   '6x take foto, durasi 7 menit.',
   '8x take foto, durasi 7 menit.',
-  '6x take foto, durasi 7 menit.',
+  '5x take foto, durasi 7 menit.', 
   '4x take foto, durasi 7 menit.',
 ];
 
-const photoCounts = [2, 4, 6, 8, 6, 4]; // Adjusted to match your description
+const photoCounts = [2, 4, 6, 8, 5, 4]; // Adjusted to match layouts
 
 export default function FrameSelect() {
   return (
     <div className="p-6 text-center">
       <h2 className="text-3xl font-bold mb-6">Pilih Layout</h2>
       <div className="flex flex-wrap justify-center gap-6">
-        {frames.map((frame, i) => (
+        {layoutPaths.map((frame, i) => (
           <a
             key={i}
             href={`/frametemplate?layout=${frame}&photos=${photoCounts[i]}`}
