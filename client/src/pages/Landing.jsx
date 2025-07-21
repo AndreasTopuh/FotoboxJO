@@ -4,7 +4,7 @@ export default function Landing() {
   const navigate = useNavigate();
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden text-white bg-gray-900">
+    <div className="relative w-screen h-screen overflow-hidden text-white">
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl p-10 text-center shadow-xl">
           <div className="text-4xl lg:text-5xl xl:text-6xl font-extrabold drop-shadow-lg mb-8">
