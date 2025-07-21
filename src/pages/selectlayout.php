@@ -127,24 +127,3 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
 </body>
 
 </html>
-
-<?php
-session_start();
-if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
-    header("Location: /index.html"); // tendang balik ke landing
-    exit();
-}
-?>
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>Pilih Layout</title>
-</head>
-
-<body>
-    <h1>Pilih layout fotomu</h1>
-    <!-- isi lainnya -->
-</body>
-
-</html>
