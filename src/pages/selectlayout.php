@@ -1,3 +1,11 @@
+<?php
+session_start();
+if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
+    header("Location: /index.html"); // tendang balik ke landing
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html>
 
@@ -42,7 +50,8 @@
 
                 <div class="layout-contents">
                     <button class="layout-holder" id="layout1Btn">
-                        <img src="../assets/layouts/thinBorders1.2.png" class="layout-img" alt="layout 1" loading="eager">
+                        <img src="../assets/layouts/thinBorders1.2.png" class="layout-img" alt="layout 1"
+                            loading="eager">
                     </button>
                     <h2 class="layout-label">layout A</h2>
                     <div>
@@ -52,7 +61,8 @@
                 </div>
                 <div class="layout-contents">
                     <button class="layout-holder" id="layout2Btn">
-                        <img src="../assets/layouts/thinBorders2.2.png" class="layout-img" alt="layout 2" loading="eager">
+                        <img src="../assets/layouts/thinBorders2.2.png" class="layout-img" alt="layout 2"
+                            loading="eager">
                     </button>
                     <h2 class="layout-label">layout B</h2>
                     <div>
@@ -62,7 +72,8 @@
                 </div>
                 <div class="layout-contents">
                     <button class="layout-holder" id="layout3Btn">
-                        <img src="../assets/layouts/thinBorders3.2.png" class="layout-img" alt="layout 3" loading="eager">
+                        <img src="../assets/layouts/thinBorders3.2.png" class="layout-img" alt="layout 3"
+                            loading="eager">
                     </button>
                     <h2 class="layout-label">layout C</h2>
                     <div>
@@ -72,7 +83,8 @@
                 </div>
                 <div class="layout-contents">
                     <button class="layout-holder" id="layout4Btn">
-                        <img src="../assets/layouts/thinBorders4.1.png" class="layout-img" alt="layout 4" loading="eager">
+                        <img src="../assets/layouts/thinBorders4.1.png" class="layout-img" alt="layout 4"
+                            loading="eager">
                     </button>
                     <h2 class="layout-label">layout D</h2>
                     <div>
@@ -95,8 +107,8 @@
         let index = 0;
 
         function showNextMessage() {
-            announcementText.classList.remove('fade'); 
-            void announcementText.offsetWidth; 
+            announcementText.classList.remove('fade');
+            void announcementText.offsetWidth;
             announcementText.classList.add('fade');
 
             // Update text
@@ -112,6 +124,27 @@
         // Rotate messages every 5s (match animation duration)
         setInterval(showNextMessage, 4000);
     </script>
+</body>
+
+</html>
+
+<?php
+session_start();
+if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
+    header("Location: /index.html"); // tendang balik ke landing
+    exit();
+}
+?>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Pilih Layout</title>
+</head>
+
+<body>
+    <h1>Pilih layout fotomu</h1>
+    <!-- isi lainnya -->
 </body>
 
 </html>
