@@ -5,6 +5,7 @@ const paymentRoutes = require('./payment');
 const path = require('path');
 
 const app = express();
+
 app.use(cors({
   origin: ['http://localhost:5173', 'https://gofotobox.online/'],
   methods: ['GET', 'POST'],
@@ -12,9 +13,13 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Taruh ini DI ATAS static dan wildcard handler!
 app.use('/payment', paymentRoutes);
+
+// Static file untuk frontend
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
+// Catch-all untuk SPA route (biar React Router tetap jalan)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });

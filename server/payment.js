@@ -16,6 +16,8 @@ router.post('/notification', async (req, res) => {
     const transactionStatus = notification.transaction_status;
     const orderId = notification.order_id;
 
+    console.log('📩 Menerima notifikasi:', JSON.stringify(req.body, null, 2));
+
     console.log(`📥 Notifikasi dari Midtrans untuk ${orderId}:`, transactionStatus);
 
     // Update order status and add timestamp
