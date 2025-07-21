@@ -5,8 +5,8 @@ export default function Landing() {
 
   return (
     <div className="w-screen h-screen text-white overflow-y-scroll snap-y snap-mandatory scroll-smooth">
-      {/* Section 1: Headline */}
-      <section className="h-screen flex items-center justify-center snap-start px-4 text-center">
+      {/* Bagian 1: Headline */}
+      <div className="h-screen flex items-center justify-center snap-start px-4 text-center">
         <div className="space-y-8">
           <div className="text-5xl lg:text-6xl font-extrabold drop-shadow-lg">
             FotoboxJO
@@ -18,11 +18,11 @@ export default function Landing() {
             Ketuk Untuk Mulai
           </button>
         </div>
-      </section>
+      </div>
 
-      {/* Section 2: Deskripsi */}
-      <section className="h-screen flex items-center justify-center snap-start px-4">
-        <div className="w-[90vw] max-w-3xl backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl px-10 py-16 text-center shadow-2xl space-y-6">
+      {/* Bagian 2: Deskripsi */}
+      <div className="h-screen flex items-center justify-center snap-start px-4 text-center">
+        <div className="w-[90vw] max-w-3xl backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl px-10 py-16 shadow-2xl space-y-6">
           <h2 className="text-3xl lg:text-4xl font-bold text-white drop-shadow mb-4">Apa itu FotoboxJO?</h2>
           <p className="text-base lg:text-lg text-white/80 leading-relaxed">
             FotoboxJO adalah layanan photobooth otomatis yang dirancang untuk event kekinian.
@@ -30,11 +30,11 @@ export default function Landing() {
             lalu mencetak hasilnya atau mengirim ke email. Semua dilakukan dalam satu alur yang cepat dan fun!
           </p>
         </div>
-      </section>
+      </div>
 
-      {/* Section 3: Contoh Hasil */}
-      <section className="h-screen flex flex-col items-center justify-center snap-start px-4">
-        <div className="w-[90vw] max-w-3xl backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl p-10 text-center shadow-2xl">
+      {/* Bagian 3: Contoh Hasil */}
+      <div className="h-screen flex flex-col items-center justify-center snap-start px-4 text-center">
+        <div className="w-[90vw] max-w-3xl backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl p-10 shadow-2xl">
           <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">Contoh Hasil Foto</h2>
           <div className="backdrop-blur-sm bg-white/10 border border-white/20 rounded-xl p-4 shadow-md inline-block">
             <img
@@ -46,9 +46,10 @@ export default function Landing() {
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="text-sm text-white/60 mt-6">© {new Date().getFullYear()} @GoFotobox</div>
-      </section>
+        <div className="text-sm text-white/60 mt-6">
+          © {new Date().getFullYear()} @GoFotobox
+        </div>
+      </div>
     </div>
   );
 }
