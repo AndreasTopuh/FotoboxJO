@@ -12,7 +12,7 @@ export default function SelectPayment() {
   };
 
   return (
-    <div className="h-screen w-screen flex items-center justify-center bg-gray-900">
+    <div className="h-screen w-screen flex items-center justify-center">
       <div className="backdrop-blur-md bg-white/10 border border-white/20 text-white rounded-xl p-10 max-w-md w-[90vw] shadow-2xl space-y-6 text-center">
         <h1 className="text-3xl font-bold">Pilih Metode Pembayaran</h1>
         <p className="text-lg">Harga layanan Fotobox: <strong className="text-pink-400">Rp15.000</strong></p>

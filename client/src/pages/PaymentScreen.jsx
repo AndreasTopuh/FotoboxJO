@@ -7,12 +7,28 @@ export default function PaymentScreen() {
   const [vaNumber, setVaNumber] = useState(null);
   const [loading, setLoading] = useState(false);
   const [orderId, setOrderId] = useState(null);
-  const [timer, setTimer] = useState(parseInt(localStorage.getItem('session_timer')) || 300);
+  const [timer, setTimer] = useState(300); // 5 menit
   const [status, setStatus] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const paymentMethod = localStorage.getItem('payment_method') || 'qris';
 
-  // Ambil orderId dari localStorage saat pertama load
+  // Timer countdown 5 menit
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimer((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          localStorage.clear();
+          navigate('/');
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [navigate]);
+
+  // Load order ID kalau udah pernah buat sebelumnya
   useEffect(() => {
     const savedOrderId = localStorage.getItem('order_id');
     if (savedOrderId) {
@@ -20,25 +36,7 @@ export default function PaymentScreen() {
     }
   }, []);
 
-  // Timer countdown
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTimer((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          localStorage.removeItem('order_id');
-          localStorage.removeItem('payment_method');
-          localStorage.removeItem('session_timer');
-          navigate('/');
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    localStorage.setItem('session_timer', timer);
-    return () => clearInterval(interval);
-  }, [timer, navigate]);
-
-  // Cek status pembayaran setiap 5 detik
+  // Auto-polling status pembayaran
   useEffect(() => {
     const checkInterval = setInterval(async () => {
       if (!orderId) return;
@@ -47,13 +45,13 @@ export default function PaymentScreen() {
         const data = await res.json();
         setStatus(data.status);
       } catch (err) {
-        console.error(err);
+        console.error('Gagal cek status:', err);
       }
     }, 5000);
     return () => clearInterval(checkInterval);
   }, [orderId]);
 
-  // Buat pembayaran baru
+  // Buat transaksi baru
   const createPayment = async () => {
     setLoading(true);
     try {
@@ -62,8 +60,7 @@ export default function PaymentScreen() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           amount: 15000,
-          payment_type: paymentMethod,
-          bank: paymentMethod === 'bank_transfer' ? 'bca' : undefined,
+          method: paymentMethod,
         }),
       });
       const data = await res.json();
@@ -81,7 +78,7 @@ export default function PaymentScreen() {
     }
   };
 
-  // Cek status pembayaran dan tampilkan popup
+  // Show popup pengecekan
   const checkPaymentStatus = () => {
     setShowPopup(true);
   };
@@ -91,11 +88,9 @@ export default function PaymentScreen() {
     setShowPopup(false);
   };
 
-  // Lanjutkan ke FrameSelect setelah pembayaran sukses
+  // Next ke frame kalau pembayaran sukses
   const proceedToFrameSelect = () => {
-    localStorage.removeItem('order_id');
-    localStorage.removeItem('payment_method');
-    localStorage.removeItem('session_timer');
+    localStorage.clear();
     navigate('/frame');
   };
 
@@ -115,7 +110,9 @@ export default function PaymentScreen() {
           </>
         ) : vaNumber && paymentMethod === 'bank_transfer' ? (
           <>
-            <p className="text-lg font-semibold text-gray-800">Nomor Virtual Account: <strong>{vaNumber}</strong></p>
+            <p className="text-lg font-semibold text-gray-800">
+              Nomor Virtual Account: <strong>{vaNumber}</strong>
+            </p>
             <p className="text-sm text-gray-500">Lakukan pembayaran melalui bank BCA</p>
           </>
         ) : (
@@ -134,20 +131,10 @@ export default function PaymentScreen() {
               <p className={`mt-2 text-sm font-medium ${
                 status === 'settlement' ? 'text-green-600' :
                 status === 'pending' ? 'text-yellow-600' :
-                status === 'expire' || status === 'cancel' || status === 'failure' ? 'text-red-600' :
+                ['expire', 'cancel', 'failure'].includes(status) ? 'text-red-600' :
                 'text-gray-600'
               }`}>
-                Status: {status === 'settlement'
-                  ? 'Pembayaran Berhasil'
-                  : status === 'pending'
-                  ? 'Menunggu Pembayaran'
-                  : status === 'expire'
-                  ? 'Kadaluarsa'
-                  : status === 'cancel'
-                  ? 'Dibatalkan'
-                  : status === 'failure'
-                  ? 'Gagal'
-                  : status}
+                Status: {status}
               </p>
             )}
             <button
@@ -160,7 +147,7 @@ export default function PaymentScreen() {
         )}
 
         {showPopup && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
               {status === 'settlement' ? (
                 <>
