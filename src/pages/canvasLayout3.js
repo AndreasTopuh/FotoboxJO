@@ -235,8 +235,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Capture Image with Filter Applied and WHITE BACKGROUND
             const ctx = canvas.getContext('2d');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
+            
+            // Reduce canvas size for better performance and smaller file size
+            const maxWidth = 800;
+            const maxHeight = 600;
+            let captureWidth = video.videoWidth;
+            let captureHeight = video.videoHeight;
+            
+            if (captureWidth > maxWidth || captureHeight > maxHeight) {
+                const ratio = Math.min(maxWidth / captureWidth, maxHeight / captureHeight);
+                captureWidth *= ratio;
+                captureHeight *= ratio;
+            }
+            
+            canvas.width = captureWidth;
+            canvas.height = captureHeight;
             
             // Fill with WHITE background first
             ctx.fillStyle = '#FFFFFF';
@@ -249,8 +262,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Slight delay for iOS fix
             await new Promise(res => setTimeout(res, 100)); 
 
-            const imageData = canvas.toDataURL('image/png');
-            console.log("Captured 4R Image: ", imageData);
+            // Use JPEG with compression instead of PNG
+            const imageData = canvas.toDataURL('image/jpeg', 0.8);
+            console.log("Captured Layout 3 Image (compressed)");
             images.push(imageData);
 
             // Display captured image in preview
@@ -356,56 +370,77 @@ document.addEventListener('DOMContentLoaded', () => {
             img.src = imgData;
             img.onload = () => {
                 
-                if (invertBtnState) {
-                    // Create an offscreen canvas to mirror the image
-                    const tempCanvas = document.createElement('canvas');
-                    const tempCtx = tempCanvas.getContext('2d');
-    
-                    tempCanvas.width = img.width;
-                    tempCanvas.height = img.height;
-    
-                    // Apply mirroring
-                    tempCtx.translate(img.width, 0);
-                    tempCtx.scale(-1, 1);
-                    tempCtx.drawImage(img, 0, 0, img.width, img.height);
-    
-                    // Convert to base64 data URL
-                    storedImages[index] = tempCanvas.toDataURL('image/png');
-                } else {
-                    // Store the original image if not mirrored
-                    storedImages[index] = imgData;
+                // Create canvas to compress image
+                const compressCanvas = document.createElement('canvas');
+                const compressCtx = compressCanvas.getContext('2d');
+                
+                // Resize image to reduce file size (max 800px width)
+                const maxWidth = 800;
+                const maxHeight = 600;
+                let { width, height } = img;
+                
+                if (width > maxWidth || height > maxHeight) {
+                    const ratio = Math.min(maxWidth / width, maxHeight / height);
+                    width *= ratio;
+                    height *= ratio;
                 }
+                
+                compressCanvas.width = width;
+                compressCanvas.height = height;
+                
+                if (invertBtnState) {
+                    // Apply mirroring
+                    compressCtx.translate(width, 0);
+                    compressCtx.scale(-1, 1);
+                    compressCtx.drawImage(img, 0, 0, width, height);
+                } else {
+                    compressCtx.drawImage(img, 0, 0, width, height);
+                }
+                
+                // Compress to JPEG with 0.7 quality to reduce size
+                const compressedData = compressCanvas.toDataURL('image/jpeg', 0.7);
+                storedImages[index] = compressedData;
+                
                 loadedImages++;
     
                 // For Layout 3 with 6 images, we need higher storage limit
                 if (loadedImages === 6) {
                     console.log('=== Layout 3 Storage Debug ===');
                     console.log('All 6 images processed for storage');
-                    console.log('Stored images array:', storedImages);
                     
                     const estimatedSize = new Blob([JSON.stringify(storedImages)]).size;
                     console.log('Estimated storage size:', estimatedSize, 'bytes');
+                    console.log('Estimated storage size (MB):', (estimatedSize / 1024 / 1024).toFixed(2));
 
-                    const storageLimit = 12 * 1024 * 1024; // 12MB limit for 6 photos
+                    const storageLimit = 10 * 1024 * 1024; // 10MB limit for compressed images
                     console.log('Storage limit:', storageLimit, 'bytes');
 
                     if (estimatedSize > storageLimit) {
-                        alert("The total image size exceeds the 12MB limit. Please use smaller images or reduce photo quality.");
-                        return; // Stop storing and redirecting
+                        alert("The total image size still exceeds the 10MB limit. Please use smaller images or take new photos.");
+                        return;
                     }
 
-                    sessionStorage.setItem('photoArray3', JSON.stringify(storedImages)); 
-                    console.log("6 images stored in sessionStorage with key 'photoArray3'!");
-                    
-                    // Verify storage
-                    const verifyStorage = sessionStorage.getItem('photoArray3');
-                    if (verifyStorage) {
-                        console.log("Storage verification successful");
-                        console.log("Redirecting to customizeLayout3.php...");
-                        window.location.href = 'customizeLayout3.php'; // Redirect to Layout3 customize page
-                    } else {
-                        console.error("Storage verification failed!");
-                        alert("Failed to save images. Please try again.");
+                    try {
+                        sessionStorage.setItem('photoArray3', JSON.stringify(storedImages)); 
+                        console.log("6 compressed images stored in sessionStorage with key 'photoArray3'!");
+                        
+                        // Verify storage
+                        const verifyStorage = sessionStorage.getItem('photoArray3');
+                        if (verifyStorage) {
+                            console.log("Storage verification successful");
+                            console.log("Redirecting to customizeLayout3.php...");
+                            window.location.href = 'customizeLayout3.php';
+                        } else {
+                            console.error("Storage verification failed!");
+                            alert("Failed to save images. Please try again.");
+                        }
+                    } catch (error) {
+                        console.error("Storage quota exceeded:", error);
+                        alert("Storage quota exceeded. Images are too large. Please try taking photos again or clear your browser cache.");
+                        
+                        // Try to clear some space
+                        sessionStorage.clear();
+                        alert("Browser storage cleared. Please try taking photos again.");
                     }
                 }
             };
@@ -438,7 +473,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (uploadBtn) {
         uploadBtn.addEventListener('click', () => {
-            alert("Note: Please make sure your photo size does not exceed 5MB.\nLarge images may cause saving issues.");
+            alert("Note: For best results, please use images smaller than 2MB each.\nLarge images will be automatically compressed to prevent storage issues.");
             uploadInput.click();
         });
     }
