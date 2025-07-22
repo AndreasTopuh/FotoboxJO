@@ -53,46 +53,114 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
 
                 <div class="layout-contents">
                     <button class="layout-holder" id="layout1Btn">
-                        <img src="/src/assets/layouts/thinBorders1.2.png" class="layout-img" alt="layout 1"
+                        <img src="/src/assets/layouts/layout1.png" class="layout-img" alt="layout 1"
                             loading="eager">
                     </button>
-                    <h2 class="layout-label">layout A</h2>
+                    <h2 class="layout-label">Layout 1</h2>
                     <div>
-                        <p class="layout-description">Size 6 x 2 Strip </p>
-                        <p class="layout-description">(3 Pose)</p>
+                        <p class="layout-description">Photo Strip</p>
+                        <p class="layout-description">(2 Photos)</p>
                     </div>
                 </div>
                 <div class="layout-contents">
                     <button class="layout-holder" id="layout2Btn">
-                        <img src="/src/assets/layouts/thinBorders2.2.png" class="layout-img" alt="layout 2"
+                        <img src="/src/assets/layouts/layout2.png" class="layout-img" alt="layout 2"
                             loading="eager">
                     </button>
-                    <h2 class="layout-label">layout B</h2>
+                    <h2 class="layout-label">Layout 2</h2>
                     <div>
-                        <p class="layout-description">Size 6 x 2 Strip </p>
-                        <p class="layout-description">(4 Pose)</p>
+                        <p class="layout-description">Photo Grid</p>
+                        <p class="layout-description">(4 Photos)</p>
                     </div>
                 </div>
                 <div class="layout-contents">
                     <button class="layout-holder" id="layout3Btn">
-                        <img src="/src/assets/layouts/thinBorders3.2.png" class="layout-img" alt="layout 3"
+                        <img src="/src/assets/layouts/layout3.png" class="layout-img" alt="layout 3"
                             loading="eager">
                     </button>
-                    <h2 class="layout-label">layout C</h2>
+                    <h2 class="layout-label">Layout 3</h2>
                     <div>
-                        <p class="layout-description">Size 6 x 2 Strip </p>
-                        <p class="layout-description">(2 Pose)</p>
+                        <p class="layout-description">Photo Grid</p>
+                        <p class="layout-description">(6 Photos)</p>
                     </div>
                 </div>
                 <div class="layout-contents">
                     <button class="layout-holder" id="layout4Btn">
-                        <img src="/src/assets/layouts/thinBorders4.1.png" class="layout-img" alt="layout 4"
+                        <img src="/src/assets/layouts/layout4.png" class="layout-img" alt="layout 4"
                             loading="eager">
                     </button>
-                    <h2 class="layout-label">layout D</h2>
+                    <h2 class="layout-label">Layout 4</h2>
                     <div>
-                        <p class="layout-description">Size 6 x 4 Strip </p>
-                        <p class="layout-description">(6 Pose)</p>
+                        <p class="layout-description">Photo Grid</p>
+                        <p class="layout-description">(8 Photos)</p>
+                    </div>
+                </div>
+                <div class="layout-contents">
+                    <button class="layout-holder" id="layout5Btn">
+                        <img src="/src/assets/layouts/layout5.png" class="layout-img" alt="layout 5"
+                            loading="eager">
+                    </button>
+                    <h2 class="layout-label">Layout 5</h2>
+                    <div>
+                        <p class="layout-description">Photo Grid</p>
+                        <p class="layout-description">(6 Photos)</p>
+                    </div>
+                </div>
+                <div class="layout-contents">
+                    <button class="layout-holder" id="layout6Btn">
+                        <img src="/src/assets/layouts/layout6.png" class="layout-img" alt="layout 6"
+                            loading="eager">
+                    </button>
+                    <h2 class="layout-label">Layout 6</h2>
+                    <div>
+                        <p class="layout-description">Photo Grid</p>
+                        <p class="layout-description">(4 Photos)</p>
+                    </div>
+                </div>
+
+                <!-- Original Canvas Options -->
+                <div class="layout-contents">
+                    <button class="layout-holder" id="canvasBtn">
+                        <img src="/src/assets/layouts/thinBorders1.2.png" class="layout-img" alt="canvas"
+                            loading="eager">
+                    </button>
+                    <h2 class="layout-label">Canvas</h2>
+                    <div>
+                        <p class="layout-description">Original Frame</p>
+                        <p class="layout-description">(1 Photo)</p>
+                    </div>
+                </div>
+                <div class="layout-contents">
+                    <button class="layout-holder" id="canvas2Btn">
+                        <img src="/src/assets/layouts/thinBorders2.2.png" class="layout-img" alt="canvas 2"
+                            loading="eager">
+                    </button>
+                    <h2 class="layout-label">Canvas 2</h2>
+                    <div>
+                        <p class="layout-description">Original Frame</p>
+                        <p class="layout-description">(2 Photos)</p>
+                    </div>
+                </div>
+                <div class="layout-contents">
+                    <button class="layout-holder" id="canvas4Btn">
+                        <img src="/src/assets/layouts/thinBorders3.2.png" class="layout-img" alt="canvas 4"
+                            loading="eager">
+                    </button>
+                    <h2 class="layout-label">Canvas 4</h2>
+                    <div>
+                        <p class="layout-description">Original Frame</p>
+                        <p class="layout-description">(4 Photos)</p>
+                    </div>
+                </div>
+                <div class="layout-contents">
+                    <button class="layout-holder" id="canvas6Btn">
+                        <img src="/src/assets/layouts/thinBorders4.1.png" class="layout-img" alt="canvas 6"
+                            loading="eager">
+                    </button>
+                    <h2 class="layout-label">Canvas 6</h2>
+                    <div>
+                        <p class="layout-description">Original Frame</p>
+                        <p class="layout-description">(6 Photos)</p>
                     </div>
                 </div>
             </div>
