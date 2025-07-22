@@ -33,7 +33,7 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
     <meta name="twitter:description"
         content="Take instant photobooth-style photos online. Customize with over 100 frame colors, add stickers and frames, and download high-quality photo strips instantly.">
     <meta name="twitter:image" content="https://www.photobooth-io.cc/assets/home-mockup.png">
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="../../styles.css" />
     <link
         href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&display=swap"
         rel="stylesheet">
@@ -53,8 +53,7 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
 
                 <div class="layout-contents">
                     <button class="layout-holder" id="layout1Btn">
-                        <img src="/src/assets/layouts/layout1.png" class="layout-img" alt="layout 1"
-                            loading="eager">
+                        <img src="../assets/layouts/layout1.png" class="layout-img" alt="layout 1" loading="eager">
                     </button>
                     <h2 class="layout-label">Layout 1</h2>
                     <div>
@@ -64,8 +63,7 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
                 </div>
                 <div class="layout-contents">
                     <button class="layout-holder" id="layout2Btn">
-                        <img src="/src/assets/layouts/layout2.png" class="layout-img" alt="layout 2"
-                            loading="eager">
+                        <img src="../assets/layouts/layout2.png" class="layout-img" alt="layout 2" loading="eager">
                     </button>
                     <h2 class="layout-label">Layout 2</h2>
                     <div>
@@ -75,8 +73,7 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
                 </div>
                 <div class="layout-contents">
                     <button class="layout-holder" id="layout3Btn">
-                        <img src="/src/assets/layouts/layout3.png" class="layout-img" alt="layout 3"
-                            loading="eager">
+                        <img src="../assets/layouts/layout3.png" class="layout-img" alt="layout 3" loading="eager">
                     </button>
                     <h2 class="layout-label">Layout 3</h2>
                     <div>
@@ -86,8 +83,7 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
                 </div>
                 <div class="layout-contents">
                     <button class="layout-holder" id="layout4Btn">
-                        <img src="/src/assets/layouts/layout4.png" class="layout-img" alt="layout 4"
-                            loading="eager">
+                        <img src="../assets/layouts/layout4.png" class="layout-img" alt="layout 4" loading="eager">
                     </button>
                     <h2 class="layout-label">Layout 4</h2>
                     <div>
@@ -97,8 +93,7 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
                 </div>
                 <div class="layout-contents">
                     <button class="layout-holder" id="layout5Btn">
-                        <img src="/src/assets/layouts/layout5.png" class="layout-img" alt="layout 5"
-                            loading="eager">
+                        <img src="../assets/layouts/layout5.png" class="layout-img" alt="layout 5" loading="eager">
                     </button>
                     <h2 class="layout-label">Layout 5</h2>
                     <div>
@@ -108,8 +103,7 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
                 </div>
                 <div class="layout-contents">
                     <button class="layout-holder" id="layout6Btn">
-                        <img src="/src/assets/layouts/layout6.png" class="layout-img" alt="layout 6"
-                            loading="eager">
+                        <img src="../assets/layouts/layout6.png" class="layout-img" alt="layout 6" loading="eager">
                     </button>
                     <h2 class="layout-label">Layout 6</h2>
                     <div>
@@ -121,8 +115,7 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
                 <!-- Original Canvas Options -->
                 <div class="layout-contents">
                     <button class="layout-holder" id="canvasBtn">
-                        <img src="/src/assets/layouts/thinBorders1.2.png" class="layout-img" alt="canvas"
-                            loading="eager">
+                        <img src="../assets/layouts/thinBorders1.2.png" class="layout-img" alt="canvas" loading="eager">
                     </button>
                     <h2 class="layout-label">Canvas</h2>
                     <div>
@@ -132,7 +125,7 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
                 </div>
                 <div class="layout-contents">
                     <button class="layout-holder" id="canvas2Btn">
-                        <img src="/src/assets/layouts/thinBorders2.2.png" class="layout-img" alt="canvas 2"
+                        <img src="../assets/layouts/thinBorders2.2.png" class="layout-img" alt="canvas 2"
                             loading="eager">
                     </button>
                     <h2 class="layout-label">Canvas 2</h2>
@@ -143,7 +136,7 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
                 </div>
                 <div class="layout-contents">
                     <button class="layout-holder" id="canvas4Btn">
-                        <img src="/src/assets/layouts/thinBorders3.2.png" class="layout-img" alt="canvas 4"
+                        <img src="../assets/layouts/thinBorders3.2.png" class="layout-img" alt="canvas 4"
                             loading="eager">
                     </button>
                     <h2 class="layout-label">Canvas 4</h2>
@@ -154,7 +147,7 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
                 </div>
                 <div class="layout-contents">
                     <button class="layout-holder" id="canvas6Btn">
-                        <img src="/src/assets/layouts/thinBorders4.1.png" class="layout-img" alt="canvas 6"
+                        <img src="../assets/layouts/thinBorders4.1.png" class="layout-img" alt="canvas 6"
                             loading="eager">
                     </button>
                     <h2 class="layout-label">Canvas 6</h2>
@@ -167,7 +160,7 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
         </section>
     </main>
 
-    <script src="layout.js"></script>
+    <script src="./layout.js"></script>
     <script>
         const messages = [
             'Follow us on Instagram @photobooth_io',

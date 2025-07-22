@@ -30,10 +30,9 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Photobooth | Customize 4R Photo">
-    <meta name="twitter:description"
-        content="Customize your 4R photobooth photos. Add frames, stickers, and text.">
+    <meta name="twitter:description" content="Customize your 4R photobooth photos. Add frames, stickers, and text.">
     <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png">
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="../../styles.css" />
     <link
         href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&display=swap"
         rel="stylesheet">
@@ -72,9 +71,9 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
                 </nav>
 
                 <div class="custom-main">
-                    
+
                     <div class="customization-container">
-                        
+
                         <!-- Frame Colors -->
                         <div class="options-label">Frame Colors</div>
                         <div class="custom-buttons-container">
@@ -122,7 +121,8 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
                                 <img class="stickerIconSize" src="../assets/stickers/ribbon-sticker.png" alt="Ribbon" />
                             </button>
                             <button id="sparkleSticker" class="buttonStickers">
-                                <img class="stickerIconSize" src="../assets/stickers/sparkle-sticker.png" alt="Sparkle" />
+                                <img class="stickerIconSize" src="../assets/stickers/sparkle-sticker.png"
+                                    alt="Sparkle" />
                             </button>
                             <button id="pearlSticker" class="buttonStickers">
                                 <img class="stickerIconSize" src="../assets/stickers/pearl-sticker.png" alt="Pearl" />
@@ -134,7 +134,8 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
                                 <img class="stickerIconSize" src="../assets/stickers/bunny-sticker.png" alt="Bunny" />
                             </button>
                             <button id="classicSticker" class="buttonStickers classicStickers">
-                                <img class="stickerIconSize" src="../assets/stickers/classic-sticker.png" alt="Classic" />
+                                <img class="stickerIconSize" src="../assets/stickers/classic-sticker.png"
+                                    alt="Classic" />
                             </button>
                             <button id="luckySticker" class="buttonStickers">
                                 <img class="stickerIconSize" src="../assets/stickers/lucky-sticker.png" alt="Lucky" />
@@ -145,13 +146,16 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
                         <div class="options-label">Logo</div>
                         <div class="custom-buttons-container">
                             <button id="engLogo" class="logoCustomBtn">
-                                <img class="stickerIconSize" src="../assets/icons/photobooth-new-logo.png" alt="English" />
+                                <img class="stickerIconSize" src="../assets/icons/photobooth-new-logo.png"
+                                    alt="English" />
                             </button>
                             <button id="korLogo" class="logoCustomBtn">
-                                <img class="stickerIconSize" src="../assets/icons/photobooth-new-logo.png" alt="Korean" />
+                                <img class="stickerIconSize" src="../assets/icons/photobooth-new-logo.png"
+                                    alt="Korean" />
                             </button>
                             <button id="cnLogo" class="logoCustomBtn">
-                                <img class="stickerIconSize" src="../assets/icons/photobooth-new-logo.png" alt="Chinese" />
+                                <img class="stickerIconSize" src="../assets/icons/photobooth-new-logo.png"
+                                    alt="Chinese" />
                             </button>
                         </div>
 
@@ -169,7 +173,7 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
                     <div id="photoPreview" class="canvas-centered">
                         <!-- Preview will be rendered here -->
                     </div>
-                    
+
                 </div>
 
             </div>

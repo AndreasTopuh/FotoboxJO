@@ -17,8 +17,7 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description"
         content="Take instant photobooth-style photos online with Layout 2 (4 photos). Perfect for photo grids and printing.">
-    <meta name="keywords"
-        content="photobooth, photo layout, photo grid, online photobooth, layout 2, 4 photos">
+    <meta name="keywords" content="photobooth, photo layout, photo grid, online photobooth, layout 2, 4 photos">
     <title>Photobooth | Layout 2 - 4 Photos</title>
     <link rel="canonical" href="https://www.gofotobox.online">
     <meta property="og:title" content="Photobooth | Layout 2 - 4 Photos">
@@ -33,7 +32,7 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
     <meta name="twitter:description"
         content="Take instant photobooth-style photos online with Layout 2. Perfect for 4-photo grids.">
     <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png">
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="../../styles.css" />
     <link
         href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&display=swap"
         rel="stylesheet">

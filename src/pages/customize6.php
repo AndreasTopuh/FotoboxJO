@@ -28,9 +28,8 @@ session_start();
         <meta name="twitter:description"
                 content="Take instant photobooth-style photos online. Customize with over 100 frame colors, add stickers and frames, and download high-quality photo strips instantly.">
         <meta name="twitter:image" content="https://www.photobooth-io.cc/assets/home-mockup.png">
-        <link rel="stylesheet" href="/styles.css" />
-        <link
-                href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Roboto:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&display=swap"
+        <link rel="stylesheet" href="../../styles.css" />
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Roboto:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&display=swap"
                 rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap"
                 rel="stylesheet">
@@ -69,7 +68,8 @@ session_start();
                                                         <button id="white-cq" class="buttonBgFrames"></button>
                                                         <button id="pinkLeather" class="buttonBgFrames"></button>
                                                         <button id="brownKnittedFrame" class="buttonBgFrames"></button>
-                                                        <button id="hotPinkKnittedFrame" class="buttonBgFrames"></button>
+                                                        <button id="hotPinkKnittedFrame"
+                                                                class="buttonBgFrames"></button>
                                                         <button id="redKnittedFrame" class="buttonBgFrames"></button>
                                                         <button id="pinkKnittedFrame" class="buttonBgFrames"></button>
                                                         <button id="redStripesFrame" class="buttonBgFrames"></button>
@@ -99,7 +99,8 @@ session_start();
                                                         <button id="cocoTrees" class="buttonBgFrames"></button>
                                                         <button id="stardustFrame" class="buttonBgFrames"></button>
                                                         <button id="roseCardFrame" class="buttonBgFrames"></button>
-                                                        <button id="princessVintageFrame" class="buttonBgFrames"></button>
+                                                        <button id="princessVintageFrame"
+                                                                class="buttonBgFrames"></button>
                                                         <button id="redRosesPaintFrame" class="buttonBgFrames"></button>
                                                         <button id="grayTrashFrame" class="buttonBgFrames"></button>
                                                         <button id="blackTrashFrame" class="buttonBgFrames"></button>
@@ -112,8 +113,10 @@ session_start();
                                                         <script async
                                                                 src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7643616606981606"
                                                                 crossorigin="anonymous"></script>
-                                                        <ins class="adsbygoogle" style="display:block" data-ad-format="fluid"
-                                                                data-ad-layout-key="-f9+5v+4m-d8+7b" data-ad-client="ca-pub-7643616606981606"
+                                                        <ins class="adsbygoogle" style="display:block"
+                                                                data-ad-format="fluid"
+                                                                data-ad-layout-key="-f9+5v+4m-d8+7b"
+                                                                data-ad-client="ca-pub-7643616606981606"
                                                                 data-ad-slot="9896966467"></ins>
                                                         <script>
                                                                 (adsbygoogle = window.adsbygoogle || []).push({});
@@ -127,16 +130,20 @@ session_start();
                                                         <h3 class="options-label">Photo Shape:</h3>
                                                         <div class="custom-buttons-container">
                                                                 <button id="noneFrameShape" class="buttonShapes"><img
-                                                                                src="assets/frame-shapes/noneShape.png" alt="None"
+                                                                                src="assets/frame-shapes/noneShape.png"
+                                                                                alt="None"
                                                                                 class="btnShapeSize"></button>
                                                                 <button id="softFrameShape" class="buttonShapes"><img
-                                                                                src="assets/frame-shapes/squareShape.png" alt="Soft Edge Frame"
+                                                                                src="assets/frame-shapes/squareShape.png"
+                                                                                alt="Soft Edge Frame"
                                                                                 class="btnShapeSize"></button>
                                                                 <button id="circleFrameShape" class="buttonShapes"><img
-                                                                                src="assets/frame-shapes/circleShape.png" alt="Circle Frame"
+                                                                                src="assets/frame-shapes/circleShape.png"
+                                                                                alt="Circle Frame"
                                                                                 class="btnShapeSize"></button>
                                                                 <button id="heartFrameShape" class="buttonShapes"><img
-                                                                                src="assets/frame-shapes/heartShape.png" alt="Heart Frame"
+                                                                                src="assets/frame-shapes/heartShape.png"
+                                                                                alt="Heart Frame"
                                                                                 class="btnShapeSize"></button>
                                                         </div>
                                                 </div>
@@ -144,68 +151,96 @@ session_start();
                                                 <div class="custom-buttons-container stickers-container">
                                                         <button id="noneSticker" class="buttonStickers">
                                                                 <!-- <img src="assets/clear.png" class="clearSticker" alt="clear"> -->
-                                                                <img src="assets/frame-shapes/noneShape.png" alt="None" class="btnShapeSize">
+                                                                <img src="assets/frame-shapes/noneShape.png" alt="None"
+                                                                        class="btnShapeSize">
                                                         </button>
-                                                        <button id="bunnySticker" class="buttonStickers"><img src="assets/stickers/bunny1.png"
-                                                                        alt="kiss" class="stickerIconSize" /></button>
-                                                        <button id="luckySticker" class="buttonStickers new-sticker"><img
-                                                                        src="assets/stickers/lucky1.png" alt="kiss" class="stickerIconSize" /></button>
-                                                        <button id="kissSticker" class="buttonStickers"><img src="assets/stickers/kiss1.png"
-                                                                        alt="kiss" class="stickerIconSize" /></button>
-                                                        <button id="sweetSticker" class="buttonStickers"><img src="assets/stickers/sweet1.png"
-                                                                        alt="sweet" class="stickerIconSize" /></button>
-                                                        <button id="ribbonSticker" class="buttonStickers"><img src="assets/stickers/ribbon1.png"
-                                                                        alt="ribbon" class="stickerIconSize" /></button>
+                                                        <button id="bunnySticker" class="buttonStickers"><img
+                                                                        src="assets/stickers/bunny1.png" alt="kiss"
+                                                                        class="stickerIconSize" /></button>
+                                                        <button id="luckySticker"
+                                                                class="buttonStickers new-sticker"><img
+                                                                        src="assets/stickers/lucky1.png" alt="kiss"
+                                                                        class="stickerIconSize" /></button>
+                                                        <button id="kissSticker" class="buttonStickers"><img
+                                                                        src="assets/stickers/kiss1.png" alt="kiss"
+                                                                        class="stickerIconSize" /></button>
+                                                        <button id="sweetSticker" class="buttonStickers"><img
+                                                                        src="assets/stickers/sweet1.png" alt="sweet"
+                                                                        class="stickerIconSize" /></button>
+                                                        <button id="ribbonSticker" class="buttonStickers"><img
+                                                                        src="assets/stickers/ribbon1.png" alt="ribbon"
+                                                                        class="stickerIconSize" /></button>
                                                         <!-- <button id="matchaSticker" class="buttonStickers">Matcha</button> -->
                                                         <!-- <button id="islandSticker" class="buttonStickers">Island Girl</button> -->
-                                                        <button id="sparkleSticker" class="buttonStickers"><img src="assets/stickers/sparkle2.png"
-                                                                        alt="sparkle" class="stickerIconSize" /></button>
-                                                        <button id="pearlSticker" class="buttonStickers"><img src="assets/stickers/pearl2.png"
-                                                                        alt="kiss" class="stickerIconSize" /></button>
-                                                        <button id="softSticker" class="buttonStickers"><img src="assets/stickers/soft5.png"
-                                                                        alt="kiss" class="stickerIconSize" /></button>
+                                                        <button id="sparkleSticker" class="buttonStickers"><img
+                                                                        src="assets/stickers/sparkle2.png" alt="sparkle"
+                                                                        class="stickerIconSize" /></button>
+                                                        <button id="pearlSticker" class="buttonStickers"><img
+                                                                        src="assets/stickers/pearl2.png" alt="kiss"
+                                                                        class="stickerIconSize" /></button>
+                                                        <button id="softSticker" class="buttonStickers"><img
+                                                                        src="assets/stickers/soft5.png" alt="kiss"
+                                                                        class="stickerIconSize" /></button>
 
 
                                                         <button id="confettiSticker" class="buttonStickers"><img
-                                                                        src="assets/stickers/confetti/confetti.png" alt="confetti"
+                                                                        src="assets/stickers/confetti/confetti.png"
+                                                                        alt="confetti"
                                                                         class="stickerIconSize" /></button>
                                                         <button id="ribbonCoquetteSticker" class="buttonStickers"><img
-                                                                        src="assets/stickers/ribboncq4.png" alt="ribbon coquette"
+                                                                        src="assets/stickers/ribboncq4.png"
+                                                                        alt="ribbon coquette"
                                                                         class="stickerIconSize" /></button>
-                                                        <button id="blueRibbonCoquetteSticker" class="buttonStickers"><img
-                                                                        src="assets/stickers/blueRibbon2.png" alt="blue ribbon coquette"
+                                                        <button id="blueRibbonCoquetteSticker"
+                                                                class="buttonStickers"><img
+                                                                        src="assets/stickers/blueRibbon2.png"
+                                                                        alt="blue ribbon coquette"
                                                                         class="stickerIconSize" /></button>
                                                         <button id="blackStarSticker" class="buttonStickers"><img
-                                                                        src="assets/stickers/blackStar5.png" alt="black stars"
+                                                                        src="assets/stickers/blackStar5.png"
+                                                                        alt="black stars"
                                                                         class="stickerIconSize" /></button>
                                                         <button id="yellowChickenSticker" class="buttonStickers"><img
-                                                                        src="assets/stickers/yellowChicken1.png" alt="yellow baby chick"
+                                                                        src="assets/stickers/yellowChicken1.png"
+                                                                        alt="yellow baby chick"
                                                                         class="stickerIconSize" /></button>
                                                         <button id="brownBearSticker" class="buttonStickers"><img
-                                                                        src="assets/stickers/brownyBear6.png" alt="brown bear"
+                                                                        src="assets/stickers/brownyBear6.png"
+                                                                        alt="brown bear"
                                                                         class="stickerIconSize" /></button>
                                                         <button id="lotsHeartSticker" class="buttonStickers"><img
-                                                                        src="assets/stickers/lotsHeart8.png" alt="3d heart"
+                                                                        src="assets/stickers/lotsHeart8.png"
+                                                                        alt="3d heart"
                                                                         class="stickerIconSize" /></button>
-                                                        <button id="tabbyCatSticker" class="buttonStickers"><img src="assets/stickers/tabbyCat6.png"
-                                                                        alt="yawning tabby cat" class="stickerIconSize" /></button>
-                                                        <button id="ballerinaCappuccinoSticker" class="buttonStickers"><img
+                                                        <button id="tabbyCatSticker" class="buttonStickers"><img
+                                                                        src="assets/stickers/tabbyCat6.png"
+                                                                        alt="yawning tabby cat"
+                                                                        class="stickerIconSize" /></button>
+                                                        <button id="ballerinaCappuccinoSticker"
+                                                                class="buttonStickers"><img
                                                                         src="assets/stickers/ballerinaCappuccino/balerinaCappuccino3.png"
-                                                                        alt="cute white cat" class="stickerIconSize" /></button>
+                                                                        alt="cute white cat"
+                                                                        class="stickerIconSize" /></button>
                                                         <button id="doggyWhiteSticker" class="buttonStickers"><img
-                                                                        src="assets/stickers/doggyWhite/doggyWhite1.png" alt="cute white dog"
+                                                                        src="assets/stickers/doggyWhite/doggyWhite1.png"
+                                                                        alt="cute white dog"
                                                                         class="stickerIconSize" /></button>
                                                         <button id="sakuraBlossomSticker" class="buttonStickers"><img
-                                                                        src="assets/stickers/sakuraBlossom/sakuraBlossom6.png" alt="sakura"
-                                                                        class="stickerIconSize" /></button>
+                                                                        src="assets/stickers/sakuraBlossom/sakuraBlossom6.png"
+                                                                        alt="sakura" class="stickerIconSize" /></button>
                                                         <button id="myGirlsSticker" class="buttonStickers"><img
-                                                                        src="assets/stickers/myGirls/myGirls12.png" alt="three girls"
+                                                                        src="assets/stickers/myGirls/myGirls12.png"
+                                                                        alt="three girls"
                                                                         class="stickerIconSize" /></button>
-                                                        <button id="classicSticker" class="buttonStickers classicStickers"><img
-                                                                        src="assets/stickers/classic1.png" alt="classic black"
+                                                        <button id="classicSticker"
+                                                                class="buttonStickers classicStickers"><img
+                                                                        src="assets/stickers/classic1.png"
+                                                                        alt="classic black"
                                                                         class="stickerIconSize" /></button>
-                                                        <button id="classicBSticker" class="buttonStickers classicStickers"><img
-                                                                        src="assets/stickers/classic4.png" alt="classic white"
+                                                        <button id="classicBSticker"
+                                                                class="buttonStickers classicStickers"><img
+                                                                        src="assets/stickers/classic4.png"
+                                                                        alt="classic white"
                                                                         class="stickerIconSize" /></button>
                                                         <!-- <button id="WISSticker" class="buttonStickers">Women In Stem</button> -->
                                                 </div>
@@ -221,12 +256,15 @@ session_start();
                                                         <input type="checkbox" id="dateCheckbox">
                                                         <label for="dateCheckbox" id="addDateLabel">Add Date</label>
                                                         <input type="checkbox" id="dateTimeCheckbox">
-                                                        <label for="dateTimeCheckbox" id="addDateTimeLabel">Add Time</label>
+                                                        <label for="dateTimeCheckbox" id="addDateTimeLabel">Add
+                                                                Time</label>
                                                 </div>
                                                 <div class="custom-buttons-holder">
-                                                        <button class="sub-button customBtn retake-button-design" id="customBack">Retake</button>
+                                                        <button class="sub-button customBtn retake-button-design"
+                                                                id="customBack">Retake</button>
                                                         <!-- <button class="main-button customBtn" id="customNext">NEXT</button> -->
-                                                        <button class="main-button download-button-design" id="downloadCopyBtn">Download</button>
+                                                        <button class="main-button download-button-design"
+                                                                id="downloadCopyBtn">Download</button>
                                                 </div>
                                                 <!--<div class="bg-custom">
                                 <input type="file" name="" id="bgUpload">
