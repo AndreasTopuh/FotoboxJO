@@ -33,13 +33,13 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
     <meta name="twitter:description"
         content="Take instant photobooth-style photos online. Customize with over 100 frame colors, add stickers and frames, and download high-quality photo strips instantly.">
     <meta name="twitter:image" content="https://www.photobooth-io.cc/assets/home-mockup.png">
-    <link rel="stylesheet" href="../../styles.css" />
+    <link rel="stylesheet" href="/styles.css" />
     <link
         href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&display=swap"
         rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap"
         rel="stylesheet">
-    <link rel="icon" href="assets/icons/photobooth-new-logo.png" />
+    <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png" />
 
 </head>
 
@@ -53,7 +53,7 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
 
                 <div class="layout-contents">
                     <button class="layout-holder" id="layout1Btn">
-                        <img src="../assets/layouts/thinBorders1.2.png" class="layout-img" alt="layout 1"
+                        <img src="/src/assets/layouts/thinBorders1.2.png" class="layout-img" alt="layout 1"
                             loading="eager">
                     </button>
                     <h2 class="layout-label">layout A</h2>
@@ -64,7 +64,7 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
                 </div>
                 <div class="layout-contents">
                     <button class="layout-holder" id="layout2Btn">
-                        <img src="../assets/layouts/thinBorders2.2.png" class="layout-img" alt="layout 2"
+                        <img src="/src/assets/layouts/thinBorders2.2.png" class="layout-img" alt="layout 2"
                             loading="eager">
                     </button>
                     <h2 class="layout-label">layout B</h2>
@@ -75,7 +75,7 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
                 </div>
                 <div class="layout-contents">
                     <button class="layout-holder" id="layout3Btn">
-                        <img src="../assets/layouts/thinBorders3.2.png" class="layout-img" alt="layout 3"
+                        <img src="/src/assets/layouts/thinBorders3.2.png" class="layout-img" alt="layout 3"
                             loading="eager">
                     </button>
                     <h2 class="layout-label">layout C</h2>
@@ -86,7 +86,7 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
                 </div>
                 <div class="layout-contents">
                     <button class="layout-holder" id="layout4Btn">
-                        <img src="../assets/layouts/thinBorders4.1.png" class="layout-img" alt="layout 4"
+                        <img src="/src/assets/layouts/thinBorders4.1.png" class="layout-img" alt="layout 4"
                             loading="eager">
                     </button>
                     <h2 class="layout-label">layout D</h2>

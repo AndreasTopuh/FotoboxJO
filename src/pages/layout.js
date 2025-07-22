@@ -7,28 +7,28 @@ document.addEventListener('DOMContentLoaded', () => {
     if (layoutBtn1) {
         layoutBtn1.addEventListener('click', (e) => {
             e.preventDefault()
-            window.location.href = 'canvas.php'
+            window.location.href = '/src/pages/canvas.php'
         })
     }
 
     if (layoutBtn2) {
         layoutBtn2.addEventListener('click', (e) => {
             e.preventDefault()
-            window.location.href = 'canvas4.php'
+            window.location.href = '/src/pages/canvas4.php'
         })
     }
 
     if (layoutBtn3) {
         layoutBtn3.addEventListener('click', (e) => {
             e.preventDefault()
-            window.location.href = 'canvas2.php'
+            window.location.href = '/src/pages/canvas2.php'
         })
     }
 
     if(layoutBtn4) {
         layoutBtn4.addEventListener('click', (e) => {
             e.preventDefault()
-            window.location.href = 'canvas6.php'
+            window.location.href = '/src/pages/canvas6.php'
         })
     }
 

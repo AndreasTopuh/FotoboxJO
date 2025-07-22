@@ -28,13 +28,13 @@ session_start();
     <meta name="twitter:description"
         content="Take instant photobooth-style photos online. Customize with over 100 frame colors, add stickers and frames, and download high-quality photo strips instantly.">
     <meta name="twitter:image" content="https://www.photobooth-io.cc/assets/home-mockup.png">
-    <link rel="stylesheet" href="../../styles.css" />
+    <link rel="stylesheet" href="/styles.css" />
     <link
         href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&display=swap"
         rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap"
         rel="stylesheet">
-    <link rel="icon" href="assets/icons/photobooth-new-logo.png" />
+    <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png" />
     <style>
         body {
             /* text-align: center;  */
@@ -303,7 +303,7 @@ session_start();
             <input type="file" id="uploadInput" accept="image/*" multiple style="display: none;">
             <div id="add-ons-container">
                 <button id="uploadBtn" class="uploadBtnStyling">
-                    <img src="../assets/upload-icon.png" class="icons-size" alt="upload image icon">
+                    <img src="/src/assets/upload-icon.png" class="icons-size" alt="upload image icon">
                     Upload Image
                 </button>
                 <div>
@@ -323,7 +323,7 @@ session_start();
                     <div id="blackScreen">Waiting for camera access...</div>
                     <div id="countdownText">3</div>
                     <button id="fullscreenBtn">
-                        <img src="../assets/fullScreen3.png" class="fullScreenSize" alt="full screen button">
+                        <img src="/src/assets/fullScreen3.png" class="fullScreenSize" alt="full screen button">
                     </button>
                 </div>
                 <div id="photoContainer"></div>
@@ -336,7 +336,7 @@ session_start();
                     <button id="bnwFilterId" class="filterBtn"></button>
                     <button id="sepiaFilterId" class="filterBtn"></button>
                     <button id="normalFilterId" class="filterBtn"></button>
-                    <button id="invertBtn"><img src="../assets/mirror-icon.svg" alt="mirror icon"
+                    <button id="invertBtn"><img src="/src/assets/mirror-icon.svg" alt="mirror icon"
                             id="mirror-icon"></button>
                 </div>
                 <div>
@@ -352,7 +352,7 @@ session_start();
     </main>
 
     <script src="canvas2.js"></script>
-    <script src="main.js"></script>
+    <!-- <script src="main.js"></script> -->
 </body>
 
 </html>
