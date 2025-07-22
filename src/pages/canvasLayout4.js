@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const timerOptions = document.getElementById("timerOptions");
         const selectedValue = parseInt(timerOptions.value) || 3; // Default to 3 if no value is selected
     
-        for (let i = 0; i < 8; i++) { // Changed to 2 photos
+        for (let i = 0; i < 8; i++) { // Layout 4: 8 photos
             // Countdown using selected timer
             await showCountdown(selectedValue);
 
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     
         // Reset buttons
-        if (images.length === 8) { // Changed to 2 photos
+        if (images.length === 8) { // Layout 4: 8 photos
             startBtn.disabled = false;
             uploadBtn.disabled = false;
             startBtn.innerHTML = 'Retake';
@@ -332,7 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 imgElement.classList.add('photo');
                 photoContainer.appendChild(imgElement);
 
-                progressCounter.textContent = `${images.length}/2`;
+                progressCounter.textContent = `${images.length}/8`;
 
                 if (images.length === 8) {
                     startBtn.innerHTML = 'Retake';
@@ -379,9 +379,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
                 // For Layout 4 with 8 images, we need higher storage limit
                 if (loadedImages === 8) {
+                    console.log('=== Layout 4 Storage Debug ===');
+                    console.log('All 8 images processed for storage');
+                    console.log('Stored images array:', storedImages);
+                    
                     const estimatedSize = new Blob([JSON.stringify(storedImages)]).size;
+                    console.log('Estimated storage size:', estimatedSize, 'bytes');
 
                     const storageLimit = 15 * 1024 * 1024; // 15MB limit for 8 photos
+                    console.log('Storage limit:', storageLimit, 'bytes');
 
                     if (estimatedSize > storageLimit) {
                         alert("The total image size exceeds the 15MB limit. Please use smaller images or reduce photo quality.");
@@ -389,8 +395,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
                     sessionStorage.setItem('photoArray4', JSON.stringify(storedImages)); 
-                    console.log("8 images stored in sessionStorage!");
-                    window.location.href = 'customizeLayout4.php'; // Redirect to Layout4 customize page
+                    console.log("8 images stored in sessionStorage with key 'photoArray4'!");
+                    
+                    // Verify storage
+                    const verifyStorage = sessionStorage.getItem('photoArray4');
+                    if (verifyStorage) {
+                        console.log("Storage verification successful");
+                        console.log("Redirecting to customizeLayout4.php...");
+                        window.location.href = 'customizeLayout4.php'; // Redirect to Layout4 customize page
+                    } else {
+                        console.error("Storage verification failed!");
+                        alert("Failed to save images. Please try again.");
+                    }
                 }
             };
         });
@@ -408,7 +424,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (doneBtn) {
-        doneBtn.addEventListener('click', () => storeImageArray());
+        doneBtn.addEventListener('click', () => {
+            console.log("Done button clicked in Layout4, calling storeImageArray()");
+            console.log("Current images array:", images);
+            console.log("Images length:", images.length);
+            if (images.length === 8) {
+                storeImageArray();
+            } else {
+                alert(`Error: Expected 8 images but found ${images.length}. Please retake photos.`);
+            }
+        });
     }
 
     if (uploadBtn) {

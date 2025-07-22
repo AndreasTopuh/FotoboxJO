@@ -105,11 +105,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const storedImages = JSON.parse(sessionStorage.getItem('photoArray4')) || [];
     const imageArrayLength = storedImages.length; // Should be 8 for Layout 4
 
+    console.log('=== Layout 4 Customize Debug ===');
     console.log('Stored Images:', storedImages);
     console.log('Image Array Length:', imageArrayLength);
+    console.log('Session Storage Key:', 'photoArray4');
+    console.log('All Session Storage Keys:', Object.keys(sessionStorage));
 
     if (imageArrayLength === 0) {
+        console.error('No images found in session storage for Layout 4');
         alert('No images found. Redirecting to camera page.');
+        window.location.href = 'canvasLayout4.php';
+        return;
+    }
+
+    if (imageArrayLength !== 8) {
+        console.warn(`Expected 8 images for Layout 4, but found ${imageArrayLength}`);
+        alert(`Expected 8 images for Layout 4, but found ${imageArrayLength}. Please retake photos.`);
         window.location.href = 'canvasLayout4.php';
         return;
     }
