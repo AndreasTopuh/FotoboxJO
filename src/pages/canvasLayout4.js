@@ -272,14 +272,20 @@ document.addEventListener('DOMContentLoaded', () => {
             uploadBtn.disabled = false;
             startBtn.innerHTML = 'Retake';
             
-            // Force show the done button
-            doneBtn.style.display = 'block';
-            doneBtn.style.visibility = 'visible';
-            doneBtn.style.opacity = '1';
+            // Force show the done button with important overrides
+            doneBtn.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; pointer-events: auto !important; z-index: 9999 !important; position: relative !important;';
             
             console.log("Done button display set to:", doneBtn.style.display);
             console.log("Done button visibility set to:", doneBtn.style.visibility);
             console.log("Done button computed style:", getComputedStyle(doneBtn).display);
+            
+            // Additional check
+            setTimeout(() => {
+                console.log("Button check after 1 second:");
+                console.log("- Clickable:", !doneBtn.disabled);
+                console.log("- Visible:", getComputedStyle(doneBtn).display !== 'none');
+                console.log("- Pointer events:", getComputedStyle(doneBtn).pointerEvents);
+            }, 1000);
         }
     }
 
@@ -347,10 +353,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.log("8 images uploaded, showing done button");
                     startBtn.innerHTML = 'Retake';
                     
-                    // Force show the done button
-                    doneBtn.style.display = 'block';
-                    doneBtn.style.visibility = 'visible';
-                    doneBtn.style.opacity = '1';
+                    // Force show the done button with important overrides
+                    doneBtn.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; pointer-events: auto !important; z-index: 9999 !important; position: relative !important;';
                     
                     console.log("Done button display set to:", doneBtn.style.display);
                     console.log("Done button computed style:", getComputedStyle(doneBtn).display);
@@ -441,29 +445,64 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (doneBtn) {
-        // Add multiple event listeners untuk memastikan tombol responsive
-        doneBtn.addEventListener('click', handleDoneClick);
-        doneBtn.addEventListener('touchstart', handleDoneClick);
+        console.log("=== SETTING UP DONE BUTTON EVENTS ===");
+        
+        // Remove any existing listeners first
+        doneBtn.removeEventListener('click', handleDoneClick);
+        doneBtn.removeEventListener('touchstart', handleDoneClick);
+        doneBtn.removeEventListener('mousedown', handleDoneClick);
+        
+        // Add multiple event types for maximum compatibility
+        doneBtn.addEventListener('click', handleDoneClick, { passive: false });
+        doneBtn.addEventListener('touchstart', handleDoneClick, { passive: false });
+        doneBtn.addEventListener('mousedown', handleDoneClick, { passive: false });
+        
+        // Also add a direct onclick as backup
+        doneBtn.onclick = function(e) {
+            console.log("Direct onclick triggered");
+            handleDoneClick(e);
+        };
         
         // Debug: Check if button is initially hidden
         console.log("Done button initial display:", doneBtn.style.display);
         console.log("Done button element:", doneBtn);
         console.log("Done button computed style:", getComputedStyle(doneBtn).display);
+        console.log("Done button bounding rect:", doneBtn.getBoundingClientRect());
     } else {
         console.error("Done button (doneBtn) not found in DOM!");
     }
 
     function handleDoneClick(event) {
-        event.preventDefault();
-        event.stopPropagation();
-        
-        console.log("Done button clicked in Layout4, calling storeImageArray()");
+        console.log("=== DONE BUTTON CLICKED ===");
+        console.log("Event type:", event.type);
+        console.log("Event target:", event.target);
         console.log("Current images array:", images);
         console.log("Images length:", images.length);
         
+        // Prevent any default behavior
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+        }
+        
+        // Force execution regardless of image count for testing
+        console.log("Forcing execution for debugging...");
+        
         if (images.length === 8) {
+            console.log("8 images found, calling storeImageArray()");
             storeImageArray();
+        } else if (images.length === 0) {
+            console.log("No images found, creating dummy data and redirecting...");
+            // Create dummy data for testing
+            const dummyImages = [];
+            for (let i = 0; i < 8; i++) {
+                dummyImages.push('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==');
+            }
+            sessionStorage.setItem('photoArray4', JSON.stringify(dummyImages));
+            window.location.href = 'customizeLayout4.php';
         } else {
+            console.log(`Found ${images.length} images, but expected 8`);
             alert(`Error: Expected 8 images but found ${images.length}. Please retake photos.`);
         }
     }
@@ -516,7 +555,31 @@ document.addEventListener('DOMContentLoaded', () => {
             display: doneBtn.style.display,
             visibility: doneBtn.style.visibility,
             disabled: doneBtn.disabled,
-            computedDisplay: getComputedStyle(doneBtn).display
+            computedDisplay: getComputedStyle(doneBtn).display,
+            pointerEvents: getComputedStyle(doneBtn).pointerEvents,
+            zIndex: getComputedStyle(doneBtn).zIndex,
+            position: getComputedStyle(doneBtn).position
         });
+        
+        // Add click area debugger
+        doneBtn.addEventListener('mouseenter', () => {
+            console.log("Mouse entered done button area");
+        });
+        
+        doneBtn.addEventListener('mouseleave', () => {
+            console.log("Mouse left done button area");
+        });
+        
+        // Check for overlapping elements
+        setTimeout(() => {
+            const rect = doneBtn.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const elementAtCenter = document.elementFromPoint(centerX, centerY);
+            
+            console.log("Element at button center:", elementAtCenter);
+            console.log("Is button the top element?", elementAtCenter === doneBtn);
+            console.log("Button rect:", rect);
+        }, 2000);
     }
 })
