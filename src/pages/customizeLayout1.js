@@ -94,8 +94,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const circleFrameBtn = document.getElementById('circleFrameShape');
     const heartFrameBtn = document.getElementById('heartFrameShape');
 
+    const colorPickerBtn = document.getElementById("colorPickerBtn");
+
+
     let finalCanvas = null;
-    let backgroundType = '#FFC2D1'; // Default background
+    let backgroundType = 'color';
+    let backgroundColor = '#FFC2D1';
+    let backgroundImage = null;
     let currentStickers = [];
     let logoStickers = [];
     let shapeFrame = 'none';
@@ -114,156 +119,188 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
+    // Function to set new background and redraw canvas
+    function setBackground(option) {
+        console.log('Setting background:', option);
+        
+        if (option.type === 'color') {
+            backgroundType = 'color';
+            backgroundColor = option.value;
+            redrawCanvas();
+        } else if (option.type === 'image') {
+            backgroundType = 'image';
+            backgroundImage = new Image();
+            backgroundImage.crossOrigin = 'anonymous';
+            backgroundImage.src = option.src;
+            
+            backgroundImage.onload = () => {
+                redrawCanvas();
+            };
+            
+            backgroundImage.onerror = () => {
+                console.error('Failed to load background image:', option.src);
+            };
+        }
+    }
+
+    // Initialize Vanilla Picker
+    const picker = new Picker({
+        parent: colorPickerBtn,
+        popup: 'bottom',
+        color: '#FFFFFF',
+        onChange: (color) => {
+            setBackground({ type: 'color', value: color.hex });
+        },
+        onDone: (color) => {
+            colorPickerBtn.style.backgroundColor = color.hex;
+        }
+    });
+
+    // Show picker on click
+    colorPickerBtn.addEventListener("click", () => picker.show());
+
+    // function setSticker(type) {
+    //     console.log(`Sticker changed to: ${type}`);
+    //     selectedSticker = type;
+    //     redrawCanvas();
+    // }
+    function setSticker(type) {
+        if (selectedSticker === type) {
+            selectedSticker = null; // Remove sticker if already selected
+            console.log(`Removed sticker: ${type}`);
+        } else {
+            selectedSticker = type;
+            console.log(`Selected sticker: ${type}`);
+        }
+        redrawCanvas();
+    }
+
     // 4R Canvas dimensions - Optimized for web and print
     function redrawCanvas() {
-        console.log(`Redrawing Layout 1 canvas with background: ${backgroundType}`);
+        console.log(`Redrawing Layout 1 canvas with background: ${backgroundType}, color: ${backgroundColor}`);
 
         const stackedCanvas = document.createElement('canvas');
         const ctx = stackedCanvas.getContext('2d');
 
-        // 4R dimensions: 4 inch x 6 inch
-        // Using 300 DPI for high print quality
-        const canvasWidth = 1200;   // 4 inch x 300 DPI
-        const canvasHeight = 1800;  // 6 inch x 300 DPI
-        const borderWidth = 30;     // Smaller border for more photo space
-        const bottomPadding = 80;   // Smaller padding for more photo space
-        const photoGap = 15;        // Gap between photos
+        const canvasWidth = 1200;
+        const canvasHeight = 1800;
+        const borderWidth = 30;
+        const bottomPadding = 80;
+        const photoGap = 15;
 
         const availableHeight = canvasHeight - (borderWidth * 2) - bottomPadding;
         const availableWidth = canvasWidth - (borderWidth * 2);
-
-        // For 4R with 2 photos, arrange them vertically with proper spacing
         const photoWidth = availableWidth;
-        const photoHeight = (availableHeight - photoGap) / 2; // Divide by 2 with gap
+        const photoHeight = (availableHeight - photoGap) / 2;
 
         stackedCanvas.width = canvasWidth;
         stackedCanvas.height = canvasHeight;
 
-        // Apply background based on layout image pattern (no forced white background)
-        if (backgroundType.startsWith('#')) {
-            ctx.fillStyle = backgroundType;
+        // Apply background
+        if (backgroundType === 'color') {
+            ctx.fillStyle = backgroundColor;
             ctx.fillRect(0, 0, stackedCanvas.width, stackedCanvas.height);
-        } else if (backgroundType.startsWith('url(')) {
-            // Handle background images
+        } else if (backgroundType === 'image') {
             const bgImg = new Image();
             bgImg.crossOrigin = 'anonymous';
             bgImg.onload = () => {
-                // Create pattern from image
                 const pattern = ctx.createPattern(bgImg, 'repeat');
                 ctx.fillStyle = pattern;
                 ctx.fillRect(0, 0, stackedCanvas.width, stackedCanvas.height);
                 drawPhotos();
             };
-            bgImg.src = backgroundType.match(/url\(([^)]+)\)/)[1];
-            return; // Exit early, continue in onload
+            bgImg.src = backgroundImage.src;
+            return;
+        } else {
+            // Fallback to default color if backgroundType is invalid
+            ctx.fillStyle = '#FFC2D1';
+            ctx.fillRect(0, 0, stackedCanvas.width, stackedCanvas.height);
         }
 
         drawPhotos();
 
         function drawPhotos() {
             let loadedCount = 0;
-            const totalPhotos = Math.min(storedImages.length, 2); // Max 2 photos
+            const totalPhotos = Math.min(storedImages.length, 2);
 
-            // Draw both photos
             for (let i = 0; i < totalPhotos; i++) {
                 if (storedImages[i]) {
                     const img = new Image();
                     img.crossOrigin = 'anonymous';
                     img.onload = () => {
                         const x = borderWidth;
-                        const y = borderWidth + (i * (photoHeight + photoGap)); // Use photoGap for consistent spacing
+                        const y = borderWidth + (i * (photoHeight + photoGap));
 
-                        // Apply shape frame
                         ctx.save();
                         if (shapeFrame === 'circle') {
-                            // Create circular clipping path
                             const centerX = x + photoWidth / 2;
                             const centerY = y + photoHeight / 2;
                             const radius = Math.min(photoWidth, photoHeight) / 2 - 10;
-                            
                             ctx.beginPath();
                             ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-                        ctx.clip();
-                    } else if (shapeFrame === 'roundedRect') {
-                        // Create rounded rectangle clipping path
-                        const cornerRadius = 20;
-                        ctx.beginPath();
-                        ctx.roundRect(x, y, photoWidth, photoHeight, cornerRadius);
-                        ctx.clip();
-                    } else if (shapeFrame === 'heart') {
-                        // Create heart-shaped clipping path
-                        const centerX = x + photoWidth / 2;
-                        const centerY = y + photoHeight / 2;
-                        const size = Math.min(photoWidth, photoHeight) / 2;
-                        
-                        ctx.beginPath();
-                        ctx.moveTo(centerX, centerY + size/4);
-                        ctx.bezierCurveTo(centerX, centerY-size/2, centerX-size, centerY-size/2, centerX-size/2, centerY);
-                        ctx.bezierCurveTo(centerX-size, centerY+size/2, centerX, centerY+size/2, centerX, centerY+size/4);
-                        ctx.bezierCurveTo(centerX, centerY+size/2, centerX+size, centerY+size/2, centerX+size/2, centerY);
-                        ctx.bezierCurveTo(centerX+size, centerY-size/2, centerX, centerY-size/2, centerX, centerY+size/4);
-                        ctx.clip();
-                    }
+                            ctx.clip();
+                        } else if (shapeFrame === 'roundedRect') {
+                            const cornerRadius = 20;
+                            ctx.beginPath();
+                            ctx.roundRect(x, y, photoWidth, photoHeight, cornerRadius);
+                            ctx.clip();
+                        } else if (shapeFrame === 'heart') {
+                            const centerX = x + photoWidth / 2;
+                            const centerY = y + photoHeight / 2;
+                            const size = Math.min(photoWidth, photoHeight) / 2;
+                            ctx.beginPath();
+                            ctx.moveTo(centerX, centerY + size/4);
+                            ctx.bezierCurveTo(centerX, centerY-size/2, centerX-size, centerY-size/2, centerX-size/2, centerY);
+                            ctx.bezierCurveTo(centerX-size, centerY+size/2, centerX, centerY+size/2, centerX, centerY+size/4);
+                            ctx.bezierCurveTo(centerX, centerY+size/2, centerX+size, centerY+size/2, centerX+size/2, centerY);
+                            ctx.bezierCurveTo(centerX+size, centerY-size/2, centerX, centerY-size/2, centerX, centerY+size/4);
+                            ctx.clip();
+                        }
 
-                    // Calculate aspect ratio and fit image to fill frame completely (crop if needed)
-                    const imgAspect = img.width / img.height;
-                    const frameAspect = photoWidth / photoHeight;
-                    
-                    let drawWidth, drawHeight, drawX, drawY;
-                    
-                    // Use "cover" method - image will fill entire frame, cropping if necessary
-                    if (imgAspect > frameAspect) {
-                        // Image is wider than frame - fit to height and crop sides
-                        drawHeight = photoHeight;
-                        drawWidth = photoHeight * imgAspect;
-                        drawX = x - (drawWidth - photoWidth) / 2; // Center horizontally
-                        drawY = y;
-                    } else {
-                        // Image is taller than frame - fit to width and crop top/bottom
-                        drawWidth = photoWidth;
-                        drawHeight = photoWidth / imgAspect;
-                        drawX = x;
-                        drawY = y - (drawHeight - photoHeight) / 2; // Center vertically
-                    }
+                        const imgAspect = img.width / img.height;
+                        const frameAspect = photoWidth / photoHeight;
+                        let drawWidth, drawHeight, drawX, drawY;
 
-                    // Ensure image fills the entire frame
-                    if (drawWidth < photoWidth) {
-                        const scale = photoWidth / drawWidth;
-                        drawWidth = photoWidth;
-                        drawHeight *= scale;
-                        drawY = y - (drawHeight - photoHeight) / 2;
-                    }
-                    
-                    if (drawHeight < photoHeight) {
-                        const scale = photoHeight / drawHeight;
-                        drawHeight = photoHeight;
-                        drawWidth *= scale;
-                        drawX = x - (drawWidth - photoWidth) / 2;
-                    }
+                        if (imgAspect > frameAspect) {
+                            drawHeight = photoHeight;
+                            drawWidth = photoHeight * imgAspect;
+                            drawX = x - (drawWidth - photoWidth) / 2;
+                            drawY = y;
+                        } else {
+                            drawWidth = photoWidth;
+                            drawHeight = photoWidth / imgAspect;
+                            drawX = x;
+                            drawY = y - (drawHeight - photoHeight) / 2;
+                        }
 
-                    ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
-                    ctx.restore();
+                        if (drawWidth < photoWidth) {
+                            const scale = photoWidth / drawWidth;
+                            drawWidth = photoWidth;
+                            drawHeight *= scale;
+                            drawY = y - (drawHeight - photoHeight) / 2;
+                        }
+                        if (drawHeight < photoHeight) {
+                            const scale = photoHeight / drawHeight;
+                            drawHeight = photoHeight;
+                            drawWidth *= scale;
+                            drawX = x - (drawWidth - photoWidth) / 2;
+                        }
 
-                    loadedCount++;
-                    
-                    // When both photos are loaded, add stickers, text, and logo
-                    if (loadedCount === totalPhotos) {
-                        // Add stickers
-                        addStickers(stackedCanvas);
-                        
-                        // Add text overlay
-                        addTextOverlay(stackedCanvas);
-                        
-                        // Add logo
-                        addLogo(stackedCanvas);
-                        
-                        updatePreview(stackedCanvas);
-                    }
-                };
-                img.src = storedImages[i];
+                        ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+                        ctx.restore();
+
+                        loadedCount++;
+                        if (loadedCount === totalPhotos) {
+                            addStickers(stackedCanvas);
+                            addTextOverlay(stackedCanvas);
+                            addLogo(stackedCanvas);
+                            updatePreview(stackedCanvas);
+                        }
+                    };
+                    img.src = storedImages[i];
+                }
             }
         }
-    }
     }
 
     function addStickers(canvas) {
@@ -363,64 +400,55 @@ document.addEventListener('DOMContentLoaded', function() {
     // Color frame handlers
     if (pinkBtn) {
         pinkBtn.addEventListener('click', () => {
-            backgroundType = '#FFC2D1';
-            redrawCanvas();
+            setBackground({ type: 'color', value: '#FFC2D1' });
         });
     }
 
     if (blueBtn) {
         blueBtn.addEventListener('click', () => {
-            backgroundType = '#CAF0F8';
-            redrawCanvas();
+            setBackground({ type: 'color', value: '#CAF0F8' });
         });
     }
 
     if (yellowBtn) {
         yellowBtn.addEventListener('click', () => {
-            backgroundType = '#FFF8A5';
-            redrawCanvas();
+            setBackground({ type: 'color', value: '#FFF8A5' });
         });
     }
 
     if (brownBtn) {
         brownBtn.addEventListener('click', () => {
-            backgroundType = '#DDBEA9';
-            redrawCanvas();
+            setBackground({ type: 'color', value: '#DDBEA9' });
         });
     }
 
     if (redBtn) {
         redBtn.addEventListener('click', () => {
-            backgroundType = '#780000';
-            redrawCanvas();
+            setBackground({ type: 'color', value: '#780000' });
         });
     }
 
     if (matchaBtn) {
         matchaBtn.addEventListener('click', () => {
-            backgroundType = '#90a955';
-            redrawCanvas();
+            setBackground({ type: 'color', value: '#90a955' });
         });
     }
 
     if (purpleBtn) {
         purpleBtn.addEventListener('click', () => {
-            backgroundType = '#c19ee0';
-            redrawCanvas();
+            setBackground({ type: 'color', value: '#c19ee0' });
         });
     }
 
     if (whiteBtn) {
         whiteBtn.addEventListener('click', () => {
-            backgroundType = '#FFFFFF';
-            redrawCanvas();
+            setBackground({ type: 'color', value: '#FFFFFF' });
         });
     }
 
     if (blackBtn) {
         blackBtn.addEventListener('click', () => {
-            backgroundType = '#000000';
-            redrawCanvas();
+            setBackground({ type: 'color', value: '#000000' });
         });
     }
 
