@@ -1,3 +1,7 @@
+<?php
+// Session start untuk PHP functionality jika diperlukan
+session_start();
+?>
 <!DOCTYPE html>
 <html>
 
@@ -149,12 +153,12 @@
         }
 
         .photo {
-            width: 150px;
-            max-width: 150px;
+            width: 120px;
+            max-width: 120px;
             border: 2px solid black;
             display: block;
             border-radius: 12px;
-            height: 109.76px;
+            height: 110.88px;
             object-fit: cover;
         }
 
@@ -241,11 +245,15 @@
                 flex-direction: column;
                 justify-content: center;
                 gap: 20px;
+                width: 100%;
+                /* Ensure it's not constrained */
+                overflow-x: hidden;
+                /* Hide overflow horizontally in the container */
             }
 
             .photo {
                 width: 100px;
-                height: 73.17px;
+                height: 92.4px;
                 display: flex;
                 flex-direction: row;
                 object-fit: cover;
@@ -257,6 +265,17 @@
                 align-items: center;
                 justify-content: center;
                 width: 100%;
+                overflow-x: auto;
+                /* enables horizontal scroll */
+                white-space: nowrap;
+                /* prevents items from wrapping to the next line */
+                gap: 10px;
+                /* optional: adds spacing between items */
+            }
+
+            #photoContainer>* {
+                flex: 0 0 auto;
+                /* prevents items from shrinking or stretching */
             }
         }
 
@@ -268,11 +287,15 @@
                 flex-direction: column;
                 justify-content: center;
                 gap: 20px;
+                width: 100%;
+                /* Ensure it's not constrained */
+                overflow-x: hidden;
+                /* Hide overflow horizontally in the container */
             }
 
             .photo {
                 width: 100px;
-                height: 73.17px;
+                height: 92.4px;
                 display: flex;
                 flex-direction: row;
                 object-fit: cover;
@@ -284,6 +307,17 @@
                 align-items: center;
                 justify-content: center;
                 width: 100%;
+                overflow-x: auto;
+                /* enables horizontal scroll */
+                white-space: nowrap;
+                /* prevents items from wrapping to the next line */
+                gap: 10px;
+                /* optional: adds spacing between items */
+            }
+
+            #photoContainer>* {
+                flex: 0 0 auto;
+                /* prevents items from shrinking or stretching */
             }
         }
     </style>
@@ -295,11 +329,11 @@
     <main id="main-section">
         <div class="canvas-centered">
             <div class="gradientBgCanvas"></div>
-            <p id="progressCounter">0/3</p>
-            <input type="file" id="uploadInput" accept="image/*" multiple style="display: none;">
+            <p id="progressCounter">0/6</p>
+            <input type="file" id="uploadInput" accept="image/*" multiple style="display:none;">
             <div id="add-ons-container">
                 <button id="uploadBtn" class="uploadBtnStyling">
-                    <img src="../assets/upload-icon.png" class="icons-size" alt="upload image icon">
+                    <img src="assets/icons/upload-icon.png" class="icons-size" alt="upload image icon">
                     Upload Image
                 </button>
                 <div>
@@ -319,7 +353,7 @@
                     <div id="blackScreen">Waiting for camera access...</div>
                     <div id="countdownText">3</div>
                     <button id="fullscreenBtn">
-                        <img src="../assets/fullScreen3.png" class="fullScreenSize" alt="full screen button">
+                        <img src="assets/fullScreen3.png" class="fullScreenSize" alt="full screen button">
                     </button>
                 </div>
                 <div id="photoContainer"></div>
@@ -332,7 +366,8 @@
                     <button id="bnwFilterId" class="filterBtn"></button>
                     <button id="sepiaFilterId" class="filterBtn"></button>
                     <button id="normalFilterId" class="filterBtn"></button>
-                    <button id="invertBtn"><img src="../assets/mirror-icon.svg" alt="mirror icon" id="mirror-icon"></button>
+                    <button id="invertBtn"><img src="assets/mirror-icon.svg" alt="mirror icon"
+                            id="mirror-icon"></button>
                 </div>
                 <div>
                     <h3 class="options-label">Choose a filter </h3>
@@ -342,13 +377,12 @@
                     <button id="doneBtn">DONE</button>
                 </div>
             </div>
-            <div id="photoPreview"></div>
             <!-- <div id="flash"></div> -->
         </div>
     </main>
 
-    <script src="canvas.js"></script>
-    <!-- <script src="main.js"></script> -->
+    <script src="canvas6.js"></script>
+    <script src="main.js"></script>
 </body>
 
 </html>

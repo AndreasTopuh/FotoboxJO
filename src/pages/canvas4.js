@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Start camera if on canvas.html
-    if (window.location.pathname.endsWith("canvas4.html") || window.location.pathname === "canvas4.html") {
+    if (window.location.pathname.endsWith("canvas4.php") || window.location.pathname === "canvas4.php") {
         startCamera();
     }
 
@@ -422,7 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     sessionStorage.setItem('photoArray', JSON.stringify(storedImages)); 
                     console.log("All 4 images stored in sessionStorage!");
-                    window.location.href = 'customize.html'; 
+                    window.location.href = 'customize.php'; 
                 }
             };
         });

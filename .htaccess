@@ -1,0 +1,22 @@
+RewriteEngine On
+
+# Redirect HTML to PHP files
+RewriteRule ^index\.html$ index.php [R=301,L]
+RewriteRule ^src/pages/(.*)\.html$ src/pages/$1.php [R=301,L]
+
+# Internal rewrite for clean URLs (opsional)
+# RewriteRule ^([^/]+)/?$ $1.php [L,QSA]
+
+# Security - Disable directory browsing
+Options -Indexes
+
+# Security - Hide sensitive files
+<Files "*.log">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files ".htaccess">
+    Order allow,deny
+    Deny from all
+</Files>

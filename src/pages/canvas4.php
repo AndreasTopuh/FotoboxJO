@@ -1,3 +1,7 @@
+<?php
+// Session start untuk PHP functionality jika diperlukan
+session_start();
+?>
 <!DOCTYPE html>
 <html>
 

@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // else {
             //     window.location.href = 'canvas2.html'
             // }
-            window.location.href = 'canvas6.html'
+            window.location.href = 'canvas6.php'
         })
         
     }

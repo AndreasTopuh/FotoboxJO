@@ -119,15 +119,15 @@ document.addEventListener('DOMContentLoaded', function() {
     if (customBack) {
         customBack.addEventListener('click', () => {
             if (imageArrayLength === 3) {
-                window.location.href = 'canvas.html'
+                window.location.href = 'canvas.php'
             }
             else if (imageArrayLength === 4) {
-                window.location.href = 'canvas4.html'
+                window.location.href = 'canvas4.php'
             }
             else {
-                window.location.href = 'canvas2.html'
+                window.location.href = 'canvas2.php'
             }
-            // window.location.href = 'canvas.html'
+            // window.location.href = 'canvas.php'
         })
         
     }

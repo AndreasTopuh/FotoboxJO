@@ -1,3 +1,7 @@
+<?php
+// Session start untuk PHP functionality jika diperlukan
+session_start();
+?>
 <!DOCTYPE html>
 <html>
 
@@ -154,7 +158,7 @@
             border: 2px solid black;
             display: block;
             border-radius: 12px;
-            height: 166.35px;
+            height: 109.76px;
             object-fit: cover;
         }
 
@@ -245,7 +249,7 @@
 
             .photo {
                 width: 100px;
-                height: 110.9px;
+                height: 73.17px;
                 display: flex;
                 flex-direction: row;
                 object-fit: cover;
@@ -272,7 +276,7 @@
 
             .photo {
                 width: 100px;
-                height: 110.9px;
+                height: 73.17px;
                 display: flex;
                 flex-direction: row;
                 object-fit: cover;
@@ -295,11 +299,11 @@
     <main id="main-section">
         <div class="canvas-centered">
             <div class="gradientBgCanvas"></div>
-            <p id="progressCounter">0/2</p>
+            <p id="progressCounter">0/3</p>
             <input type="file" id="uploadInput" accept="image/*" multiple style="display: none;">
             <div id="add-ons-container">
                 <button id="uploadBtn" class="uploadBtnStyling">
-                    <img src="assets/icons/upload-icon.png" class="icons-size" alt="upload image icon">
+                    <img src="../assets/upload-icon.png" class="icons-size" alt="upload image icon">
                     Upload Image
                 </button>
                 <div>
@@ -319,7 +323,7 @@
                     <div id="blackScreen">Waiting for camera access...</div>
                     <div id="countdownText">3</div>
                     <button id="fullscreenBtn">
-                        <img src="assets/fullScreen3.png" class="fullScreenSize" alt="full screen button">
+                        <img src="../assets/fullScreen3.png" class="fullScreenSize" alt="full screen button">
                     </button>
                 </div>
                 <div id="photoContainer"></div>
@@ -332,8 +336,7 @@
                     <button id="bnwFilterId" class="filterBtn"></button>
                     <button id="sepiaFilterId" class="filterBtn"></button>
                     <button id="normalFilterId" class="filterBtn"></button>
-                    <button id="invertBtn"><img src="assets/mirror-icon.svg" alt="mirror icon"
-                            id="mirror-icon"></button>
+                    <button id="invertBtn"><img src="../assets/mirror-icon.svg" alt="mirror icon" id="mirror-icon"></button>
                 </div>
                 <div>
                     <h3 class="options-label">Choose a filter </h3>
@@ -343,12 +346,14 @@
                     <button id="doneBtn">DONE</button>
                 </div>
             </div>
+            <div id="photoPreview"></div>
             <!-- <div id="flash"></div> -->
         </div>
     </main>
 
-    <script src="canvas2.js"></script>
-    <script src="main.js"></script>
+    <script src="canvas.js"></script>
+    <script src="debug-camera.js"></script>
+    <!-- <script src="main.js"></script> -->
 </body>
 
 </html>
