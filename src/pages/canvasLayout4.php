@@ -140,6 +140,11 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
                             <button id="doneBtn" class="sub-button">
                                 Customize
                             </button>
+                            
+                            <!-- Temporary test button for debugging -->
+                            <button id="testBtn" class="sub-button" style="background-color: orange; margin-top: 10px;">
+                                Test Customize (Debug)
+                            </button>
                         </div>
                     </div>
                 </div>

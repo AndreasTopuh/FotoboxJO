@@ -267,10 +267,19 @@ document.addEventListener('DOMContentLoaded', () => {
     
         // Reset buttons
         if (images.length === 8) { // Layout 4: 8 photos
+            console.log("8 photos captured, showing done button");
             startBtn.disabled = false;
             uploadBtn.disabled = false;
             startBtn.innerHTML = 'Retake';
+            
+            // Force show the done button
             doneBtn.style.display = 'block';
+            doneBtn.style.visibility = 'visible';
+            doneBtn.style.opacity = '1';
+            
+            console.log("Done button display set to:", doneBtn.style.display);
+            console.log("Done button visibility set to:", doneBtn.style.visibility);
+            console.log("Done button computed style:", getComputedStyle(doneBtn).display);
         }
     }
 
@@ -335,8 +344,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 progressCounter.textContent = `${images.length}/8`;
 
                 if (images.length === 8) {
+                    console.log("8 images uploaded, showing done button");
                     startBtn.innerHTML = 'Retake';
+                    
+                    // Force show the done button
                     doneBtn.style.display = 'block';
+                    doneBtn.style.visibility = 'visible';
+                    doneBtn.style.opacity = '1';
+                    
+                    console.log("Done button display set to:", doneBtn.style.display);
+                    console.log("Done button computed style:", getComputedStyle(doneBtn).display);
                 }
             };
 
@@ -424,16 +441,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (doneBtn) {
-        doneBtn.addEventListener('click', () => {
-            console.log("Done button clicked in Layout4, calling storeImageArray()");
-            console.log("Current images array:", images);
-            console.log("Images length:", images.length);
-            if (images.length === 8) {
-                storeImageArray();
-            } else {
-                alert(`Error: Expected 8 images but found ${images.length}. Please retake photos.`);
-            }
-        });
+        // Add multiple event listeners untuk memastikan tombol responsive
+        doneBtn.addEventListener('click', handleDoneClick);
+        doneBtn.addEventListener('touchstart', handleDoneClick);
+        
+        // Debug: Check if button is initially hidden
+        console.log("Done button initial display:", doneBtn.style.display);
+        console.log("Done button element:", doneBtn);
+        console.log("Done button computed style:", getComputedStyle(doneBtn).display);
+    } else {
+        console.error("Done button (doneBtn) not found in DOM!");
+    }
+
+    function handleDoneClick(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        console.log("Done button clicked in Layout4, calling storeImageArray()");
+        console.log("Current images array:", images);
+        console.log("Images length:", images.length);
+        
+        if (images.length === 8) {
+            storeImageArray();
+        } else {
+            alert(`Error: Expected 8 images but found ${images.length}. Please retake photos.`);
+        }
     }
 
     if (uploadBtn) {
@@ -445,5 +477,46 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if(uploadInput) {
         uploadInput.addEventListener('change', handleImageUpload);
+    }
+
+    // Add test button for debugging
+    const testBtn = document.getElementById('testBtn');
+    if (testBtn) {
+        testBtn.addEventListener('click', () => {
+            console.log("Test button clicked - forcing redirect to customize");
+            console.log("Current images:", images.length);
+            
+            // Create dummy data if no images
+            if (images.length === 0) {
+                const dummyImages = [];
+                for (let i = 0; i < 8; i++) {
+                    dummyImages.push('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==');
+                }
+                sessionStorage.setItem('photoArray4', JSON.stringify(dummyImages));
+                console.log("Created dummy images for testing");
+            } else {
+                // Use existing images
+                storeImageArray();
+                return;
+            }
+            
+            window.location.href = 'customizeLayout4.php';
+        });
+    }
+
+    // Test button functionality on page load
+    console.log('=== Layout 4 Button Debug ===');
+    console.log('Start button found:', !!startBtn);
+    console.log('Done button found:', !!doneBtn);
+    console.log('Upload button found:', !!uploadBtn);
+    console.log('Test button found:', !!testBtn);
+    
+    if (doneBtn) {
+        console.log('Done button initial state:', {
+            display: doneBtn.style.display,
+            visibility: doneBtn.style.visibility,
+            disabled: doneBtn.disabled,
+            computedDisplay: getComputedStyle(doneBtn).display
+        });
     }
 })
