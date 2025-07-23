@@ -3,27 +3,44 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Payment Method</title>
+  <title>Pilih Metode Pembayaran</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../../home-styles.css">
+  <link rel="stylesheet" href="../../home-styles.css" />
 </head>
 <body>
   <div class="gradientBgCanvas"></div>
-  <div class="container">
-        <div class="glass-card">
-            <h1 class="hero-title">Pilih Metode Pembayaran</h1>
-            <a href="payment-qris.php">
-                <button class="start-btn">QRIS</button>
-            </a>
-            <a href="payment-bank.php">
-                <button class="start-btn">Transfer Bank (BCA)</button>
-            </a>
-        </div>
-    </div>
-  
 
+  <div class="container">
+    <div class="glass-card">
+      <div class="select-payment">
+        
+        <!-- Kiri -->
+        <div class="select-payment-left">
+          <h1 class="hero-title">Pilih Metode Pembayaran</h1>
+          <p class="hero-subtitle">Gunakan salah satu metode berikut untuk menyelesaikan pembayaran.</p>
+        </div>
+
+        <!-- Kanan -->
+        <div class="select-payment-right">
+          <!-- QRIS -->
+          <a href="payment-qris.php">
+            <div class="select-payment-option">
+              <span>QRIS</span>
+              <img src="https://upload.wikimedia.org/wikipedia/id/thumb/f/f1/BANK_BCA_logo.svg/512px-BANK_BCA_logo.svg.png" alt="BCA Logo">
+            </div>
+          </a>
+
+          <!-- BCA -->
+          <a href="payment-bank.php">
+            <div class="select-payment-option">
+              <span>Virtual Bank (BCA)</span>
+              <img src="https://upload.wikimedia.org/wikipedia/id/thumb/f/f1/BANK_BCA_logo.svg/512px-BANK_BCA_logo.svg.png" alt="BCA Logo">
+            </div>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
 </body>
 </html>
-
-
-

@@ -1,167 +1,288 @@
+/* ==================================================
+   Root Variables & Base Styling
+================================================== */
+
 :root {
-    --pink1: #fcd5ce;
-    --pink2: #f9bec7;
-    --pink3: #f8edeb;
-    --text-dark: #333;
-    --text-light: #666;
+  --pink1: #ff9494;
+  --pink2: #ff7e91;
+  --pink3: #ffe4e4;
+  --text-dark: #333;
+  --text-light: #666;
+  --btn-color: #ff4e68;
+  --btn-hover: rgba(255, 94, 145, 0.4);
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Poppins', sans-serif;
-    min-height: 100vh;
-    position: relative;
-    overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  background-color: #fff;
 }
+
+/* ==================================================
+   Background Animation
+================================================== */
 
 .gradientBgCanvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: radial-gradient(circle at center, var(--pink1), var(--pink2), var(--pink3));
-    background-size: 400% 400%;
-    animation: gradient 15s ease infinite;
-    z-index: -1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at center, var(--pink1), var(--pink2), var(--pink3));
+  background-size: 400% 400%;
+  animation: gradientMove 15s ease infinite;
+  z-index: -1;
 }
 
-@keyframes gradient {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
-nav {
-    width: 100%;
-    padding: 1rem 2rem;
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 10;
-}
-
-.logo {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-dark);
-}
+/* ==================================================
+   Layout & Containers
+================================================== */
 
 .container {
-    max-width: 800px;
-    padding: 2rem;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
-.hero-title {
-    font-size: 3rem;
-    font-weight: 700;
-    color: var(--text-dark);
-    margin-bottom: 1rem;
-}
+/* ==================================================
+   Glassmorphism Card
+================================================== */
 
-.hero-subtitle {
-    font-size: 1.1rem;
-    color: var(--text-light);
-    margin-bottom: 2.5rem;
-}
-
-.start-btn {
-    font-size: 1.1rem;
-    padding: 0.8rem 2.2rem;
-    border: none;
-    border-radius: 999px;
-    background: linear-gradient(90deg, #ff5e91, #ff85a1);
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.25s ease-in-out;
-}
-
-.start-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 20px rgba(255, 94, 145, 0.4);
-}
-
-@media (max-width: 768px) {
-    .hero-title {
-        font-size: 2.2rem;
-    }
-
-    .hero-subtitle {
-        font-size: 1rem;
-    }
-
-    .start-btn {
-        font-size: 1rem;
-        padding: 0.7rem 1.8rem;
-    }
-}
 .glass-card {
-    width: 100%;
-    max-width: 800px;
-    background: rgba(255, 255, 255, 0.13);
-    backdrop-filter: blur(9px);
-    -webkit-backdrop-filter: blur(9px);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.5),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.1),
-        inset 0 0 4px 2px rgba(255, 255, 255, 0.2);
-    position: relative;
-    overflow: hidden;
-    padding: 2rem;
-    text-align: center;
+  width: 100%;
+  max-width: 700px;
+  height: 400px;
+  padding: 3rem;
+  background: rgba(255, 255, 255, 0.13);
+  backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 4px 2px rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
 }
 
 .glass-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.8),
-        transparent
-    );
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.8),
+    transparent
+  );
 }
-        
+
 .glass-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 1px;
-    height: 100%;
-    background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.8),
-        transparent,
-        rgba(255, 255, 255, 0.3)
-    );
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.8),
+    transparent,
+    rgba(255, 255, 255, 0.3)
+  );
+}
+
+/* ==================================================
+   Typography
+================================================== */
+
+.hero-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-light);
+  margin-bottom: 2.5rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ==================================================
+   Button Style
+================================================== */
+
+.start-btn {
+  font-size: 1rem;
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--btn-color);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+}
+
+.start-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px var(--btn-hover);
+}
+
+/* ==================================================
+   Responsive Tweaks
+================================================== */
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .glass-card {
+    padding: 2rem;
+  }
+
+  .start-btn {
+    font-size: 0.95rem;
+    padding: 0.65rem 1.6rem;
+  }
+}
+
+/* ==================================================
+   Select Payment Section
+================================================== */
+
+.select-payment {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  gap: 2rem;
+}
+
+.select-payment-left {
+  flex: 1;
+  text-align: left;
+  padding-right: 1.5rem;
+}
+
+.select-payment-divider {
+  width: 1px;
+  height: 80%;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.select-payment-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* Card-style option for each payment method */
+.select-payment-option {
+  display: flex;
+  align-items: first baseline;
+  justify-content: space-between;
+  max-width: 300px;
+  padding: 0.6rem 1.2rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
+  transition: all 0.25s ease-in-out;
+  text-decoration: none;
+}
+
+.select-payment-option:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.select-payment-option .start-btn {
+  font-size: 0.9rem;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.select-payment-option img {
+  height: 28px;
+  width: auto;
+  margin-left: 1rem;
+}
+
+/* ==================================================
+   Responsive Styling
+================================================== */
+
+@media (max-width: 768px) {
+  .select-payment {
+    flex-direction: column;
+    text-align: center;
+    gap: 2rem;
+  }
+
+  .select-payment-left {
+    padding-right: 0;
+  }
+
+  .select-payment-divider {
+    display: none;
+  }
+
+  .select-payment-right {
+    align-items: center;
+  }
+
+  .select-payment-option {
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .select-payment-option img {
+    margin-left: 0;
+  }
 }
