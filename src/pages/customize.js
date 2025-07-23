@@ -541,227 +541,227 @@ document.addEventListener('DOMContentLoaded', function() {
     // BG IMG FRAMES
     if (pinkPlaid) {
         pinkPlaid.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/pink-plaid.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/pink-plaid.jpg'});
         });
     }
     if (pinkGlitter) {
         pinkGlitter.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/pink-glitter.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/pink-glitter.jpg'});
         });
     }
     if (bluePlaid) {
         bluePlaid.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/blue-plaid.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/blue-plaid.jpg'});
         });
     }
     if (brownLeopard) {
         brownLeopard.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/brown-leopard.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/brown-leopard.jpg'});
         });
     }
     if (cowPrint) {
         cowPrint.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/cow-print.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/cow-print.jpg'});
         });
     }
     if (redLeather) {
         redLeather.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/red-leather.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/red-leather.jpg'});
         });
     }
     if (pinkGumamela) {
         pinkGumamela.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/pink-gumamela.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/pink-gumamela.jpg'});
         });
     }
     if (whiteKnitted) {
         whiteKnitted.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/white-knitted-cloth.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/white-knitted-cloth.jpg'});
         });
     }
     if (blackCq) {
         blackCq.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/black-couqutte.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/black-couqutte.jpg'});
         });
     }
     if (whiteCq) {
         whiteCq.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/white-couquette.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/white-couquette.jpg'});
         });
     }
     if (pinkLeather) {
         pinkLeather.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/pink-diamond-leather.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/pink-diamond-leather.jpg'});
         });
     }
     if (ribbonDenim) {
         ribbonDenim.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/ribbon-denim.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/ribbon-denim.jpg'});
         });
     }
     if (blackPinkRibbon) {
         blackPinkRibbon.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/black-pink-ribbon.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/black-pink-ribbon.jpg'});
         });
     }
     if (blueYellowSquares) {
         blueYellowSquares.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/blue-yellow-squares.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/blue-yellow-squares.jpg'});
         });
     }
     if (blueWhiteSquares) {
         blueWhiteSquares.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/blue-white-squares.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/blue-white-squares.jpg'});
         });
     }
     if (fourLockers) {
         fourLockers.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/4-lockers.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/4-lockers.jpg'});
         });
     }
     if (crumpledPaper) {
         crumpledPaper.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/crumpled-paper.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/crumpled-paper.jpg'});
         });
     }
     if (blueBackdrop) {
         blueBackdrop.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/blue-backdrop.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/blue-backdrop.jpg'});
         });
     }
     if (greenHills) {
         greenHills.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/green-hills.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/green-hills.jpg'});
         });
     }
     if (sandShells) {
         sandShells.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/sand-shells.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/sand-shells.jpg'});
         });
     }
     if (waterBeach) {
         waterBeach.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/water.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/water.jpg'});
         });
     }
     if (cocoTrees) {
         cocoTrees.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/coco-trees.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/coco-trees.jpg'});
         });
     }
     if (pinkLiliesFrame) {
         pinkLiliesFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/pink-lilies.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/pink-lilies.jpg'});
         });
     }
     if (roseCardFrame) {
         roseCardFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/rose-card.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/rose-card.jpg'});
         });
     }
     if (princessVintageFrame) {
         princessVintageFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/princess-vintage.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/princess-vintage.jpg'});
         });
     }
     if (gridPaperFrame) {
         gridPaperFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/grid-paper.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/grid-paper.jpg'});
         });
     }
     if (stardustFrame) {
         stardustFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/stardust.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/stardust.jpg'});
         });
     }
     if (roughTextureFrame) {
         roughTextureFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/rough-texture.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/rough-texture.jpg'});
         });
     }
     if (ribbonSweaterFrame) {
         ribbonSweaterFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/ribbon-sweater.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/ribbon-sweater.jpg'});
         });
     }
     if (vsPinkFrame) {
         vsPinkFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/vs-pink.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/vs-pink.jpg'});
         });
     }
     if (vsYellowFrame) {
         vsYellowFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/vs-yellow.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/vs-yellow.jpg'});
         });
     }
     if (redRosesPaintFrame) {
         redRosesPaintFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/red-roses-paint.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/red-roses-paint.jpg'});
         });
     }
     if (grayTrashFrame) {
         grayTrashFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/gray-trash.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/gray-trash.jpg'});
         });
     }
     if (blackTrashFrame) {
         blackTrashFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/black-trash.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/black-trash.jpg'});
         });
     }
     if (whiteTrashFrame) {
         whiteTrashFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/white-trash.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/white-trash.jpg'});
         });
     }
     if (brownKnittedFrame) {
         brownKnittedFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/brown-knitted.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/brown-knitted.jpg'});
         });
     }
     if (hotPinkKnittedFrame) {
         hotPinkKnittedFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/hot-pink-knitted.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/hot-pink-knitted.jpg'});
         });
     }
     if (redKnittedFrame) {
         redKnittedFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/red-knitted.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/red-knitted.jpg'});
         });
     }
     if (pinkKnittedFrame) {
         pinkKnittedFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/pink-knitted.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/pink-knitted.jpg'});
         });
     }
     if (redStripesFrame) {
         redStripesFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/red-stripes.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/red-stripes.jpg'});
         });
     }
     if (greenStripesFrame) {
         greenStripesFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/green-stripes.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/green-stripes.jpg'});
         });
     }
     if (blueStripesFrame) {
         blueStripesFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/blue-stripes.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/blue-stripes.jpg'});
         });
     }
     if (partyDrapeFrame) {
         partyDrapeFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/party-drape.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/party-drape.jpg'});
         });
     }
     if (partyDotsFrame) {
         partyDotsFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/party-dots.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/party-dots.jpg'});
         });
     }
     if (blingDenimFrame) {
         blingDenimFrame.addEventListener('click', () => {
-            setBackground({ type: 'image', src: 'assets/frame-backgrounds/bling-denim.jpg'});
+            setBackground({ type: 'image', src: '/src/assets/frame-backgrounds/bling-denim.jpg'});
         });
     }
 
@@ -860,267 +860,267 @@ document.addEventListener('DOMContentLoaded', function() {
             }
     
             const stickerLayouts = {
-                'kiss': [{ src: 'assets/stickers/kiss1.png', x: 30, y: 300, size: 170 }],
+                'kiss': [{ src: '/src/assets/stickers/kiss1.png', x: 30, y: 300, size: 170 }],
                 'sweet': [
-                    { src: 'assets/stickers/sweet1.png', x: 17, y: 80, size: 90 },
-                    { src: 'assets/stickers/sweet2.png', x: stackedCanvas.width - 100, y: 390, size: 90 },
-                    { src: 'assets/stickers/sweet3.png', x: 30, y: stackedCanvas.height - 200, size: 90 }
+                    { src: '/src/assets/stickers/sweet1.png', x: 17, y: 80, size: 90 },
+                    { src: '/src/assets/stickers/sweet2.png', x: stackedCanvas.width - 100, y: 390, size: 90 },
+                    { src: '/src/assets/stickers/sweet3.png', x: 30, y: stackedCanvas.height - 200, size: 90 }
                 ],
                 'ribbon': [
-                    { src: 'assets/stickers/ribbon1.png', x: 17, y: 80, size: 90 },
-                    { src: 'assets/stickers/ribbon3.png', x: stackedCanvas.width - 100, y: 550, size: 95 },
-                    { src: 'assets/stickers/ribbon2.png', x: 15, y: stackedCanvas.height - 380, size: 90 }
+                    { src: '/src/assets/stickers/ribbon1.png', x: 17, y: 80, size: 90 },
+                    { src: '/src/assets/stickers/ribbon3.png', x: stackedCanvas.width - 100, y: 550, size: 95 },
+                    { src: '/src/assets/stickers/ribbon2.png', x: 15, y: stackedCanvas.height - 380, size: 90 }
                 ],
                 'sparkle': [    
-                    { src: 'assets/stickers/sparkle1.png', x: stackedCanvas.width - 200, y: 150, size: 250 },
-                    { src: 'assets/stickers/sparkle2.png', x: 2, y: stackedCanvas.height - 850, size: 200 },
-                    { src: 'assets/stickers/sparkle2.png', x: stackedCanvas.width - 150, y: stackedCanvas.height - 180, size: 110 }
+                    { src: '/src/assets/stickers/sparkle1.png', x: stackedCanvas.width - 200, y: 150, size: 250 },
+                    { src: '/src/assets/stickers/sparkle2.png', x: 2, y: stackedCanvas.height - 850, size: 200 },
+                    { src: '/src/assets/stickers/sparkle2.png', x: stackedCanvas.width - 150, y: stackedCanvas.height - 180, size: 110 }
                 ],
                 'pearl': [    
-                    { src: 'assets/stickers/pearl1.png', x: 35, y: 30, size: 30 },
-                    { src: 'assets/stickers/pearl1.png', x: 25, y: 50, size: 25 },
-                    { src: 'assets/stickers/pearl1.png', x: 65, y: 40, size: 20 },
-                    { src: 'assets/stickers/pearl1.png', x: 95, y: 40, size: 15 },
-                    { src: 'assets/stickers/pearl1.png', x: 75, y: 26, size: 15 },
-                    { src: 'assets/stickers/pearl1.png', x: 25, y: 65, size: 55 },
-                    { src: 'assets/stickers/pearl1.png', x: 25, y: 120, size: 15 },
+                    { src: '/src/assets/stickers/pearl1.png', x: 35, y: 30, size: 30 },
+                    { src: '/src/assets/stickers/pearl1.png', x: 25, y: 50, size: 25 },
+                    { src: '/src/assets/stickers/pearl1.png', x: 65, y: 40, size: 20 },
+                    { src: '/src/assets/stickers/pearl1.png', x: 95, y: 40, size: 15 },
+                    { src: '/src/assets/stickers/pearl1.png', x: 75, y: 26, size: 15 },
+                    { src: '/src/assets/stickers/pearl1.png', x: 25, y: 65, size: 55 },
+                    { src: '/src/assets/stickers/pearl1.png', x: 25, y: 120, size: 15 },
                     //middle
-                    { src: 'assets/stickers/pearl1.png', x: 525, y: stackedCanvas.height - 620, size: 15 },
-                    { src: 'assets/stickers/pearl1.png', x: 500, y: stackedCanvas.height - 690, size: 15 },
-                    { src: 'assets/stickers/pearl1.png', x: 540, y: stackedCanvas.height - 650, size: 25 },
-                    { src: 'assets/stickers/pearl1.png', x: 530, y: stackedCanvas.height - 700, size: 45 },
-                    { src: 'assets/stickers/pearl1.png', x: 510, y: stackedCanvas.height - 670, size: 30 },
-                    { src: 'assets/stickers/pearl1.png', x: 510, y: stackedCanvas.height - 710, size: 30 },
+                    { src: '/src/assets/stickers/pearl1.png', x: 525, y: stackedCanvas.height - 620, size: 15 },
+                    { src: '/src/assets/stickers/pearl1.png', x: 500, y: stackedCanvas.height - 690, size: 15 },
+                    { src: '/src/assets/stickers/pearl1.png', x: 540, y: stackedCanvas.height - 650, size: 25 },
+                    { src: '/src/assets/stickers/pearl1.png', x: 530, y: stackedCanvas.height - 700, size: 45 },
+                    { src: '/src/assets/stickers/pearl1.png', x: 510, y: stackedCanvas.height - 670, size: 30 },
+                    { src: '/src/assets/stickers/pearl1.png', x: 510, y: stackedCanvas.height - 710, size: 30 },
                     // heart pearl
-                    { src: 'assets/stickers/pearl1.png', x: 15, y: stackedCanvas.height - 200, size: 30 },
-                    { src: 'assets/stickers/pearl1.png', x: 35, y: stackedCanvas.height - 220, size: 20 },
-                    { src: 'assets/stickers/pearl1.png', x: 20, y: stackedCanvas.height - 240, size: 15 },
+                    { src: '/src/assets/stickers/pearl1.png', x: 15, y: stackedCanvas.height - 200, size: 30 },
+                    { src: '/src/assets/stickers/pearl1.png', x: 35, y: stackedCanvas.height - 220, size: 20 },
+                    { src: '/src/assets/stickers/pearl1.png', x: 20, y: stackedCanvas.height - 240, size: 15 },
                     //hearts
-                    { src: 'assets/stickers/pearl2.png', x: stackedCanvas.width - 570, y: stackedCanvas.height - 180, size: 150 },
-                    { src: 'assets/stickers/pearl2.png', x: stackedCanvas.width - 150, y: 270, size: 120 }
+                    { src: '/src/assets/stickers/pearl2.png', x: stackedCanvas.width - 570, y: stackedCanvas.height - 180, size: 150 },
+                    { src: '/src/assets/stickers/pearl2.png', x: stackedCanvas.width - 150, y: 270, size: 120 }
                 ],
                 'classic': [
-                    { src: 'assets/stickers/classic1.png', x: 1, y: 50, size: 32},
-                    { src: 'assets/stickers/classic1.png', x: 1, y: 450, size: 32},
-                    { src: 'assets/stickers/classic1.png', x: 1, y: 950, size: 32},
-                    { src: 'assets/stickers/classic2.png', x: 4, y: 80, size: 20},
-                    { src: 'assets/stickers/classic2.png', x: 4, y: 980, size: 20},
-                    { src: 'assets/stickers/classic3.png', x: stackedCanvas.width - 75, y: 70, size: 120},
-                    { src: 'assets/stickers/classic3.png', x: stackedCanvas.width - 75, y: 570, size: 120}
+                    { src: '/src/assets/stickers/classic1.png', x: 1, y: 50, size: 32},
+                    { src: '/src/assets/stickers/classic1.png', x: 1, y: 450, size: 32},
+                    { src: '/src/assets/stickers/classic1.png', x: 1, y: 950, size: 32},
+                    { src: '/src/assets/stickers/classic2.png', x: 4, y: 80, size: 20},
+                    { src: '/src/assets/stickers/classic2.png', x: 4, y: 980, size: 20},
+                    { src: '/src/assets/stickers/classic3.png', x: stackedCanvas.width - 75, y: 70, size: 120},
+                    { src: '/src/assets/stickers/classic3.png', x: stackedCanvas.width - 75, y: 570, size: 120}
                 ],
                 'classicB': [
-                    { src: 'assets/stickers/classic4.png', x: 1, y: 50, size: 32},
-                    { src: 'assets/stickers/classic4.png', x: 1, y: 450, size: 32},
-                    { src: 'assets/stickers/classic4.png', x: 1, y: 950, size: 32},
-                    { src: 'assets/stickers/classic5.png', x: 4, y: 80, size: 20},
-                    { src: 'assets/stickers/classic5.png', x: 4, y: 980, size: 20},
-                    { src: 'assets/stickers/classic6.png', x: stackedCanvas.width - 75, y: 70, size: 120},
-                    { src: 'assets/stickers/classic6.png', x: stackedCanvas.width - 75, y: 570, size: 120}
+                    { src: '/src/assets/stickers/classic4.png', x: 1, y: 50, size: 32},
+                    { src: '/src/assets/stickers/classic4.png', x: 1, y: 450, size: 32},
+                    { src: '/src/assets/stickers/classic4.png', x: 1, y: 950, size: 32},
+                    { src: '/src/assets/stickers/classic5.png', x: 4, y: 80, size: 20},
+                    { src: '/src/assets/stickers/classic5.png', x: 4, y: 980, size: 20},
+                    { src: '/src/assets/stickers/classic6.png', x: stackedCanvas.width - 75, y: 70, size: 120},
+                    { src: '/src/assets/stickers/classic6.png', x: stackedCanvas.width - 75, y: 570, size: 120}
                 ],
                 'soft': [
-                    { src: 'assets/stickers/soft1.png', x: 5, y: 20, size: 145},
-                    { src: 'assets/stickers/soft2.png', x: stackedCanvas.width - 120, y: 30, size: 100},
-                    { src: 'assets/stickers/soft3.png', x: 10, y: 500, size: 120},
-                    { src: 'assets/stickers/soft4.png', x: 15, y: stackedCanvas.height - 200, size: 120},
-                    { src: 'assets/stickers/soft5.png', x: stackedCanvas.width - 130, y: stackedCanvas.height - 200, size: 120},
-                    { src: 'assets/stickers/soft6.png', x: stackedCanvas.width - 130, y: 430, size: 120}
+                    { src: '/src/assets/stickers/soft1.png', x: 5, y: 20, size: 145},
+                    { src: '/src/assets/stickers/soft2.png', x: stackedCanvas.width - 120, y: 30, size: 100},
+                    { src: '/src/assets/stickers/soft3.png', x: 10, y: 500, size: 120},
+                    { src: '/src/assets/stickers/soft4.png', x: 15, y: stackedCanvas.height - 200, size: 120},
+                    { src: '/src/assets/stickers/soft5.png', x: stackedCanvas.width - 130, y: stackedCanvas.height - 200, size: 120},
+                    { src: '/src/assets/stickers/soft6.png', x: stackedCanvas.width - 130, y: 430, size: 120}
                 ],
                 'bunny': [
-                    { src: 'assets/stickers/bunny1.png', x: stackedCanvas.width - 170, y: 10, size: 150},
-                    { src: 'assets/stickers/bunny2.png', x: 15, y: 300, size: 95},
-                    { src: 'assets/stickers/bunny2.png', x: stackedCanvas.width - 100, y: 700, size: 75},
-                    { src: 'assets/stickers/bunny3.png', x: 15, y: stackedCanvas.height - 200, size: 135}
+                    { src: '/src/assets/stickers/bunny1.png', x: stackedCanvas.width - 170, y: 10, size: 150},
+                    { src: '/src/assets/stickers/bunny2.png', x: 15, y: 300, size: 95},
+                    { src: '/src/assets/stickers/bunny2.png', x: stackedCanvas.width - 100, y: 700, size: 75},
+                    { src: '/src/assets/stickers/bunny3.png', x: 15, y: stackedCanvas.height - 200, size: 135}
                 ],
                 'lucky' : [
-                    { src: 'assets/stickers/lucky2.png', x: stackedCanvas.width - 170, y: 20, size: 150},
-                    { src: 'assets/stickers/lucky1.png', x: 15, y: stackedCanvas.height - 215, size: 170},
+                    { src: '/src/assets/stickers/lucky2.png', x: stackedCanvas.width - 170, y: 20, size: 150},
+                    { src: '/src/assets/stickers/lucky1.png', x: 15, y: stackedCanvas.height - 215, size: 170},
 
                     // lucky text
-                    { src: 'assets/stickers/lucky3.png', x: stackedCanvas.width - 120, y: 420, size: 90},
-                    { src: 'assets/stickers/lucky4.png', x: stackedCanvas.width - 120, y: 495, size: 90},
-                    { src: 'assets/stickers/lucky5.png', x: stackedCanvas.width - 128, y: 560, size: 110},
-                    { src: 'assets/stickers/lucky6.png', x: stackedCanvas.width - 120, y: 650, size: 100},
-                    { src: 'assets/stickers/lucky7.png', x: stackedCanvas.width - 120, y: 730, size: 95}
+                    { src: '/src/assets/stickers/lucky3.png', x: stackedCanvas.width - 120, y: 420, size: 90},
+                    { src: '/src/assets/stickers/lucky4.png', x: stackedCanvas.width - 120, y: 495, size: 90},
+                    { src: '/src/assets/stickers/lucky5.png', x: stackedCanvas.width - 128, y: 560, size: 110},
+                    { src: '/src/assets/stickers/lucky6.png', x: stackedCanvas.width - 120, y: 650, size: 100},
+                    { src: '/src/assets/stickers/lucky7.png', x: stackedCanvas.width - 120, y: 730, size: 95}
 
                 ],
                 'confetti' : [
-                    { src: 'assets/stickers/confetti/star5.png', x: 100, y: 20, size: 40},
-                    { src: 'assets/stickers/confetti/circle2.png', x: stackedCanvas.width - 120, y: 45, size: 50},
-                    { src: 'assets/stickers/confetti/circle1.png', x: 30, y: 150, size: 35},
-                    { src: 'assets/stickers/confetti/circle1.png', x: stackedCanvas.width - 70, y: 180, size: 32},
-                    { src: 'assets/stickers/confetti/star2.png', x: stackedCanvas.width - 100, y: 320, size: 40},
+                    { src: '/src/assets/stickers/confetti/star5.png', x: 100, y: 20, size: 40},
+                    { src: '/src/assets/stickers/confetti/circle2.png', x: stackedCanvas.width - 120, y: 45, size: 50},
+                    { src: '/src/assets/stickers/confetti/circle1.png', x: 30, y: 150, size: 35},
+                    { src: '/src/assets/stickers/confetti/circle1.png', x: stackedCanvas.width - 70, y: 180, size: 32},
+                    { src: '/src/assets/stickers/confetti/star2.png', x: stackedCanvas.width - 100, y: 320, size: 40},
 
 
-                    { src: 'assets/stickers/confetti/star1.png', x: 100, y: 450, size: 32},
-                    { src: 'assets/stickers/confetti/circle2.png', x: stackedCanvas.width - 30, y: 530, size: 27},
-                    { src: 'assets/stickers/confetti/star4.png', x: stackedCanvas.width - 70, y: 580, size: 27},
-                    { src: 'assets/stickers/confetti/star3.png', x: 22, y: 690, size: 47},
-                    { src: 'assets/stickers/confetti/circle1.png', x: stackedCanvas.width - 200, y: 800, size: 32},
-                    { src: 'assets/stickers/confetti/circle1.png', x: stackedCanvas.width - 200, y: 800, size: 32},
-                    { src: 'assets/stickers/confetti/star2.png', x: 100, y: 850, size: 49},
-                    { src: 'assets/stickers/confetti/circle2.png', x: 22, y: 990, size: 30},
-                    { src: 'assets/stickers/confetti/star1.png', x: stackedCanvas.width - 100, y: stackedCanvas.height - 200, size: 35}
+                    { src: '/src/assets/stickers/confetti/star1.png', x: 100, y: 450, size: 32},
+                    { src: '/src/assets/stickers/confetti/circle2.png', x: stackedCanvas.width - 30, y: 530, size: 27},
+                    { src: '/src/assets/stickers/confetti/star4.png', x: stackedCanvas.width - 70, y: 580, size: 27},
+                    { src: '/src/assets/stickers/confetti/star3.png', x: 22, y: 690, size: 47},
+                    { src: '/src/assets/stickers/confetti/circle1.png', x: stackedCanvas.width - 200, y: 800, size: 32},
+                    { src: '/src/assets/stickers/confetti/circle1.png', x: stackedCanvas.width - 200, y: 800, size: 32},
+                    { src: '/src/assets/stickers/confetti/star2.png', x: 100, y: 850, size: 49},
+                    { src: '/src/assets/stickers/confetti/circle2.png', x: 22, y: 990, size: 30},
+                    { src: '/src/assets/stickers/confetti/star1.png', x: stackedCanvas.width - 100, y: stackedCanvas.height - 200, size: 35}
                 ],
                 // NEW STICKERS
                 'ribboncoquette' : [
-                    { src: 'assets/stickers/ribboncq2.png', x: 1, y: 0, size: 80},
-                    { src: 'assets/stickers/ribboncq3.png', x: 295, y: 15, size: 95},
-                    { src: 'assets/stickers/ribboncq1.png', x: stackedCanvas.width - 39, y: 25, size: 82},
-                    { src: 'assets/stickers/ribboncq1.png', x: -22, y: 290, size: 75},
-                    { src: 'assets/stickers/ribboncq2.png', x: stackedCanvas.width - 100, y: 240, size: 55},
-                    { src: 'assets/stickers/ribboncq3.png', x: 5, y: 640, size: 52},
-                    { src: 'assets/stickers/ribboncq3.png', x: stackedCanvas.width - 78, y: 520, size: 69},
-                    { src: 'assets/stickers/ribboncq1.png', x: 140, y: 570, size: 82},
-                    { src: 'assets/stickers/ribboncq2.png', x: stackedCanvas.width - 42, y: 760, size: 55},
-                    { src: 'assets/stickers/ribboncq1.png', x: -15, y: 890, size: 72},
-                    { src: 'assets/stickers/ribboncq3.png', x: stackedCanvas.width - 70, y: 1020, size: 55},
-                    { src: 'assets/stickers/ribboncq2.png', x: -8, y: stackedCanvas.height - 200, size: 80},
-                    { src: 'assets/stickers/ribboncq3.png', x: stackedCanvas.width - 70, y: stackedCanvas.height - 100, size: 55}
+                    { src: '/src/assets/stickers/ribboncq2.png', x: 1, y: 0, size: 80},
+                    { src: '/src/assets/stickers/ribboncq3.png', x: 295, y: 15, size: 95},
+                    { src: '/src/assets/stickers/ribboncq1.png', x: stackedCanvas.width - 39, y: 25, size: 82},
+                    { src: '/src/assets/stickers/ribboncq1.png', x: -22, y: 290, size: 75},
+                    { src: '/src/assets/stickers/ribboncq2.png', x: stackedCanvas.width - 100, y: 240, size: 55},
+                    { src: '/src/assets/stickers/ribboncq3.png', x: 5, y: 640, size: 52},
+                    { src: '/src/assets/stickers/ribboncq3.png', x: stackedCanvas.width - 78, y: 520, size: 69},
+                    { src: '/src/assets/stickers/ribboncq1.png', x: 140, y: 570, size: 82},
+                    { src: '/src/assets/stickers/ribboncq2.png', x: stackedCanvas.width - 42, y: 760, size: 55},
+                    { src: '/src/assets/stickers/ribboncq1.png', x: -15, y: 890, size: 72},
+                    { src: '/src/assets/stickers/ribboncq3.png', x: stackedCanvas.width - 70, y: 1020, size: 55},
+                    { src: '/src/assets/stickers/ribboncq2.png', x: -8, y: stackedCanvas.height - 200, size: 80},
+                    { src: '/src/assets/stickers/ribboncq3.png', x: stackedCanvas.width - 70, y: stackedCanvas.height - 100, size: 55}
                 ],
                 'blueribboncoquette' : [
-                    { src: 'assets/stickers/blueRibbon.png', x: 1, y: 0, size: 80},
-                    { src: 'assets/stickers/blueRibbon.png', x: 295, y: 15, size: 95},
-                    { src: 'assets/stickers/blueRibbon.png', x: stackedCanvas.width - 39, y: 25, size: 82},
-                    { src: 'assets/stickers/blueRibbon.png', x: -22, y: 290, size: 75},
-                    { src: 'assets/stickers/blueRibbon.png', x: stackedCanvas.width - 100, y: 240, size: 55},
-                    { src: 'assets/stickers/blueRibbon.png', x: 5, y: 640, size: 52},
-                    { src: 'assets/stickers/blueRibbon.png', x: stackedCanvas.width - 78, y: 520, size: 69},
-                    { src: 'assets/stickers/blueRibbon.png', x: 140, y: 570, size: 82},
-                    { src: 'assets/stickers/blueRibbon.png', x: stackedCanvas.width - 42, y: 760, size: 55},
-                    { src: 'assets/stickers/blueRibbon.png', x: -15, y: 890, size: 72},
-                    { src: 'assets/stickers/blueRibbon.png', x: stackedCanvas.width - 70, y: 1020, size: 55},
-                    { src: 'assets/stickers/blueRibbon.png', x: -8, y: stackedCanvas.height - 200, size: 80},
-                    { src: 'assets/stickers/blueRibbon.png', x: stackedCanvas.width - 70, y: stackedCanvas.height - 100, size: 55}
+                    { src: '/src/assets/stickers/blueRibbon.png', x: 1, y: 0, size: 80},
+                    { src: '/src/assets/stickers/blueRibbon.png', x: 295, y: 15, size: 95},
+                    { src: '/src/assets/stickers/blueRibbon.png', x: stackedCanvas.width - 39, y: 25, size: 82},
+                    { src: '/src/assets/stickers/blueRibbon.png', x: -22, y: 290, size: 75},
+                    { src: '/src/assets/stickers/blueRibbon.png', x: stackedCanvas.width - 100, y: 240, size: 55},
+                    { src: '/src/assets/stickers/blueRibbon.png', x: 5, y: 640, size: 52},
+                    { src: '/src/assets/stickers/blueRibbon.png', x: stackedCanvas.width - 78, y: 520, size: 69},
+                    { src: '/src/assets/stickers/blueRibbon.png', x: 140, y: 570, size: 82},
+                    { src: '/src/assets/stickers/blueRibbon.png', x: stackedCanvas.width - 42, y: 760, size: 55},
+                    { src: '/src/assets/stickers/blueRibbon.png', x: -15, y: 890, size: 72},
+                    { src: '/src/assets/stickers/blueRibbon.png', x: stackedCanvas.width - 70, y: 1020, size: 55},
+                    { src: '/src/assets/stickers/blueRibbon.png', x: -8, y: stackedCanvas.height - 200, size: 80},
+                    { src: '/src/assets/stickers/blueRibbon.png', x: stackedCanvas.width - 70, y: stackedCanvas.height - 100, size: 55}
                 ],
                 'blackstar' : [
-                    { src: 'assets/stickers/blackStar1.png', x: 180, y: -90, size: 250},
-                    { src: 'assets/stickers/blackStar2.png', x: stackedCanvas.width - 90, y: -30, size: 110},
-                    { src: 'assets/stickers/blackStar3.png', x: 18, y: 130, size: 98},
-                    { src: 'assets/stickers/blackStar4.png', x: stackedCanvas.width - 120, y: 230, size: 115},
-                    { src: 'assets/stickers/blackStar2.png', x: -17, y: 390, size: 65},
-                    { src: 'assets/stickers/blackStar3.png', x: stackedCanvas.width - 190, y: 590, size: 145},
-                    { src: 'assets/stickers/blackStar2.png', x: 15, y: 750, size: 45},
-                    { src: 'assets/stickers/blackStar2.png', x: stackedCanvas.width - 80, y: 950, size: 55},
-                    // { src: 'assets/stickers/blackstar1.png', x: 180, y: stackedCanvas.height - 230, size: 250},
-                    { src: 'assets/stickers/blackStar4.png', x: -50, y: stackedCanvas.height - 150, size: 190}
+                    { src: '/src/assets/stickers/blackStar1.png', x: 180, y: -90, size: 250},
+                    { src: '/src/assets/stickers/blackStar2.png', x: stackedCanvas.width - 90, y: -30, size: 110},
+                    { src: '/src/assets/stickers/blackStar3.png', x: 18, y: 130, size: 98},
+                    { src: '/src/assets/stickers/blackStar4.png', x: stackedCanvas.width - 120, y: 230, size: 115},
+                    { src: '/src/assets/stickers/blackStar2.png', x: -17, y: 390, size: 65},
+                    { src: '/src/assets/stickers/blackStar3.png', x: stackedCanvas.width - 190, y: 590, size: 145},
+                    { src: '/src/assets/stickers/blackStar2.png', x: 15, y: 750, size: 45},
+                    { src: '/src/assets/stickers/blackStar2.png', x: stackedCanvas.width - 80, y: 950, size: 55},
+                    // { src: '/src/assets/stickers/blackstar1.png', x: 180, y: stackedCanvas.height - 230, size: 250},
+                    { src: '/src/assets/stickers/blackStar4.png', x: -50, y: stackedCanvas.height - 150, size: 190}
                 ],
                 'yellowchicken' : [
-                    { src: 'assets/stickers/yellowChicken1.png', x: 1, y: 2, size: 90},
-                    { src: 'assets/stickers/yellowChicken2.png', x: 220, y: -2, size: 66},
-                    { src: 'assets/stickers/yellowChicken1.png', x: stackedCanvas.width - 160, y: 25, size: 55},
-                    { src: 'assets/stickers/yellowChicken2.png', x: stackedCanvas.width - 90, y: 145, size: 85},
-                    { src: 'assets/stickers/yellowChicken2.png', x: -20, y: 245, size: 95},
-                    { src: 'assets/stickers/yellowChicken2.png', x: 140, y: 360, size: 55},
-                    { src: 'assets/stickers/yellowChicken3.png', x: stackedCanvas.width - 70, y: 490, size: 85},
-                    { src: 'assets/stickers/yellowChicken1.png', x: -5, y: 630, size: 80},
-                    { src: 'assets/stickers/yellowChicken1.png', x: stackedCanvas.width - 70, y: 830, size: 75},
-                    { src: 'assets/stickers/yellowChicken2.png', x: stackedCanvas.width - 120, y: stackedCanvas.height - 190, size: 65},
-                    { src: 'assets/stickers/yellowChicken4.png', x: 1, y: stackedCanvas.height - 230, size: 95}
+                    { src: '/src/assets/stickers/yellowChicken1.png', x: 1, y: 2, size: 90},
+                    { src: '/src/assets/stickers/yellowChicken2.png', x: 220, y: -2, size: 66},
+                    { src: '/src/assets/stickers/yellowChicken1.png', x: stackedCanvas.width - 160, y: 25, size: 55},
+                    { src: '/src/assets/stickers/yellowChicken2.png', x: stackedCanvas.width - 90, y: 145, size: 85},
+                    { src: '/src/assets/stickers/yellowChicken2.png', x: -20, y: 245, size: 95},
+                    { src: '/src/assets/stickers/yellowChicken2.png', x: 140, y: 360, size: 55},
+                    { src: '/src/assets/stickers/yellowChicken3.png', x: stackedCanvas.width - 70, y: 490, size: 85},
+                    { src: '/src/assets/stickers/yellowChicken1.png', x: -5, y: 630, size: 80},
+                    { src: '/src/assets/stickers/yellowChicken1.png', x: stackedCanvas.width - 70, y: 830, size: 75},
+                    { src: '/src/assets/stickers/yellowChicken2.png', x: stackedCanvas.width - 120, y: stackedCanvas.height - 190, size: 65},
+                    { src: '/src/assets/stickers/yellowChicken4.png', x: 1, y: stackedCanvas.height - 230, size: 95}
                 ],
                 'brownbear' : [
-                    { src: 'assets/stickers/brownyBear1.png', x: 1, y: 5, size: 120},
-                    { src: 'assets/stickers/brownyBear2.png', x: stackedCanvas.width - 100, y: 25, size: 80},
-                    { src: 'assets/stickers/brownyBear3.png', x: -8, y: 315, size: 82},
-                    { src: 'assets/stickers/brownyBear4.png', x: stackedCanvas.width - 100, y: 490, size: 91},
-                    { src: 'assets/stickers/brownyBear5.png', x: -2, y: 590, size: 91},
-                    { src: 'assets/stickers/brownyBear2.png', x: stackedCanvas.width - 70, y: 790, size: 87},
-                    { src: 'assets/stickers/brownyBear3.png', x: -1, y: stackedCanvas.height - 320, size: 82},
-                    { src: 'assets/stickers/brownyBear6.png', x: stackedCanvas.width - 90, y: stackedCanvas.height - 200, size: 92}
+                    { src: '/src/assets/stickers/brownyBear1.png', x: 1, y: 5, size: 120},
+                    { src: '/src/assets/stickers/brownyBear2.png', x: stackedCanvas.width - 100, y: 25, size: 80},
+                    { src: '/src/assets/stickers/brownyBear3.png', x: -8, y: 315, size: 82},
+                    { src: '/src/assets/stickers/brownyBear4.png', x: stackedCanvas.width - 100, y: 490, size: 91},
+                    { src: '/src/assets/stickers/brownyBear5.png', x: -2, y: 590, size: 91},
+                    { src: '/src/assets/stickers/brownyBear2.png', x: stackedCanvas.width - 70, y: 790, size: 87},
+                    { src: '/src/assets/stickers/brownyBear3.png', x: -1, y: stackedCanvas.height - 320, size: 82},
+                    { src: '/src/assets/stickers/brownyBear6.png', x: stackedCanvas.width - 90, y: stackedCanvas.height - 200, size: 92}
                 ],
                 'lotsheart' : [
-                    { src: 'assets/stickers/lotsHeart1.png', x: 1, y: 15, size: 78},
-                    { src: 'assets/stickers/lotsHeart5.png', x: -18, y: 450, size: 78},
-                    { src: 'assets/stickers/lotsHeart7.png', x: -8, y: 860, size: 60},
-                    { src: 'assets/stickers/lotsHeart6.png', x: 25, y: stackedCanvas.height - 170, size: 70},
+                    { src: '/src/assets/stickers/lotsHeart1.png', x: 1, y: 15, size: 78},
+                    { src: '/src/assets/stickers/lotsHeart5.png', x: -18, y: 450, size: 78},
+                    { src: '/src/assets/stickers/lotsHeart7.png', x: -8, y: 860, size: 60},
+                    { src: '/src/assets/stickers/lotsHeart6.png', x: 25, y: stackedCanvas.height - 170, size: 70},
 
-                    { src: 'assets/stickers/lotsHeart2.png', x: stackedCanvas.width - 250, y: 20, size: 60},
-                    { src: 'assets/stickers/lotsHeart4.png', x: stackedCanvas.width - 70, y: 200, size: 57},
-                    // { src: 'assets/stickers/lotsHeart4.png', x: 390, y: 200, size: 50},
-                    { src: 'assets/stickers/lotsHeart6.png', x: stackedCanvas.width - 80, y: 650, size: 60},
-                    { src: 'assets/stickers/lotsHeart3.png', x: stackedCanvas.width - 50, y: 990, size: 50},
-                    { src: 'assets/stickers/lotsHeart8.png', x: stackedCanvas.width - 90, y: stackedCanvas.height - 140, size: 70},
+                    { src: '/src/assets/stickers/lotsHeart2.png', x: stackedCanvas.width - 250, y: 20, size: 60},
+                    { src: '/src/assets/stickers/lotsHeart4.png', x: stackedCanvas.width - 70, y: 200, size: 57},
+                    // { src: '/src/assets/stickers/lotsHeart4.png', x: 390, y: 200, size: 50},
+                    { src: '/src/assets/stickers/lotsHeart6.png', x: stackedCanvas.width - 80, y: 650, size: 60},
+                    { src: '/src/assets/stickers/lotsHeart3.png', x: stackedCanvas.width - 50, y: 990, size: 50},
+                    { src: '/src/assets/stickers/lotsHeart8.png', x: stackedCanvas.width - 90, y: stackedCanvas.height - 140, size: 70},
                 ],
                 'tabbycat' : [
-                    { src: 'assets/stickers/tabbyCat1.png', x: 1, y: 2, size: 95},
-                    { src: 'assets/stickers/tabbyCat2.png', x: 220, y: -2, size: 66},
-                    { src: 'assets/stickers/tabbyCat3.png', x: stackedCanvas.width - 160, y: 25, size: 60},
-                    { src: 'assets/stickers/tabbyCat4.png', x: stackedCanvas.width - 90, y: 145, size: 95},
-                    { src: 'assets/stickers/tabbyCat9.png', x: -20, y: 245, size: 100},
-                    { src: 'assets/stickers/tabbyCat2.png', x: 140, y: 360, size: 55},
-                    { src: 'assets/stickers/tabbyCat5.png', x: stackedCanvas.width - 90, y: 490, size: 95},
-                    { src: 'assets/stickers/tabbyCat6.png', x: -5, y: 630, size: 84},
-                    { src: 'assets/stickers/tabbyCat9.png', x: stackedCanvas.width - 70, y: 830, size: 75},
-                    { src: 'assets/stickers/tabbyCat3.png', x: -5, y: 830, size: 75},
-                    { src: 'assets/stickers/tabbyCat3.png', x: stackedCanvas.width - 120, y: stackedCanvas.height - 190, size: 65},
-                    { src: 'assets/stickers/tabbyCat7.png', x: 1, y: stackedCanvas.height - 230, size: 120}
+                    { src: '/src/assets/stickers/tabbyCat1.png', x: 1, y: 2, size: 95},
+                    { src: '/src/assets/stickers/tabbyCat2.png', x: 220, y: -2, size: 66},
+                    { src: '/src/assets/stickers/tabbyCat3.png', x: stackedCanvas.width - 160, y: 25, size: 60},
+                    { src: '/src/assets/stickers/tabbyCat4.png', x: stackedCanvas.width - 90, y: 145, size: 95},
+                    { src: '/src/assets/stickers/tabbyCat9.png', x: -20, y: 245, size: 100},
+                    { src: '/src/assets/stickers/tabbyCat2.png', x: 140, y: 360, size: 55},
+                    { src: '/src/assets/stickers/tabbyCat5.png', x: stackedCanvas.width - 90, y: 490, size: 95},
+                    { src: '/src/assets/stickers/tabbyCat6.png', x: -5, y: 630, size: 84},
+                    { src: '/src/assets/stickers/tabbyCat9.png', x: stackedCanvas.width - 70, y: 830, size: 75},
+                    { src: '/src/assets/stickers/tabbyCat3.png', x: -5, y: 830, size: 75},
+                    { src: '/src/assets/stickers/tabbyCat3.png', x: stackedCanvas.width - 120, y: stackedCanvas.height - 190, size: 65},
+                    { src: '/src/assets/stickers/tabbyCat7.png', x: 1, y: stackedCanvas.height - 230, size: 120}
                 ],
                 'ballerinacp' : [
-                    { src: 'assets/stickers/ballerinaCappuccino/balerinaCappuccino1.png', x: 1, y: 2, size: 125},
-                    { src: 'assets/stickers/ballerinaCappuccino/balerinaCappuccino3.png', x: 250, y: -2, size: 90},
-                    { src: 'assets/stickers/ballerinaCappuccino/balerinaCappuccino4.png', x: stackedCanvas.width - 130, y: 25, size: 150},
-                    { src: 'assets/stickers/ballerinaCappuccino/balerinaCappuccino2.png', x: stackedCanvas.width - 120, y: 345, size: 129},
-                    { src: 'assets/stickers/ballerinaCappuccino/balerinaCappuccino5.png', x: -10, y: 595, size: 150},
-                    { src: 'assets/stickers/ballerinaCappuccino/balerinaCappuccino7.png', x: -10, y: 295, size: 100},
-                    { src: 'assets/stickers/ballerinaCappuccino/balerinaCappuccino6.png', x: stackedCanvas.width - 115, y: 750, size: 110},
-                    { src: 'assets/stickers/ballerinaCappuccino/balerinaCappuccino3.png', x: -5, y: stackedCanvas.height - 200, size: 145},
-                    { src: 'assets/stickers/ballerinaCappuccino/balerinaCappuccino4.png', x: stackedCanvas.width - 90, y: stackedCanvas.height - 200, size: 95}
+                    { src: '/src/assets/stickers/ballerinaCappuccino/balerinaCappuccino1.png', x: 1, y: 2, size: 125},
+                    { src: '/src/assets/stickers/ballerinaCappuccino/balerinaCappuccino3.png', x: 250, y: -2, size: 90},
+                    { src: '/src/assets/stickers/ballerinaCappuccino/balerinaCappuccino4.png', x: stackedCanvas.width - 130, y: 25, size: 150},
+                    { src: '/src/assets/stickers/ballerinaCappuccino/balerinaCappuccino2.png', x: stackedCanvas.width - 120, y: 345, size: 129},
+                    { src: '/src/assets/stickers/ballerinaCappuccino/balerinaCappuccino5.png', x: -10, y: 595, size: 150},
+                    { src: '/src/assets/stickers/ballerinaCappuccino/balerinaCappuccino7.png', x: -10, y: 295, size: 100},
+                    { src: '/src/assets/stickers/ballerinaCappuccino/balerinaCappuccino6.png', x: stackedCanvas.width - 115, y: 750, size: 110},
+                    { src: '/src/assets/stickers/ballerinaCappuccino/balerinaCappuccino3.png', x: -5, y: stackedCanvas.height - 200, size: 145},
+                    { src: '/src/assets/stickers/ballerinaCappuccino/balerinaCappuccino4.png', x: stackedCanvas.width - 90, y: stackedCanvas.height - 200, size: 95}
                 ],
                 'doggywhite' : [
-                    { src: 'assets/stickers/doggyWhite/doggyWhite3.png', x: 1, y: 230, size: 115},
-                    { src: 'assets/stickers/doggyWhite/doggyWhite1.png', x: stackedCanvas.width - 130, y: 25, size: 125},
-                    { src: 'assets/stickers/doggyWhite/doggyWhite4.png', x: stackedCanvas.width - 110, y: 545, size: 115},
-                    { src: 'assets/stickers/doggyWhite/doggyWhite2.png', x: -10, y: 695, size: 125},
-                    { src: 'assets/stickers/doggyWhite/doggyWhite3.png', x: -5, y: stackedCanvas.height - 200, size: 115},
-                    { src: 'assets/stickers/doggyWhite/doggyWhite1.png', x: stackedCanvas.width - 130, y: stackedCanvas.height - 200, size: 125}
+                    { src: '/src/assets/stickers/doggyWhite/doggyWhite3.png', x: 1, y: 230, size: 115},
+                    { src: '/src/assets/stickers/doggyWhite/doggyWhite1.png', x: stackedCanvas.width - 130, y: 25, size: 125},
+                    { src: '/src/assets/stickers/doggyWhite/doggyWhite4.png', x: stackedCanvas.width - 110, y: 545, size: 115},
+                    { src: '/src/assets/stickers/doggyWhite/doggyWhite2.png', x: -10, y: 695, size: 125},
+                    { src: '/src/assets/stickers/doggyWhite/doggyWhite3.png', x: -5, y: stackedCanvas.height - 200, size: 115},
+                    { src: '/src/assets/stickers/doggyWhite/doggyWhite1.png', x: stackedCanvas.width - 130, y: stackedCanvas.height - 200, size: 125}
                 ],
                 'mygirls' : [
-                    { src: 'assets/stickers/myGirls/myGirls4.png', x: -30, y: 15, size: 200},
-                    { src: 'assets/stickers/myGirls/myGirls7.png', x: 200, y: -25, size: 215},
+                    { src: '/src/assets/stickers/myGirls/myGirls4.png', x: -30, y: 15, size: 200},
+                    { src: '/src/assets/stickers/myGirls/myGirls7.png', x: 200, y: -25, size: 215},
 
-                    { src: 'assets/stickers/myGirls/myGirls8.png', x: stackedCanvas.width - 110, y: 25, size: 105},
-                    { src: 'assets/stickers/myGirls/myGirls10.png', x: stackedCanvas.width - 150, y: 95, size: 155},
-                    { src: 'assets/stickers/myGirls/myGirls11.png', x: stackedCanvas.width - 95, y: 185, size: 115},
+                    { src: '/src/assets/stickers/myGirls/myGirls8.png', x: stackedCanvas.width - 110, y: 25, size: 105},
+                    { src: '/src/assets/stickers/myGirls/myGirls10.png', x: stackedCanvas.width - 150, y: 95, size: 155},
+                    { src: '/src/assets/stickers/myGirls/myGirls11.png', x: stackedCanvas.width - 95, y: 185, size: 115},
 
-                    { src: 'assets/stickers/myGirls/myGirls6.png', x: stackedCanvas.width - 110, y: 395, size: 135},
-                    { src: 'assets/stickers/myGirls/myGirls4.png', x: stackedCanvas.width - 110, y: 545, size: 135},
-                    { src: 'assets/stickers/myGirls/myGirls1.png', x: stackedCanvas.width - 110, y: 695, size: 135},
+                    { src: '/src/assets/stickers/myGirls/myGirls6.png', x: stackedCanvas.width - 110, y: 395, size: 135},
+                    { src: '/src/assets/stickers/myGirls/myGirls4.png', x: stackedCanvas.width - 110, y: 545, size: 135},
+                    { src: '/src/assets/stickers/myGirls/myGirls1.png', x: stackedCanvas.width - 110, y: 695, size: 135},
 
-                    { src: 'assets/stickers/myGirls/myGirls2.png', x: -20, y: 305, size: 125},
-                    { src: 'assets/stickers/myGirls/myGirls4.png', x: -20, y: 450, size: 125},
-                    { src: 'assets/stickers/myGirls/myGirls6.png', x: -20, y: 580, size: 125},
+                    { src: '/src/assets/stickers/myGirls/myGirls2.png', x: -20, y: 305, size: 125},
+                    { src: '/src/assets/stickers/myGirls/myGirls4.png', x: -20, y: 450, size: 125},
+                    { src: '/src/assets/stickers/myGirls/myGirls6.png', x: -20, y: 580, size: 125},
 
-                    { src: 'assets/stickers/myGirls/myGirls10.png', x: -15, y: stackedCanvas.height - 370, size: 115},
-                    { src: 'assets/stickers/myGirls/myGirls11.png', x: 15, y: stackedCanvas.height - 300, size: 155},
-                    { src: 'assets/stickers/myGirls/myGirls9.png', x: -5, y: stackedCanvas.height - 200, size: 115},
+                    { src: '/src/assets/stickers/myGirls/myGirls10.png', x: -15, y: stackedCanvas.height - 370, size: 115},
+                    { src: '/src/assets/stickers/myGirls/myGirls11.png', x: 15, y: stackedCanvas.height - 300, size: 155},
+                    { src: '/src/assets/stickers/myGirls/myGirls9.png', x: -5, y: stackedCanvas.height - 200, size: 115},
 
-                    { src: 'assets/stickers/myGirls/myGirls5.png', x: stackedCanvas.width - 190, y: stackedCanvas.height - 290, size: 222}
+                    { src: '/src/assets/stickers/myGirls/myGirls5.png', x: stackedCanvas.width - 190, y: stackedCanvas.height - 290, size: 222}
                 ],
                 'sakurablossom' : [
-                    { src: 'assets/stickers/sakuraBlossom/sakuraBlossom1.png', x: 1, y: 5, size: 120},
-                    { src: 'assets/stickers/sakuraBlossom/sakuraBlossom2.png', x: stackedCanvas.width - 100, y: 25, size: 80},
-                    { src: 'assets/stickers/sakuraBlossom/sakuraBlossom4.png', x: stackedCanvas.width - 120, y: 95, size: 40},
-                    { src: 'assets/stickers/sakuraBlossom/sakuraBlossom2.png', x: -8, y: 315, size: 82},
-                    { src: 'assets/stickers/sakuraBlossom/sakuraBlossom3.png', x: 35, y: 390, size: 50},
-                    { src: 'assets/stickers/sakuraBlossom/sakuraBlossom2.png', x: stackedCanvas.width - 100, y: 490, size: 91},
-                    { src: 'assets/stickers/sakuraBlossom/sakuraBlossom4.png', x: stackedCanvas.width - 140, y: 430, size: 35},
-                    { src: 'assets/stickers/sakuraBlossom/sakuraBlossom2.png', x: -2, y: 590, size: 91},
-                    { src: 'assets/stickers/sakuraBlossom/sakuraBlossom3.png', x: -15, y: 700, size: 45},
-                    { src: 'assets/stickers/sakuraBlossom/sakuraBlossom5.png', x: 50, y: 900, size: 45},
-                    { src: 'assets/stickers/sakuraBlossom/sakuraBlossom1.png', x: stackedCanvas.width - 70, y: 790, size: 87},
-                    { src: 'assets/stickers/sakuraBlossom/sakuraBlossom2.png', x: -1, y: stackedCanvas.height - 320, size: 82},
-                    { src: 'assets/stickers/sakuraBlossom/sakuraBlossom5.png', x: 30, y: stackedCanvas.height - 100, size: 48},
-                    { src: 'assets/stickers/sakuraBlossom/sakuraBlossom5.png', x: 90, y: stackedCanvas.height - 40, size: 44},
-                    { src: 'assets/stickers/sakuraBlossom/sakuraBlossom2.png', x: stackedCanvas.width - 90, y: stackedCanvas.height - 200, size: 92},
-                    { src: 'assets/stickers/sakuraBlossom/sakuraBlossom4.png', x: stackedCanvas.width - 40, y: stackedCanvas.height - 290, size: 40}
+                    { src: '/src/assets/stickers/sakuraBlossom/sakuraBlossom1.png', x: 1, y: 5, size: 120},
+                    { src: '/src/assets/stickers/sakuraBlossom/sakuraBlossom2.png', x: stackedCanvas.width - 100, y: 25, size: 80},
+                    { src: '/src/assets/stickers/sakuraBlossom/sakuraBlossom4.png', x: stackedCanvas.width - 120, y: 95, size: 40},
+                    { src: '/src/assets/stickers/sakuraBlossom/sakuraBlossom2.png', x: -8, y: 315, size: 82},
+                    { src: '/src/assets/stickers/sakuraBlossom/sakuraBlossom3.png', x: 35, y: 390, size: 50},
+                    { src: '/src/assets/stickers/sakuraBlossom/sakuraBlossom2.png', x: stackedCanvas.width - 100, y: 490, size: 91},
+                    { src: '/src/assets/stickers/sakuraBlossom/sakuraBlossom4.png', x: stackedCanvas.width - 140, y: 430, size: 35},
+                    { src: '/src/assets/stickers/sakuraBlossom/sakuraBlossom2.png', x: -2, y: 590, size: 91},
+                    { src: '/src/assets/stickers/sakuraBlossom/sakuraBlossom3.png', x: -15, y: 700, size: 45},
+                    { src: '/src/assets/stickers/sakuraBlossom/sakuraBlossom5.png', x: 50, y: 900, size: 45},
+                    { src: '/src/assets/stickers/sakuraBlossom/sakuraBlossom1.png', x: stackedCanvas.width - 70, y: 790, size: 87},
+                    { src: '/src/assets/stickers/sakuraBlossom/sakuraBlossom2.png', x: -1, y: stackedCanvas.height - 320, size: 82},
+                    { src: '/src/assets/stickers/sakuraBlossom/sakuraBlossom5.png', x: 30, y: stackedCanvas.height - 100, size: 48},
+                    { src: '/src/assets/stickers/sakuraBlossom/sakuraBlossom5.png', x: 90, y: stackedCanvas.height - 40, size: 44},
+                    { src: '/src/assets/stickers/sakuraBlossom/sakuraBlossom2.png', x: stackedCanvas.width - 90, y: stackedCanvas.height - 200, size: 92},
+                    { src: '/src/assets/stickers/sakuraBlossom/sakuraBlossom4.png', x: stackedCanvas.width - 40, y: stackedCanvas.height - 290, size: 40}
                 ]
 
                 // ,
                 // 'island': [
-                //     { src: 'assets/stickers/aloha1.png', x: 10, y: 80, size: 80 },
-                //     { src: 'assets/stickers/aloha1.png', x: stackedCanvas.width - 100, y: 320, size: 50 },
-                //     { src: 'assets/stickers/aloha1.png', x: stackedCanvas.width - 580, y: 750, size: 50 },
-                //     { src: 'assets/stickers/aloha2.png', x: stackedCanvas.width - 100, y: stackedCanvas.height - 180, size: 95 },
-                //     { src: 'assets/stickers/aloha2.png', x: stackedCanvas.width - 580, y: stackedCanvas.height - 180, size: 95 }
+                //     { src: '/src/assets/stickers/aloha1.png', x: 10, y: 80, size: 80 },
+                //     { src: '/src/assets/stickers/aloha1.png', x: stackedCanvas.width - 100, y: 320, size: 50 },
+                //     { src: '/src/assets/stickers/aloha1.png', x: stackedCanvas.width - 580, y: 750, size: 50 },
+                //     { src: '/src/assets/stickers/aloha2.png', x: stackedCanvas.width - 100, y: stackedCanvas.height - 180, size: 95 },
+                //     { src: '/src/assets/stickers/aloha2.png', x: stackedCanvas.width - 580, y: stackedCanvas.height - 180, size: 95 }
                 // ]
             };
     

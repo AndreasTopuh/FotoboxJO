@@ -32,8 +32,8 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
     <meta name="twitter:title" content="Photobooth | Customize 4R Photo">
     <meta name="twitter:description"
         content="Customize your 4R photobooth photos. Add frames, stickers, and text.">
-    <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png">
-    <link rel="stylesheet" href="/styles.css" />
+    <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png">   
+        <link rel="stylesheet" href="/styles.css?v=<?php echo time(); ?>" />
     <link
         href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&display=swap"
         rel="stylesheet">
@@ -45,14 +45,9 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
 
 <body>
     <main id="main-section">
-        <section id="choose-layout">
-            <h1 class="custom-heading layout-heading">Customize Your 4R Photo</h1>
-            <p class="layout-subtext">4R size: 10.2cm x 15.2cm (4" x 6") - Perfect for printing!</p>
+                <div class="gradientBgCanvas"></div>
+                <section class="custom-main">
 
-            <div id="layout-settings">
-
-                <div class="custom-main">
-                    
                         <div id="photoPreview"></div>
 
                         <div class="customization-container">
@@ -230,14 +225,10 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
                                         </div>
                                 </div>
                         </div>
-                    
-                </div>
 
-            </div>
+                </section>
 
-        </section>
-
-    </main>
+    </main>>
 
     <script src="https://cdn.jsdelivr.net/npm/vanilla-picker@2.12.1/dist/vanilla-picker.min.js"></script>
     <script src="customizeLayout2.js"></script>

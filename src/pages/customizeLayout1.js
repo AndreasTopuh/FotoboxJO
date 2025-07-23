@@ -196,7 +196,6 @@ document.addEventListener('DOMContentLoaded', function() {
         stackedCanvas.width = canvasWidth;
         stackedCanvas.height = canvasHeight;
 
-        // Apply background
         if (backgroundType === 'color') {
             ctx.fillStyle = backgroundColor;
             ctx.fillRect(0, 0, stackedCanvas.width, stackedCanvas.height);
@@ -212,7 +211,6 @@ document.addEventListener('DOMContentLoaded', function() {
             bgImg.src = backgroundImage.src;
             return;
         } else {
-            // Fallback to default color if backgroundType is invalid
             ctx.fillStyle = '#FFC2D1';
             ctx.fillRect(0, 0, stackedCanvas.width, stackedCanvas.height);
         }
@@ -224,81 +222,65 @@ document.addEventListener('DOMContentLoaded', function() {
             const totalPhotos = Math.min(storedImages.length, 2);
 
             for (let i = 0; i < totalPhotos; i++) {
-                if (storedImages[i]) {
-                    const img = new Image();
-                    img.crossOrigin = 'anonymous';
-                    img.onload = () => {
-                        const x = borderWidth;
-                        const y = borderWidth + (i * (photoHeight + photoGap));
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => {
+                    const x = borderWidth;
+                    const y = borderWidth + (i * (photoHeight + photoGap));
 
-                        ctx.save();
-                        if (shapeFrame === 'circle') {
-                            const centerX = x + photoWidth / 2;
-                            const centerY = y + photoHeight / 2;
-                            const radius = Math.min(photoWidth, photoHeight) / 2 - 10;
-                            ctx.beginPath();
-                            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-                            ctx.clip();
-                        } else if (shapeFrame === 'roundedRect') {
-                            const cornerRadius = 20;
-                            ctx.beginPath();
-                            ctx.roundRect(x, y, photoWidth, photoHeight, cornerRadius);
-                            ctx.clip();
-                        } else if (shapeFrame === 'heart') {
-                            const centerX = x + photoWidth / 2;
-                            const centerY = y + photoHeight / 2;
-                            const size = Math.min(photoWidth, photoHeight) / 2;
-                            ctx.beginPath();
-                            ctx.moveTo(centerX, centerY + size/4);
-                            ctx.bezierCurveTo(centerX, centerY-size/2, centerX-size, centerY-size/2, centerX-size/2, centerY);
-                            ctx.bezierCurveTo(centerX-size, centerY+size/2, centerX, centerY+size/2, centerX, centerY+size/4);
-                            ctx.bezierCurveTo(centerX, centerY+size/2, centerX+size, centerY+size/2, centerX+size/2, centerY);
-                            ctx.bezierCurveTo(centerX+size, centerY-size/2, centerX, centerY-size/2, centerX, centerY+size/4);
-                            ctx.clip();
-                        }
+                    ctx.save();
+                    if (shapeFrame === 'circle') {
+                        const centerX = x + photoWidth / 2;
+                        const centerY = y + photoHeight / 2;
+                        const radius = Math.min(photoWidth, photoHeight) / 2 - 10;
+                        ctx.beginPath();
+                        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                        ctx.clip();
+                    } else if (shapeFrame === 'roundedRect') {
+                        const cornerRadius = 20;
+                        ctx.beginPath();
+                        ctx.roundRect(x, y, photoWidth, photoHeight, cornerRadius);
+                        ctx.clip();
+                    } else if (shapeFrame === 'heart') {
+                        const centerX = x + photoWidth / 2;
+                        const centerY = y + photoHeight / 2;
+                        const size = Math.min(photoWidth, photoHeight) / 2;
+                        ctx.beginPath();
+                        ctx.moveTo(centerX, centerY + size/4);
+                        ctx.bezierCurveTo(centerX, centerY-size/2, centerX-size, centerY-size/2, centerX-size/2, centerY);
+                        ctx.bezierCurveTo(centerX-size, centerY+size/2, centerX, centerY+size/2, centerX, centerY+size/4);
+                        ctx.bezierCurveTo(centerX, centerY+size/2, centerX+size, centerY+size/2, centerX+size/2, centerY);
+                        ctx.bezierCurveTo(centerX+size, centerY-size/2, centerX, centerY-size/2, centerX, centerY+size/4);
+                        ctx.clip();
+                    }
 
-                        const imgAspect = img.width / img.height;
-                        const frameAspect = photoWidth / photoHeight;
-                        let drawWidth, drawHeight, drawX, drawY;
+                    const imgAspect = img.width / img.height;
+                    let drawWidth, drawHeight, drawX, drawY;
 
-                        if (imgAspect > frameAspect) {
-                            drawHeight = photoHeight;
-                            drawWidth = photoHeight * imgAspect;
-                            drawX = x - (drawWidth - photoWidth) / 2;
-                            drawY = y;
-                        } else {
-                            drawWidth = photoWidth;
-                            drawHeight = photoWidth / imgAspect;
-                            drawX = x;
-                            drawY = y - (drawHeight - photoHeight) / 2;
-                        }
+                    if (imgAspect > 1) {
+                        drawHeight = photoHeight;
+                        drawWidth = photoHeight * imgAspect;
+                        drawX = x - (drawWidth - photoWidth) / 2;
+                        drawY = y;
+                    } else {
+                        drawWidth = photoWidth;
+                        drawHeight = photoWidth / imgAspect;
+                        drawX = x;
+                        drawY = y - (drawHeight - photoHeight) / 2;
+                    }
 
-                        if (drawWidth < photoWidth) {
-                            const scale = photoWidth / drawWidth;
-                            drawWidth = photoWidth;
-                            drawHeight *= scale;
-                            drawY = y - (drawHeight - photoHeight) / 2;
-                        }
-                        if (drawHeight < photoHeight) {
-                            const scale = photoHeight / drawHeight;
-                            drawHeight = photoHeight;
-                            drawWidth *= scale;
-                            drawX = x - (drawWidth - photoWidth) / 2;
-                        }
+                    ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+                    ctx.restore();
 
-                        ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
-                        ctx.restore();
-
-                        loadedCount++;
-                        if (loadedCount === totalPhotos) {
-                            addStickers(stackedCanvas);
-                            addTextOverlay(stackedCanvas);
-                            addLogo(stackedCanvas);
-                            updatePreview(stackedCanvas);
-                        }
-                    };
-                    img.src = storedImages[i];
-                }
+                    loadedCount++;
+                    if (loadedCount === totalPhotos) {
+                        addStickers(stackedCanvas);
+                        addTextOverlay(stackedCanvas);
+                        addLogo(stackedCanvas);
+                        updatePreview(stackedCanvas);
+                    }
+                };
+                img.src = storedImages[i];
             }
         }
     }
@@ -308,21 +290,21 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 4R specific sticker configurations
         const stickerConfigs = {
-            'kiss': [{ src: 'assets/stickers/kiss1.png', x: 50, y: 400, size: 200 }],
+            'kiss': [{ src: '/src/assets/stickers/kiss1.png', x: 50, y: 400, size: 200 }],
             'sweet': [
-                { src: 'assets/stickers/sweet1.png', x: 30, y: 100, size: 120 },
-                { src: 'assets/stickers/sweet2.png', x: canvas.width - 150, y: 600, size: 120 },
-                { src: 'assets/stickers/sweet3.png', x: 50, y: canvas.height - 300, size: 120 }
+                { src: '/src/assets/stickers/sweet1.png', x: 30, y: 100, size: 120 },
+                { src: '/src/assets/stickers/sweet2.png', x: canvas.width - 150, y: 600, size: 120 },
+                { src: '/src/assets/stickers/sweet3.png', x: 50, y: canvas.height - 300, size: 120 }
             ],
             'ribbon': [
-                { src: 'assets/stickers/ribbon1.png', x: 30, y: 100, size: 120 },
-                { src: 'assets/stickers/ribbon3.png', x: canvas.width - 150, y: 800, size: 130 },
-                { src: 'assets/stickers/ribbon2.png', x: 25, y: canvas.height - 500, size: 120 }
+                { src: '/src/assets/stickers/ribbon1.png', x: 30, y: 100, size: 120 },
+                { src: '/src/assets/stickers/ribbon3.png', x: canvas.width - 150, y: 800, size: 130 },
+                { src: '/src/assets/stickers/ribbon2.png', x: 25, y: canvas.height - 500, size: 120 }
             ],
             'sparkle': [
-                { src: 'assets/stickers/sparkle1.png', x: canvas.width - 250, y: 200, size: 300 },
-                { src: 'assets/stickers/sparkle2.png', x: 5, y: canvas.height - 1200, size: 250 },
-                { src: 'assets/stickers/sparkle2.png', x: canvas.width - 200, y: canvas.height - 250, size: 150 }
+                { src: '/src/assets/stickers/sparkle1.png', x: canvas.width - 250, y: 200, size: 300 },
+                { src: '/src/assets/stickers/sparkle2.png', x: 5, y: canvas.height - 1200, size: 250 },
+                { src: '/src/assets/stickers/sparkle2.png', x: canvas.width - 200, y: canvas.height - 250, size: 150 }
             ]
             // Add more sticker configurations as needed
         };
@@ -360,9 +342,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function addLogo(canvas) {
         logoStickers.forEach(logoType => {
             const logoConfigs = {
-                'english': { src: 'assets/icons/photobooth-new-logo.png', x: canvas.width - 120, y: canvas.height - 120, size: 80 },
-                'korean': { src: 'assets/icons/photobooth-new-logo.png', x: canvas.width - 120, y: canvas.height - 120, size: 80 },
-                'chinese': { src: 'assets/icons/photobooth-new-logo.png', x: canvas.width - 120, y: canvas.height - 120, size: 80 }
+                'english': { src: '/src/assets/icons/photobooth-new-logo.png', x: canvas.width - 120, y: canvas.height - 120, size: 80 },
+                'korean': { src: '/src/assets/icons/photobooth-new-logo.png', x: canvas.width - 120, y: canvas.height - 120, size: 80 },
+                'chinese': { src: '/src/assets/icons/photobooth-new-logo.png', x: canvas.width - 120, y: canvas.height - 120, size: 80 }
             };
 
             if (logoConfigs[logoType]) {

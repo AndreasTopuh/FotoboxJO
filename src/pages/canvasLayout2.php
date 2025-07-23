@@ -32,8 +32,7 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
     <meta name="twitter:description"
         content="Take instant photobooth-style photos online with Layout 1. Perfect for 2-photo strips." />
     <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png" />
-    <link rel="stylesheet" href="/styles.css" />
-    <link
+<link rel="stylesheet" href="/styles.css?v=<?php echo time(); ?>" />    <link
         href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&display=swap"
         rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap"

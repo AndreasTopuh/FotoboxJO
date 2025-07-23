@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             fullscreenMessage.style.opacity = "1";
-            fullscreenImg.src = "assets/fullScreen2.png";
+            fullscreenImg.src = "/src/assets/fullScreen2.png";
             
             setTimeout(() => {
                 fullscreenMessage.style.opacity = "0"; // Fade out
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             fullscreenMessage.style.opacity = "0";
-            fullscreenImg.src = "assets/fullScreen3.png";
+            fullscreenImg.src = "/src/assets/fullScreen3.png";
         }
     }
     

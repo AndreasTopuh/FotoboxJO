@@ -26,12 +26,13 @@
     --chocolate: #6c584c;
     --leafy-green: #3a5a40;
 
-    --sepiaBg: url(assets/sepiaBg.jpg);
-    --bnwBg: url(assets/bnw-icon.jpg);
-    --normalBg: url(assets/normal-icon.jpg);
-    --vintageBg: url(assets/vintage-icon.jpg);
-    --grayBg: url(assets/grayscale-icon.jpg);
-    --smoothBg: url(assets/smooth-icon.jpg);
+    /* CACHE BUSTER - TIMESTAMP 1737671234 */
+    --sepiaBg: linear-gradient(45deg, #D2691E, #8B4513);
+    --bnwBg: linear-gradient(45deg, #000000, #333333);
+    --normalBg: linear-gradient(45deg, #6495ED, #87CEEB);
+    --vintageBg: linear-gradient(45deg, #DAA520, #CD853F);
+    --grayBg: linear-gradient(45deg, #696969, #A9A9A9);
+    --smoothBg: linear-gradient(45deg, #FFB6C1, #FFC0CB);
 
     --lightGray: #6c757d;
     --lighterGray: #dcdcdd;
@@ -1420,260 +1421,399 @@ input[type=checkbox] {
 }
 
 #pinkPlaid {
-    background-image: url(assets/frame-backgrounds/pink-plaid.jpg);
+    background: repeating-linear-gradient(45deg,
+            #FFB6C1,
+            #FFB6C1 10px,
+            #FFC0CB 10px,
+            #FFC0CB 20px);
     background-size: 200%;
 }
 
 #brownLeopard {
-    background-image: url(assets/frame-backgrounds/brown-leopard.jpg);
+    background: radial-gradient(circle at 20% 80%, #8B4513 12%, transparent 12.2%),
+        radial-gradient(circle at 80% 80%, #A0522D 12%, transparent 12.2%),
+        radial-gradient(circle at 40% 40%, #8B4513 12%, transparent 12.2%),
+        radial-gradient(circle at 60% 60%, #A0522D 12%, transparent 12.2%),
+        #D2691E;
     background-size: cover;
 }
 
 #redLeather {
-    background-image: url(assets/frame-backgrounds/red-leather.jpg);
-    background-size: cover;
+    background: linear-gradient(135deg, #8B0000 25%, #DC143C 25%, #DC143C 50%, #8B0000 50%, #8B0000 75%, #DC143C 75%);
+    background-size: 20px 20px;
 }
 
 #pinkLeather {
-    background-image: url(assets/frame-backgrounds/pink-diamond-leather.jpg);
-    background-size: 200%;
+    background: linear-gradient(135deg, #FFB6C1 25%, #FF69B4 25%, #FF69B4 50%, #FFB6C1 50%, #FFB6C1 75%, #FF69B4 75%);
+    background-size: 15px 15px;
 }
 
 #pinkGlitter {
-    background-image: url(assets/frame-backgrounds/pink-glitter.jpg);
-    background-size: cover;
+    /* background-image: url(assets/frame-backgrounds/pink-glitter .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    background: radial-gradient(circle, #FF69B4 1px, transparent 1px),
+        radial-gradient(circle, #FFB6C1 1px, transparent 1px),
+        #FFC0CB;
+    background-size: 10px 10px, 15px 15px;
+    background-position: 0 0, 5px 5px;
 }
 
 #cowPrint {
-    background-image: url(assets/frame-backgrounds/cow-print.jpg);
-    background-size: cover;
+    /* background-image: url(assets/frame-backgrounds/cow-print .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    background: radial-gradient(ellipse at center, #000 25%, transparent 25%),
+        radial-gradient(ellipse at 30% 70%, #000 15%, transparent 15%),
+        radial-gradient(ellipse at 70% 30%, #000 20%, transparent 20%),
+        #FFFFFF;
+    background-size: 40px 30px, 25px 20px, 35px 25px;
 }
 
 #bluePlaid {
-    background-image: url(assets/frame-backgrounds/blue-plaid.jpg);
+    /* background-image: url(assets/frame-backgrounds/blue-plaid .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: cover;
 }
 
 #pinkGumamela {
-    background-image: url(assets/frame-backgrounds/pink-gumamela.jpg);
+    /* background-image: url(assets/frame-backgrounds/pink-gumamela .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 150%;
     background-position: bottom;
 }
 
 #whiteKnitted {
-    background-image: url(assets/frame-backgrounds/white-knitted-cloth.jpg);
+    /* background-image: url(assets/frame-backgrounds/white-knitted-cloth .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: cover;
 }
 
 #black-cq {
-    background-image: url(assets/frame-backgrounds/black-couqutte.jpg);
+    /* background-image: url(assets/frame-backgrounds/black-couqutte .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 200%;
 }
 
 #white-cq {
-    background-image: url(assets/frame-backgrounds/white-couquette.jpg);
+    /* background-image: url(assets/frame-backgrounds/white-couquette .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 200%;
 }
 
 #ribbonDenim {
-    background-image: url(assets/frame-backgrounds/ribbon-denim.jpg);
+    /* background-image: url(assets/frame-backgrounds/ribbon-denim .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 120%;
 }
 
 #blackPinkRibbon {
-    background-image: url(assets/frame-backgrounds/black-pink-ribbon.jpg);
+    /* background-image: url(assets/frame-backgrounds/black-pink-ribbon .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: cover;
     background-position: bottom;
 }
 
 #blueYellowSquares {
-    background-image: url(assets/frame-backgrounds/blue-yellow-squares.jpg);
+    /* background-image: url(assets/frame-backgrounds/blue-yellow-squares .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: cover;
     background-position: bottom;
 }
 
 #blueWhiteSquares {
-    background-image: url(assets/frame-backgrounds/blue-white-squares.jpg);
+    /* background-image: url(assets/frame-backgrounds/blue-white-squares .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: cover;
     background-position: bottom;
 }
 
 #fourLockers {
-    background-image: url(assets/frame-backgrounds/4-lockers.jpg);
+    /* background-image: url(assets/frame-backgrounds/4-lockers .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: cover;
     background-position: center;
 }
 
 #crumpledPaper {
-    background-image: url(assets/frame-backgrounds/crumpled-paper.jpg);
+    /* background-image: url(assets/frame-backgrounds/crumpled-paper .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 190%;
     background-position: center;
 }
 
 #blueBackdrop {
-    background-image: url(assets/frame-backgrounds/blue-backdrop.jpg);
+    /* background-image: url(assets/frame-backgrounds/blue-backdrop .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 190%;
     background-position: center;
 }
 
 #greenHills {
-    background-image: url(assets/frame-backgrounds/green-hills.jpg);
+    /* background-image: url(assets/frame-backgrounds/green-hills .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 190%;
     background-position: center;
 }
 
 #sandShells {
-    background-image: url(assets/frame-backgrounds/sand-shells.jpg);
+    /* background-image: url(assets/frame-backgrounds/sand-shells .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 190%;
     background-position: center;
 }
 
 #waterBeach {
-    background-image: url(assets/frame-backgrounds/water.jpg);
+    /* background-image: url(assets/frame-backgrounds/water .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 190%;
     background-position: center;
 }
 
 #cocoTrees {
-    background-image: url(assets/frame-backgrounds/coco-trees.jpg);
+    /* background-image: url(assets/frame-backgrounds/coco-trees .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 190%;
     background-position: center;
 }
 
 #pinkLiliesFrame {
-    background-image: url(assets/frame-backgrounds/pink-lilies.jpg);
+    /* background-image: url(assets/frame-backgrounds/pink-lilies .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: cover;
     background-position: center;
 }
 
 #roseCardFrame {
-    background-image: url(assets/frame-backgrounds/rose-card.jpg);
+    /* background-image: url(assets/frame-backgrounds/rose-card .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: cover;
     background-position: center;
 }
 
 #princessVintageFrame {
-    background-image: url(assets/frame-backgrounds/princess-vintage.jpg);
+    /* background-image: url(assets/frame-backgrounds/princess-vintage .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: cover;
     background-position: center;
 }
 
 #gridPaperFrame {
-    background-image: url(assets/frame-backgrounds/grid-paper.jpg);
+    /* background-image: url(assets/frame-backgrounds/grid-paper .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 200%;
     background-position: center;
 }
 
 #stardustFrame {
-    background-image: url(assets/frame-backgrounds/stardust.jpg);
+    /* background-image: url(assets/frame-backgrounds/stardust .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 200%;
     background-position: center;
 }
 
 #roughTextureFrame {
-    background-image: url(assets/frame-backgrounds/rough-texture.jpg);
+    /* background-image: url(assets/frame-backgrounds/rough-texture .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 190%;
     background-position: center;
 }
 
 #ribbonSweaterFrame {
-    background-image: url(assets/frame-backgrounds/ribbon-sweater.jpg);
+    /* background-image: url(assets/frame-backgrounds/ribbon-sweater .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: cover;
     background-position: center;
 }
 
 #vsPinkFrame {
-    background-image: url(assets/frame-backgrounds/vs-pink.jpg);
+    /* background-image: url(assets/frame-backgrounds/vs-pink .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: cover;
     background-position: center;
 }
 
 #vsYellowFrame {
-    background-image: url(assets/frame-backgrounds/vs-yellow.jpg);
+    /* background-image: url(assets/frame-backgrounds/vs-yellow .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: cover;
     background-position: center;
 }
 
 #redRosesPaintFrame {
-    background-image: url(assets/frame-backgrounds/red-roses-paint.jpg);
+    /* background-image: url(assets/frame-backgrounds/red-roses-paint .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 190%;
     background-position: center;
 }
 
 #grayTrashFrame {
-    background-image: url(assets/frame-backgrounds/gray-trash.jpg);
+    /* background-image: url(assets/frame-backgrounds/gray-trash .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 190%;
     background-position: center;
 }
 
 #blackTrashFrame {
-    background-image: url(assets/frame-backgrounds/black-trash.jpg);
+    /* background-image: url(assets/frame-backgrounds/black-trash .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 190%;
     background-position: center;
 }
 
 #whiteTrashFrame {
-    background-image: url(assets/frame-backgrounds/white-trash.jpg);
+    /* background-image: url(assets/frame-backgrounds/white-trash .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 180%;
     background-position: center;
 }
 
 #brownKnittedFrame {
-    background-image: url(assets/frame-backgrounds/brown-knitted.jpg);
+    /* background-image: url(assets/frame-backgrounds/brown-knitted .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: cover;
     background-position: center;
 }
 
 #hotPinkKnittedFrame {
-    background-image: url(assets/frame-backgrounds/hot-pink-knitted.jpg);
+    /* background-image: url(assets/frame-backgrounds/hot-pink-knitted .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: cover;
     background-position: center;
 }
 
 #redKnittedFrame {
-    background-image: url(assets/frame-backgrounds/red-knitted.jpg);
+    /* background-image: url(assets/frame-backgrounds/red-knitted .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: cover;
     background-position: center;
 }
 
 #pinkKnittedFrame {
-    background-image: url(assets/frame-backgrounds/pink-knitted.jpg);
+    /* background-image: url(assets/frame-backgrounds/pink-knitted .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: cover;
     background-position: center;
 }
 
 #redStripesFrame {
-    background-image: url(assets/frame-backgrounds/red-stripes.jpg);
+    /* background-image: url(assets/frame-backgrounds/red-stripes .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 190%;
     background-position: center;
 }
 
 #greenStripesFrame {
-    background-image: url(assets/frame-backgrounds/green-stripes.jpg);
+    /* background-image: url(assets/frame-backgrounds/green-stripes .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 190%;
     background-position: center;
 }
 
 #blueStripesFrame {
-    background-image: url(assets/frame-backgrounds/blue-stripes.jpg);
+    /* background-image: url(assets/frame-backgrounds/blue-stripes .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 190%;
     background-position: center;
 }
 
 #partyDrapeFrame {
-    background-image: url(assets/frame-backgrounds/party-drape.jpg);
+    /* background-image: url(assets/frame-backgrounds/party-drape .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: cover;
     background-position: center;
 }
 
 #partyDotsFrame {
-    background-image: url(assets/frame-backgrounds/party-dots.jpg);
+    /* background-image: url(assets/frame-backgrounds/party-dots .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 210%;
     background-position: center;
 }
 
 #blingDenimFrame {
-    background-image: url(assets/frame-backgrounds/bling-denim.jpg);
+    /* background-image: url(assets/frame-backgrounds/bling-denim .jpg); */
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background-size: 210%;
     background-position: center;
 }

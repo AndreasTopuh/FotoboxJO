@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             fullscreenMessage.style.opacity = "1";
-            fullscreenImg.src = "assets/fullScreen2.png";
+            fullscreenImg.src = "/src/assets/fullScreen2.png";
             
             setTimeout(() => {
                 fullscreenMessage.style.opacity = "0";
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             fullscreenMessage.style.opacity = "0";
-            fullscreenImg.src = "assets/fullScreen3.png";
+            fullscreenImg.src = "/src/assets/fullScreen3.png";
         }
     }
     
@@ -330,7 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function storeImageArray() {
         let loadedImages = 0;
         let storedImages = [];
-    
+
         images.forEach((imgData, index) => {
             const img = new Image();
             img.src = imgData;
@@ -338,33 +338,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (invertBtnState) {
                     const tempCanvas = document.createElement('canvas');
                     const tempCtx = tempCanvas.getContext('2d');
-    
                     tempCanvas.width = img.width;
                     tempCanvas.height = img.height;
-    
                     tempCtx.translate(img.width, 0);
                     tempCtx.scale(-1, 1);
                     tempCtx.drawImage(img, 0, 0, img.width, img.height);
-    
                     storedImages[index] = tempCanvas.toDataURL('image/png');
                 } else {
                     storedImages[index] = imgData;
                 }
                 loadedImages++;
-    
-                if (loadedImages === 4) { // Changed from 2 to 4 for Layout 2
-                    const estimatedSize = new Blob([JSON.stringify(storedImages)]).size;
-                    const storageLimit = 10 * 1024 * 1024; // 8MB limit for 4 photos
 
+                if (loadedImages === 4) { // Pastikan 4 gambar untuk Layout 2
+                    const estimatedSize = new Blob([JSON.stringify(storedImages)]).size;
+                    const storageLimit = 10 * 1024 * 1024; // 10MB limit
                     if (estimatedSize > storageLimit) {
-                        alert("The total image size exceeds the 8MB limit. Please upload smaller images.");
+                        alert("The total image size exceeds the 10MB limit. Please upload smaller images.");
                         return;
                     }
-
                     sessionStorage.setItem('photoArray2', JSON.stringify(storedImages));
                     console.log("4 images stored in sessionStorage!");
                     window.location.href = 'customizeLayout2.php';
                 }
+            };
+            img.onerror = () => {
+                console.error(`Failed to load image at index ${index}`);
             };
         });
     }

@@ -273,21 +273,21 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 4R specific sticker configurations
         const stickerConfigs = {
-            'kiss': [{ src: 'assets/stickers/kiss1.png', x: 50, y: 400, size: 200 }],
+            'kiss': [{ src: '/src/assets/stickers/kiss1.png', x: 50, y: 400, size: 200 }],
             'sweet': [
-                { src: 'assets/stickers/sweet1.png', x: 30, y: 100, size: 120 },
-                { src: 'assets/stickers/sweet2.png', x: canvas.width - 150, y: 600, size: 120 },
-                { src: 'assets/stickers/sweet3.png', x: 50, y: canvas.height - 300, size: 120 }
+                { src: '/src/assets/stickers/sweet1.png', x: 30, y: 100, size: 120 },
+                { src: '/src/assets/stickers/sweet2.png', x: canvas.width - 150, y: 600, size: 120 },
+                { src: '/src/assets/stickers/sweet3.png', x: 50, y: canvas.height - 300, size: 120 }
             ],
             'ribbon': [
-                { src: 'assets/stickers/ribbon1.png', x: 30, y: 100, size: 120 },
-                { src: 'assets/stickers/ribbon3.png', x: canvas.width - 150, y: 800, size: 130 },
-                { src: 'assets/stickers/ribbon2.png', x: 25, y: canvas.height - 500, size: 120 }
+                { src: '/src/assets/stickers/ribbon1.png', x: 30, y: 100, size: 120 },
+                { src: '/src/assets/stickers/ribbon3.png', x: canvas.width - 150, y: 800, size: 130 },
+                { src: '/src/assets/stickers/ribbon2.png', x: 25, y: canvas.height - 500, size: 120 }
             ],
             'sparkle': [
-                { src: 'assets/stickers/sparkle1.png', x: canvas.width - 250, y: 200, size: 300 },
-                { src: 'assets/stickers/sparkle2.png', x: 5, y: canvas.height - 1200, size: 250 },
-                { src: 'assets/stickers/sparkle2.png', x: canvas.width - 200, y: canvas.height - 250, size: 150 }
+                { src: '/src/assets/stickers/sparkle1.png', x: canvas.width - 250, y: 200, size: 300 },
+                { src: '/src/assets/stickers/sparkle2.png', x: 5, y: canvas.height - 1200, size: 250 },
+                { src: '/src/assets/stickers/sparkle2.png', x: canvas.width - 200, y: canvas.height - 250, size: 150 }
             ]
             // Add more sticker configurations as needed
         };
@@ -325,9 +325,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function addLogo(canvas) {
         logoStickers.forEach(logoType => {
             const logoConfigs = {
-                'english': { src: 'assets/icons/photobooth-new-logo.png', x: canvas.width - 120, y: canvas.height - 120, size: 80 },
-                'korean': { src: 'assets/icons/photobooth-new-logo.png', x: canvas.width - 120, y: canvas.height - 120, size: 80 },
-                'chinese': { src: 'assets/icons/photobooth-new-logo.png', x: canvas.width - 120, y: canvas.height - 120, size: 80 }
+                'english': { src: '/src/assets/icons/photobooth-new-logo.png', x: canvas.width - 120, y: canvas.height - 120, size: 80 },
+                'korean': { src: '/src/assets/icons/photobooth-new-logo.png', x: canvas.width - 120, y: canvas.height - 120, size: 80 },
+                'chinese': { src: '/src/assets/icons/photobooth-new-logo.png', x: canvas.width - 120, y: canvas.height - 120, size: 80 }
             };
 
             if (logoConfigs[logoType]) {

@@ -161,33 +161,6 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
     </main>
 
     <script src="./layout.js"></script>
-    <script>
-        const messages = [
-            'Follow us on Instagram @photobooth_io',
-            "Share your photos and don't forget to tag us @photobooth_io!"
-        ];
-
-        const announcementText = document.getElementById('header-announcement-text');
-        let index = 0;
-
-        function showNextMessage() {
-            announcementText.classList.remove('fade');
-            void announcementText.offsetWidth;
-            announcementText.classList.add('fade');
-
-            // Update text
-            announcementText.innerHTML = `<a href="https://www.instagram.com/photobooth_io/" target="_blank">${messages[index]}</a>`;
-
-            // Prepare next index
-            index = (index + 1) % messages.length;
-        }
-
-        // Initial display
-        showNextMessage();
-
-        // Rotate messages every 5s (match animation duration)
-        setInterval(showNextMessage, 4000);
-    </script>
 </body>
 
 </html>

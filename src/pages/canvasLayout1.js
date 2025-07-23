@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             fullscreenMessage.style.opacity = "1";
-            fullscreenImg.src = "assets/fullScreen2.png";
+            fullscreenImg.src = "/src/assets/fullScreen2.png";
             
             setTimeout(() => {
                 fullscreenMessage.style.opacity = "0"; // Fade out
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             fullscreenMessage.style.opacity = "0";
-            fullscreenImg.src = "assets/fullScreen3.png";
+            fullscreenImg.src = "/src/assets/fullScreen3.png";
         }
     }
     
@@ -350,48 +350,39 @@ document.addEventListener('DOMContentLoaded', () => {
     function storeImageArray() {
         let loadedImages = 0;
         let storedImages = [];
-    
+
         images.forEach((imgData, index) => {
             const img = new Image();
             img.src = imgData;
             img.onload = () => {
-                
                 if (invertBtnState) {
-                    // Create an offscreen canvas to mirror the image
                     const tempCanvas = document.createElement('canvas');
                     const tempCtx = tempCanvas.getContext('2d');
-    
                     tempCanvas.width = img.width;
                     tempCanvas.height = img.height;
-    
-                    // Apply mirroring
                     tempCtx.translate(img.width, 0);
                     tempCtx.scale(-1, 1);
                     tempCtx.drawImage(img, 0, 0, img.width, img.height);
-    
-                    // Convert to base64 data URL
                     storedImages[index] = tempCanvas.toDataURL('image/png');
                 } else {
-                    // Store the original image if not mirrored
                     storedImages[index] = imgData;
                 }
                 loadedImages++;
-    
-                // For 4R layout, we now need 2 images
-                if (loadedImages === 2) {
+
+                if (loadedImages === 2) { // Pastikan 2 gambar untuk Layout 1
                     const estimatedSize = new Blob([JSON.stringify(storedImages)]).size;
-
-                    const storageLimit = 6 * 1024 * 1024; // 6MB limit for 2 photos
-
+                    const storageLimit = 6 * 1024 * 1024; // 6MB limit
                     if (estimatedSize > storageLimit) {
-                        alert("The total image size exceeds the 5MB limit. Please upload smaller images.");
-                        return; // Stop storing and redirecting
+                        alert("The total image size exceeds the 6MB limit. Please upload smaller images.");
+                        return;
                     }
-
-                    sessionStorage.setItem('photoArray1', JSON.stringify(storedImages)); 
+                    sessionStorage.setItem('photoArray1', JSON.stringify(storedImages));
                     console.log("2 images stored in sessionStorage!");
-                    window.location.href = 'customizeLayout1.php'; // Redirect to Layout1 customize page
+                    window.location.href = 'customizeLayout1.php';
                 }
+            };
+            img.onerror = () => {
+                console.error(`Failed to load image at index ${index}`);
             };
         });
     }
