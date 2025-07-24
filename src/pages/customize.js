@@ -1326,8 +1326,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const stackedCanvas = document.createElement('canvas');
         const ctx = stackedCanvas.getContext('2d');
 
-        const canvasWidth = 1206;   // 10.2cm pada 300 DPI
-        const canvasHeight = 1794;  // 15.2cm pada 300 DPI
+        const canvasWidth = 1200;   // 4R standard width
+        const canvasHeight = 1800;  // 4R standard height
         const borderWidth = 30; //previously 40
         const spacing = 12; //previously 20
         const bottomPadding = 100;
@@ -1505,21 +1505,24 @@ document.addEventListener('DOMContentLoaded', function() {
     function updatePreview(canvas) {
         if (photoCustomPreview) {
             photoCustomPreview.innerHTML = ''; // Clear old content
-            photoCustomPreview.appendChild(canvas); // Append new canvas
-
-            // canvas.style.width = "230px"; //prev 170px
-            // Detect if the device is mobile based on screen width
-            if (window.innerWidth <= 768) {
-                // Mobile size
-                canvas.style.width = "150px";
-            } else {
-                // Default/desktop size
-                canvas.style.width = "230px";
-            }
+            
+            // Set canvas style for small preview display (consistent with layout files)
+            canvas.style.maxWidth = "300px";
+            canvas.style.maxHeight = "450px";
+            canvas.style.width = "auto";
+            canvas.style.height = "auto";
+            canvas.style.border = "2px solid #ddd";
+            canvas.style.borderRadius = "8px";
+            canvas.style.boxShadow = "0 4px 8px rgba(0,0,0,0.1)";
+            canvas.style.display = "block";
+            canvas.style.margin = "0 auto";
+            
+            // Special border for white background
             if(backgroundType == '#FFFFFF') {
-                canvas.style.border = '1px solid black';
+                canvas.style.border = '2px solid #000';
             }
             
+            photoCustomPreview.appendChild(canvas); // Append new canvas
         }
     }
 
@@ -1532,8 +1535,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const stackedCanvas = document.createElement('canvas');
         const ctx = stackedCanvas.getContext('2d');
     
-        const canvasWidth = 1206;   // 10.2cm pada 300 DPI
-        const canvasHeight = 1794;  // 15.2cm pada 300 DPI
+        const canvasWidth = 1200;   // 4R standard width
+        const canvasHeight = 1800;  // 4R standard height
         const borderWidth = 30; //previously 40
         const spacing = 12; //previously 20
         const bottomPadding = 100;

@@ -1896,6 +1896,10 @@ input[type=checkbox] {
 
 #photoPreview {
     width: fit-content;
+    max-width: 300px;
+    /* Limit container width */
+    margin: 0 auto;
+    /* Center the preview */
     /* border: 1px solid var(--black); */
 }
 
@@ -2830,5 +2834,33 @@ body.blur {
         width: 100%;
         max-width: 95px;
         border: 1px solid var(--black);
+    }
+}
+
+/* Canvas preview styling - ukuran diperkecil untuk tampilan */
+#photoPreview canvas {
+    max-width: 300px !important;
+    max-height: 450px !important;
+    width: auto !important;
+    height: auto !important;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: block;
+    margin: 0 auto;
+}
+
+/* Responsive canvas preview */
+@media (max-width: 768px) {
+    #photoPreview canvas {
+        max-width: 250px !important;
+        max-height: 375px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #photoPreview canvas {
+        max-width: 200px !important;
+        max-height: 300px !important;
     }
 }

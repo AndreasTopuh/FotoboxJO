@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (customBack) {
         customBack.addEventListener('click', () => {
-            window.location.href = 'canvasLayout1.php'
+            window.location.href = 'canvasLayout6.php'
         })
     }
 
@@ -212,9 +212,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const stackedCanvas = document.createElement('canvas');
             const ctx = stackedCanvas.getContext('2d');
 
-            // Layout 1 dimensions (2 photos in vertical strip)
-            const canvasWidth = 592;
-            const canvasHeight = 1352;
+            // Layout 6 dimensions (2 photos in vertical strip)
+            const canvasWidth = 1200;   // 4R standard width
+            const canvasHeight = 1800;  // 4R standard height
             const borderWidth = 30;
             const spacing = 12;
             const bottomPadding = 100;
@@ -312,11 +312,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 };
                 img.src = imageData;
-            });
-
-            // Update preview
+            });            // Update preview
             if (photoCustomPreview) {
                 photoCustomPreview.innerHTML = '';
+                
+                // Set canvas style for small preview display
+                stackedCanvas.style.maxWidth = "300px";
+                stackedCanvas.style.maxHeight = "450px";
+                stackedCanvas.style.width = "auto";
+                stackedCanvas.style.height = "auto";
+                stackedCanvas.style.border = "2px solid #ddd";
+                stackedCanvas.style.borderRadius = "8px";
+                stackedCanvas.style.boxShadow = "0 4px 8px rgba(0,0,0,0.1)";
+                stackedCanvas.style.display = "block";
+                stackedCanvas.style.margin = "0 auto";
+                
                 photoCustomPreview.appendChild(stackedCanvas);
             }
 
@@ -446,7 +456,7 @@ document.addEventListener('DOMContentLoaded', function() {
             downloadCopyBtn.addEventListener('click', () => {
                 if (finalCanvas) {
                     const link = document.createElement('a');
-                    link.download = 'photobooth-layout1.png';
+                    link.download = 'photobooth-layout6.png';
                     link.href = finalCanvas.toDataURL();
                     link.click();
                 }

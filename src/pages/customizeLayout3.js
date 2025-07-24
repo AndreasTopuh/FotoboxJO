@@ -46,427 +46,220 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Start the timer
     timerInterval = setInterval(updateTimer, 1000);
-    updateTimer(); // Initial call to set display
+    updateTimer();
 
-    const photoCustomPreview = document.getElementById('photoPreview')
-    const pinkBtn = document.getElementById('pinkBtnFrame')
-    const blueBtn = document.getElementById('blueBtnFrame')
-    const yellowBtn = document.getElementById('yellowBtnFrame')
-    const brownBtn = document.getElementById('brownBtnFrame')
-    const redBtn = document.getElementById('redBtnFrame')
-
-    const matchaBtn = document.getElementById('matchaBtnFrame')
-    const purpleBtn = document.getElementById('purpleBtnFrame')
-    const whiteBtn = document.getElementById('whiteBtnFrame')
-    const blackBtn = document.getElementById('blackBtnFrame')
-
-    const pinkGlitter = document.getElementById('pinkGlitter');
-    const pinkPlaid = document.getElementById('pinkPlaid');
-    const bluePlaid = document.getElementById('bluePlaid');
-    const brownLeopard = document.getElementById('brownLeopard');
-    const cowPrint = document.getElementById('cowPrint');
-    const redLeather = document.getElementById('redLeather');
-    const pinkGumamela = document.getElementById('pinkGumamela');
-    const whiteKnitted = document.getElementById('whiteKnitted');
-    const blackCq = document.getElementById('black-cq');
-    const whiteCq = document.getElementById('white-cq');
-    const pinkLeather = document.getElementById('pinkLeather');
-    const ribbonDenim = document.getElementById('ribbonDenim');
-    const blackPinkRibbon = document.getElementById('blackPinkRibbon');
-    const blueYellowSquares = document.getElementById('blueYellowSquares');
-    const blueWhiteSquares = document.getElementById('blueWhiteSquares');
-    const fourLockers = document.getElementById('fourLockers');
-    const crumpledPaper = document.getElementById('crumpledPaper');
-    const blueBackdrop = document.getElementById('blueBackdrop');
-    const greenHills = document.getElementById('greenHills');
-    const sandShells = document.getElementById('sandShells');
-    const waterBeach = document.getElementById('waterBeach');
-    const cocoTrees = document.getElementById('cocoTrees');
-    const pinkLiliesFrame = document.getElementById('pinkLiliesFrame');
-    const roseCardFrame = document.getElementById('roseCardFrame');
-    const princessVintageFrame = document.getElementById('princessVintageFrame');
-
-    const customBack = document.getElementById('customBack');
-    const downloadCopyBtn = document.getElementById('downloadCopyBtn');
-    const emailBtn = document.getElementById('emailBtn');
-    const printBtn = document.getElementById('printBtn');
-    const continueBtn = document.getElementById('continueBtn');
-
-    const noneSticker = document.getElementById('noneSticker')
-    const kissSticker = document.getElementById('kissSticker')
-    const ribbonSticker = document.getElementById('ribbonSticker')
-    const sweetSticker = document.getElementById('sweetSticker')
-    const sparkleSticker = document.getElementById('sparkleSticker')
-    const pearlSticker = document.getElementById('pearlSticker')
-    const softSticker = document.getElementById('softSticker');
-    const bunnySticker = document.getElementById('bunnySticker');
-    const classicSticker = document.getElementById('classicSticker');
-    const classicBSticker = document.getElementById('classicBSticker');
-    const luckySticker = document.getElementById('luckySticker');
-    const confettiSticker = document.getElementById('confettiSticker');
-
-    const engLogo = document.getElementById('engLogo');
-    const korLogo = document.getElementById('korLogo');
-    const cnLogo = document.getElementById('cnLogo');
-
-    const normalFrameBtn = document.getElementById('noneFrameShape');
-    const roundEdgeFrameBtn = document.getElementById('softFrameShape');
-    const circleFrameBtn = document.getElementById('circleFrameShape');
-    const heartFrameBtn = document.getElementById('heartFrameShape');
-
-    let engLogoToggle = false;
-    let korLogoToggle = false;
-    let cnLogoToggle = false;
-
-    let selectedShape = 'default'; // or 'circle', 'rounded', 'heart'
-
-    const dateCheckbox = document.getElementById('dateCheckbox');
-    const dateTimeCheckbox = document.getElementById('dateTimeCheckbox');
-
-    const colorPickerBtn = document.getElementById("colorPickerBtn");
-
-    let finalCanvas = null;
-    let selectedSticker = null;
-
-    let selectedText = 'photobooth';
-
-    if (customBack) {
-        customBack.addEventListener('click', () => {
-            window.location.href = 'canvasLayout3.php'
-        })
-    }
-
-    if (dateCheckbox) {
-        dateCheckbox.addEventListener('change', () => {
-            redrawCanvas();
-        });
-    }
-
-    if (dateTimeCheckbox) {
-        dateTimeCheckbox.addEventListener('change', () => {
-            redrawCanvas();
-        });
-    }
+    // 🎯 PRIORITAS 1: LOAD FOTO TERLEBIH DAHULU
+    console.log('🔄 Loading photos first for better UX...');
     
-    // Retrieve stored images array from server session
+    // Variables
     let storedImages = [];
     let imageArrayLength = 0;
+    let finalCanvas = null;
+    let selectedSticker = null;
+    let selectedShape = 'default';
+    let backgroundType = 'color';
+    let backgroundColor = '#FFFFFF';
+    let backgroundImage = null;
     
-    // Fetch photos from server session
-    fetch('../api-fetch/get_photos.php')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.photos) {
-                storedImages = data.photos;
-                imageArrayLength = storedImages.length;
-                console.log("Loaded images from server session:", storedImages);
-                
-                // Initialize canvas with photos after loading
-                initializeCanvas();
-            } else {
-                console.log("No valid images found in server session");
-                alert("Tidak ada foto ditemukan. Kembali ke halaman sebelumnya.");
-                window.location.href = 'selectlayout.php';
-            }
+    // DOM Elements
+    const photoCustomPreview = document.getElementById('photoPreview');
+    const customBack = document.getElementById('customBack');
+
+    // Load photos first with priority
+    loadPhotosFirst()
+        .then(() => {
+            console.log('✅ Photos loaded successfully');
+            // Initialize canvas immediately after photos load
+            initializeCanvas();
+            // Load UI controls
+            initializeControls();
+            // Load stickers in background (non-blocking)
+            console.log('📦 Loading stickers in background...');
+            initializeStickerControls();
         })
         .catch(error => {
-            console.error('Error loading photos:', error);
-            alert("Error loading photos. Please try again.");
+            console.error('❌ Error loading photos:', error);
+            alert('Gagal memuat foto. Redirecting...');
             window.location.href = 'selectlayout.php';
         });
 
+    // Function to load photos with priority
+    function loadPhotosFirst() {
+        return new Promise((resolve, reject) => {
+            fetch('../api-fetch/get_photos.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.photos) {
+                        storedImages = data.photos;
+                        imageArrayLength = storedImages.length;
+                        console.log(`Loaded ${imageArrayLength} images from server session:`, storedImages);
+                        resolve(storedImages);
+                    } else {
+                        throw new Error('No photos found in session');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching photos:', error);
+                    reject(error);
+                });
+        });
+    }
+
+    // Initialize canvas immediately after photos load
     function initializeCanvas() {
-        if (!storedImages || storedImages.length !== imageArrayLength) {
-            console.log("No valid images found");
+        if (!storedImages || storedImages.length === 0) {
+            console.error('❌ No images available for canvas');
             return;
         }
 
-        // Default background color
-        let backgroundType = 'color';
-        let backgroundColor = '#FFFFFF'; // default
-        let backgroundImage = null;
-
-        // Function to set new background and redraw canvas
-        function setBackground(option) {
-            console.log('Setting background:', option);
+        console.log('🎨 Initializing canvas with photos...');
         
-            if (option.type === 'color') {
-                backgroundType = 'color';
-                backgroundColor = option.value;
+        // Create and render canvas immediately
+        redrawCanvas();
+        
+        console.log('✅ Canvas initialized and rendered');
+    }
+
+    // Initialize basic controls (non-sticker related)
+    function initializeControls() {
+        console.log('🎛️ Initializing basic controls...');
+        
+        // Back button
+        if (customBack) {
+            customBack.addEventListener('click', () => {
+                window.location.href = 'canvasLayout3.php';
+            });
+        }
+
+        // Date checkboxes
+        const dateCheckbox = document.getElementById('dateCheckbox');
+        const dateTimeCheckbox = document.getElementById('dateTimeCheckbox');
+        
+        if (dateCheckbox) {
+            dateCheckbox.addEventListener('change', () => {
                 redrawCanvas();
-            } else if (option.type === 'image') {
-                backgroundType = 'image';
-                const img = new Image();
-                img.onload = function() {
-                    backgroundImage = img;
+            });
+        }
+
+        if (dateTimeCheckbox) {
+            dateTimeCheckbox.addEventListener('change', () => {
+                redrawCanvas();
+            });
+        }
+
+        // Frame color controls
+        initializeFrameControls();
+        
+        // Shape controls
+        initializeShapeControls();
+        
+        // Action buttons
+        initializeActionButtons();
+        
+        console.log('✅ Basic controls initialized');
+    }
+
+    // Initialize sticker controls (loaded in background)
+    function initializeStickerControls() {
+        setTimeout(() => {
+            console.log('🎭 Initializing sticker controls...');
+            
+            const stickerButtons = [
+                'noneSticker', 'kissSticker', 'ribbonSticker', 'sweetSticker',
+                'sparkleSticker', 'pearlSticker', 'softSticker', 'bunnySticker',
+                'classicSticker', 'classicBSticker', 'luckySticker', 'confettiSticker'
+            ];
+            
+            stickerButtons.forEach(buttonId => {
+                const button = document.getElementById(buttonId);
+                if (button) {
+                    button.addEventListener('click', () => {
+                        if (buttonId === 'noneSticker') {
+                            selectedSticker = null;
+                        } else {
+                            const img = button.querySelector('img');
+                            if (img) {
+                                selectedSticker = img.src;
+                            }
+                        }
+                        redrawCanvas();
+                    });
+                }
+            });
+            
+            console.log('✅ Sticker controls initialized');
+        }, 100); // Small delay to not block photo rendering
+    }
+
+    // Frame controls
+    function initializeFrameControls() {
+        const colorButtons = [
+            {id: 'pinkBtnFrame', color: '#FFB6C1'},
+            {id: 'blueBtnFrame', color: '#87CEEB'},
+            {id: 'yellowBtnFrame', color: '#FFFFE0'},
+            {id: 'brownBtnFrame', color: '#D2691E'},
+            {id: 'redBtnFrame', color: '#FF6347'},
+            {id: 'matchaBtnFrame', color: '#9ACD32'},
+            {id: 'purpleBtnFrame', color: '#DDA0DD'},
+            {id: 'whiteBtnFrame', color: '#FFFFFF'},
+            {id: 'blackBtnFrame', color: '#000000'}
+        ];
+        
+        colorButtons.forEach(btn => {
+            const element = document.getElementById(btn.id);
+            if (element) {
+                element.addEventListener('click', () => {
+                    backgroundColor = btn.color;
+                    backgroundType = 'color';
+                    backgroundImage = null;
                     redrawCanvas();
-                };
-                img.src = option.value;
+                });
             }
-        }
+        });
+    }
 
-        // Function to redraw the canvas with stored images & selected background
-        function redrawCanvas() {
-            console.log(`Redrawing canvas with background: ${backgroundType}`);
-
-            const stackedCanvas = document.createElement('canvas');
-            const ctx = stackedCanvas.getContext('2d');
-
-            // Layout 3 dimensions (2 photos in vertical strip)
-            const canvasWidth = 1206;   // 10.2cm pada 300 DPI
-            const canvasHeight = 1794;  // 15.2cm pada 300 DPI
-            const borderWidth = 30;
-            const spacing = 12;
-            const bottomPadding = 100;
-
-            const availableHeight = canvasHeight - (borderWidth * 2) - (spacing * 2) - bottomPadding;
-            const photoHeight = availableHeight / imageArrayLength;
-            const photoWidth = canvasWidth - (borderWidth * 2);
-
-            stackedCanvas.width = canvasWidth;
-            stackedCanvas.height = canvasHeight;
-
-            // Clear the entire canvas first
-            ctx.clearRect(0, 0, stackedCanvas.width, stackedCanvas.height);
-
-            if (backgroundType === 'color') {
-                ctx.fillStyle = backgroundColor;
-                ctx.fillRect(0, 0, stackedCanvas.width, stackedCanvas.height);
-                if(backgroundColor !== '#000000' && backgroundColor !== '#780000' && backgroundColor !== '#90a955') {
-                    ctx.fillStyle = 'black';
-                }
-                else {
-                    ctx.fillStyle = '#FFFFFF';
-                }
-            } else if (backgroundType === 'image' && backgroundImage) {
-                ctx.drawImage(backgroundImage, 0, 0, stackedCanvas.width, stackedCanvas.height);
-                const imageName = backgroundImage.src.split('/').pop();
-
-                const darkImages = [
-                    'pink-glitter.jpg',
-                    'brown-leopard.jpg',
-                    'red-leather.jpg',
-                    'ribbon-denim.jpg',
-                    'black-pink-ribbon.jpg',
-                    'green-hills.jpg',
-                    'sand-shells.jpg',
-                    'coco-trees.jpg'
-                ];
-
-                if (darkImages.includes(imageName)) {
-                    ctx.fillStyle = '#FFFFFF';
-                } else {
-                    ctx.fillStyle = '#000000';
-                }
+    // Shape controls
+    function initializeShapeControls() {
+        const shapeButtons = [
+            {id: 'noneFrameShape', shape: 'default'},
+            {id: 'softFrameShape', shape: 'rounded'},
+            {id: 'circleFrameShape', shape: 'circle'},
+            {id: 'heartFrameShape', shape: 'heart'}
+        ];
+        
+        shapeButtons.forEach(btn => {
+            const element = document.getElementById(btn.id);
+            if (element) {
+                element.addEventListener('click', () => {
+                    selectedShape = btn.shape;
+                    redrawCanvas();
+                });
             }
+        });
+    }
 
-            ctx.font = 'bold 32px Arial, Roboto, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(selectedText, stackedCanvas.width / 2, stackedCanvas.height - 55);
-
-            // Draw photos
-            storedImages.forEach((imageData, index) => {
-                const img = new Image();
-                img.onload = function() {
-                    const x = borderWidth;
-                    const y = borderWidth + (index * (photoHeight + spacing));
-
-                    ctx.save();
-
-                    if (selectedShape === 'circle') {
-                        // Create circular clipping path
-                        const centerX = x + photoWidth / 2;
-                        const centerY = y + photoHeight / 2;
-                        const radius = Math.min(photoWidth, photoHeight) / 2;
-                        
-                        ctx.beginPath();
-                        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-                        ctx.clip();
-                    } else if (selectedShape === 'rounded') {
-                        // Create rounded rectangle clipping path
-                        const radius = 20;
-                        ctx.beginPath();
-                        ctx.roundRect(x, y, photoWidth, photoHeight, radius);
-                        ctx.clip();
-                    } else if (selectedShape === 'heart') {
-                        // Create heart clipping path
-                        const centerX = x + photoWidth / 2;
-                        const centerY = y + photoHeight / 2;
-                        const size = Math.min(photoWidth, photoHeight) / 2;
-                        
-                        ctx.beginPath();
-                        ctx.moveTo(centerX, centerY + size/4);
-                        ctx.bezierCurveTo(centerX, centerY-size/2, centerX-size*3/4, centerY-size/2, centerX-size/2, centerY);
-                        ctx.bezierCurveTo(centerX-size/4, centerY+size/4, centerX, centerY+size/2, centerX, centerY+size*3/4);
-                        ctx.bezierCurveTo(centerX, centerY+size/2, centerX+size/4, centerY+size/4, centerX+size/2, centerY);
-                        ctx.bezierCurveTo(centerX+size*3/4, centerY-size/2, centerX, centerY-size/2, centerX, centerY+size/4);
-                        ctx.clip();
-                    }
-
-                    ctx.drawImage(img, x, y, photoWidth, photoHeight);
-                    ctx.restore();
-
-                    // Draw stickers and logos after all photos are drawn
-                    if (index === storedImages.length - 1) {
-                        drawStickersAndLogos(ctx, stackedCanvas);
-                    }
-                };
-                img.src = imageData;
-            });
-
-            // Update preview
-            if (photoCustomPreview) {
-                photoCustomPreview.innerHTML = '';
-                photoCustomPreview.appendChild(stackedCanvas);
-            }
-
-            finalCanvas = stackedCanvas;
-        }
-
-        function drawStickersAndLogos(ctx, canvas) {
-            // Draw selected sticker
-            if (selectedSticker) {
-                const stickerImg = new Image();
-                stickerImg.onload = function() {
-                    const stickerSize = 100;
-                    const stickerX = canvas.width - stickerSize - 20;
-                    const stickerY = 20;
-                    ctx.drawImage(stickerImg, stickerX, stickerY, stickerSize, stickerSize);
-                };
-                stickerImg.src = selectedSticker;
-            }
-
-            // Draw logos
-            if (engLogoToggle) {
-                // Draw English logo
-                const logoImg = new Image();
-                logoImg.onload = function() {
-                    ctx.drawImage(logoImg, 20, 20, 80, 40);
-                };
-                logoImg.src = '/src/assets/logos/eng-logo.png';
-            }
-
-            // Draw date/time if enabled
-            if (dateCheckbox && dateCheckbox.checked) {
-                const now = new Date();
-                const dateString = now.toLocaleDateString();
-                ctx.font = '16px Arial';
-                ctx.fillText(dateString, canvas.width / 2, canvas.height - 20);
-            }
-
-            if (dateTimeCheckbox && dateTimeCheckbox.checked) {
-                const now = new Date();
-                const timeString = now.toLocaleTimeString();
-                ctx.font = '14px Arial';
-                ctx.fillText(timeString, canvas.width / 2, canvas.height - 5);
-            }
-        }
-
-        // Color button event listeners
-        if (pinkBtn) {
-            pinkBtn.addEventListener('click', () => setBackground({type: 'color', value: '#FF69B4'}));
-        }
-        if (blueBtn) {
-            blueBtn.addEventListener('click', () => setBackground({type: 'color', value: '#4169E1'}));
-        }
-        if (yellowBtn) {
-            yellowBtn.addEventListener('click', () => setBackground({type: 'color', value: '#FFD700'}));
-        }
-        if (brownBtn) {
-            brownBtn.addEventListener('click', () => setBackground({type: 'color', value: '#8B4513'}));
-        }
-        if (redBtn) {
-            redBtn.addEventListener('click', () => setBackground({type: 'color', value: '#DC143C'}));
-        }
-        if (matchaBtn) {
-            matchaBtn.addEventListener('click', () => setBackground({type: 'color', value: '#90a955'}));
-        }
-        if (purpleBtn) {
-            purpleBtn.addEventListener('click', () => setBackground({type: 'color', value: '#8A2BE2'}));
-        }
-        if (whiteBtn) {
-            whiteBtn.addEventListener('click', () => setBackground({type: 'color', value: '#FFFFFF'}));
-        }
-        if (blackBtn) {
-            blackBtn.addEventListener('click', () => setBackground({type: 'color', value: '#000000'}));
-        }
-
-        // Background image event listeners
-        if (pinkGlitter) {
-            pinkGlitter.addEventListener('click', () => setBackground({type: 'image', value: '/src/assets/backgrounds/pink-glitter.jpg'}));
-        }
-        if (pinkPlaid) {
-            pinkPlaid.addEventListener('click', () => setBackground({type: 'image', value: '/src/assets/backgrounds/pink-plaid.jpg'}));
-        }
-        // Add more background image listeners...
-
-        // Shape button event listeners
-        if (normalFrameBtn) {
-            normalFrameBtn.addEventListener('click', () => {
-                selectedShape = 'default';
-                redrawCanvas();
-            });
-        }
-        if (roundEdgeFrameBtn) {
-            roundEdgeFrameBtn.addEventListener('click', () => {
-                selectedShape = 'rounded';
-                redrawCanvas();
-            });
-        }
-        if (circleFrameBtn) {
-            circleFrameBtn.addEventListener('click', () => {
-                selectedShape = 'circle';
-                redrawCanvas();
-            });
-        }
-        if (heartFrameBtn) {
-            heartFrameBtn.addEventListener('click', () => {
-                selectedShape = 'heart';
-                redrawCanvas();
-            });
-        }
-
-        // Sticker event listeners
-        if (noneSticker) {
-            noneSticker.addEventListener('click', () => {
-                selectedSticker = null;
-                redrawCanvas();
-            });
-        }
-        if (kissSticker) {
-            kissSticker.addEventListener('click', () => {
-                selectedSticker = '/src/assets/stickers/kiss.png';
-                redrawCanvas();
-            });
-        }
-        // Add more sticker listeners...
-
-        // Action button event listeners
-        if (downloadCopyBtn) {
-            downloadCopyBtn.addEventListener('click', () => {
+    // Action buttons
+    function initializeActionButtons() {
+        const downloadBtn = document.getElementById('downloadCopyBtn');
+        const emailBtn = document.getElementById('emailBtn');
+        const printBtn = document.getElementById('printBtn');
+        const continueBtn = document.getElementById('continueBtn');
+        
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', () => {
                 if (finalCanvas) {
                     const link = document.createElement('a');
-                    link.download = 'photobooth-layout3.png';
+                    link.download = 'fotoboks-layout3.png';
                     link.href = finalCanvas.toDataURL();
                     link.click();
                 }
             });
         }
-
-        if (emailBtn) {
-            emailBtn.addEventListener('click', () => {
-                // Show email modal
-                const emailModal = document.getElementById('emailModal');
-                if (emailModal) {
-                    emailModal.style.display = 'flex';
-                }
-            });
-        }
-
+        
         if (printBtn) {
             printBtn.addEventListener('click', () => {
                 if (finalCanvas) {
-                    const printWindow = window.open('', '_blank');
+                    const printWindow = window.open('', '', 'width=800,height=600');
                     printWindow.document.write(`
                         <html>
                             <head><title>Print Photo</title></head>
@@ -478,14 +271,197 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
-
+        
         if (continueBtn) {
             continueBtn.addEventListener('click', () => {
                 window.location.href = 'thankyou.php';
             });
         }
+    }
 
-        // Initialize canvas on load
-        redrawCanvas();
+    // Main canvas drawing function
+    function redrawCanvas() {
+        if (!storedImages || storedImages.length === 0) {
+            console.warn('⚠️ No images available for redraw');
+            return;
+        }
+
+        console.log(`Redrawing canvas with background: ${backgroundType}`);
+
+        const stackedCanvas = document.createElement('canvas');
+        const ctx = stackedCanvas.getContext('2d');
+
+        // Layout 3 dimensions (6 photos in 3x2 grid)
+        const canvasWidth = 1200;   // 4R standard width
+        const canvasHeight = 1800;  // 4R standard height
+        const borderWidth = 30;
+        const spacing = 12;
+        const bottomPadding = 100;
+        const expectedPhotos = 6;
+
+        const availableHeight = canvasHeight - (borderWidth * 2) - (spacing * 2) - bottomPadding;
+        const photoHeight = (availableHeight - spacing) / 2;
+        const photoWidth = (canvasWidth - (borderWidth * 2) - (spacing * 2)) / 3;
+
+        stackedCanvas.width = canvasWidth;
+        stackedCanvas.height = canvasHeight;
+
+        // Clear the entire canvas first
+        ctx.clearRect(0, 0, stackedCanvas.width, stackedCanvas.height);
+
+        // Set background
+        if (backgroundType === 'color') {
+            ctx.fillStyle = backgroundColor;
+            ctx.fillRect(0, 0, stackedCanvas.width, stackedCanvas.height);
+        } else if (backgroundImage) {
+            const bgImg = new Image();
+            bgImg.onload = function() {
+                ctx.drawImage(bgImg, 0, 0, stackedCanvas.width, stackedCanvas.height);
+                drawPhotos();
+            };
+            bgImg.src = backgroundImage;
+            return;
+        }
+
+        drawPhotos();
+
+        function drawPhotos() {
+            if (storedImages.length < expectedPhotos) {
+                console.warn(`⚠️ Layout ${expectedPhotos} requires ${expectedPhotos} photos, only found: ${storedImages.length}`);
+            }
+
+            let loadedCount = 0;
+            const imagesToProcess = Math.min(storedImages.length, expectedPhotos);
+
+            storedImages.slice(0, imagesToProcess).forEach((imageData, index) => {
+                const img = new Image();
+                img.onload = function() {
+                    // Layout 3/5: 3x2 grid
+                    const col = index % 3;
+                    const row = Math.floor(index / 3);
+                    const x = borderWidth + (col * (photoWidth + spacing));
+                    const y = borderWidth + (row * (photoHeight + spacing));
+                    
+                    drawPhotoWithShape(ctx, img, x, y, photoWidth, photoHeight, selectedShape);
+                    
+                    loadedCount++;
+                    if (loadedCount === imagesToProcess) {
+                        drawStickersAndLogos(ctx, stackedCanvas);
+                    }
+                };
+                img.src = imageData;
+            });
+        }
+
+        // Update preview with optimized canvas style
+        if (photoCustomPreview) {
+            photoCustomPreview.innerHTML = '';
+            
+            // Set canvas style for small preview display
+            stackedCanvas.style.maxWidth = "300px";
+            stackedCanvas.style.maxHeight = "450px";
+            stackedCanvas.style.width = "auto";
+            stackedCanvas.style.height = "auto";
+            stackedCanvas.style.border = "2px solid #ddd";
+            stackedCanvas.style.borderRadius = "8px";
+            stackedCanvas.style.boxShadow = "0 4px 8px rgba(0,0,0,0.1)";
+            stackedCanvas.style.display = "block";
+            stackedCanvas.style.margin = "0 auto";
+            
+            photoCustomPreview.appendChild(stackedCanvas);
+        }
+
+        finalCanvas = stackedCanvas;
+    }
+
+    // Helper function to draw photo with shape
+    function drawPhotoWithShape(ctx, img, x, y, width, height, shape) {
+        ctx.save();
+        
+        if (shape === 'circle') {
+            const centerX = x + width / 2;
+            const centerY = y + height / 2;
+            const radius = Math.min(width, height) / 2;
+            
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.clip();
+        } else if (shape === 'rounded') {
+            roundedRect(ctx, x, y, width, height, 20);
+            ctx.clip();
+        } else if (shape === 'heart') {
+            heartShape(ctx, x + width/2, y + height/2, Math.min(width, height)/2);
+            ctx.clip();
+        }
+        
+        ctx.drawImage(img, x, y, width, height);
+        ctx.restore();
+    }
+
+    // Helper functions for shapes
+    function roundedRect(ctx, x, y, width, height, radius) {
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + width - radius, y);
+        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+        ctx.lineTo(x + width, y + height - radius);
+        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        ctx.lineTo(x + radius, y + height);
+        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+    }
+
+    function heartShape(ctx, x, y, size) {
+        ctx.beginPath();
+        ctx.moveTo(x, y + size / 4);
+        ctx.quadraticCurveTo(x, y, x + size / 4, y);
+        ctx.quadraticCurveTo(x + size / 2, y, x + size / 2, y + size / 4);
+        ctx.quadraticCurveTo(x + size / 2, y, x + size * 3 / 4, y);
+        ctx.quadraticCurveTo(x + size, y, x + size, y + size / 4);
+        ctx.quadraticCurveTo(x + size, y + size / 2, x + size * 3 / 4, y + size * 3 / 4);
+        ctx.lineTo(x + size / 2, y + size);
+        ctx.lineTo(x + size / 4, y + size * 3 / 4);
+        ctx.quadraticCurveTo(x, y + size / 2, x, y + size / 4);
+        ctx.closePath();
+    }
+
+    // Draw stickers and logos
+    function drawStickersAndLogos(ctx, canvas) {
+        // Draw selected sticker
+        if (selectedSticker) {
+            const stickerImg = new Image();
+            stickerImg.onload = function() {
+                const stickerSize = 100;
+                const stickerX = canvas.width - stickerSize - 20;
+                const stickerY = canvas.height - stickerSize - 120;
+                
+                ctx.drawImage(stickerImg, stickerX, stickerY, stickerSize, stickerSize);
+            };
+            stickerImg.src = selectedSticker;
+        }
+
+        // Add date/time if checked
+        const dateCheckbox = document.getElementById('dateCheckbox');
+        const dateTimeCheckbox = document.getElementById('dateTimeCheckbox');
+        
+        if (dateCheckbox && dateCheckbox.checked) {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString();
+            
+            ctx.fillStyle = 'white';
+            ctx.font = '16px Arial';
+            ctx.fillText(dateStr, 40, canvas.height - 40);
+        }
+        
+        if (dateTimeCheckbox && dateTimeCheckbox.checked) {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString();
+            
+            ctx.fillStyle = 'white';
+            ctx.font = '16px Arial';
+            ctx.fillText(timeStr, 40, canvas.height - 20);
+        }
     }
 });
