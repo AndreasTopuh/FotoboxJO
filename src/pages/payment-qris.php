@@ -49,17 +49,28 @@ $_SESSION['session_type'] = 'payment';
 
         <!-- Kanan -->
         <div class="select-payment-right">
-          <!-- Timer -->
-          <div class="timer-container" style="text-align: center; margin-bottom: 1rem;">
+          <!-- Timer (Hidden saat loading) -->
+          <div id="timer-container" class="timer-container" style="text-align: center; margin-bottom: 1rem; display: none;">
             <h3 style="color: #ff4444; margin: 0;">Waktu Tersisa:</h3>
             <div id="timer" style="font-size: 2rem; font-weight: bold; color: #ff4444;">03:00</div>
           </div>
           
-          <div class="qr-container">
+          <!-- Loading Spinner -->
+          <div id="loading-container" class="loading-container" style="text-align: center; margin-bottom: 1rem;">
+            <div class="loading-spinner"></div>
+            <p style="margin-top: 1rem; color: #333; font-weight: 600;">Memuat QR Code...</p>
+            <div class="loading-progress">
+              <div class="progress-bar"></div>
+            </div>
+          </div>
+          
+          <!-- QR Container (Hidden saat loading) -->
+          <div id="qr-container" class="qr-container" style="display: none;">
             <img id="qris-img" src="" style="width: 180px; height: 180px; object-fit: contain;" alt="QRIS Code">
           </div>
           
-          <div class="status-container">
+          <!-- Status Container (Hidden saat loading) -->
+          <div id="status-container" class="status-container" style="display: none;">
             <p id="status" style="margin: 0; color: #333; font-weight: 600;">Status: Menunggu pembayaran...</p>
           </div>
           
@@ -97,7 +108,18 @@ $_SESSION['session_type'] = 'payment';
             }, 1000);
         }
 
-        // Fetch QR code dan mulai timer
+        // Function untuk hide loading dan show QR
+        function showQRCode() {
+            // Hide loading
+            document.getElementById('loading-container').style.display = 'none';
+            
+            // Show QR dan timer
+            document.getElementById('timer-container').style.display = 'block';
+            document.getElementById('qr-container').style.display = 'block';
+            document.getElementById('status-container').style.display = 'block';
+        }
+
+        // Fetch QR code dengan loading
         fetch('../api-fetch/charge_qris.php')
             .then(res => res.json())
             .then(data => {
@@ -121,13 +143,21 @@ $_SESSION['session_type'] = 'payment';
                 const qrUrl = data.qr_url;
                 document.getElementById('qris-img').src = qrUrl;
 
-                // Mulai timer dan polling status
-                startTimer();
-                pollStatus();
+                // Simulasi loading delay (2 detik) untuk UX yang lebih baik
+                setTimeout(() => {
+                    showQRCode();
+                    
+                    // Mulai timer dan polling status setelah QR muncul
+                    startTimer();
+                    pollStatus();
+                }, 2000);
             })
             .catch(error => {
                 console.error('Error:', error);
                 alert('Terjadi kesalahan saat memuat QR code');
+                
+                // Hide loading jika error
+                document.getElementById('loading-container').style.display = 'none';
             });
 
         function pollStatus() {
@@ -219,6 +249,65 @@ $_SESSION['session_type'] = 'payment';
         
         .continue-btn:hover {
             background: #0056b3;
+        }
+
+        /* Loading Spinner Styles */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 250px;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Loading Progress Bar */
+        .loading-progress {
+            width: 200px;
+            height: 6px;
+            background-color: #f3f3f3;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #007bff, #00d4ff);
+            border-radius: 3px;
+            animation: loadProgress 2s ease-out forwards;
+        }
+
+        @keyframes loadProgress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .loading-spinner {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .loading-progress {
+                width: 150px;
+            }
         }
     </style>
 </body>

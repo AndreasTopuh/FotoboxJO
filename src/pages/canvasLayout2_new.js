@@ -1,11 +1,58 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Timer functionality
+    const timerDisplay = document.getElementById('timer-display');
+    const timeoutModal = document.getElementById('timeout-modal');
+    const timeoutOkBtn = document.getElementById('timeout-ok-btn');
+    
+    let timeLeft = 7 * 60; // 7 minutes in seconds
+    let timerInterval;
+
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (timerDisplay) {
+            timerDisplay.textContent = display;
+        }
+        
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            showTimeoutModal();
+        }
+        
+        timeLeft--;
+    }
+
+    function showTimeoutModal() {
+        if (timeoutModal) {
+            timeoutModal.style.display = 'flex';
+        }
+    }
+
+    function hideTimeoutModal() {
+        if (timeoutModal) {
+            timeoutModal.style.display = 'none';
+        }
+    }
+
+    if (timeoutOkBtn) {
+        timeoutOkBtn.addEventListener('click', () => {
+            hideTimeoutModal();
+            window.location.href = 'customizeLayout2.php';
+        });
+    }
+
+    // Start the timer
+    timerInterval = setInterval(updateTimer, 1000);
+    updateTimer(); // Initial call to set display
+
     const video = document.getElementById('video');
     const blackScreen = document.getElementById('blackScreen');
     const countdownText = document.getElementById('countdownText');
     const progressCounter = document.getElementById('progressCounter');
     const startBtn = document.getElementById('startBtn');
     const invertBtn = document.getElementById('invertBtn');
-    // const downloadBtn = document.getElementById('downloadBtn');
     const doneBtn = document.getElementById('doneBtn');
     const flash = document.getElementById('flash');
     const photoContainer = document.getElementById('photoContainer');
@@ -19,17 +66,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fullscreenBtn = document.getElementById('fullscreenBtn');
     const videoContainer = document.getElementById("videoContainer");
-
     const fullscreenMessage = document.getElementById("fullscreenMessage");
     const filterMessage = document.getElementById("filterMessage");
-
-    const fullscreenImg = fullscreenBtn.querySelector("img");
+    const fullscreenImg = fullscreenBtn && fullscreenBtn.querySelector("img");
 
     const uploadInput = document.getElementById('uploadInput');
     const uploadBtn = document.getElementById('uploadBtn');
 
-    document.getElementById("timerOptions").addEventListener("change", updateCountdown);
-
+    const timerOptions = document.getElementById("timerOptions");
+    if (timerOptions) {
+        timerOptions.addEventListener("change", updateCountdown);
+    }
 
     window.addEventListener("beforeunload", () => {
         let stream = document.querySelector("video")?.srcObject;
@@ -55,11 +102,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 videoContainer.msRequestFullscreen();
             }
             
-            fullscreenMessage.style.opacity = "1";
-            fullscreenImg.src = "/src/assets/fullScreen2.png";
+            if (fullscreenMessage) {
+                fullscreenMessage.style.opacity = "1";
+            }
+            if (fullscreenImg) {
+                fullscreenImg.src = "/src/assets/fullScreen2.png";
+            }
             
             setTimeout(() => {
-                fullscreenMessage.style.opacity = "0"; // Fade out
+                if (fullscreenMessage) {
+                    fullscreenMessage.style.opacity = "0"; // Fade out
+                }
             }, 1000);
 
         } else {
@@ -74,14 +127,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.msExitFullscreen();
             }
             
-            fullscreenMessage.style.opacity = "0";
-            fullscreenImg.src = "/src/assets/fullScreen3.png";
+            if (fullscreenMessage) {
+                fullscreenMessage.style.opacity = "0";
+            }
+            if (fullscreenImg) {
+                fullscreenImg.src = "/src/assets/fullScreen3.png";
+            }
         }
     }
     
-    // Attach event listener to the button
-    fullscreenBtn.addEventListener("click", toggleFullscreen);
-      
+    if (fullscreenBtn) {
+        fullscreenBtn.addEventListener("click", toggleFullscreen);
+    }
 
     if(bnwFilter) {
         bnwFilter.addEventListener('click', () => {
@@ -126,6 +183,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function applyFilter(filterClass) {
+        if (!video) return;
+        
         // Remove existing filters
         video.classList.remove("sepia", "grayscale","smooth","gray","vintage");
 
@@ -136,6 +195,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function filterText(chosenFilter) {
+        if (!filterMessage) return;
+        
         filterMessage.style.opacity = "1";
         filterMessage.innerHTML = chosenFilter;
             
@@ -146,13 +207,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const canvas = document.createElement('canvas');
     let images = [];
-
     let invertBtnState = false;
 
     if(invertBtn) {
         invertBtn.addEventListener('click', () => {
             invertBtnState =!invertBtnState;
-            // alert(invertBtnState)
             cameraInvertSwitch()
             filterText("invert")
         });
@@ -160,12 +219,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function cameraInvertSwitch() {
         if (invertBtnState == true) {
-            photoContainer.style.transform = 'scaleX(-1)'
-            video.style.transform = 'scaleX(-1)'
+            if (photoContainer) photoContainer.style.transform = 'scaleX(-1)'
+            if (video) video.style.transform = 'scaleX(-1)'
         }
         else {
-            photoContainer.style.transform = 'scaleX(1)'
-            video.style.transform = 'scaleX(1)'
+            if (photoContainer) photoContainer.style.transform = 'scaleX(1)'
+            if (video) video.style.transform = 'scaleX(1)'
         }
     }
 
@@ -174,16 +233,20 @@ document.addEventListener('DOMContentLoaded', () => {
     
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-            video.srcObject = stream;
-    
-            // Ensure video is playing before hiding black screen
-            video.onloadedmetadata = () => {
-                video.play();
-                setTimeout(() => {
-                    blackScreen.style.opacity = 0;
-                    setTimeout(() => blackScreen.style.display = 'none', 1000);
-                }, 500);
-            };
+            if (video) {
+                video.srcObject = stream;
+        
+                // Ensure video is playing before hiding black screen
+                video.onloadedmetadata = () => {
+                    video.play();
+                    setTimeout(() => {
+                        if (blackScreen) {
+                            blackScreen.style.opacity = 0;
+                            setTimeout(() => blackScreen.style.display = 'none', 1000);
+                        }
+                    }, 500);
+                };
+            }
         } catch (err) {
             console.error("Camera Access Denied", err);
             alert("Please enable camera permissions in your browser settings.");
@@ -191,48 +254,54 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function stopCameraStream() {
-        if (video.srcObject) {
+        if (video && video.srcObject) {
             video.srcObject.getTracks().forEach(track => track.stop());
             video.srcObject = null;
         }
     }
     
-    // Start camera if on canvas.php
-    if (window.location.pathname.endsWith("canvas.php") || window.location.pathname === "canvas.php") {
+    // Start camera if on canvasLayout2.php
+    if (window.location.pathname.endsWith("canvasLayout2.php") || window.location.pathname === "canvasLayout2.php") {
         startCamera();
     }
 
     async function startPhotobooth() {
+        const photoCount = 4; // Layout 2 has 4 photos
+        
         if (images.length > 0) {
             const confirmReset = confirm("You already have pictures. Do you want to retake them?");
             if (!confirmReset) return;
     
             images = [];
-            photoContainer.innerHTML = '';
-            progressCounter.textContent = "0/3";
-            doneBtn.style.display = 'none';
+            if (photoContainer) photoContainer.innerHTML = '';
+            if (progressCounter) progressCounter.textContent = `0/${photoCount}`;
+            if (doneBtn) doneBtn.style.display = 'none';
         }
     
         // Disable buttons to prevent multiple actions
-        startBtn.disabled = true;
-        uploadBtn.disabled = true;
-        startBtn.innerHTML = 'Capturing...';
-        progressCounter.textContent = "0/3";
+        if (startBtn) {
+            startBtn.disabled = true;
+            startBtn.innerHTML = 'Capturing...';
+        }
+        if (uploadBtn) uploadBtn.disabled = true;
+        if (progressCounter) progressCounter.textContent = `0/${photoCount}`;
     
         // Get the selected timer value
         const timerOptions = document.getElementById("timerOptions");
-        const selectedValue = parseInt(timerOptions.value) || 3; // Default to 3 if no value is selected
+        const selectedValue = parseInt(timerOptions?.value) || 3; // Default to 3 if no value is selected
     
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < photoCount; i++) {
             // Countdown using selected timer
             await showCountdown(selectedValue);
     
             // Flash Effect
-            flash.style.opacity = 1;
-            setTimeout(() => flash.style.opacity = 0, 200);
+            if (flash) {
+                flash.style.opacity = 1;
+                setTimeout(() => flash.style.opacity = 0, 200);
+            }
     
             // Ensure video dimensions are loaded before capturing
-            if (video.videoWidth === 0 || video.videoHeight === 0) {
+            if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
                 console.error("Video not ready yet.");
                 alert("Camera not ready. Please try again.");
                 return;
@@ -255,27 +324,33 @@ document.addEventListener('DOMContentLoaded', () => {
             images.push(imageData);
     
             // Display captured image in preview
-            const imgElement = document.createElement('img');
-            imgElement.src = imageData;
-            imgElement.classList.add('photo');
-            photoContainer.appendChild(imgElement);
+            if (photoContainer) {
+                const imgElement = document.createElement('img');
+                imgElement.src = imageData;
+                imgElement.classList.add('photo');
+                photoContainer.appendChild(imgElement);
+            }
     
-            progressCounter.textContent = `${i + 1}/3`;
+            if (progressCounter) progressCounter.textContent = `${i + 1}/${photoCount}`;
     
             // Wait before next capture if not the last one
-            if (i < 2) await new Promise(res => setTimeout(res, 500)); 
+            if (i < photoCount - 1) await new Promise(res => setTimeout(res, 500)); 
         }
     
         // Reset buttons
-        if (images.length === 3) {
-            startBtn.disabled = false;
-            uploadBtn.disabled = false;
-            startBtn.innerHTML = 'Retake';
-            doneBtn.style.display = 'block';
+        if (images.length === photoCount) {
+            if (startBtn) {
+                startBtn.disabled = false;
+                startBtn.innerHTML = 'Retake';
+            }
+            if (uploadBtn) uploadBtn.disabled = false;
+            if (doneBtn) doneBtn.style.display = 'block';
         }
     }
 
     async function showCountdown(selectedValue) {
+        if (!countdownText) return;
+        
         countdownText.style.display = "flex";
         for (let countdown = selectedValue; countdown > 0; countdown--) {
             countdownText.textContent = countdown;
@@ -294,6 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Update Image Upload for Users to choose multiple images at once
     function handleImageUpload(event) {
+        const photoCount = 4; // Layout 2 has 4 photos
         const files = Array.from(event.target.files); // Get all selected files
 
         if (files.length === 0) {
@@ -304,9 +380,9 @@ document.addEventListener('DOMContentLoaded', () => {
         for (const file of files) {
             if (!file.type.startsWith("image/")) continue;
 
-            // Stop if we already have 3 images
-            if (images.length >= 3) {
-                const confirmReplace = confirm("You already have 3 pictures. Uploading new images will replace all current pictures. Do you want to proceed?");
+            // Stop if we already have required number of images
+            if (images.length >= photoCount) {
+                const confirmReplace = confirm(`You already have ${photoCount} pictures. Uploading new images will replace all current pictures. Do you want to proceed?`);
                 if (!confirmReplace) {
                     event.target.value = "";
                     return;
@@ -314,13 +390,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Reset everything
                 images = [];
-                photoContainer.innerHTML = '';
-                progressCounter.textContent = "0/3";
-                startBtn.innerHTML = 'Capturing...';
-                doneBtn.style.display = 'none';
+                if (photoContainer) photoContainer.innerHTML = '';
+                if (progressCounter) progressCounter.textContent = `0/${photoCount}`;
+                if (startBtn) startBtn.innerHTML = 'Capturing...';
+                if (doneBtn) doneBtn.style.display = 'none';
             }
 
-            startBtn.innerHTML = 'Capturing...';
+            if (startBtn) startBtn.innerHTML = 'Capturing...';
 
             const reader = new FileReader();
             reader.onload = function (e) {
@@ -328,16 +404,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 images.push(imageData);
 
-                const imgElement = document.createElement('img');
-                imgElement.src = imageData;
-                imgElement.classList.add('photo');
-                photoContainer.appendChild(imgElement);
+                if (photoContainer) {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = imageData;
+                    imgElement.classList.add('photo');
+                    photoContainer.appendChild(imgElement);
+                }
 
-                progressCounter.textContent = `${images.length}/3`;
+                if (progressCounter) progressCounter.textContent = `${images.length}/${photoCount}`;
 
-                if (images.length === 3) {
-                    startBtn.innerHTML = 'Retake';
-                    doneBtn.style.display = 'block';
+                if (images.length === photoCount) {
+                    if (startBtn) startBtn.innerHTML = 'Retake';
+                    if (doneBtn) doneBtn.style.display = 'block';
                 }
             };
 
@@ -349,6 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function storeImageArray() {
+        const photoCount = 4; // Layout 2 has 4 photos
         let loadedImages = 0;
         let storedImages = [];
     
@@ -379,13 +458,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 loadedImages++;
     
 
-                if (loadedImages === 3) {
+                if (loadedImages === photoCount) {
                     const estimatedSize = new Blob([JSON.stringify(storedImages)]).size;
 
-                    const storageLimit = 15 * 1024 * 1024; // 15MB limit
+                    const storageLimit = 5 * 1024 * 1024; // 5MB limit
 
                     if (estimatedSize > storageLimit) {
-                        alert("The total image size exceeds the 15MB limit. Please upload smaller images.");
+                        alert("The total image size exceeds the 5MB limit. Please upload smaller images.");
                         return; // Stop storing and redirecting
                     }
 
@@ -400,7 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            console.log("All 3 images stored in server session!");
+                            console.log(`All ${photoCount} images stored in server session!`);
                             
                             // Create customize session before redirect
                             return fetch('../api-fetch/create_customize_session.php', {
@@ -413,10 +492,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            window.location.href = 'customize.php'; 
+                            window.location.href = 'customizeLayout2.php'; 
                         } else {
                             console.error('Error creating customize session:', data.error);
-                            window.location.href = 'customize.php'; // Fallback
+                            window.location.href = 'customizeLayout2.php'; // Fallback
                         }
                     })
                     .catch(error => {
@@ -445,13 +524,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (uploadBtn) {
         uploadBtn.addEventListener('click', () => {
-            alert("Note: Please make sure your total photo size does not exceed 15MB.\nLarge images may cause saving issues.");
-            uploadInput.click();
+            alert("Note: Please make sure your total photo size does not exceed 5MB.\nLarge images may cause saving issues.");
+            if (uploadInput) uploadInput.click();
         });
     }
     
     if(uploadInput) {
         uploadInput.addEventListener('change', handleImageUpload);
     }
-    // downloadBtn.addEventListener('click', () => downloadStackedImages());
-})
+});

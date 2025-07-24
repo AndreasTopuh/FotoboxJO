@@ -1,16 +1,12 @@
 <?php
 session_start();
-
-// Auto create customize session jika belum ada atau expired
-if (!isset($_SESSION['customize_expired_time']) || time() > $_SESSION['customize_expired_time']) {
-    // Create new customize session
-    $_SESSION['customize_start_time'] = time();
-    $_SESSION['customize_expired_time'] = time() + (3 * 60); // 3 menit
-    $_SESSION['session_type'] = 'customize';
+// Comment out payment check untuk testing
+/*
+if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
+    header("Location: /FotoboxJO/index.php"); // tendang balik ke landing
+    exit();
 }
-
-// Hitung waktu tersisa
-$timeLeft = $_SESSION['customize_expired_time'] - time();
+*/
 ?>
 
 <!DOCTYPE html>
@@ -20,14 +16,14 @@ $timeLeft = $_SESSION['customize_expired_time'] - time();
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description"
-        content="Customize your Layout 5 photobooth photos. Add frames, stickers, and text to your 6-photo strip.">
+        content="Customize your Layout 1 photobooth photos. Add frames, stickers, and text to your 2-photo strip.">
     <meta name="keywords"
-        content="photobooth customization, layout 5 editing, photo frames, photo stickers, photo strip editing">
-    <title>Photobooth | Customize Layout 5</title>
+        content="photobooth customization, layout 1 editing, photo frames, photo stickers, photo strip editing">
+    <title>Photobooth | Customize Layout 1</title>
     <link rel="canonical" href="https://www.gofotobox.online">
-    <meta property="og:title" content="Photobooth | Customize Layout 5">
+    <meta property="og:title" content="Photobooth | Customize Layout 1">
     <meta property="og:description"
-        content="Customize your Layout 5 photobooth photos. Add frames, stickers, and text to your 6-photo strip.">
+        content="Customize your Layout 1 photobooth photos. Add frames, stickers, and text to your 2-photo strip.">
     <meta property="og:image" content="https://www.gofotobox.online/assets/home-mockup.png">
     <meta property="og:url" content="https://www.gofotobox.online">
     <meta property="og:type" content="website">
@@ -48,21 +44,6 @@ $timeLeft = $_SESSION['customize_expired_time'] - time();
 </head>
 
 <body>
-    <!-- Timer Box -->
-    <div id="timer-box" class="timer-box">
-        <span id="timer-display">03:00</span>
-        <p>Sisa waktu untuk customize</p>
-    </div>
-
-    <!-- Timeout Modal -->
-    <div id="timeout-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h2>Waktu Habis!</h2>
-            <p>Sesi customize Anda telah berakhir. Anda akan diarahkan ke halaman utama.</p>
-            <button id="timeout-ok-btn" class="modal-btn">OK</button>
-        </div>
-    </div>
-
     <main id="main-section">
                 <div class="gradientBgCanvas"></div>
                 <section class="custom-main">
@@ -236,9 +217,9 @@ $timeLeft = $_SESSION['customize_expired_time'] - time();
                                                         <label for="dateTimeCheckbox" id="addDateTimeLabel">Add Time</label>
                                                 </div>
                                                 <div class="custom-buttons-holder">
-                                                        <button class="main-button email-button" id="emailBtn" style="background: #28a745;">📧 Kirim ke Email</button>
-                                                        <button class="main-button print-button" id="printBtn" style="background: #ffc107; color: #000;">🖨️ Print</button>
-                                                        <button class="main-button continue-button" id="continueBtn" style="background: #007bff;">➡️ Lanjutkan</button>
+                                                        <button class="sub-button customBtn retake-button-design" id="customBack">Retake</button>
+                                                        <!-- <button class="main-button customBtn" id="customNext">NEXT</button> -->
+                                                        <button class="main-button download-button-design" id="downloadCopyBtn">Download</button>
                                                 </div>
 
                                         </div>
@@ -247,19 +228,7 @@ $timeLeft = $_SESSION['customize_expired_time'] - time();
 
                 </section>
 
-    </main>
-
-    <!-- Email Modal -->
-    <div id="emailModal" class="modal-overlay" style="display: none;">
-        <div class="modal-content">
-            <button id="closeEmailModal" class="close-btn">&times;</button>
-            <h3>Masukan Email Anda</h3>
-            <input type="email" id="emailInput" placeholder="contoh@email.com" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 5px; margin: 1rem 0;">
-            <div class="modal-buttons">
-                <button id="sendEmailBtn" class="btn-primary">Kirim</button>
-            </div>
-        </div>
-    </div>
+    </main>>
 
     <script src="https://cdn.jsdelivr.net/npm/vanilla-picker@2.12.1/dist/vanilla-picker.min.js"></script>
     <script src="customizeLayout5.js"></script>

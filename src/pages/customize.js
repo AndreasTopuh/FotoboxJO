@@ -1326,8 +1326,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const stackedCanvas = document.createElement('canvas');
         const ctx = stackedCanvas.getContext('2d');
 
-        const canvasWidth = 592;
-        const canvasHeight = 1352;
+        const canvasWidth = 1206;   // 10.2cm pada 300 DPI
+        const canvasHeight = 1794;  // 15.2cm pada 300 DPI
         const borderWidth = 30; //previously 40
         const spacing = 12; //previously 20
         const bottomPadding = 100;
@@ -1532,8 +1532,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const stackedCanvas = document.createElement('canvas');
         const ctx = stackedCanvas.getContext('2d');
     
-        const canvasWidth = 592;
-        const canvasHeight = 1352;
+        const canvasWidth = 1206;   // 10.2cm pada 300 DPI
+        const canvasHeight = 1794;  // 15.2cm pada 300 DPI
         const borderWidth = 30; //previously 40
         const spacing = 12; //previously 20
         const bottomPadding = 100;

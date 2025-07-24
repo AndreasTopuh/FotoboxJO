@@ -1,16 +1,12 @@
 <?php
 session_start();
-
-// Auto create customize session jika belum ada atau expired
-if (!isset($_SESSION['customize_expired_time']) || time() > $_SESSION['customize_expired_time']) {
-    // Create new customize session
-    $_SESSION['customize_start_time'] = time();
-    $_SESSION['customize_expired_time'] = time() + (3 * 60); // 3 menit
-    $_SESSION['session_type'] = 'customize';
+// Comment out payment check untuk testing
+/*
+if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
+    header("Location: /FotoboxJO/index.php"); // tendang balik ke landing
+    exit();
 }
-
-// Hitung waktu tersisa
-$timeLeft = $_SESSION['customize_expired_time'] - time();
+*/
 ?>
 
 <!DOCTYPE html>
@@ -20,14 +16,14 @@ $timeLeft = $_SESSION['customize_expired_time'] - time();
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description"
-        content="Customize your Layout 5 photobooth photos. Add frames, stickers, and text to your 6-photo strip.">
+        content="Customize your Layout 1 photobooth photos. Add frames, stickers, and text to your 2-photo strip.">
     <meta name="keywords"
-        content="photobooth customization, layout 5 editing, photo frames, photo stickers, photo strip editing">
-    <title>Photobooth | Customize Layout 5</title>
+        content="photobooth customization, layout 1 editing, photo frames, photo stickers, photo strip editing">
+    <title>Photobooth | Customize Layout 1</title>
     <link rel="canonical" href="https://www.gofotobox.online">
-    <meta property="og:title" content="Photobooth | Customize Layout 5">
+    <meta property="og:title" content="Photobooth | Customize Layout 1">
     <meta property="og:description"
-        content="Customize your Layout 5 photobooth photos. Add frames, stickers, and text to your 6-photo strip.">
+        content="Customize your Layout 1 photobooth photos. Add frames, stickers, and text to your 2-photo strip.">
     <meta property="og:image" content="https://www.gofotobox.online/assets/home-mockup.png">
     <meta property="og:url" content="https://www.gofotobox.online">
     <meta property="og:type" content="website">
@@ -36,8 +32,8 @@ $timeLeft = $_SESSION['customize_expired_time'] - time();
     <meta name="twitter:title" content="Photobooth | Customize 4R Photo">
     <meta name="twitter:description"
         content="Customize your 4R photobooth photos. Add frames, stickers, and text.">
-    <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png">
-    <link rel="stylesheet" href="/styles.css" />
+    <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png">   
+        <link rel="stylesheet" href="/styles.css?v=<?php echo time(); ?>" />
     <link
         href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&display=swap"
         rel="stylesheet">
@@ -262,7 +258,7 @@ $timeLeft = $_SESSION['customize_expired_time'] - time();
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/vanilla-picker@2.12.1/dist/vanilla-picker.min.js"></script>
-    <script src="customizeLayout5.js"></script>
+    <script src="customizeLayout2.js"></script>
 </body>
 
 </html>

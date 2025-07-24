@@ -10,30 +10,38 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateTimer() {
         const minutes = Math.floor(timeLeft / 60);
         const seconds = timeLeft % 60;
-        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (timerDisplay) {
+            timerDisplay.textContent = display;
+        }
         
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
             showTimeoutModal();
-            return;
         }
         
         timeLeft--;
     }
 
     function showTimeoutModal() {
-        timeoutModal.style.display = 'block';
+        if (timeoutModal) {
+            timeoutModal.style.display = 'flex';
+        }
     }
 
     function hideTimeoutModal() {
-        timeoutModal.style.display = 'none';
+        if (timeoutModal) {
+            timeoutModal.style.display = 'none';
+        }
     }
 
-    timeoutOkBtn.addEventListener('click', () => {
-        hideTimeoutModal();
-        // Redirect to main page
-        window.location.href = '/FotoboxJO/index.html';
-    });
+    if (timeoutOkBtn) {
+        timeoutOkBtn.addEventListener('click', () => {
+            hideTimeoutModal();
+            window.location.href = 'customizeLayout4.php';
+        });
+    }
 
     // Start the timer
     timerInterval = setInterval(updateTimer, 1000);
@@ -60,12 +68,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const videoContainer = document.getElementById("videoContainer");
     const fullscreenMessage = document.getElementById("fullscreenMessage");
     const filterMessage = document.getElementById("filterMessage");
-    const fullscreenImg = fullscreenBtn.querySelector("img");
+    const fullscreenImg = fullscreenBtn && fullscreenBtn.querySelector("img");
 
     const uploadInput = document.getElementById('uploadInput');
     const uploadBtn = document.getElementById('uploadBtn');
 
-    document.getElementById("timerOptions").addEventListener("change", updateCountdown);
+    const timerOptions = document.getElementById("timerOptions");
+    if (timerOptions) {
+        timerOptions.addEventListener("change", updateCountdown);
+    }
 
     window.addEventListener("beforeunload", () => {
         let stream = document.querySelector("video")?.srcObject;
@@ -91,11 +102,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 videoContainer.msRequestFullscreen();
             }
             
-            fullscreenMessage.style.opacity = "1";
-            fullscreenImg.src = "/src/assets/fullScreen2.png";
+            if (fullscreenMessage) {
+                fullscreenMessage.style.opacity = "1";
+            }
+            if (fullscreenImg) {
+                fullscreenImg.src = "/src/assets/fullScreen2.png";
+            }
             
             setTimeout(() => {
-                fullscreenMessage.style.opacity = "0"; // Fade out
+                if (fullscreenMessage) {
+                    fullscreenMessage.style.opacity = "0"; // Fade out
+                }
             }, 1000);
 
         } else {
@@ -110,15 +127,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.msExitFullscreen();
             }
             
-            fullscreenMessage.style.opacity = "0";
-            fullscreenImg.src = "/src/assets/fullScreen3.png";
+            if (fullscreenMessage) {
+                fullscreenMessage.style.opacity = "0";
+            }
+            if (fullscreenImg) {
+                fullscreenImg.src = "/src/assets/fullScreen3.png";
+            }
         }
     }
     
-    // Attach event listener to the button
-    fullscreenBtn.addEventListener("click", toggleFullscreen);
+    if (fullscreenBtn) {
+        fullscreenBtn.addEventListener("click", toggleFullscreen);
+    }
 
-    // Filter functionality
     if(bnwFilter) {
         bnwFilter.addEventListener('click', () => {
             applyFilter("grayscale");
@@ -162,6 +183,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function applyFilter(filterClass) {
+        if (!video) return;
+        
         // Remove existing filters
         video.classList.remove("sepia", "grayscale","smooth","gray","vintage");
 
@@ -172,6 +195,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function filterText(chosenFilter) {
+        if (!filterMessage) return;
+        
         filterMessage.style.opacity = "1";
         filterMessage.innerHTML = chosenFilter;
             
@@ -194,12 +219,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function cameraInvertSwitch() {
         if (invertBtnState == true) {
-            photoContainer.style.transform = 'scaleX(-1)'
-            video.style.transform = 'scaleX(-1)'
+            if (photoContainer) photoContainer.style.transform = 'scaleX(-1)'
+            if (video) video.style.transform = 'scaleX(-1)'
         }
         else {
-            photoContainer.style.transform = 'scaleX(1)'
-            video.style.transform = 'scaleX(1)'
+            if (photoContainer) photoContainer.style.transform = 'scaleX(1)'
+            if (video) video.style.transform = 'scaleX(1)'
         }
     }
 
@@ -208,16 +233,20 @@ document.addEventListener('DOMContentLoaded', () => {
     
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-            video.srcObject = stream;
-    
-            // Ensure video is playing before hiding black screen
-            video.onloadedmetadata = () => {
-                video.play();
-                setTimeout(() => {
-                    blackScreen.style.opacity = 0;
-                    setTimeout(() => blackScreen.style.display = 'none', 1000);
-                }, 500);
-            };
+            if (video) {
+                video.srcObject = stream;
+        
+                // Ensure video is playing before hiding black screen
+                video.onloadedmetadata = () => {
+                    video.play();
+                    setTimeout(() => {
+                        if (blackScreen) {
+                            blackScreen.style.opacity = 0;
+                            setTimeout(() => blackScreen.style.display = 'none', 1000);
+                        }
+                    }, 500);
+                };
+            }
         } catch (err) {
             console.error("Camera Access Denied", err);
             alert("Please enable camera permissions in your browser settings.");
@@ -225,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function stopCameraStream() {
-        if (video.srcObject) {
+        if (video && video.srcObject) {
             video.srcObject.getTracks().forEach(track => track.stop());
             video.srcObject = null;
         }
@@ -236,114 +265,92 @@ document.addEventListener('DOMContentLoaded', () => {
         startCamera();
     }
 
-    // Modified for single photo capture (4R layout)
     async function startPhotobooth() {
+        const photoCount = 8; // Layout 4 has 2 photos
+        
         if (images.length > 0) {
             const confirmReset = confirm("You already have pictures. Do you want to retake them?");
             if (!confirmReset) return;
     
             images = [];
-            photoContainer.innerHTML = '';
-            progressCounter.textContent = "0/8";
-            doneBtn.style.display = 'none';
+            if (photoContainer) photoContainer.innerHTML = '';
+            if (progressCounter) progressCounter.textContent = `0/${photoCount}`;
+            if (doneBtn) doneBtn.style.display = 'none';
         }
     
         // Disable buttons to prevent multiple actions
-        startBtn.disabled = true;
-        uploadBtn.disabled = true;
-        startBtn.innerHTML = 'Capturing...';
-        progressCounter.textContent = "0/8";
+        if (startBtn) {
+            startBtn.disabled = true;
+            startBtn.innerHTML = 'Capturing...';
+        }
+        if (uploadBtn) uploadBtn.disabled = true;
+        if (progressCounter) progressCounter.textContent = `0/${photoCount}`;
     
         // Get the selected timer value
         const timerOptions = document.getElementById("timerOptions");
-        const selectedValue = parseInt(timerOptions.value) || 3; // Default to 3 if no value is selected
+        const selectedValue = parseInt(timerOptions?.value) || 3; // Default to 3 if no value is selected
     
-        for (let i = 0; i < 8; i++) { // Layout 4: 8 photos
+        for (let i = 0; i < photoCount; i++) {
             // Countdown using selected timer
             await showCountdown(selectedValue);
-
+    
             // Flash Effect
-            flash.style.opacity = 1;
-            setTimeout(() => flash.style.opacity = 0, 200);
-
+            if (flash) {
+                flash.style.opacity = 1;
+                setTimeout(() => flash.style.opacity = 0, 200);
+            }
+    
             // Ensure video dimensions are loaded before capturing
-            if (video.videoWidth === 0 || video.videoHeight === 0) {
+            if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
                 console.error("Video not ready yet.");
                 alert("Camera not ready. Please try again.");
                 return;
             }
-
-            // Capture Image with Filter Applied and WHITE BACKGROUND
+    
+            // Capture Image with Filter Applied
             const ctx = canvas.getContext('2d');
-            
-            // Reduce canvas size for better performance and smaller file size
-            const maxWidth = 800;
-            const maxHeight = 600;
-            let captureWidth = video.videoWidth;
-            let captureHeight = video.videoHeight;
-            
-            if (captureWidth > maxWidth || captureHeight > maxHeight) {
-                const ratio = Math.min(maxWidth / captureWidth, maxHeight / captureHeight);
-                captureWidth *= ratio;
-                captureHeight *= ratio;
-            }
-            
-            canvas.width = captureWidth;
-            canvas.height = captureHeight;
-            
-            // Fill with WHITE background first
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+    
             // Apply current video filter to the canvas
             ctx.filter = getComputedStyle(video).filter;
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
+    
             // Slight delay for iOS fix
             await new Promise(res => setTimeout(res, 100)); 
-
-            // Use JPEG with compression instead of PNG
-            const imageData = canvas.toDataURL('image/jpeg', 0.8);
-            console.log("Captured Layout 4 Image (compressed)");
+    
+            const imageData = canvas.toDataURL('image/png');
+            console.log("Captured Image: ", imageData);
             images.push(imageData);
-
+    
             // Display captured image in preview
-            const imgElement = document.createElement('img');
-            imgElement.src = imageData;
-            imgElement.classList.add('photo');
-            photoContainer.appendChild(imgElement);
-
-            progressCounter.textContent = `${i + 1}/8`;
-
+            if (photoContainer) {
+                const imgElement = document.createElement('img');
+                imgElement.src = imageData;
+                imgElement.classList.add('photo');
+                photoContainer.appendChild(imgElement);
+            }
+    
+            if (progressCounter) progressCounter.textContent = `${i + 1}/${photoCount}`;
+    
             // Wait before next capture if not the last one
-            if (i < 7) await new Promise(res => setTimeout(res, 500)); // Wait between photos
+            if (i < photoCount - 1) await new Promise(res => setTimeout(res, 500)); 
         }
     
         // Reset buttons
-        if (images.length === 8) { // Layout 4: 8 photos
-            console.log("8 photos captured, showing done button");
-            startBtn.disabled = false;
-            uploadBtn.disabled = false;
-            startBtn.innerHTML = 'Retake';
-            
-            // Force show the done button with important overrides
-            doneBtn.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; pointer-events: auto !important; z-index: 9999 !important; position: relative !important;';
-            
-            console.log("Done button display set to:", doneBtn.style.display);
-            console.log("Done button visibility set to:", doneBtn.style.visibility);
-            console.log("Done button computed style:", getComputedStyle(doneBtn).display);
-            
-            // Additional check
-            setTimeout(() => {
-                console.log("Button check after 1 second:");
-                console.log("- Clickable:", !doneBtn.disabled);
-                console.log("- Visible:", getComputedStyle(doneBtn).display !== 'none');
-                console.log("- Pointer events:", getComputedStyle(doneBtn).pointerEvents);
-            }, 1000);
+        if (images.length === photoCount) {
+            if (startBtn) {
+                startBtn.disabled = false;
+                startBtn.innerHTML = 'Retake';
+            }
+            if (uploadBtn) uploadBtn.disabled = false;
+            if (doneBtn) doneBtn.style.display = 'block';
         }
     }
 
     async function showCountdown(selectedValue) {
+        if (!countdownText) return;
+        
         countdownText.style.display = "flex";
         for (let countdown = selectedValue; countdown > 0; countdown--) {
             countdownText.textContent = countdown;
@@ -360,21 +367,22 @@ document.addEventListener('DOMContentLoaded', () => {
         showCountdown();
     }
 
-    // Update Image Upload for single image
+    // Update Image Upload for Users to choose multiple images at once
     function handleImageUpload(event) {
+        const photoCount = 8; // Layout 4 has 2 photos
         const files = Array.from(event.target.files); // Get all selected files
 
         if (files.length === 0) {
-            alert("Please upload valid image files.");
+            alert("Please upload a valid image file.");
             return;
         }
 
         for (const file of files) {
             if (!file.type.startsWith("image/")) continue;
 
-            // Stop if we already have 8 images
-            if (images.length >= 8) {
-                const confirmReplace = confirm("You already have 8 pictures. Uploading new images will replace all current pictures. Do you want to proceed?");
+            // Stop if we already have required number of images
+            if (images.length >= photoCount) {
+                const confirmReplace = confirm(`You already have ${photoCount} pictures. Uploading new images will replace all current pictures. Do you want to proceed?`);
                 if (!confirmReplace) {
                     event.target.value = "";
                     return;
@@ -382,13 +390,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Reset everything
                 images = [];
-                photoContainer.innerHTML = '';
-                progressCounter.textContent = "0/8";
-                startBtn.innerHTML = 'Capturing...';
-                doneBtn.style.display = 'none';
+                if (photoContainer) photoContainer.innerHTML = '';
+                if (progressCounter) progressCounter.textContent = `0/${photoCount}`;
+                if (startBtn) startBtn.innerHTML = 'Capturing...';
+                if (doneBtn) doneBtn.style.display = 'none';
             }
 
-            startBtn.innerHTML = 'Capturing...';
+            if (startBtn) startBtn.innerHTML = 'Capturing...';
 
             const reader = new FileReader();
             reader.onload = function (e) {
@@ -396,22 +404,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 images.push(imageData);
 
-                const imgElement = document.createElement('img');
-                imgElement.src = imageData;
-                imgElement.classList.add('photo');
-                photoContainer.appendChild(imgElement);
+                if (photoContainer) {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = imageData;
+                    imgElement.classList.add('photo');
+                    photoContainer.appendChild(imgElement);
+                }
 
-                progressCounter.textContent = `${images.length}/8`;
+                if (progressCounter) progressCounter.textContent = `${images.length}/${photoCount}`;
 
-                if (images.length === 8) {
-                    console.log("8 images uploaded, showing done button");
-                    startBtn.innerHTML = 'Retake';
-                    
-                    // Force show the done button with important overrides
-                    doneBtn.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; pointer-events: auto !important; z-index: 9999 !important; position: relative !important;';
-                    
-                    console.log("Done button display set to:", doneBtn.style.display);
-                    console.log("Done button computed style:", getComputedStyle(doneBtn).display);
+                if (images.length === photoCount) {
+                    if (startBtn) startBtn.innerHTML = 'Retake';
+                    if (doneBtn) doneBtn.style.display = 'block';
                 }
             };
 
@@ -422,90 +426,82 @@ document.addEventListener('DOMContentLoaded', () => {
         event.target.value = "";
     }
 
-    async function storeImageArray() {
+    function storeImageArray() {
+        const photoCount = 8; // Layout 4 has 2 photos
         let loadedImages = 0;
         let storedImages = [];
     
         images.forEach((imgData, index) => {
             const img = new Image();
             img.src = imgData;
-            img.onload = async () => {
-                
-                // Create canvas to compress image
-                const compressCanvas = document.createElement('canvas');
-                const compressCtx = compressCanvas.getContext('2d');
-                
-                // Resize image to reduce file size (max 800px width)
-                const maxWidth = 800;
-                const maxHeight = 600;
-                let { width, height } = img;
-                
-                if (width > maxWidth || height > maxHeight) {
-                    const ratio = Math.min(maxWidth / width, maxHeight / height);
-                    width *= ratio;
-                    height *= ratio;
-                }
-                
-                compressCanvas.width = width;
-                compressCanvas.height = height;
+            img.onload = () => {
                 
                 if (invertBtnState) {
+                    // Create an offscreen canvas to mirror the image
+                    const tempCanvas = document.createElement('canvas');
+                    const tempCtx = tempCanvas.getContext('2d');
+    
+                    tempCanvas.width = img.width;
+                    tempCanvas.height = img.height;
+    
                     // Apply mirroring
-                    compressCtx.translate(width, 0);
-                    compressCtx.scale(-1, 1);
-                    compressCtx.drawImage(img, 0, 0, width, height);
+                    tempCtx.translate(img.width, 0);
+                    tempCtx.scale(-1, 1);
+                    tempCtx.drawImage(img, 0, 0, img.width, img.height);
+    
+                    // Convert to base64 data URL
+                    storedImages[index] = tempCanvas.toDataURL('image/png');
                 } else {
-                    compressCtx.drawImage(img, 0, 0, width, height);
+                    // Store the original image if not mirrored
+                    storedImages[index] = imgData;
                 }
-                
-                // Compress to JPEG with 0.7 quality to reduce size
-                const compressedData = compressCanvas.toDataURL('image/jpeg', 0.7);
-                storedImages[index] = compressedData;
-                
                 loadedImages++;
     
-                // For Layout 4 with 8 images, we need higher storage limit
-                if (loadedImages === 8) {
-                    console.log('=== Layout 4 Storage Debug ===');
-                    console.log('All 8 images processed for storage');
-                    
-                    const estimatedSize = new Blob([JSON.stringify(storedImages)]).size;
-                    console.log('Estimated storage size:', estimatedSize, 'bytes');
-                    console.log('Estimated storage size (MB):', (estimatedSize / 1024 / 1024).toFixed(2));
 
-                    const storageLimit = 10 * 1024 * 1024; // 10MB limit for compressed images
-                    console.log('Storage limit:', storageLimit, 'bytes');
+                if (loadedImages === photoCount) {
+                    const estimatedSize = new Blob([JSON.stringify(storedImages)]).size;
+
+                    const storageLimit = 15 * 1024 * 1024; // 15MB limit
 
                     if (estimatedSize > storageLimit) {
-                        alert("The total image size still exceeds the 10MB limit. Please use smaller images or take new photos.");
-                        return;
+                        alert("The total image size exceeds the 15MB limit. Please upload smaller images.");
+                        return; // Stop storing and redirecting
                     }
 
-                    try {
-                        // Send photos to server for session storage
-                        const formData = new FormData();
-                        formData.append('photos', JSON.stringify(storedImages));
-                        formData.append('layout', 'layout4');
-                        
-                        const response = await fetch('/FotoboxJO/src/api-fetch/save_photos.php', {
-                            method: 'POST',
-                            body: formData
-                        });
-                        
-                        const result = await response.json();
-                        
-                        if (result.success) {
-                            console.log("8 compressed images stored in server session with key 'photoArray4'!");
-                            console.log("Redirecting to customizeLayout4.php...");
-                            window.location.href = 'customizeLayout4.php';
+                    // Simpan ke server-side session daripada sessionStorage
+                    fetch('../api-fetch/save_photos.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ photos: storedImages })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log(`All ${photoCount} images stored in server session!`);
+                            
+                            // Create customize session before redirect
+                            return fetch('../api-fetch/create_customize_session.php', {
+                                method: 'POST'
+                            });
                         } else {
-                            console.error("Server storage failed:", result.error);
-                            alert("Failed to save images. Please try again.");
+                            throw new Error(data.error || 'Failed to save photos');
                         }
-                    } catch (error) {
-                        console.error("Error saving to server:", error);
-                        alert("Error saving images. Please try again.");
-                    }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.href = 'customizeLayout4.php'; 
+                        } else {
+                            console.error('Error creating customize session:', data.error);
+                            window.location.href = 'customizeLayout4.php'; // Fallback
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error saving photos: ' + error.message);
+                    });
                 }
             };
         });
@@ -523,183 +519,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (doneBtn) {
-        console.log("=== SETTING UP DONE BUTTON EVENTS ===");
-        
-        // Remove any existing listeners first
-        doneBtn.removeEventListener('click', handleDoneClick);
-        doneBtn.removeEventListener('touchstart', handleDoneClick);
-        doneBtn.removeEventListener('mousedown', handleDoneClick);
-        
-        // Add multiple event types for maximum compatibility
-        doneBtn.addEventListener('click', handleDoneClick, { passive: false });
-        doneBtn.addEventListener('touchstart', handleDoneClick, { passive: false });
-        doneBtn.addEventListener('mousedown', handleDoneClick, { passive: false });
-        
-        // Also add a direct onclick as backup
-        doneBtn.onclick = function(e) {
-            console.log("Direct onclick triggered");
-            handleDoneClick(e);
-        };
-        
-        // Debug: Check if button is initially hidden
-        console.log("Done button initial display:", doneBtn.style.display);
-        console.log("Done button element:", doneBtn);
-        console.log("Done button computed style:", getComputedStyle(doneBtn).display);
-        console.log("Done button bounding rect:", doneBtn.getBoundingClientRect());
-    } else {
-        console.error("Done button (doneBtn) not found in DOM!");
-    }
-
-    function handleDoneClick(event) {
-        console.log("=== DONE BUTTON CLICKED ===");
-        console.log("Event type:", event.type);
-        console.log("Event target:", event.target);
-        console.log("Current images array:", images);
-        console.log("Images length:", images.length);
-        
-        // Prevent any default behavior
-        if (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            event.stopImmediatePropagation();
-        }
-        
-        // Force execution regardless of image count for testing
-        console.log("Forcing execution for debugging...");
-        
-        if (images.length === 8) {
-            console.log("8 images found, calling storeImageArray()");
-            storeImageArray();
-        } else if (images.length === 0) {
-            console.log("No images found, creating dummy data and redirecting...");
-            // Create dummy data for testing
-            const dummyImages = [];
-            for (let i = 0; i < 8; i++) {
-                dummyImages.push('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==');
-            }
-            
-            // Send dummy photos to server for session storage
-            const formData = new FormData();
-            formData.append('photos', JSON.stringify(dummyImages));
-            formData.append('layout', 'layout4');
-            
-            fetch('/FotoboxJO/src/api-fetch/save_photos.php', {
-                method: 'POST',
-                body: formData
-            }).then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    console.log("Dummy images stored in server session!");
-                    window.location.href = 'customizeLayout4.php';
-                } else {
-                    console.error("Server storage failed:", result.error);
-                    alert("Failed to save images. Please try again.");
-                }
-            }).catch(error => {
-                console.error("Error saving dummy images to server:", error);
-                alert("Error saving images. Please try again.");
-            });
-            window.location.href = 'customizeLayout4.php';
-        } else {
-            console.log(`Found ${images.length} images, but expected 8`);
-            alert(`Error: Expected 8 images but found ${images.length}. Please retake photos.`);
-        }
+        doneBtn.addEventListener('click', () => storeImageArray());
     }
 
     if (uploadBtn) {
         uploadBtn.addEventListener('click', () => {
-            alert("Note: For best results, please use images smaller than 2MB each.\nLarge images will be automatically compressed to prevent storage issues.");
-            uploadInput.click();
+            alert("Note: Please make sure your total photo size does not exceed 15MB.\nLarge images may cause saving issues.");
+            if (uploadInput) uploadInput.click();
         });
     }
     
     if(uploadInput) {
         uploadInput.addEventListener('change', handleImageUpload);
     }
-
-    // Add test button for debugging
-    const testBtn = document.getElementById('testBtn');
-    if (testBtn) {
-        testBtn.addEventListener('click', () => {
-            console.log("Test button clicked - forcing redirect to customize");
-            console.log("Current images:", images.length);
-            
-            // Create dummy data if no images
-            if (images.length === 0) {
-                const dummyImages = [];
-                for (let i = 0; i < 8; i++) {
-                    dummyImages.push('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==');
-                }
-                
-                // Send dummy photos to server for session storage
-                const formData = new FormData();
-                formData.append('photos', JSON.stringify(dummyImages));
-                formData.append('layout', 'layout4');
-                
-                fetch('/FotoboxJO/src/api-fetch/save_photos.php', {
-                    method: 'POST',
-                    body: formData
-                }).then(response => response.json())
-                .then(result => {
-                    if (result.success) {
-                        console.log("Test dummy images stored in server session!");
-                        window.location.href = 'customizeLayout4.php';
-                    } else {
-                        console.error("Server storage failed:", result.error);
-                        window.location.href = 'customizeLayout4.php'; // Still redirect for testing
-                    }
-                }).catch(error => {
-                    console.error("Error saving test images to server:", error);
-                    window.location.href = 'customizeLayout4.php'; // Still redirect for testing
-                });
-                
-                console.log("Created dummy images for testing");
-                return;
-            } else {
-                // Use existing images
-                storeImageArray();
-                return;
-            }
-        });
-    }
-
-    // Test button functionality on page load
-    console.log('=== Layout 4 Button Debug ===');
-    console.log('Start button found:', !!startBtn);
-    console.log('Done button found:', !!doneBtn);
-    console.log('Upload button found:', !!uploadBtn);
-    console.log('Test button found:', !!testBtn);
-    
-    if (doneBtn) {
-        console.log('Done button initial state:', {
-            display: doneBtn.style.display,
-            visibility: doneBtn.style.visibility,
-            disabled: doneBtn.disabled,
-            computedDisplay: getComputedStyle(doneBtn).display,
-            pointerEvents: getComputedStyle(doneBtn).pointerEvents,
-            zIndex: getComputedStyle(doneBtn).zIndex,
-            position: getComputedStyle(doneBtn).position
-        });
-        
-        // Add click area debugger
-        doneBtn.addEventListener('mouseenter', () => {
-            console.log("Mouse entered done button area");
-        });
-        
-        doneBtn.addEventListener('mouseleave', () => {
-            console.log("Mouse left done button area");
-        });
-        
-        // Check for overlapping elements
-        setTimeout(() => {
-            const rect = doneBtn.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            const elementAtCenter = document.elementFromPoint(centerX, centerY);
-            
-            console.log("Element at button center:", elementAtCenter);
-            console.log("Is button the top element?", elementAtCenter === doneBtn);
-            console.log("Button rect:", rect);
-        }, 2000);
-    }
-})
+});

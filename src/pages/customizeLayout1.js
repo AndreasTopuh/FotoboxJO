@@ -11,29 +11,38 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateTimer() {
         const minutes = Math.floor(timeLeft / 60);
         const seconds = timeLeft % 60;
-        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (timerDisplay) {
+            timerDisplay.textContent = display;
+        }
         
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
             showTimeoutModal();
-            return;
         }
         
         timeLeft--;
     }
 
     function showTimeoutModal() {
-        timeoutModal.style.display = 'block';
+        if (timeoutModal) {
+            timeoutModal.style.display = 'flex';
+        }
     }
 
     function hideTimeoutModal() {
-        timeoutModal.style.display = 'none';
+        if (timeoutModal) {
+            timeoutModal.style.display = 'none';
+        }
     }
 
-    timeoutOkBtn.addEventListener('click', () => {
-        hideTimeoutModal();
-        window.location.href = '/FotoboxJO/index.html';
-    });
+    if (timeoutOkBtn) {
+        timeoutOkBtn.addEventListener('click', () => {
+            hideTimeoutModal();
+            window.location.href = '/';
+        });
+    }
 
     // Start the timer
     timerInterval = setInterval(updateTimer, 1000);
@@ -76,29 +85,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const pinkLiliesFrame = document.getElementById('pinkLiliesFrame');
     const roseCardFrame = document.getElementById('roseCardFrame');
     const princessVintageFrame = document.getElementById('princessVintageFrame');
-    const gridPaperFrame = document.getElementById('gridPaperFrame');
-    const stardustFrame = document.getElementById('stardustFrame');
-    const roughTextureFrame = document.getElementById('roughTextureFrame');
-    const ribbonSweaterFrame = document.getElementById('ribbonSweaterFrame');
-    const vsPinkFrame = document.getElementById('vsPinkFrame');
-    const vsYellowFrame = document.getElementById('vsYellowFrame');
-    const redRosesPaintFrame = document.getElementById('redRosesPaintFrame');
-    const grayTrashFrame = document.getElementById('grayTrashFrame');
-    const blackTrashFrame = document.getElementById('blackTrashFrame');
-    const whiteTrashFrame = document.getElementById('whiteTrashFrame');
-    const brownKnittedFrame = document.getElementById('brownKnittedFrame');
-    const hotPinkKnittedFrame = document.getElementById('hotPinkKnittedFrame');
-    const redKnittedFrame = document.getElementById('redKnittedFrame');
-    const pinkKnittedFrame = document.getElementById('pinkKnittedFrame');
-    const redStripesFrame = document.getElementById('redStripesFrame');
-    const greenStripesFrame = document.getElementById('greenStripesFrame');
-    const blueStripesFrame = document.getElementById('blueStripesFrame');
-    const partyDrapeFrame = document.getElementById('partyDrapeFrame');
-    const partyDotsFrame = document.getElementById('partyDotsFrame');
-    const blingDenimFrame = document.getElementById('blingDenimFrame');
 
     const customBack = document.getElementById('customBack');
     const downloadCopyBtn = document.getElementById('downloadCopyBtn');
+    const emailBtn = document.getElementById('emailBtn');
+    const printBtn = document.getElementById('printBtn');
+    const continueBtn = document.getElementById('continueBtn');
 
     const noneSticker = document.getElementById('noneSticker')
     const kissSticker = document.getElementById('kissSticker')
@@ -112,17 +104,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const classicBSticker = document.getElementById('classicBSticker');
     const luckySticker = document.getElementById('luckySticker');
     const confettiSticker = document.getElementById('confettiSticker');
-    const ribbonCoquetteSticker = document.getElementById('ribbonCoquetteSticker');
-    const blueRibbonCoquetteSticker = document.getElementById('blueRibbonCoquetteSticker');
-    const blackStarSticker = document.getElementById('blackStarSticker');
-    const yellowChickenSticker = document.getElementById('yellowChickenSticker');
-    const brownBearSticker = document.getElementById('brownBearSticker');
-    const lotsHeartSticker = document.getElementById('lotsHeartSticker');
-    const tabbyCatSticker = document.getElementById('tabbyCatSticker');
-    const ballerinaCappuccinoSticker = document.getElementById('ballerinaCappuccinoSticker');
-    const doggyWhiteSticker = document.getElementById('doggyWhiteSticker');
-    const sakuraBlossomSticker = document.getElementById('sakuraBlossomSticker');
-    const myGirlsSticker = document.getElementById('myGirlsSticker');
 
     const engLogo = document.getElementById('engLogo');
     const korLogo = document.getElementById('korLogo');
@@ -133,560 +114,378 @@ document.addEventListener('DOMContentLoaded', function() {
     const circleFrameBtn = document.getElementById('circleFrameShape');
     const heartFrameBtn = document.getElementById('heartFrameShape');
 
+    let engLogoToggle = false;
+    let korLogoToggle = false;
+    let cnLogoToggle = false;
+
+    let selectedShape = 'default'; // or 'circle', 'rounded', 'heart'
+
+    const dateCheckbox = document.getElementById('dateCheckbox');
+    const dateTimeCheckbox = document.getElementById('dateTimeCheckbox');
+
     const colorPickerBtn = document.getElementById("colorPickerBtn");
 
-
     let finalCanvas = null;
-    let backgroundType = 'color';
-    let backgroundColor = '#FFC2D1';
-    let backgroundImage = null;
-    let currentStickers = [];
-    let logoStickers = [];
-    let shapeFrame = 'none';
-    let textOverlay = '';
-    let logoOverlay = '';
+    let selectedSticker = null;
 
+    let selectedText = 'photobooth';
+
+    if (customBack) {
+        customBack.addEventListener('click', () => {
+            window.location.href = 'canvasLayout1.php'
+        })
+    }
+
+    if (dateCheckbox) {
+        dateCheckbox.addEventListener('change', () => {
+            redrawCanvas();
+        });
+    }
+
+    if (dateTimeCheckbox) {
+        dateTimeCheckbox.addEventListener('change', () => {
+            redrawCanvas();
+        });
+    }
+    
+    // Retrieve stored images array from server session
     let storedImages = [];
     let imageArrayLength = 0;
-
-    // Fetch photos from server session instead of sessionStorage
-    fetch('/FotoboxJO/src/api-fetch/get_photos.php')
+    
+    // Fetch photos from server session
+    fetch('../api-fetch/get_photos.php')
         .then(response => response.json())
         .then(data => {
             if (data.success && data.photos) {
                 storedImages = data.photos;
                 imageArrayLength = storedImages.length;
+                console.log("Loaded images from server session:", storedImages);
                 
-                console.log('Stored Images from server:', storedImages);
-                console.log('Image Array Length:', imageArrayLength);
-
-                if (imageArrayLength === 0) {
-                    console.error('No images found in server session!');
-                    alert('No images found. Please go back and take photos first.');
-                    window.location.href = 'canvasLayout1.php';
-                    return;
-                }
-
-                // Initialize canvas after getting images
+                // Initialize canvas with photos after loading
                 initializeCanvas();
             } else {
-                console.error('Failed to get photos from server:', data.error);
-                alert('Failed to load photos. Please try again.');
-                window.location.href = 'canvasLayout1.php';
+                console.log("No valid images found in server session");
+                alert("Tidak ada foto ditemukan. Kembali ke halaman sebelumnya.");
+                window.location.href = 'selectlayout.php';
             }
         })
         .catch(error => {
-            console.error('Error fetching photos:', error);
-            alert('Error loading photos. Please try again.');
-            window.location.href = 'canvasLayout1.php';
+            console.error('Error loading photos:', error);
+            alert("Error loading photos. Please try again.");
+            window.location.href = 'selectlayout.php';
         });
 
     function initializeCanvas() {
-        if (imageArrayLength === 0) {
-            console.error('No images found in server session!');
-            alert('No images found. Redirecting to camera page.');
-            window.location.href = 'canvasLayout1.php';
+        if (!storedImages || storedImages.length !== imageArrayLength) {
+            console.log("No valid images found");
             return;
         }
 
-        // Continue with canvas initialization
-        console.log('Initializing canvas with', imageArrayLength, 'images');
-        redrawCanvas(); // Call initial draw
-    }
+        // Default background color
+        let backgroundType = 'color';
+        let backgroundColor = '#FFFFFF'; // default
+        let backgroundImage = null;
 
-    // Function to set new background and redraw canvas
-    function setBackground(option) {
-        console.log('Setting background:', option);
+        // Function to set new background and redraw canvas
+        function setBackground(option) {
+            console.log('Setting background:', option);
         
-        if (option.type === 'color') {
-            backgroundType = 'color';
-            backgroundColor = option.value;
-            redrawCanvas();
-        } else if (option.type === 'image') {
-            backgroundType = 'image';
-            backgroundImage = new Image();
-            backgroundImage.crossOrigin = 'anonymous';
-            backgroundImage.src = option.src;
-            
-            backgroundImage.onload = () => {
+            if (option.type === 'color') {
+                backgroundType = 'color';
+                backgroundColor = option.value;
                 redrawCanvas();
-            };
-            
-            backgroundImage.onerror = () => {
-                console.error('Failed to load background image:', option.src);
-            };
-        }
-    }
-
-    // Initialize Vanilla Picker
-    const picker = new Picker({
-        parent: colorPickerBtn,
-        popup: 'bottom',
-        color: '#FFFFFF',
-        onChange: (color) => {
-            setBackground({ type: 'color', value: color.hex });
-        },
-        onDone: (color) => {
-            colorPickerBtn.style.backgroundColor = color.hex;
-        }
-    });
-
-    // Show picker on click
-    colorPickerBtn.addEventListener("click", () => picker.show());
-
-    // function setSticker(type) {
-    //     console.log(`Sticker changed to: ${type}`);
-    //     selectedSticker = type;
-    //     redrawCanvas();
-    // }
-    function setSticker(type) {
-        if (selectedSticker === type) {
-            selectedSticker = null; // Remove sticker if already selected
-            console.log(`Removed sticker: ${type}`);
-        } else {
-            selectedSticker = type;
-            console.log(`Selected sticker: ${type}`);
-        }
-        redrawCanvas();
-    }
-
-    // 4R Canvas dimensions - Optimized for web and print
-    function redrawCanvas() {
-        console.log(`Redrawing Layout 1 canvas with background: ${backgroundType}, color: ${backgroundColor}`);
-
-        const stackedCanvas = document.createElement('canvas');
-        const ctx = stackedCanvas.getContext('2d');
-
-        const canvasWidth = 1200;
-        const canvasHeight = 1800;
-        const borderWidth = 30;
-        const bottomPadding = 80;
-        const photoGap = 15;
-
-        const availableHeight = canvasHeight - (borderWidth * 2) - bottomPadding;
-        const availableWidth = canvasWidth - (borderWidth * 2);
-        const photoWidth = availableWidth;
-        const photoHeight = (availableHeight - photoGap) / 2;
-
-        stackedCanvas.width = canvasWidth;
-        stackedCanvas.height = canvasHeight;
-
-        if (backgroundType === 'color') {
-            ctx.fillStyle = backgroundColor;
-            ctx.fillRect(0, 0, stackedCanvas.width, stackedCanvas.height);
-        } else if (backgroundType === 'image') {
-            const bgImg = new Image();
-            bgImg.crossOrigin = 'anonymous';
-            bgImg.onload = () => {
-                const pattern = ctx.createPattern(bgImg, 'repeat');
-                ctx.fillStyle = pattern;
-                ctx.fillRect(0, 0, stackedCanvas.width, stackedCanvas.height);
-                drawPhotos();
-            };
-            bgImg.src = backgroundImage.src;
-            return;
-        } else {
-            ctx.fillStyle = '#FFC2D1';
-            ctx.fillRect(0, 0, stackedCanvas.width, stackedCanvas.height);
-        }
-
-        drawPhotos();
-
-        function drawPhotos() {
-            let loadedCount = 0;
-            const totalPhotos = Math.min(storedImages.length, 2);
-
-            for (let i = 0; i < totalPhotos; i++) {
+            } else if (option.type === 'image') {
+                backgroundType = 'image';
                 const img = new Image();
-                img.crossOrigin = 'anonymous';
-                img.onload = () => {
+                img.onload = function() {
+                    backgroundImage = img;
+                    redrawCanvas();
+                };
+                img.src = option.value;
+            }
+        }
+
+        // Function to redraw the canvas with stored images & selected background
+        function redrawCanvas() {
+            console.log(`Redrawing canvas with background: ${backgroundType}`);
+
+            const stackedCanvas = document.createElement('canvas');
+            const ctx = stackedCanvas.getContext('2d');
+
+            // Layout 1 dimensions (2 photos in vertical strip)
+            const canvasWidth = 1206;   // 10.2cm pada 300 DPI
+            const canvasHeight = 1794;  // 15.2cm pada 300 DPI
+            const borderWidth = 30;
+            const spacing = 12;
+            const bottomPadding = 100;
+
+            const availableHeight = canvasHeight - (borderWidth * 2) - (spacing * 2) - bottomPadding;
+            const photoHeight = availableHeight / imageArrayLength;
+            const photoWidth = canvasWidth - (borderWidth * 2);
+
+            stackedCanvas.width = canvasWidth;
+            stackedCanvas.height = canvasHeight;
+
+            // Clear the entire canvas first
+            ctx.clearRect(0, 0, stackedCanvas.width, stackedCanvas.height);
+
+            if (backgroundType === 'color') {
+                ctx.fillStyle = backgroundColor;
+                ctx.fillRect(0, 0, stackedCanvas.width, stackedCanvas.height);
+                if(backgroundColor !== '#000000' && backgroundColor !== '#780000' && backgroundColor !== '#90a955') {
+                    ctx.fillStyle = 'black';
+                }
+                else {
+                    ctx.fillStyle = '#FFFFFF';
+                }
+            } else if (backgroundType === 'image' && backgroundImage) {
+                ctx.drawImage(backgroundImage, 0, 0, stackedCanvas.width, stackedCanvas.height);
+                const imageName = backgroundImage.src.split('/').pop();
+
+                const darkImages = [
+                    'pink-glitter.jpg',
+                    'brown-leopard.jpg',
+                    'red-leather.jpg',
+                    'ribbon-denim.jpg',
+                    'black-pink-ribbon.jpg',
+                    'green-hills.jpg',
+                    'sand-shells.jpg',
+                    'coco-trees.jpg'
+                ];
+
+                if (darkImages.includes(imageName)) {
+                    ctx.fillStyle = '#FFFFFF';
+                } else {
+                    ctx.fillStyle = '#000000';
+                }
+            }
+
+            ctx.font = 'bold 32px Arial, Roboto, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(selectedText, stackedCanvas.width / 2, stackedCanvas.height - 55);
+
+            // Draw photos
+            storedImages.forEach((imageData, index) => {
+                const img = new Image();
+                img.onload = function() {
                     const x = borderWidth;
-                    const y = borderWidth + (i * (photoHeight + photoGap));
+                    const y = borderWidth + (index * (photoHeight + spacing));
 
                     ctx.save();
-                    if (shapeFrame === 'circle') {
+
+                    if (selectedShape === 'circle') {
+                        // Create circular clipping path
                         const centerX = x + photoWidth / 2;
                         const centerY = y + photoHeight / 2;
-                        const radius = Math.min(photoWidth, photoHeight) / 2 - 10;
+                        const radius = Math.min(photoWidth, photoHeight) / 2;
+                        
                         ctx.beginPath();
                         ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
                         ctx.clip();
-                    } else if (shapeFrame === 'roundedRect') {
-                        const cornerRadius = 20;
+                    } else if (selectedShape === 'rounded') {
+                        // Create rounded rectangle clipping path
+                        const radius = 20;
                         ctx.beginPath();
-                        ctx.roundRect(x, y, photoWidth, photoHeight, cornerRadius);
+                        ctx.roundRect(x, y, photoWidth, photoHeight, radius);
                         ctx.clip();
-                    } else if (shapeFrame === 'heart') {
+                    } else if (selectedShape === 'heart') {
+                        // Create heart clipping path
                         const centerX = x + photoWidth / 2;
                         const centerY = y + photoHeight / 2;
                         const size = Math.min(photoWidth, photoHeight) / 2;
+                        
                         ctx.beginPath();
                         ctx.moveTo(centerX, centerY + size/4);
-                        ctx.bezierCurveTo(centerX, centerY-size/2, centerX-size, centerY-size/2, centerX-size/2, centerY);
-                        ctx.bezierCurveTo(centerX-size, centerY+size/2, centerX, centerY+size/2, centerX, centerY+size/4);
-                        ctx.bezierCurveTo(centerX, centerY+size/2, centerX+size, centerY+size/2, centerX+size/2, centerY);
-                        ctx.bezierCurveTo(centerX+size, centerY-size/2, centerX, centerY-size/2, centerX, centerY+size/4);
+                        ctx.bezierCurveTo(centerX, centerY-size/2, centerX-size*3/4, centerY-size/2, centerX-size/2, centerY);
+                        ctx.bezierCurveTo(centerX-size/4, centerY+size/4, centerX, centerY+size/2, centerX, centerY+size*3/4);
+                        ctx.bezierCurveTo(centerX, centerY+size/2, centerX+size/4, centerY+size/4, centerX+size/2, centerY);
+                        ctx.bezierCurveTo(centerX+size*3/4, centerY-size/2, centerX, centerY-size/2, centerX, centerY+size/4);
                         ctx.clip();
                     }
 
-                    const imgAspect = img.width / img.height;
-                    let drawWidth, drawHeight, drawX, drawY;
-
-                    if (imgAspect > 1) {
-                        drawHeight = photoHeight;
-                        drawWidth = photoHeight * imgAspect;
-                        drawX = x - (drawWidth - photoWidth) / 2;
-                        drawY = y;
-                    } else {
-                        drawWidth = photoWidth;
-                        drawHeight = photoWidth / imgAspect;
-                        drawX = x;
-                        drawY = y - (drawHeight - photoHeight) / 2;
-                    }
-
-                    ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+                    ctx.drawImage(img, x, y, photoWidth, photoHeight);
                     ctx.restore();
 
-                    loadedCount++;
-                    if (loadedCount === totalPhotos) {
-                        addStickers(stackedCanvas);
-                        addTextOverlay(stackedCanvas);
-                        addLogo(stackedCanvas);
-                        updatePreview(stackedCanvas);
+                    // Draw stickers and logos after all photos are drawn
+                    if (index === storedImages.length - 1) {
+                        drawStickersAndLogos(ctx, stackedCanvas);
                     }
                 };
-                img.src = storedImages[i];
+                img.src = imageData;
+            });
+
+            // Update preview
+            if (photoCustomPreview) {
+                photoCustomPreview.innerHTML = '';
+                photoCustomPreview.appendChild(stackedCanvas);
             }
+
+            finalCanvas = stackedCanvas;
         }
-    }
 
-    function addStickers(canvas) {
-        const ctx = canvas.getContext('2d');
-        
-        // 4R specific sticker configurations
-        const stickerConfigs = {
-            'kiss': [{ src: '/src/assets/stickers/kiss1.png', x: 50, y: 400, size: 200 }],
-            'sweet': [
-                { src: '/src/assets/stickers/sweet1.png', x: 30, y: 100, size: 120 },
-                { src: '/src/assets/stickers/sweet2.png', x: canvas.width - 150, y: 600, size: 120 },
-                { src: '/src/assets/stickers/sweet3.png', x: 50, y: canvas.height - 300, size: 120 }
-            ],
-            'ribbon': [
-                { src: '/src/assets/stickers/ribbon1.png', x: 30, y: 100, size: 120 },
-                { src: '/src/assets/stickers/ribbon3.png', x: canvas.width - 150, y: 800, size: 130 },
-                { src: '/src/assets/stickers/ribbon2.png', x: 25, y: canvas.height - 500, size: 120 }
-            ],
-            'sparkle': [
-                { src: '/src/assets/stickers/sparkle1.png', x: canvas.width - 250, y: 200, size: 300 },
-                { src: '/src/assets/stickers/sparkle2.png', x: 5, y: canvas.height - 1200, size: 250 },
-                { src: '/src/assets/stickers/sparkle2.png', x: canvas.width - 200, y: canvas.height - 250, size: 150 }
-            ]
-            // Add more sticker configurations as needed
-        };
-
-        currentStickers.forEach(stickerType => {
-            if (stickerConfigs[stickerType]) {
-                stickerConfigs[stickerType].forEach(config => {
-                    const stickerImg = new Image();
-                    stickerImg.crossOrigin = 'anonymous';
-                    stickerImg.onload = () => {
-                        ctx.drawImage(stickerImg, config.x, config.y, config.size, config.size);
-                        updatePreview(canvas);
-                    };
-                    stickerImg.src = config.src;
-                });
-            }
-        });
-    }
-
-    function addTextOverlay(canvas) {
-        if (!textOverlay) return;
-        
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#fff';
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = 2;
-        ctx.font = 'bold 40px Arial'; // Adjusted text size for smaller padding
-        ctx.textAlign = 'center';
-        
-        const selectedText = textOverlay;
-        ctx.strokeText(selectedText, canvas.width / 2, canvas.height - 40); // Closer to bottom
-        ctx.fillText(selectedText, canvas.width / 2, canvas.height - 40);
-    }
-
-    function addLogo(canvas) {
-        logoStickers.forEach(logoType => {
-            const logoConfigs = {
-                'english': { src: '/src/assets/icons/photobooth-new-logo.png', x: canvas.width - 120, y: canvas.height - 120, size: 80 },
-                'korean': { src: '/src/assets/icons/photobooth-new-logo.png', x: canvas.width - 120, y: canvas.height - 120, size: 80 },
-                'chinese': { src: '/src/assets/icons/photobooth-new-logo.png', x: canvas.width - 120, y: canvas.height - 120, size: 80 }
-            };
-
-            if (logoConfigs[logoType]) {
-                const config = logoConfigs[logoType];
-                const logoImg = new Image();
-                logoImg.crossOrigin = 'anonymous';
-                logoImg.onload = () => {
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(logoImg, config.x, config.y, config.size, config.size);
-                    updatePreview(canvas);
+        function drawStickersAndLogos(ctx, canvas) {
+            // Draw selected sticker
+            if (selectedSticker) {
+                const stickerImg = new Image();
+                stickerImg.onload = function() {
+                    const stickerSize = 100;
+                    const stickerX = canvas.width - stickerSize - 20;
+                    const stickerY = 20;
+                    ctx.drawImage(stickerImg, stickerX, stickerY, stickerSize, stickerSize);
                 };
-                logoImg.src = config.src;
+                stickerImg.src = selectedSticker;
             }
-        });
-    }
 
-    function updatePreview(canvas) {
-        finalCanvas = canvas;
-        photoCustomPreview.innerHTML = '';
-        
-        const clonedCanvas = document.createElement('canvas');
-        const clonedCtx = clonedCanvas.getContext('2d');
-        clonedCanvas.width = canvas.width;
-        clonedCanvas.height = canvas.height;
-        clonedCtx.drawImage(canvas, 0, 0);
-        
-        // Scale down for preview
-        clonedCanvas.style.width = "300px"; // Larger preview for high-res 4R
-        clonedCanvas.style.height = "auto";
-        clonedCanvas.style.border = "1px solid #ccc";
-        
-        photoCustomPreview.appendChild(clonedCanvas);
-    }
-
-    // Color frame handlers
-    if (pinkBtn) {
-        pinkBtn.addEventListener('click', () => {
-            setBackground({ type: 'color', value: '#FFC2D1' });
-        });
-    }
-
-    if (blueBtn) {
-        blueBtn.addEventListener('click', () => {
-            setBackground({ type: 'color', value: '#CAF0F8' });
-        });
-    }
-
-    if (yellowBtn) {
-        yellowBtn.addEventListener('click', () => {
-            setBackground({ type: 'color', value: '#FFF8A5' });
-        });
-    }
-
-    if (brownBtn) {
-        brownBtn.addEventListener('click', () => {
-            setBackground({ type: 'color', value: '#DDBEA9' });
-        });
-    }
-
-    if (redBtn) {
-        redBtn.addEventListener('click', () => {
-            setBackground({ type: 'color', value: '#780000' });
-        });
-    }
-
-    if (matchaBtn) {
-        matchaBtn.addEventListener('click', () => {
-            setBackground({ type: 'color', value: '#90a955' });
-        });
-    }
-
-    if (purpleBtn) {
-        purpleBtn.addEventListener('click', () => {
-            setBackground({ type: 'color', value: '#c19ee0' });
-        });
-    }
-
-    if (whiteBtn) {
-        whiteBtn.addEventListener('click', () => {
-            setBackground({ type: 'color', value: '#FFFFFF' });
-        });
-    }
-
-    if (blackBtn) {
-        blackBtn.addEventListener('click', () => {
-            setBackground({ type: 'color', value: '#000000' });
-        });
-    }
-
-    // Shape frame handlers
-    if (normalFrameBtn) {
-        normalFrameBtn.addEventListener('click', () => {
-            shapeFrame = 'none';
-            redrawCanvas();
-        });
-    }
-
-    if (roundEdgeFrameBtn) {
-        roundEdgeFrameBtn.addEventListener('click', () => {
-            shapeFrame = 'roundedRect';
-            redrawCanvas();
-        });
-    }
-
-    if (circleFrameBtn) {
-        circleFrameBtn.addEventListener('click', () => {
-            shapeFrame = 'circle';
-            redrawCanvas();
-        });
-    }
-
-    if (heartFrameBtn) {
-        heartFrameBtn.addEventListener('click', () => {
-            shapeFrame = 'heart';
-            redrawCanvas();
-        });
-    }
-
-    // Sticker handlers
-    if (noneSticker) {
-        noneSticker.addEventListener('click', () => {
-            currentStickers = [];
-            redrawCanvas();
-        });
-    }
-
-    if (kissSticker) {
-        kissSticker.addEventListener('click', () => {
-            currentStickers = ['kiss'];
-            redrawCanvas();
-        });
-    }
-
-    if (sweetSticker) {
-        sweetSticker.addEventListener('click', () => {
-            currentStickers = ['sweet'];
-            redrawCanvas();
-        });
-    }
-
-    if (ribbonSticker) {
-        ribbonSticker.addEventListener('click', () => {
-            currentStickers = ['ribbon'];
-            redrawCanvas();
-        });
-    }
-
-    if (sparkleSticker) {
-        sparkleSticker.addEventListener('click', () => {
-            currentStickers = ['sparkle'];
-            redrawCanvas();
-        });
-    }
-
-    // Download functionality
-    if (downloadCopyBtn) {
-        downloadCopyBtn.addEventListener('click', () => {
-            if (finalCanvas) {
-                const link = document.createElement('a');
-                link.download = `photobooth-4R-${Date.now()}.png`;
-                link.href = finalCanvas.toDataURL('image/png');
-                link.click();
+            // Draw logos
+            if (engLogoToggle) {
+                // Draw English logo
+                const logoImg = new Image();
+                logoImg.onload = function() {
+                    ctx.drawImage(logoImg, 20, 20, 80, 40);
+                };
+                logoImg.src = '/src/assets/logos/eng-logo.png';
             }
-        });
-    }
 
-    // Back button
-    if (customBack) {
-        customBack.addEventListener('click', () => {
-            window.location.href = 'canvasLayout1.php';
-        });
-    }
+            // Draw date/time if enabled
+            if (dateCheckbox && dateCheckbox.checked) {
+                const now = new Date();
+                const dateString = now.toLocaleDateString();
+                ctx.font = '16px Arial';
+                ctx.fillText(dateString, canvas.width / 2, canvas.height - 20);
+            }
 
-    // Email Modal Functions
-    function showEmailModal() {
-        document.getElementById('emailModal').style.display = 'flex';
-    }
-
-    function hideEmailModal() {
-        document.getElementById('emailModal').style.display = 'none';
-    }
-
-    // Email Function
-    function sendEmail() {
-        const email = document.getElementById('emailInput').value;
-        if (!email) {
-            alert('Please enter your email address');
-            return;
+            if (dateTimeCheckbox && dateTimeCheckbox.checked) {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString();
+                ctx.font = '14px Arial';
+                ctx.fillText(timeString, canvas.width / 2, canvas.height - 5);
+            }
         }
 
-        if (!email.includes('@')) {
-            alert('Please enter a valid email address');
-            return;
+        // Color button event listeners
+        if (pinkBtn) {
+            pinkBtn.addEventListener('click', () => setBackground({type: 'color', value: '#FF69B4'}));
+        }
+        if (blueBtn) {
+            blueBtn.addEventListener('click', () => setBackground({type: 'color', value: '#4169E1'}));
+        }
+        if (yellowBtn) {
+            yellowBtn.addEventListener('click', () => setBackground({type: 'color', value: '#FFD700'}));
+        }
+        if (brownBtn) {
+            brownBtn.addEventListener('click', () => setBackground({type: 'color', value: '#8B4513'}));
+        }
+        if (redBtn) {
+            redBtn.addEventListener('click', () => setBackground({type: 'color', value: '#DC143C'}));
+        }
+        if (matchaBtn) {
+            matchaBtn.addEventListener('click', () => setBackground({type: 'color', value: '#90a955'}));
+        }
+        if (purpleBtn) {
+            purpleBtn.addEventListener('click', () => setBackground({type: 'color', value: '#8A2BE2'}));
+        }
+        if (whiteBtn) {
+            whiteBtn.addEventListener('click', () => setBackground({type: 'color', value: '#FFFFFF'}));
+        }
+        if (blackBtn) {
+            blackBtn.addEventListener('click', () => setBackground({type: 'color', value: '#000000'}));
         }
 
-        // Get the current canvas as base64
-        const canvas = document.getElementById('combinedCanvas');
-        const imageData = canvas.toDataURL('image/png');
+        // Background image event listeners
+        if (pinkGlitter) {
+            pinkGlitter.addEventListener('click', () => setBackground({type: 'image', value: '/src/assets/backgrounds/pink-glitter.jpg'}));
+        }
+        if (pinkPlaid) {
+            pinkPlaid.addEventListener('click', () => setBackground({type: 'image', value: '/src/assets/backgrounds/pink-plaid.jpg'}));
+        }
+        // Add more background image listeners...
 
-        fetch('/FotoboxJO/src/api-fetch/send_email.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                email: email,
-                customized_image: imageData,
-                layout: 'layout1'
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Email berhasil dikirim!');
-                hideEmailModal();
-            } else {
-                alert('Gagal mengirim email: ' + (data.error || 'Unknown error'));
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error sending email: ' + error.message);
-        });
+        // Shape button event listeners
+        if (normalFrameBtn) {
+            normalFrameBtn.addEventListener('click', () => {
+                selectedShape = 'default';
+                redrawCanvas();
+            });
+        }
+        if (roundEdgeFrameBtn) {
+            roundEdgeFrameBtn.addEventListener('click', () => {
+                selectedShape = 'rounded';
+                redrawCanvas();
+            });
+        }
+        if (circleFrameBtn) {
+            circleFrameBtn.addEventListener('click', () => {
+                selectedShape = 'circle';
+                redrawCanvas();
+            });
+        }
+        if (heartFrameBtn) {
+            heartFrameBtn.addEventListener('click', () => {
+                selectedShape = 'heart';
+                redrawCanvas();
+            });
+        }
+
+        // Sticker event listeners
+        if (noneSticker) {
+            noneSticker.addEventListener('click', () => {
+                selectedSticker = null;
+                redrawCanvas();
+            });
+        }
+        if (kissSticker) {
+            kissSticker.addEventListener('click', () => {
+                selectedSticker = '/src/assets/stickers/kiss.png';
+                redrawCanvas();
+            });
+        }
+        // Add more sticker listeners...
+
+        // Action button event listeners
+        if (downloadCopyBtn) {
+            downloadCopyBtn.addEventListener('click', () => {
+                if (finalCanvas) {
+                    const link = document.createElement('a');
+                    link.download = 'photobooth-layout1.png';
+                    link.href = finalCanvas.toDataURL();
+                    link.click();
+                }
+            });
+        }
+
+        if (emailBtn) {
+            emailBtn.addEventListener('click', () => {
+                // Show email modal
+                const emailModal = document.getElementById('emailModal');
+                if (emailModal) {
+                    emailModal.style.display = 'flex';
+                }
+            });
+        }
+
+        if (printBtn) {
+            printBtn.addEventListener('click', () => {
+                if (finalCanvas) {
+                    const printWindow = window.open('', '_blank');
+                    printWindow.document.write(`
+                        <html>
+                            <head><title>Print Photo</title></head>
+                            <body style="margin:0; display:flex; justify-content:center; align-items:center;">
+                                <img src="${finalCanvas.toDataURL()}" style="max-width:100%; max-height:100vh;" onload="window.print(); window.close();">
+                            </body>
+                        </html>
+                    `);
+                }
+            });
+        }
+
+        if (continueBtn) {
+            continueBtn.addEventListener('click', () => {
+                window.location.href = 'thankyou.php';
+            });
+        }
+
+        // Initialize canvas on load
+        redrawCanvas();
     }
-
-    // Print Function
-    function printPhoto() {
-        const canvas = document.getElementById('combinedCanvas');
-        const imageData = canvas.toDataURL('image/png');
-
-        fetch('/FotoboxJO/src/api-fetch/print_photo.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                image: imageData,
-                layout: 'layout1'
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Foto berhasil dicetak! Silakan ambil foto Anda.');
-            } else {
-                alert('Gagal mencetak foto: ' + (data.error || 'Unknown error'));
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error printing photo: ' + error.message);
-        });
-    }
-
-    // Continue Function
-    function continueToThankYou() {
-        clearInterval(timerInterval);
-        window.location.href = 'thankyou.php';
-    }
-
-    // Button Event Listeners
-    document.getElementById('emailBtn').addEventListener('click', showEmailModal);
-    document.getElementById('closeEmailModal').addEventListener('click', hideEmailModal);
-    document.getElementById('sendEmailBtn').addEventListener('click', sendEmail);
-    document.getElementById('printBtn').addEventListener('click', printPhoto);
-    document.getElementById('continueBtn').addEventListener('click', continueToThankYou);
-
-    // Initialize with default settings
-    redrawCanvas();
 });

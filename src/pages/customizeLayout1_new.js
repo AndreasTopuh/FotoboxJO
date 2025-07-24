@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (customBack) {
         customBack.addEventListener('click', () => {
-            window.location.href = 'canvasLayout2.php'
+            window.location.href = 'canvasLayout1.php'
         })
     }
 
@@ -212,9 +212,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const stackedCanvas = document.createElement('canvas');
             const ctx = stackedCanvas.getContext('2d');
 
-            // Layout 2 dimensions (2 photos in vertical strip)
-            const canvasWidth = 1206;   // 10.2cm pada 300 DPI
-            const canvasHeight = 1794;  // 15.2cm pada 300 DPI
+            // Layout 1 dimensions (2 photos in vertical strip)
+            const canvasWidth = 592;
+            const canvasHeight = 1352;
             const borderWidth = 30;
             const spacing = 12;
             const bottomPadding = 100;
@@ -446,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function() {
             downloadCopyBtn.addEventListener('click', () => {
                 if (finalCanvas) {
                     const link = document.createElement('a');
-                    link.download = 'photobooth-layout2.png';
+                    link.download = 'photobooth-layout1.png';
                     link.href = finalCanvas.toDataURL();
                     link.click();
                 }
