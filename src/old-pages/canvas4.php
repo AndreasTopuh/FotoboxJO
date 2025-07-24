@@ -333,6 +333,11 @@ session_start();
 <body>
 
     <main id="main-section">
+        <!-- Timer Session -->
+        <div id="session-timer" style="position: fixed; top: 20px; right: 20px; background: rgba(255, 68, 68, 0.9); color: white; padding: 10px 15px; border-radius: 8px; font-weight: bold; z-index: 1000;">
+            <div>Waktu Tersisa: <span id="timer"><?php echo sprintf('%02d:%02d', floor($timeLeft / 60), $timeLeft % 60); ?></span></div>
+        </div>
+        
         <div class="canvas-centered">
             <div class="gradientBgCanvas"></div>
             <p id="progressCounter">0/4</p>
@@ -386,6 +391,35 @@ session_start();
             <!-- <div id="flash"></div> -->
         </div>
     </main>
+
+    <script>
+        // Session timer
+        let timeLeft = <?php echo $timeLeft; ?>;
+        let timerInterval;
+
+        function startSessionTimer() {
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                
+                document.getElementById('timer').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert('Waktu sesi foto habis! Melanjutkan ke halaman customize.');
+                    window.location.href = 'customize.php';
+                }
+                
+                timeLeft--;
+            }, 1000);
+        }
+
+        // Mulai timer ketika halaman load
+        window.addEventListener('load', function() {
+            startSessionTimer();
+        });
+    </script>
 
     <script src="canvas4.js"></script>
     <!-- <script src="main.js"></script> -->

@@ -1,12 +1,21 @@
 <?php
 session_start();
-// Comment out payment check untuk testing
-/*
-if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
-    header("Location: /FotoboxJO/index.php"); // tendang balik ke landing
+
+// Validasi session photo
+if (!isset($_SESSION['photo_expired_time']) || time() > $_SESSION['photo_expired_time']) {
+    // Session photo expired atau tidak ada
+    header("Location: customizeLayout6.php");
     exit();
 }
-*/
+
+if (!isset($_SESSION['session_type']) || $_SESSION['session_type'] !== 'photo') {
+    // Session tidak valid
+    header("Location: selectlayout.php");
+    exit();
+}
+
+// Hitung waktu tersisa
+$timeLeft = $_SESSION['photo_expired_time'] - time();
 ?>
 
 <!DOCTYPE html>
@@ -299,6 +308,21 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
 </head>
 
 <body>
+    <!-- Timer Box -->
+    <div id="timer-box" class="timer-box">
+        <span id="timer-display">07:00</span>
+        <p>Sisa waktu untuk mengambil foto</p>
+    </div>
+
+    <!-- Timeout Modal -->
+    <div id="timeout-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Waktu Habis!</h2>
+            <p>Sesi foto Anda telah berakhir. Anda akan diarahkan ke halaman utama.</p>
+            <button id="timeout-ok-btn" class="modal-btn">OK</button>
+        </div>
+    </div>
+
     <main id="main-section">
         <div class="canvas-centered">
             <div class="gradientBgCanvas"></div>

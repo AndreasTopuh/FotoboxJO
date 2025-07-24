@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Start camera if on canvas.html
-    if (window.location.pathname.endsWith("canvas2.php") || window.location.pathname === "canvas2.php") {
+    if (window.location.pathname.endsWith("canvas4.php") || window.location.pathname === "canvas4.php") {
         startCamera();
     }
 
@@ -234,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
             images = [];
             photoContainer.innerHTML = '';
-            progressCounter.textContent = "0/2";
+            progressCounter.textContent = "0/4";
             doneBtn.style.display = 'none';
         }
     
@@ -242,13 +242,13 @@ document.addEventListener('DOMContentLoaded', () => {
         startBtn.disabled = true;
         uploadBtn.disabled = true;
         startBtn.innerHTML = 'Capturing...';
-        progressCounter.textContent = "0/2";
+        progressCounter.textContent = "0/4";
     
         // Get the selected timer value
         const timerOptions = document.getElementById("timerOptions");
         const selectedValue = parseInt(timerOptions.value) || 3; // Default to 3 if no value is selected
     
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < 4; i++) {
             // Countdown using selected timer
             await showCountdown(selectedValue);
     
@@ -285,14 +285,14 @@ document.addEventListener('DOMContentLoaded', () => {
             imgElement.classList.add('photo');
             photoContainer.appendChild(imgElement);
     
-            progressCounter.textContent = `${i + 1}/2`;
+            progressCounter.textContent = `${i + 1}/4`;
     
             // Wait before next capture if not the last one
             if (i < 2) await new Promise(res => setTimeout(res, 500)); 
         }
     
         // Reset buttons
-        if (images.length === 2) {
+        if (images.length === 4) {
             startBtn.disabled = false;
             uploadBtn.disabled = false;
             startBtn.innerHTML = 'Retake';
@@ -329,9 +329,9 @@ document.addEventListener('DOMContentLoaded', () => {
         for (const file of files) {
             if (!file.type.startsWith("image/")) continue;
 
-            // Stop if we already have 2 images
-            if (images.length >= 2) {
-                const confirmReplace = confirm("You already have 2 pictures. Uploading new images will replace all current pictures. Do you want to proceed?");
+            // Stop if we already have 4 images
+            if (images.length >= 4) {
+                const confirmReplace = confirm("You already have 4 pictures. Uploading new images will replace all current pictures. Do you want to proceed?");
                 if (!confirmReplace) {
                     event.target.value = "";
                     return;
@@ -340,7 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Reset everything
                 images = [];
                 photoContainer.innerHTML = '';
-                progressCounter.textContent = "0/2";
+                progressCounter.textContent = "0/4";
                 startBtn.innerHTML = 'Capturing...';
                 doneBtn.style.display = 'none';
             }
@@ -358,9 +358,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 imgElement.classList.add('photo');
                 photoContainer.appendChild(imgElement);
 
-                progressCounter.textContent = `${images.length}/2`;
+                progressCounter.textContent = `${images.length}/4`;
 
-                if (images.length === 2) {
+                if (images.length === 4) {
                     startBtn.innerHTML = 'Retake';
                     doneBtn.style.display = 'block';
                 }
@@ -403,14 +403,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 loadedImages++;
     
-                // if (loadedImages === 2) { 
+                // if (loadedImages === 4) { 
                 //     sessionStorage.setItem('photoArray', JSON.stringify(storedImages)); // Store the array
                     
-                //     console.log("All 2 images stored in sessionStorage!");
+                //     console.log("All 4 images stored in sessionStorage!");
                 //     window.location.href = 'customize.html'; 
                 // }
 
-                if (loadedImages === 2) {
+                if (loadedImages === 4) {
                     const estimatedSize = new Blob([JSON.stringify(storedImages)]).size;
 
                     const storageLimit = 5 * 1024 * 1024; // 5MB limit
@@ -420,9 +420,40 @@ document.addEventListener('DOMContentLoaded', () => {
                         return; // Stop storing and redirecting
                     }
 
-                    sessionStorage.setItem('photoArray', JSON.stringify(storedImages)); 
-                    console.log("All 2 images stored in sessionStorage!");
-                    window.location.href = 'customize.php'; 
+                    // Simpan ke server-side session daripada sessionStorage
+                    fetch('../api-fetch/save_photos.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ photos: storedImages })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log("All 4 images stored in server session!");
+                            
+                            // Create customize session before redirect
+                            return fetch('../api-fetch/create_customize_session.php', {
+                                method: 'POST'
+                            });
+                        } else {
+                            throw new Error(data.error || 'Failed to save photos');
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.href = 'customize.php'; 
+                        } else {
+                            console.error('Error creating customize session:', data.error);
+                            window.location.href = 'customize.php'; // Fallback
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error saving photos: ' + error.message);
+                    }); 
                 }
             };
         });
@@ -442,7 +473,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (doneBtn) {
         doneBtn.addEventListener('click', () => storeImageArray());
     }
-    
+
     if (uploadBtn) {
         uploadBtn.addEventListener('click', () => {
             alert("Note: Please make sure your total photo size does not exceed 5MB.\nLarge images may cause saving issues.");
@@ -453,5 +484,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if(uploadInput) {
         uploadInput.addEventListener('change', handleImageUpload);
     }
+    
     // downloadBtn.addEventListener('click', () => downloadStackedImages());
 })

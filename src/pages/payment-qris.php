@@ -1,43 +1,226 @@
+<?php
+session_start();
+
+// Reset session sebelumnya jika ada
+session_unset();
+session_destroy();
+session_start();
+
+// Set session payment dengan waktu expired 3 menit
+$_SESSION['payment_start_time'] = time();
+$_SESSION['payment_expired_time'] = time() + (3 * 60); // 3 menit
+$_SESSION['session_type'] = 'payment';
+?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pembayaran QRIS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="home-styles.css" />
+</head>
 
 <body>
-    <h2>QRIS Gopay</h2>
-    <p>Scan QR berikut atau copy URL QR-nya:</p>
-    <p id="qr-url" style="word-break: break-all; font-size: 14px; color: blue;"></p>
-    <img id="qris-img" src="" width="300" alt="QRIS Gopay">
-    <p id="status">Status: Menunggu pembayaran...</p>
-    <button id="next" style="display:none;" onclick="location.href='selectlayout.php'">Lanjutkan</button>
+  <div class="gradientBgCanvas"></div>
+
+  <div class="container">
+    <div class="glass-card">
+      <div class="select-payment">
+
+        <!-- Kiri -->
+        <div class="select-payment-left">
+          <h1 class="hero-title" style="font-size: 2rem; margin-bottom: 1rem;">Pembayaran QRIS</h1>
+          <div class="hero-subtitle payment-qris-instructions" style="text-align: left; margin-top: 0;">
+            <p style="margin-bottom: 0.5rem;"><strong>Cara Pembayaran:</strong></p>
+            <ol style="margin: 0; padding-left: 20px; line-height: 1.4;">
+              <li style="margin-bottom: 0.3rem;">Buka aplikasi e-wallet (GoPay, Dana, OVO, dll)</li>
+              <li style="margin-bottom: 0.3rem;">Pilih fitur "Scan QR" atau "Bayar"</li>
+              <li style="margin-bottom: 0.3rem;">Arahkan kamera ke QR code di sebelah kanan</li>
+              <li style="margin-bottom: 0.3rem;">Konfirmasi pembayaran di aplikasi Anda</li>
+              <li style="margin-bottom: 0;">Tunggu konfirmasi pembayaran berhasil</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="select-payment-divider"></div>
+
+        <!-- Kanan -->
+        <div class="select-payment-right">
+          <!-- Timer -->
+          <div class="timer-container" style="text-align: center; margin-bottom: 1rem;">
+            <h3 style="color: #ff4444; margin: 0;">Waktu Tersisa:</h3>
+            <div id="timer" style="font-size: 2rem; font-weight: bold; color: #ff4444;">03:00</div>
+          </div>
+          
+          <div class="qr-container">
+            <img id="qris-img" src="" style="width: 180px; height: 180px; object-fit: contain;" alt="QRIS Code">
+          </div>
+          
+          <div class="status-container">
+            <p id="status" style="margin: 0; color: #333; font-weight: 600;">Status: Menunggu pembayaran...</p>
+          </div>
+          
+          <button id="next" class="start-btn" style="display:none;" onclick="location.href='./selectlayout.php'">Lanjutkan</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
 
     <script>
         let orderId = "";
+        let timeLeft = 180; // 3 menit dalam detik
+        let timerInterval;
+        let statusInterval;
 
+        // Timer countdown
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                
+                document.getElementById('timer').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    clearInterval(statusInterval);
+                    
+                    // Tampilkan popup modal
+                    showTimeoutModal();
+                }
+                
+                timeLeft--;
+            }, 1000);
+        }
+
+        // Fetch QR code dan mulai timer
         fetch('../api-fetch/charge_qris.php')
             .then(res => res.json())
             .then(data => {
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                    return;
+                }
+                
                 orderId = data.order_id;
 
-                // Tampilkan link QR Midtrans (yang akan di-embed ke generator QR)
-                const qrUrl = data.qr_url;
-                document.getElementById('qr-url').innerText = qrUrl;
-                document.getElementById('qris-img').src = qrUrl; // <-- Tambahin ini
+                // Set session order_id via fetch
+                fetch('../api-fetch/set_session.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ order_id: orderId })
+                });
 
+                // Tampilkan QR code di image
+                const qrUrl = data.qr_url;
+                document.getElementById('qris-img').src = qrUrl;
+
+                // Mulai timer dan polling status
+                startTimer();
                 pollStatus();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat memuat QR code');
             });
 
         function pollStatus() {
-            fetch(`../api-fetch/check_status.php?order_id=${orderId}`)
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('status').innerText = "Status: " + data.transaction_status;
-                    if (data.transaction_status === "settlement") {
-                        document.getElementById('next').style.display = "block";
-                    } else {
-                        setTimeout(pollStatus, 3000);
-                    }
-                });
+            statusInterval = setInterval(() => {
+                fetch(`../api-fetch/check_status.php?order_id=${orderId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById('status').innerText = "Status: " + data.transaction_status;
+                        if (data.transaction_status === "settlement") {
+                            clearInterval(timerInterval);
+                            clearInterval(statusInterval);
+                            document.getElementById('timer').textContent = "LUNAS";
+                            document.getElementById('timer').style.color = "#28a745";
+                            document.getElementById('status').style.color = "#28a745";
+                            document.getElementById('next').style.display = "block";
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking status:', error);
+                    });
+            }, 3000);
+        }
+
+        // Function untuk menampilkan modal timeout
+        function showTimeoutModal() {
+            const modal = document.getElementById('timeoutModal');
+            modal.style.display = 'flex';
+        }
+
+        // Function untuk reset session dan kembali ke index
+        function continueAfterTimeout() {
+            fetch('../api-fetch/reset_session.php', {
+                method: 'POST'
+            })
+            .then(() => {
+                window.location.href = '../../index.html';
+            });
         }
     </script>
+
+    <!-- Modal Timeout -->
+    <div id="timeoutModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3>Waktu Pembayaran Habis</h3>
+            <p>Waktu pembayaran telah berakhir. Silakan coba lagi.</p>
+            <button onclick="continueAfterTimeout()" class="continue-btn">Lanjutkan</button>
+        </div>
+    </div>
+
+    <style>
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            margin: 0 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-content h3 {
+            color: #ff4444;
+            margin-bottom: 1rem;
+        }
+        
+        .continue-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+        
+        .continue-btn:hover {
+            background: #0056b3;
+        }
+    </style>
 </body>
 
 </html>

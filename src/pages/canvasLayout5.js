@@ -1,4 +1,44 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Timer functionality
+    const timerDisplay = document.getElementById('timer-display');
+    const timeoutModal = document.getElementById('timeout-modal');
+    const timeoutOkBtn = document.getElementById('timeout-ok-btn');
+    
+    let timeLeft = 7 * 60; // 7 minutes in seconds
+    let timerInterval;
+
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            showTimeoutModal();
+            return;
+        }
+        
+        timeLeft--;
+    }
+
+    function showTimeoutModal() {
+        timeoutModal.style.display = 'block';
+    }
+
+    function hideTimeoutModal() {
+        timeoutModal.style.display = 'none';
+    }
+
+    timeoutOkBtn.addEventListener('click', () => {
+        hideTimeoutModal();
+        // Redirect to main page
+        window.location.href = '/FotoboxJO/index.html';
+    });
+
+    // Start the timer
+    timerInterval = setInterval(updateTimer, 1000);
+    updateTimer(); // Initial call to set display
+
     const video = document.getElementById('video');
     const blackScreen = document.getElementById('blackScreen');
     const countdownText = document.getElementById('countdownText');
@@ -361,7 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
         event.target.value = "";
     }
 
-    function storeImageArray() {
+    async function storeImageArray() {
         let loadedImages = 0;
         let storedImages = [];
     
@@ -421,26 +461,33 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
                     try {
-                        sessionStorage.setItem('photoArray5', JSON.stringify(storedImages)); 
-                        console.log("6 compressed images stored in sessionStorage with key 'photoArray5'!");
+                        // Send photos to server for session storage
+                        const formData = new FormData();
+                        formData.append('photos', JSON.stringify(storedImages));
+                        formData.append('layout', 'layout5');
                         
-                        // Verify storage
-                        const verifyStorage = sessionStorage.getItem('photoArray5');
-                        if (verifyStorage) {
-                            console.log("Storage verification successful");
-                            console.log("Redirecting to customizeLayout5.php...");
-                            window.location.href = 'customizeLayout5.php';
-                        } else {
-                            console.error("Storage verification failed!");
-                            alert("Failed to save images. Please try again.");
-                        }
+                        fetch('/FotoboxJO/src/api-fetch/save_photos.php', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result.success) {
+                                console.log("6 compressed images stored in server session with key 'photoArray5'!");
+                                console.log("Redirecting to customizeLayout5.php...");
+                                window.location.href = 'customizeLayout5.php';
+                            } else {
+                                console.error("Server storage failed:", result.error);
+                                alert("Failed to save images. Please try again.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error saving to server:", error);
+                            alert("Error saving images. Please try again.");
+                        });
                     } catch (error) {
-                        console.error("Storage quota exceeded:", error);
-                        alert("Storage quota exceeded. Images are too large. Please try taking photos again or clear your browser cache.");
-                        
-                        // Try to clear some space
-                        sessionStorage.clear();
-                        alert("Browser storage cleared. Please try taking photos again.");
+                        console.error("Error preparing data for server:", error);
+                        alert("Error saving images. Please try again.");
                     }
                 }
             };
@@ -465,6 +512,9 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("Images length:", images.length);
             if (images.length === 6) {
                 storeImageArray();
+            } else if (images.length === 0) {
+                console.log("No images found!");
+                alert("Anda belum mengambil foto! Silakan ambil foto terlebih dahulu atau upload gambar.");
             } else {
                 alert(`Error: Expected 6 images but found ${images.length}. Please retake photos.`);
             }

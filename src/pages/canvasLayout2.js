@@ -1,4 +1,44 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Timer functionality
+    const timerDisplay = document.getElementById('timer-display');
+    const timeoutModal = document.getElementById('timeout-modal');
+    const timeoutOkBtn = document.getElementById('timeout-ok-btn');
+    
+    let timeLeft = 7 * 60; // 7 minutes in seconds
+    let timerInterval;
+
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            showTimeoutModal();
+            return;
+        }
+        
+        timeLeft--;
+    }
+
+    function showTimeoutModal() {
+        timeoutModal.style.display = 'block';
+    }
+
+    function hideTimeoutModal() {
+        timeoutModal.style.display = 'none';
+    }
+
+    timeoutOkBtn.addEventListener('click', () => {
+        hideTimeoutModal();
+        // Redirect to main page
+        window.location.href = '/FotoboxJO/index.html';
+    });
+
+    // Start the timer
+    timerInterval = setInterval(updateTimer, 1000);
+    updateTimer(); // Initial call to set display
+
     const video = document.getElementById('video');
     const blackScreen = document.getElementById('blackScreen');
     const countdownText = document.getElementById('countdownText');
@@ -356,9 +396,40 @@ document.addEventListener('DOMContentLoaded', () => {
                         alert("The total image size exceeds the 10MB limit. Please upload smaller images.");
                         return;
                     }
-                    sessionStorage.setItem('photoArray2', JSON.stringify(storedImages));
-                    console.log("4 images stored in sessionStorage!");
-                    window.location.href = 'customizeLayout2.php';
+                    // Simpan ke server-side session daripada sessionStorage
+                    fetch('../api-fetch/save_photos.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ photos: storedImages })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log("4 images stored in server session!");
+                            
+                            // Create customize session before redirect
+                            return fetch('../api-fetch/create_customize_session.php', {
+                                method: 'POST'
+                            });
+                        } else {
+                            throw new Error(data.error || 'Failed to save photos');
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.href = 'customizeLayout2.php';
+                        } else {
+                            console.error('Error creating customize session:', data.error);
+                            window.location.href = 'customizeLayout2.php'; // Fallback
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error saving photos: ' + error.message);
+                    });
                 }
             };
             img.onerror = () => {
@@ -379,7 +450,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (doneBtn) {
-        doneBtn.addEventListener('click', () => storeImageArray());
+        doneBtn.addEventListener('click', () => {
+            console.log("=== DONE BUTTON CLICKED ===");
+            console.log("Current images array:", images);
+            console.log("Images length:", images.length);
+            
+            if (images.length === 4) {
+                console.log("4 images found, calling storeImageArray()");
+                storeImageArray();
+            } else if (images.length === 0) {
+                console.log("No images found!");
+                alert("Anda belum mengambil foto! Silakan ambil foto terlebih dahulu atau upload gambar.");
+            } else {
+                console.log(`Found ${images.length} images, but expected 4`);
+                alert(`Error: Expected 4 images but found ${images.length}. Please retake photos.`);
+            }
+        });
     }
 
     if (uploadBtn) {

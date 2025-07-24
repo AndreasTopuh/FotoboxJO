@@ -1,6 +1,16 @@
 <?php
-// Session start untuk PHP functionality jika diperlukan
 session_start();
+
+// Auto create customize session jika belum ada atau expired
+if (!isset($_SESSION['customize_expired_time']) || time() > $_SESSION['customize_expired_time']) {
+    // Create new customize session
+    $_SESSION['customize_start_time'] = time();
+    $_SESSION['customize_expired_time'] = time() + (3 * 60); // 3 menit
+    $_SESSION['session_type'] = 'customize';
+}
+
+// Hitung waktu tersisa
+$timeLeft = $_SESSION['customize_expired_time'] - time();
 ?>
 <!DOCTYPE html>
 <html>
@@ -40,6 +50,11 @@ session_start();
 <body>
 
         <main id="main-section">
+                <!-- Timer Session -->
+                <div id="session-timer" style="position: fixed; top: 20px; right: 20px; background: rgba(255, 68, 68, 0.9); color: white; padding: 10px 15px; border-radius: 8px; font-weight: bold; z-index: 1000;">
+                    <div>Waktu Tersisa: <span id="timer"><?php echo sprintf('%02d:%02d', floor($timeLeft / 60), $timeLeft % 60); ?></span></div>
+                </div>
+                
                 <div class="gradientBgCanvas"></div>
                 <section class="custom-main">
                         <div id="photoPreview"></div>
@@ -262,9 +277,12 @@ session_start();
                                                 <div class="custom-buttons-holder">
                                                         <button class="sub-button customBtn retake-button-design"
                                                                 id="customBack">Retake</button>
-                                                        <!-- <button class="main-button customBtn" id="customNext">NEXT</button> -->
-                                                        <button class="main-button download-button-design"
-                                                                id="downloadCopyBtn">Download</button>
+                                                        <!-- Action Buttons -->
+                                                        <div class="action-buttons-container" style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+                                                            <button class="main-button email-button" id="emailBtn" style="background: #28a745;">📧 Kirim ke Email</button>
+                                                            <button class="main-button print-button" id="printBtn" style="background: #ffc107; color: #000;">🖨️ Print</button>
+                                                            <button class="main-button continue-button" id="continueBtn" style="background: #007bff;">➡️ Lanjutkan</button>
+                                                        </div>
                                                 </div>
                                                 <!--<div class="bg-custom">
                                 <input type="file" name="" id="bgUpload">
@@ -276,8 +294,215 @@ session_start();
                 </section>
         </main>
 
+        <!-- Email Modal -->
+        <div id="emailModal" class="modal-overlay" style="display: none;">
+            <div class="modal-content">
+                <button id="closeEmailModal" class="close-btn">&times;</button>
+                <h3>Masukan Email Anda</h3>
+                <input type="email" id="emailInput" placeholder="contoh@email.com" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 5px; margin: 1rem 0;">
+                <div class="modal-buttons">
+                    <button id="sendEmailBtn" class="btn-primary">Kirim</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Session timer
+            let timeLeft = <?php echo $timeLeft; ?>;
+            let timerInterval;
+
+            function startSessionTimer() {
+                timerInterval = setInterval(() => {
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    
+                    document.getElementById('timer').textContent = 
+                        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        alert('Waktu customize habis! Melanjutkan ke halaman berikutnya.');
+                        continueToThankYou();
+                    }
+                    
+                    timeLeft--;
+                }, 1000);
+            }
+
+            // Email Modal Functions
+            function showEmailModal() {
+                document.getElementById('emailModal').style.display = 'flex';
+            }
+
+            function hideEmailModal() {
+                document.getElementById('emailModal').style.display = 'none';
+                document.getElementById('emailInput').value = '';
+            }
+
+            function sendEmail() {
+                const email = document.getElementById('emailInput').value;
+                if (!email) {
+                    alert('Silakan masukkan alamat email.');
+                    return;
+                }
+
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    alert('Format email tidak valid.');
+                    return;
+                }
+
+                const canvas = document.getElementById('canvasId');
+                const customizedImage = canvas.toDataURL('image/png');
+
+                fetch('../api-fetch/send_email.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        customized_image: customizedImage
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Email berhasil dikirim!');
+                        hideEmailModal();
+                    } else {
+                        alert('Gagal mengirim email: ' + (data.error || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat mengirim email.');
+                });
+            }
+
+            function printPhoto() {
+                const canvas = document.getElementById('canvasId');
+                const imageData = canvas.toDataURL('image/png');
+                
+                fetch('../api-fetch/print_photo.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        image_data: imageData
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Foto berhasil dikirim ke printer!');
+                    } else {
+                        alert('Gagal print foto: ' + (data.error || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat print foto.');
+                });
+            }
+
+            function continueToThankYou() {
+                window.location.href = 'thankyou.php';
+            }
+
+            // Event Listeners
+            document.getElementById('emailBtn').addEventListener('click', showEmailModal);
+            document.getElementById('closeEmailModal').addEventListener('click', hideEmailModal);
+            document.getElementById('sendEmailBtn').addEventListener('click', sendEmail);
+            document.getElementById('printBtn').addEventListener('click', printPhoto);
+            document.getElementById('continueBtn').addEventListener('click', continueToThankYou);
+
+            // Initialize when page loads
+            window.addEventListener('load', function() {
+                startSessionTimer();
+            });
+        </script>
+
         <script src="https://cdn.jsdelivr.net/npm/vanilla-picker@2.12.1/dist/vanilla-picker.min.js"></script>
         <script src="customize6.js"></script>
+        
+        <style>
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            }
+            
+            .modal-content {
+                background: white;
+                padding: 2rem;
+                border-radius: 10px;
+                text-align: center;
+                max-width: 400px;
+                margin: 0 1rem;
+                position: relative;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            }
+            
+            .close-btn {
+                position: absolute;
+                top: 10px;
+                right: 15px;
+                background: none;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                color: #999;
+            }
+            
+            .close-btn:hover {
+                color: #333;
+            }
+            
+            .modal-buttons {
+                display: flex;
+                justify-content: center;
+                margin-top: 1rem;
+            }
+            
+            .btn-primary {
+                background: #007bff;
+                color: white;
+                border: none;
+                padding: 0.75rem 2rem;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: 600;
+                font-size: 1rem;
+            }
+            
+            .btn-primary:hover {
+                background: #0056b3;
+            }
+            
+            .action-buttons-container button {
+                padding: 1rem 1.5rem;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: 600;
+                font-size: 1rem;
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+            
+            .action-buttons-container button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            }
+        </style>
         <!-- <script src="canvas.js"></script> -->
         <!-- <script src="main.js"></script> -->
         <!-- <script src="download.js"></script> -->

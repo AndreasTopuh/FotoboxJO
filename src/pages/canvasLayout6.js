@@ -1,4 +1,44 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Timer functionality
+    const timerDisplay = document.getElementById('timer-display');
+    const timeoutModal = document.getElementById('timeout-modal');
+    const timeoutOkBtn = document.getElementById('timeout-ok-btn');
+    
+    let timeLeft = 7 * 60; // 7 minutes in seconds
+    let timerInterval;
+
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            showTimeoutModal();
+            return;
+        }
+        
+        timeLeft--;
+    }
+
+    function showTimeoutModal() {
+        timeoutModal.style.display = 'block';
+    }
+
+    function hideTimeoutModal() {
+        timeoutModal.style.display = 'none';
+    }
+
+    timeoutOkBtn.addEventListener('click', () => {
+        hideTimeoutModal();
+        // Redirect to main page
+        window.location.href = '/FotoboxJO/index.html';
+    });
+
+    // Start the timer
+    timerInterval = setInterval(updateTimer, 1000);
+    updateTimer(); // Initial call to set display
+
     const video = document.getElementById('video');
     const blackScreen = document.getElementById('blackScreen');
     const countdownText = document.getElementById('countdownText');
@@ -388,9 +428,29 @@ document.addEventListener('DOMContentLoaded', () => {
                         return; // Stop storing and redirecting
                     }
 
-                    sessionStorage.setItem('photoArray6', JSON.stringify(storedImages)); 
-                    console.log("4 images stored in sessionStorage!");
-                    window.location.href = 'customizeLayout6.php'; // Redirect to Layout6 customize page
+                    // Send photos to server for session storage
+                    const formData = new FormData();
+                    formData.append('photos', JSON.stringify(storedImages));
+                    formData.append('layout', 'layout6');
+                    
+                    fetch('/FotoboxJO/src/api-fetch/save_photos.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success) {
+                            console.log("4 images stored in server session!");
+                            window.location.href = 'customizeLayout6.php'; // Redirect to Layout6 customize page
+                        } else {
+                            console.error("Server storage failed:", result.error);
+                            alert("Failed to save images. Please try again.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error saving to server:", error);
+                        alert("Error saving images. Please try again.");
+                    });
                 }
             };
         });
@@ -408,7 +468,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (doneBtn) {
-        doneBtn.addEventListener('click', () => storeImageArray());
+        doneBtn.addEventListener('click', () => {
+            console.log("=== DONE BUTTON CLICKED ===");
+            console.log("Current images array:", images);
+            console.log("Images length:", images.length);
+            
+            if (images.length === 4) {
+                console.log("4 images found, calling storeImageArray()");
+                storeImageArray();
+            } else if (images.length === 0) {
+                console.log("No images found!");
+                alert("Anda belum mengambil foto! Silakan ambil foto terlebih dahulu atau upload gambar.");
+            } else {
+                console.log(`Found ${images.length} images, but expected 4`);
+                alert(`Error: Expected 4 images but found ${images.length}. Please retake photos.`);
+            }
+        });
     }
 
     if (uploadBtn) {

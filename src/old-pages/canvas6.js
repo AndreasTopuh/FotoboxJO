@@ -421,9 +421,40 @@ document.addEventListener('DOMContentLoaded', () => {
                         return; // Stop storing and redirecting
                     }
 
-                    sessionStorage.setItem('photoArray', JSON.stringify(storedImages)); 
-                    console.log("All 6 images stored in sessionStorage!");
-                    window.location.href = 'customize6.php'; 
+                    // Simpan ke server-side session daripada sessionStorage
+                    fetch('../api-fetch/save_photos.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ photos: storedImages })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log("All 6 images stored in server session!");
+                            
+                            // Create customize session before redirect
+                            return fetch('../api-fetch/create_customize_session.php', {
+                                method: 'POST'
+                            });
+                        } else {
+                            throw new Error(data.error || 'Failed to save photos');
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.href = 'customize6.php'; 
+                        } else {
+                            console.error('Error creating customize session:', data.error);
+                            window.location.href = 'customize6.php'; // Fallback
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error saving photos: ' + error.message);
+                    }); 
                 }
             };
         });

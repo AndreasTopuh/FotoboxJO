@@ -1,4 +1,44 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Timer functionality
+    const timerDisplay = document.getElementById('timer-display');
+    const timeoutModal = document.getElementById('timeout-modal');
+    const timeoutOkBtn = document.getElementById('timeout-ok-btn');
+    
+    let timeLeft = 7 * 60; // 7 minutes in seconds
+    let timerInterval;
+
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            showTimeoutModal();
+            return;
+        }
+        
+        timeLeft--;
+    }
+
+    function showTimeoutModal() {
+        timeoutModal.style.display = 'block';
+    }
+
+    function hideTimeoutModal() {
+        timeoutModal.style.display = 'none';
+    }
+
+    timeoutOkBtn.addEventListener('click', () => {
+        hideTimeoutModal();
+        // Redirect to main page
+        window.location.href = '/FotoboxJO/index.html';
+    });
+
+    // Start the timer
+    timerInterval = setInterval(updateTimer, 1000);
+    updateTimer(); // Initial call to set display
+
     const video = document.getElementById('video');
     const blackScreen = document.getElementById('blackScreen');
     const countdownText = document.getElementById('countdownText');
@@ -382,14 +422,14 @@ document.addEventListener('DOMContentLoaded', () => {
         event.target.value = "";
     }
 
-    function storeImageArray() {
+    async function storeImageArray() {
         let loadedImages = 0;
         let storedImages = [];
     
         images.forEach((imgData, index) => {
             const img = new Image();
             img.src = imgData;
-            img.onload = () => {
+            img.onload = async () => {
                 
                 // Create canvas to compress image
                 const compressCanvas = document.createElement('canvas');
@@ -442,26 +482,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
                     try {
-                        sessionStorage.setItem('photoArray4', JSON.stringify(storedImages)); 
-                        console.log("8 compressed images stored in sessionStorage with key 'photoArray4'!");
+                        // Send photos to server for session storage
+                        const formData = new FormData();
+                        formData.append('photos', JSON.stringify(storedImages));
+                        formData.append('layout', 'layout4');
                         
-                        // Verify storage
-                        const verifyStorage = sessionStorage.getItem('photoArray4');
-                        if (verifyStorage) {
-                            console.log("Storage verification successful");
+                        const response = await fetch('/FotoboxJO/src/api-fetch/save_photos.php', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            console.log("8 compressed images stored in server session with key 'photoArray4'!");
                             console.log("Redirecting to customizeLayout4.php...");
                             window.location.href = 'customizeLayout4.php';
                         } else {
-                            console.error("Storage verification failed!");
+                            console.error("Server storage failed:", result.error);
                             alert("Failed to save images. Please try again.");
                         }
                     } catch (error) {
-                        console.error("Storage quota exceeded:", error);
-                        alert("Storage quota exceeded. Images are too large. Please try taking photos again or clear your browser cache.");
-                        
-                        // Try to clear some space
-                        sessionStorage.clear();
-                        alert("Browser storage cleared. Please try taking photos again.");
+                        console.error("Error saving to server:", error);
+                        alert("Error saving images. Please try again.");
                     }
                 }
             };
@@ -534,7 +577,28 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let i = 0; i < 8; i++) {
                 dummyImages.push('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==');
             }
-            sessionStorage.setItem('photoArray4', JSON.stringify(dummyImages));
+            
+            // Send dummy photos to server for session storage
+            const formData = new FormData();
+            formData.append('photos', JSON.stringify(dummyImages));
+            formData.append('layout', 'layout4');
+            
+            fetch('/FotoboxJO/src/api-fetch/save_photos.php', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    console.log("Dummy images stored in server session!");
+                    window.location.href = 'customizeLayout4.php';
+                } else {
+                    console.error("Server storage failed:", result.error);
+                    alert("Failed to save images. Please try again.");
+                }
+            }).catch(error => {
+                console.error("Error saving dummy images to server:", error);
+                alert("Error saving images. Please try again.");
+            });
             window.location.href = 'customizeLayout4.php';
         } else {
             console.log(`Found ${images.length} images, but expected 8`);
@@ -566,15 +630,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 for (let i = 0; i < 8; i++) {
                     dummyImages.push('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==');
                 }
-                sessionStorage.setItem('photoArray4', JSON.stringify(dummyImages));
+                
+                // Send dummy photos to server for session storage
+                const formData = new FormData();
+                formData.append('photos', JSON.stringify(dummyImages));
+                formData.append('layout', 'layout4');
+                
+                fetch('/FotoboxJO/src/api-fetch/save_photos.php', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        console.log("Test dummy images stored in server session!");
+                        window.location.href = 'customizeLayout4.php';
+                    } else {
+                        console.error("Server storage failed:", result.error);
+                        window.location.href = 'customizeLayout4.php'; // Still redirect for testing
+                    }
+                }).catch(error => {
+                    console.error("Error saving test images to server:", error);
+                    window.location.href = 'customizeLayout4.php'; // Still redirect for testing
+                });
+                
                 console.log("Created dummy images for testing");
+                return;
             } else {
                 // Use existing images
                 storeImageArray();
                 return;
             }
-            
-            window.location.href = 'customizeLayout4.php';
         });
     }
 

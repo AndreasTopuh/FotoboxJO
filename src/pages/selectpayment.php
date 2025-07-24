@@ -1,3 +1,11 @@
+<?php
+session_start();
+
+// Reset session sebelumnya jika ada
+session_unset();
+session_destroy();
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -27,20 +35,16 @@
           <!-- QRIS -->
           <a href="payment-qris.php" style="width: 275px; text-decoration: none;">
             <div class="select-payment-option">
-              <span class="hero-title" style="font-size: 0.8rem;">QRIS</span>
-              <img
-                src="https://upload.wikimedia.org/wikipedia/id/thumb/f/f1/BANK_BCA_logo.svg/512px-BANK_BCA_logo.svg.png"
-                alt="QRIS Logo">
+              <span class="hero-title">QRIS</span>
+              <img src="../assets/qris.png" alt="QRIS Logo">
             </div>
           </a>
 
           <!-- BCA -->
           <a href="payment-bank.php" style="width: 275px; text-decoration: none;">
             <div class="select-payment-option">
-              <span class="hero-title" style="font-size: 0.8rem;">Virtual Bank (BCA)</span>
-              <img
-                src="https://upload.wikimedia.org/wikipedia/id/thumb/f/f1/BANK_BCA_logo.svg/512px-BANK_BCA_logo.svg.png"
-                alt="QRIS Logo">
+              <span class="hero-title">Virtual Bank (BCA)</span>
+              <img src="../assets/bca.png" alt="BCA Logo">
             </div>
           </a>
         </div>

@@ -1,6 +1,21 @@
 <?php
-// Session start untuk PHP functionality jika diperlukan
 session_start();
+
+// Validasi session photo
+if (!isset($_SESSION['photo_expired_time']) || time() > $_SESSION['photo_expired_time']) {
+    // Session photo expired atau tidak ada
+    header("Location: customize.php");
+    exit();
+}
+
+if (!isset($_SESSION['session_type']) || $_SESSION['session_type'] !== 'photo') {
+    // Session tidak valid
+    header("Location: selectlayout.php");
+    exit();
+}
+
+// Hitung waktu tersisa
+$timeLeft = $_SESSION['photo_expired_time'] - time();
 ?>
 <!DOCTYPE html>
 <html>
@@ -153,12 +168,12 @@ session_start();
         }
 
         .photo {
-            width: 120px;
-            max-width: 120px;
+            width: 150px;
+            max-width: 150px;
             border: 2px solid black;
             display: block;
             border-radius: 12px;
-            height: 110.88px;
+            height: 166.35px;
             object-fit: cover;
         }
 
@@ -245,15 +260,11 @@ session_start();
                 flex-direction: column;
                 justify-content: center;
                 gap: 20px;
-                width: 100%;
-                /* Ensure it's not constrained */
-                overflow-x: hidden;
-                /* Hide overflow horizontally in the container */
             }
 
             .photo {
                 width: 100px;
-                height: 92.4px;
+                height: 110.9px;
                 display: flex;
                 flex-direction: row;
                 object-fit: cover;
@@ -265,17 +276,6 @@ session_start();
                 align-items: center;
                 justify-content: center;
                 width: 100%;
-                overflow-x: auto;
-                /* enables horizontal scroll */
-                white-space: nowrap;
-                /* prevents items from wrapping to the next line */
-                gap: 10px;
-                /* optional: adds spacing between items */
-            }
-
-            #photoContainer>* {
-                flex: 0 0 auto;
-                /* prevents items from shrinking or stretching */
             }
         }
 
@@ -287,15 +287,11 @@ session_start();
                 flex-direction: column;
                 justify-content: center;
                 gap: 20px;
-                width: 100%;
-                /* Ensure it's not constrained */
-                overflow-x: hidden;
-                /* Hide overflow horizontally in the container */
             }
 
             .photo {
                 width: 100px;
-                height: 92.4px;
+                height: 110.9px;
                 display: flex;
                 flex-direction: row;
                 object-fit: cover;
@@ -307,17 +303,6 @@ session_start();
                 align-items: center;
                 justify-content: center;
                 width: 100%;
-                overflow-x: auto;
-                /* enables horizontal scroll */
-                white-space: nowrap;
-                /* prevents items from wrapping to the next line */
-                gap: 10px;
-                /* optional: adds spacing between items */
-            }
-
-            #photoContainer>* {
-                flex: 0 0 auto;
-                /* prevents items from shrinking or stretching */
             }
         }
     </style>
@@ -327,10 +312,15 @@ session_start();
 <body>
 
     <main id="main-section">
+        <!-- Timer Session -->
+        <div id="session-timer" style="position: fixed; top: 20px; right: 20px; background: rgba(255, 68, 68, 0.9); color: white; padding: 10px 15px; border-radius: 8px; font-weight: bold; z-index: 1000;">
+            <div>Waktu Tersisa: <span id="timer"><?php echo sprintf('%02d:%02d', floor($timeLeft / 60), $timeLeft % 60); ?></span></div>
+        </div>
+        
         <div class="canvas-centered">
             <div class="gradientBgCanvas"></div>
-            <p id="progressCounter">0/6</p>
-            <input type="file" id="uploadInput" accept="image/*" multiple style="display:none;">
+            <p id="progressCounter">0/2</p>
+            <input type="file" id="uploadInput" accept="image/*" multiple style="display: none;">
             <div id="add-ons-container">
                 <button id="uploadBtn" class="uploadBtnStyling">
                     <img src="/src/assets/upload-icon.png" class="icons-size" alt="upload image icon">
@@ -381,7 +371,36 @@ session_start();
         </div>
     </main>
 
-    <script src="canvas6.js"></script>
+    <script>
+        // Session timer
+        let timeLeft = <?php echo $timeLeft; ?>;
+        let timerInterval;
+
+        function startSessionTimer() {
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                
+                document.getElementById('timer').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert('Waktu sesi foto habis! Melanjutkan ke halaman customize.');
+                    window.location.href = 'customize.php';
+                }
+                
+                timeLeft--;
+            }, 1000);
+        }
+
+        // Mulai timer ketika halaman load
+        window.addEventListener('load', function() {
+            startSessionTimer();
+        });
+    </script>
+
+    <script src="canvas2.js"></script>
     <!-- <script src="main.js"></script> -->
 </body>
 

@@ -102,16 +102,51 @@ document.addEventListener('DOMContentLoaded', function() {
     let textOverlay = '';
     let logoOverlay = '';
 
-    const storedImages = JSON.parse(sessionStorage.getItem('photoArray5')) || [];
-    const imageArrayLength = storedImages.length; // Should be 6 for Layout 5
+    let storedImages = [];
+    let imageArrayLength = 0;
 
-    console.log('Stored Images:', storedImages);
-    console.log('Image Array Length:', imageArrayLength);
+    // Fetch photos from server session instead of sessionStorage
+    fetch('/FotoboxJO/src/api-fetch/get_photos.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.photos) {
+                storedImages = data.photos;
+                imageArrayLength = storedImages.length;
+                
+                console.log('Stored Images from server:', storedImages);
+                console.log('Image Array Length:', imageArrayLength);
 
-    if (imageArrayLength === 0) {
-        alert('No images found. Redirecting to camera page.');
-        window.location.href = 'canvasLayout5.php';
-        return;
+                if (imageArrayLength === 0) {
+                    console.error('No images found in server session for Layout 5');
+                    alert('No images found. Please go back and take photos first.');
+                    window.location.href = 'canvasLayout5.php';
+                    return;
+                }
+
+                // Initialize canvas after getting images
+                initializeCanvas();
+            } else {
+                console.error('Failed to get photos from server:', data.error);
+                alert('Failed to load photos. Please try again.');
+                window.location.href = 'canvasLayout5.php';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching photos:', error);
+            alert('Error loading photos. Please try again.');
+            window.location.href = 'canvasLayout5.php';
+        });
+
+    function initializeCanvas() {
+        if (imageArrayLength === 0) {
+            alert('No images found. Redirecting to camera page.');
+            window.location.href = 'canvasLayout5.php';
+            return;
+        }
+
+        // Continue with canvas initialization
+        console.log('Initializing canvas with', imageArrayLength, 'images');
+        redrawCanvas(); // Call initial draw
     }
 
     // 4R Canvas dimensions - Optimized for web and print

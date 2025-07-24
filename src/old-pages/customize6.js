@@ -145,15 +145,38 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Retrieve stored images array from sessionStorage
-    const storedImages = JSON.parse(sessionStorage.getItem('photoArray'));
-    const imageArrayLength = storedImages.length;
+    // Retrieve stored images array from server session
+    let storedImages = [];
+    let imageArrayLength = 0;
     
-    if (!storedImages || storedImages.length !== imageArrayLength) {
-        console.log("No valid images found in sessionStorage");
-    } else {
-        console.log("Loaded images:", storedImages);
-    }
+    // Fetch photos from server session
+    fetch('../api-fetch/get_photos.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.photos) {
+                storedImages = data.photos;
+                imageArrayLength = storedImages.length;
+                console.log("Loaded images from server session:", storedImages);
+                
+                // Initialize canvas with photos after loading
+                initializeCanvas();
+            } else {
+                console.log("No valid images found in server session");
+                alert("Tidak ada foto ditemukan. Kembali ke halaman sebelumnya.");
+                window.location.href = 'selectlayout.php';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading photos:', error);
+            alert("Error loading photos. Please try again.");
+            window.location.href = 'selectlayout.php';
+        });
+
+    function initializeCanvas() {
+        if (!storedImages || storedImages.length !== imageArrayLength) {
+            console.log("No valid images found");
+            return;
+        }
 
     // Default background color
     // let backgroundType = 'white';
@@ -1674,6 +1697,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (downloadCopyBtn) {
         downloadCopyBtn.addEventListener('click', downloadCanvasCopy);
     }
+    } // End of initializeCanvas function
 
     window.onload = () => {
         redrawCanvas();

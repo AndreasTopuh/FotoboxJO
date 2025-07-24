@@ -49,17 +49,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Original Canvas Buttons
-    const canvasBtn = document.querySelector('#canvasBtn')
+    // const canvasBtn = document.querySelector('#canvasBtn')
     const canvas2Btn = document.querySelector('#canvas2Btn')
     const canvas4Btn = document.querySelector('#canvas4Btn')
     const canvas6Btn = document.querySelector('#canvas6Btn')
 
-    if (canvasBtn) {
-        canvasBtn.addEventListener('click', (e) => {
-            e.preventDefault()
-            window.location.href = './canvas.php' // Original canvas - 1 photo
-        })
-    }
+    // if (canvasBtn) {
+    //     canvasBtn.addEventListener('click', (e) => {
+    //         e.preventDefault()
+    //         window.location.href = './canvas.php' // Original canvas - 1 photo
+    //     })
+    // }
 
     if (canvas2Btn) {
         canvas2Btn.addEventListener('click', (e) => {

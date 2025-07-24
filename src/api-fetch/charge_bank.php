@@ -6,7 +6,7 @@ $dotenv = parse_ini_file('.env');
 \Midtrans\Config::$isProduction = false;
 
 $orderId = 'ORDER-BCA-' . time();
-$grossAmount = 44000;
+$grossAmount = 15000;
 
 $params = array(
     'payment_type' => 'bank_transfer',

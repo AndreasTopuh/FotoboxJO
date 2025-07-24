@@ -1,5 +1,44 @@
 document.addEventListener('DOMContentLoaded', function() {
     
+    // Timer functionality
+    const timerDisplay = document.getElementById('timer-display');
+    const timeoutModal = document.getElementById('timeout-modal');
+    const timeoutOkBtn = document.getElementById('timeout-ok-btn');
+    
+    let timeLeft = 3 * 60; // 3 minutes in seconds
+    let timerInterval;
+
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            showTimeoutModal();
+            return;
+        }
+        
+        timeLeft--;
+    }
+
+    function showTimeoutModal() {
+        timeoutModal.style.display = 'block';
+    }
+
+    function hideTimeoutModal() {
+        timeoutModal.style.display = 'none';
+    }
+
+    timeoutOkBtn.addEventListener('click', () => {
+        hideTimeoutModal();
+        window.location.href = '/FotoboxJO/index.html';
+    });
+
+    // Start the timer
+    timerInterval = setInterval(updateTimer, 1000);
+    updateTimer(); // Initial call to set display
+
     const photoCustomPreview = document.getElementById('photoPreview')
     const pinkBtn = document.getElementById('pinkBtnFrame')
     const blueBtn = document.getElementById('blueBtnFrame')
@@ -102,16 +141,52 @@ document.addEventListener('DOMContentLoaded', function() {
     let textOverlay = '';
     let logoOverlay = '';
 
-    const storedImages = JSON.parse(sessionStorage.getItem('photoArray2')) || [];
-    const imageArrayLength = storedImages.length; // Should be 4 for Layout 2
+    let storedImages = [];
+    let imageArrayLength = 0;
 
-    console.log('Stored Images:', storedImages);
-    console.log('Image Array Length:', imageArrayLength);
+    // Fetch photos from server session instead of sessionStorage
+    fetch('/FotoboxJO/src/api-fetch/get_photos.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.photos) {
+                storedImages = data.photos;
+                imageArrayLength = storedImages.length;
+                
+                console.log('Stored Images from server:', storedImages);
+                console.log('Image Array Length:', imageArrayLength);
 
-    if (imageArrayLength === 0) {
-        alert('No images found. Redirecting to camera page.');
-        window.location.href = 'canvasLayout2.php';
-        return;
+                if (imageArrayLength === 0) {
+                    console.error('No images found in server session!');
+                    alert('No images found. Please go back and take photos first.');
+                    window.location.href = 'canvasLayout2.php';
+                    return;
+                }
+
+                // Initialize canvas after getting images
+                initializeCanvas();
+            } else {
+                console.error('Failed to get photos from server:', data.error);
+                alert('Failed to load photos. Please try again.');
+                window.location.href = 'canvasLayout2.php';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching photos:', error);
+            alert('Error loading photos. Please try again.');
+            window.location.href = 'canvasLayout2.php';
+        });
+
+    function initializeCanvas() {
+        if (imageArrayLength === 0) {
+            console.error('No images found in server session!');
+            alert('No images found. Redirecting to camera page.');
+            window.location.href = 'canvasLayout2.php';
+            return;
+        }
+
+        // Continue with canvas initialization
+        console.log('Initializing canvas with', imageArrayLength, 'images');
+        redrawCanvas(); // Call initial draw
     }
 
     // 4R Canvas dimensions - Optimized for web and print
@@ -464,6 +539,100 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = 'canvasLayout2.php';
         });
     }
+
+    // Email Modal Functions
+    function showEmailModal() {
+        document.getElementById('emailModal').style.display = 'flex';
+    }
+
+    function hideEmailModal() {
+        document.getElementById('emailModal').style.display = 'none';
+    }
+
+    // Email Function
+    function sendEmail() {
+        const email = document.getElementById('emailInput').value;
+        if (!email) {
+            alert('Please enter your email address');
+            return;
+        }
+
+        if (!email.includes('@')) {
+            alert('Please enter a valid email address');
+            return;
+        }
+
+        // Get the current canvas as base64
+        const canvas = document.getElementById('combinedCanvas');
+        const imageData = canvas.toDataURL('image/png');
+
+        fetch('/FotoboxJO/src/api-fetch/send_email.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: email,
+                customized_image: imageData,
+                layout: 'layout2'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Email berhasil dikirim!');
+                hideEmailModal();
+            } else {
+                alert('Gagal mengirim email: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error sending email: ' + error.message);
+        });
+    }
+
+    // Print Function
+    function printPhoto() {
+        const canvas = document.getElementById('combinedCanvas');
+        const imageData = canvas.toDataURL('image/png');
+
+        fetch('/FotoboxJO/src/api-fetch/print_photo.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                image: imageData,
+                layout: 'layout2'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Foto berhasil dicetak! Silakan ambil foto Anda.');
+            } else {
+                alert('Gagal mencetak foto: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error printing photo: ' + error.message);
+        });
+    }
+
+    // Continue Function
+    function continueToThankYou() {
+        clearInterval(timerInterval);
+        window.location.href = 'thankyou.php';
+    }
+
+    // Button Event Listeners
+    document.getElementById('emailBtn').addEventListener('click', showEmailModal);
+    document.getElementById('closeEmailModal').addEventListener('click', hideEmailModal);
+    document.getElementById('sendEmailBtn').addEventListener('click', sendEmail);
+    document.getElementById('printBtn').addEventListener('click', printPhoto);
+    document.getElementById('continueBtn').addEventListener('click', continueToThankYou);
 
     // Initialize with default settings
     redrawCanvas();

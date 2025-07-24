@@ -1,12 +1,21 @@
 <?php
 session_start();
-// Comment out payment check untuk testing
-/*
-if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
-    header("Location: /FotoboxJO/index.php"); // tendang balik ke landing
+
+// Validasi session photo
+if (!isset($_SESSION['photo_expired_time']) || time() > $_SESSION['photo_expired_time']) {
+    // Session photo expired atau tidak ada
+    header("Location: customizeLayout3.php");
     exit();
 }
-*/
+
+if (!isset($_SESSION['session_type']) || $_SESSION['session_type'] !== 'photo') {
+    // Session tidak valid
+    header("Location: selectlayout.php");
+    exit();
+}
+
+// Hitung waktu tersisa
+$timeLeft = $_SESSION['photo_expired_time'] - time();
 ?>
 
 <!DOCTYPE html>
@@ -300,6 +309,11 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
 
 <body>
     <main id="main-section">
+        <!-- Timer Session -->
+        <div id="session-timer" style="position: fixed; top: 20px; right: 20px; background: rgba(255, 68, 68, 0.9); color: white; padding: 10px 15px; border-radius: 8px; font-weight: bold; z-index: 1000;">
+            <div>Waktu Tersisa: <span id="timer"><?php echo sprintf('%02d:%02d', floor($timeLeft / 60), $timeLeft % 60); ?></span></div>
+        </div>
+        
         <div class="canvas-centered">
             <div class="gradientBgCanvas"></div>
             <p id="progressCounter">0/6</p>
@@ -354,7 +368,36 @@ if (!isset($_SESSION['has_paid']) || $_SESSION['has_paid'] !== true) {
         </div>
 
     </main>
+    
+    <script>
+        // Session timer
+        let timeLeft = <?php echo $timeLeft; ?>;
+        let timerInterval;
 
+        function startSessionTimer() {
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                
+                document.getElementById('timer').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert('Waktu sesi foto habis! Melanjutkan ke halaman customize.');
+                    window.location.href = 'customizeLayout3.php';
+                }
+                
+                timeLeft--;
+            }, 1000);
+        }
+
+        // Mulai timer ketika halaman load
+        window.addEventListener('load', function() {
+            startSessionTimer();
+        });
+    </script>
+    
     <script src="canvasLayout3.js"></script>
 </body>
 
