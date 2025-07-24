@@ -1,4 +1,37 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // 🚀 COMPRESSION CONFIGURATION - 3-Level Quality System
+    const COMPRESSION_CONFIG = {
+        session: { quality: 0.8, maxWidth: 800 },     // Fast session save
+        download: { quality: 0.95, maxWidth: 1200 },  // High quality download
+        print: { quality: 1.0, maxWidth: 2400 }       // Full quality print
+    };
+
+    // 🔥 FAST COMPRESSION FUNCTION
+    function compressImage(base64Data, type = 'session') {
+        return new Promise((resolve) => {
+            const config = COMPRESSION_CONFIG[type];
+            const img = new Image();
+            
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Calculate new dimensions
+                const ratio = Math.min(config.maxWidth / img.width, config.maxWidth / img.height);
+                canvas.width = img.width * (ratio > 1 ? 1 : ratio);
+                canvas.height = img.height * (ratio > 1 ? 1 : ratio);
+                
+                // Draw and compress
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                const compressed = canvas.toDataURL('image/jpeg', config.quality);
+                
+                resolve(compressed);
+            };
+            
+            img.src = base64Data;
+        });
+    }
+
     // Timer functionality
     const timerDisplay = document.getElementById('timer-display');
     const timeoutModal = document.getElementById('timeout-modal');
@@ -426,84 +459,150 @@ document.addEventListener('DOMContentLoaded', () => {
         event.target.value = "";
     }
 
-    function storeImageArray() {
-        const photoCount = 6; // Layout 5 has 2 photos
-        let loadedImages = 0;
-        let storedImages = [];
-    
-        images.forEach((imgData, index) => {
-            const img = new Image();
-            img.src = imgData;
-            img.onload = () => {
+    // 🚀 OPTIMIZED STORE IMAGE FUNCTION - Layout 5 (6 PHOTOS)
+    async function storeImageArray() {
+        const photoCount = 6; // Layout 5 has 6 photos ✅
+        const doneBtn = document.getElementById('doneBtn');
+        const startTime = Date.now();
+        
+        try {
+            console.log('⚡ Starting FAST photo compression for 6 photos...');
+            
+            if (doneBtn) {
+                doneBtn.textContent = 'Compressing...';
+                doneBtn.disabled = true;
+            }
+            
+            const sessionPhotos = [];  // For session (80% quality)
+            const originalPhotos = []; // Backup original (100% quality)
+            
+            // Process each image
+            for (let index = 0; index < images.length; index++) {
+                const imgData = images[index];
+                if (!imgData) continue;
                 
-                if (invertBtnState) {
-                    // Create an offscreen canvas to mirror the image
-                    const tempCanvas = document.createElement('canvas');
-                    const tempCtx = tempCanvas.getContext('2d');
-    
-                    tempCanvas.width = img.width;
-                    tempCanvas.height = img.height;
-    
-                    // Apply mirroring
-                    tempCtx.translate(img.width, 0);
-                    tempCtx.scale(-1, 1);
-                    tempCtx.drawImage(img, 0, 0, img.width, img.height);
-    
-                    // Convert to base64 data URL
-                    storedImages[index] = tempCanvas.toDataURL('image/png');
-                } else {
-                    // Store the original image if not mirrored
-                    storedImages[index] = imgData;
+                console.log(`📸 Processing image ${index + 1}/${photoCount}...`);
+                
+                // Update progress
+                if (doneBtn) {
+                    const progress = Math.round(((index + 1) / photoCount) * 50);
+                    doneBtn.textContent = `Compressing ${progress}%`;
                 }
-                loadedImages++;
-    
-
-                if (loadedImages === photoCount) {
-                    const estimatedSize = new Blob([JSON.stringify(storedImages)]).size;
-
-                    const storageLimit = 15 * 1024 * 1024; // 15MB limit
-
-                    if (estimatedSize > storageLimit) {
-                        alert("The total image size exceeds the 15MB limit. Please upload smaller images.");
-                        return; // Stop storing and redirecting
+                
+                let processedImage = imgData;
+                
+                // Apply mirror if needed
+                if (typeof invertBtnState !== 'undefined' && invertBtnState) {
+                    processedImage = await applyMirrorEffect(imgData);
+                }
+                
+                // Compress for session (FAST SAVE)
+                const compressedImage = await compressImage(processedImage, 'session');
+                sessionPhotos[index] = compressedImage;
+                
+                // Keep original for download (HIGH QUALITY)
+                originalPhotos[index] = processedImage;
+                
+                console.log(`✅ Image ${index + 1} compressed: ${Math.round(compressedImage.length / 1024)}KB`);
+            }
+            
+            if (doneBtn) {
+                doneBtn.textContent = 'Saving to server...';
+            }
+            
+            console.log('💾 Saving 6 compressed photos to server session...');
+            
+            const response = await fetch('../api-fetch/save_photos.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ photos: sessionPhotos }),
+                signal: AbortSignal.timeout(15000)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                console.log(`🎉 SUCCESS! 6 photos saved in ${Date.now() - startTime}ms`);
+                console.log(`📊 Compressed size: ${data.data_size || 'unknown'}`);
+                
+                // Save originals to localStorage for download
+                try {
+                    localStorage.setItem('fotobox_originals', JSON.stringify(originalPhotos));
+                    localStorage.setItem('fotobox_timestamp', Date.now().toString());
+                    console.log('💾 Original photos backed up for download');
+                } catch (e) {
+                    console.warn('⚠️ Could not backup originals:', e.message);
+                }
+                
+                // Create customize session
+                const sessionResponse = await fetch('../api-fetch/create_customize_session.php', {
+                    method: 'POST',
+                    signal: AbortSignal.timeout(5000)
+                });
+                
+                if (sessionResponse.ok) {
+                    const sessionData = await sessionResponse.json();
+                    if (sessionData.success) {
+                        console.log('✅ Customize session created');
+                        window.location.href = 'customizeLayout5.php';
+                        return;
                     }
-
-                    // Simpan ke server-side session daripada sessionStorage
-                    fetch('../api-fetch/save_photos.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ photos: storedImages })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            console.log(`All ${photoCount} images stored in server session!`);
-                            
-                            // Create customize session before redirect
-                            return fetch('../api-fetch/create_customize_session.php', {
-                                method: 'POST'
-                            });
-                        } else {
-                            throw new Error(data.error || 'Failed to save photos');
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            window.location.href = 'customizeLayout5.php'; 
-                        } else {
-                            console.error('Error creating customize session:', data.error);
-                            window.location.href = 'customizeLayout5.php'; // Fallback
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Error saving photos: ' + error.message);
-                    });
                 }
+                
+                // Fallback redirect
+                console.log('⚠️ Session creation failed, but proceeding...');
+                window.location.href = 'customizeLayout5.php';
+                
+            } else {
+                throw new Error(data.error || 'Failed to save photos');
+            }
+            
+        } catch (error) {
+            console.error('❌ Error in storeImageArray:', error);
+            
+            if (doneBtn) {
+                doneBtn.textContent = 'Done';
+                doneBtn.disabled = false;
+            }
+            
+            let errorMessage = 'Error saving photos: ';
+            if (error.name === 'TimeoutError') {
+                errorMessage += 'Request timeout. Please try again.';
+            } else if (error.message.includes('Failed to fetch')) {
+                errorMessage += 'Network error. Check your connection.';
+            } else {
+                errorMessage += error.message;
+            }
+            
+            alert(errorMessage);
+        }
+    }
+    
+    // 🪞 HELPER FUNCTION - Apply Mirror Effect
+    function applyMirrorEffect(imgData) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = function() {
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                
+                tempCanvas.width = img.width;
+                tempCanvas.height = img.height;
+                
+                tempCtx.translate(img.width, 0);
+                tempCtx.scale(-1, 1);
+                tempCtx.drawImage(img, 0, 0, img.width, img.height);
+                
+                resolve(tempCanvas.toDataURL('image/png'));
             };
+            img.onerror = () => reject(new Error('Failed to apply mirror effect'));
+            img.src = imgData;
         });
     }
     

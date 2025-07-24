@@ -1,0 +1,27 @@
+# FotoboxJO Configuration
+# Simple and compatible .htaccess file
+
+# Increase PHP limits for image processing
+php_value post_max_size 50M
+php_value upload_max_filesize 50M
+php_value max_execution_time 60
+php_value max_input_time 60
+php_value memory_limit 256M
+php_value session.gc_maxlifetime 3600
+php_value max_input_vars 3000
+
+# Error reporting
+php_flag display_errors Off
+php_flag log_errors On
+
+# DirectoryIndex for clean URLs
+DirectoryIndex index.html index.php
+
+# Basic security
+<Files "debug_*.php">
+    Require all denied
+</Files>
+
+<Files "test_*.php">
+    Require all denied
+</Files>

@@ -1461,15 +1461,15 @@ input[type=checkbox] {
 }
 
 #cowPrint {
-    /* background-image: url(assets/frame-backgrounds/cow-print .jpg); */
-    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-image: url(src/assets/frame-backgrounds/frameBG1.png);
+    /* background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
     background-size: 20px 20px;
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     background: radial-gradient(ellipse at center, #000 25%, transparent 25%),
         radial-gradient(ellipse at 30% 70%, #000 15%, transparent 15%),
         radial-gradient(ellipse at 70% 30%, #000 20%, transparent 20%),
         #FFFFFF;
-    background-size: 40px 30px, 25px 20px, 35px 25px;
+    background-size: 40px 30px, 25px 20px, 35px 25px; */
 }
 
 #bluePlaid {

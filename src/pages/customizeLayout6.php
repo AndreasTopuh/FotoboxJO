@@ -155,71 +155,11 @@ $timeLeft = $_SESSION['customize_expired_time'] - time();
                                                         </div>
                                                 </div>
                                                 <h3 class="options-label">Stickers</h3>
-                                                <div class="custom-buttons-container stickers-container">
-                                                        <button id="noneSticker" class="buttonStickers">
-                                                                <!-- <img src="assets/clear.png" class="clearSticker" alt="clear"> -->
-                                                                <img src="assets/frame-shapes/noneShape.png" alt="None" class="btnShapeSize">
+             <div class="custom-buttons-container stickers-container">
+                                                        <button id="bunnySticker" class="buttonStickers">
+                                                                <img src="/src/assets/stickers/bunny1.png" alt="bunny" class="stickerIconSize" />
                                                         </button>
-                                                        <button id="bunnySticker" class="buttonStickers"><img src="assets/stickers/bunny1.png"
-                                                                        alt="kiss" class="stickerIconSize" /></button>
-                                                        <button id="luckySticker" class="buttonStickers new-sticker"><img
-                                                                        src="assets/stickers/lucky1.png" alt="kiss" class="stickerIconSize" /></button>
-                                                        <button id="kissSticker" class="buttonStickers"><img src="assets/stickers/kiss1.png"
-                                                                        alt="kiss" class="stickerIconSize" /></button>
-                                                        <button id="sweetSticker" class="buttonStickers"><img src="assets/stickers/sweet1.png"
-                                                                        alt="sweet" class="stickerIconSize" /></button>
-                                                        <button id="ribbonSticker" class="buttonStickers"><img src="assets/stickers/ribbon1.png"
-                                                                        alt="ribbon" class="stickerIconSize" /></button>
-                                                        <button id="sparkleSticker" class="buttonStickers"><img src="assets/stickers/sparkle2.png"
-                                                                        alt="sparkle" class="stickerIconSize" /></button>
-                                                        <button id="pearlSticker" class="buttonStickers"><img src="assets/stickers/pearl2.png"
-                                                                        alt="kiss" class="stickerIconSize" /></button>
-                                                        <button id="softSticker" class="buttonStickers"><img src="assets/stickers/soft5.png"
-                                                                        alt="kiss" class="stickerIconSize" /></button>
-
-
-                                                        <button id="confettiSticker" class="buttonStickers"><img
-                                                                        src="assets/stickers/confetti/confetti.png" alt="confetti"
-                                                                        class="stickerIconSize" /></button>
-                                                        <button id="ribbonCoquetteSticker" class="buttonStickers"><img
-                                                                        src="assets/stickers/ribboncq4.png" alt="ribbon coquette"
-                                                                        class="stickerIconSize" /></button>
-                                                        <button id="blueRibbonCoquetteSticker" class="buttonStickers"><img
-                                                                        src="assets/stickers/blueRibbon2.png" alt="blue ribbon coquette"
-                                                                        class="stickerIconSize" /></button>
-                                                        <button id="blackStarSticker" class="buttonStickers"><img
-                                                                        src="assets/stickers/blackStar5.png" alt="black stars"
-                                                                        class="stickerIconSize" /></button>
-                                                        <button id="yellowChickenSticker" class="buttonStickers"><img
-                                                                        src="assets/stickers/yellowChicken1.png" alt="yellow baby chick"
-                                                                        class="stickerIconSize" /></button>
-                                                        <button id="brownBearSticker" class="buttonStickers"><img
-                                                                        src="assets/stickers/brownyBear6.png" alt="brown bear"
-                                                                        class="stickerIconSize" /></button>
-                                                        <button id="lotsHeartSticker" class="buttonStickers"><img
-                                                                        src="assets/stickers/lotsHeart8.png" alt="3d heart"
-                                                                        class="stickerIconSize" /></button>
-                                                        <button id="tabbyCatSticker" class="buttonStickers"><img src="assets/stickers/tabbyCat6.png"
-                                                                        alt="yawning tabby cat" class="stickerIconSize" /></button>
-                                                        <button id="ballerinaCappuccinoSticker" class="buttonStickers"><img
-                                                                        src="assets/stickers/ballerinaCappuccino/balerinaCappuccino3.png"
-                                                                        alt="cute white cat" class="stickerIconSize" /></button>
-                                                        <button id="doggyWhiteSticker" class="buttonStickers"><img
-                                                                        src="assets/stickers/doggyWhite/doggyWhite1.png" alt="cute white dog"
-                                                                        class="stickerIconSize" /></button>
-                                                        <button id="sakuraBlossomSticker" class="buttonStickers"><img
-                                                                        src="assets/stickers/sakuraBlossom/sakuraBlossom6.png" alt="sakura"
-                                                                        class="stickerIconSize" /></button>
-                                                        <button id="myGirlsSticker" class="buttonStickers"><img
-                                                                        src="assets/stickers/myGirls/myGirls12.png" alt="three girls"
-                                                                        class="stickerIconSize" /></button>
-                                                        <button id="classicSticker" class="buttonStickers classicStickers"><img
-                                                                        src="assets/stickers/classic1.png" alt="classic black"
-                                                                        class="stickerIconSize" /></button>
-                                                        <button id="classicBSticker" class="buttonStickers classicStickers"><img
-                                                                        src="assets/stickers/classic4.png" alt="classic white"
-                                                                        class="stickerIconSize" /></button>
-                                                        <!-- <button id="WISSticker" class="buttonStickers">Women In Stem</button> -->
+                                                        <!-- Add more stickers here as needed, using the correct path -->
                                                 </div>
                                                 <div class="custom-logo-holder">
                                                         <h3 class="options-label">Logo:</h3>
