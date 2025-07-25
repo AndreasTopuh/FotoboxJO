@@ -10,20 +10,20 @@
   "scope": "https://gofotobox.online/",
   "icons": [
     {
-      "src": "https://gofotobox.online/src/assets/icons/icon-192x192.png",
+      "src": "https://gofotobox.online/src/assets/icons/logo-gofotobox-new-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "https://gofotobox.online/src/assets/icons/icon-512x512.png",
+      "src": "https://gofotobox.online/src/assets/icons/logo-gofotobox-new-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "https://gofotobox.online/src/assets/icons/photobooth-new-logo.png",
-      "sizes": "any",
+      "src": "https://gofotobox.online/src/assets/icons/logo-gofotobox-new-180.png",
+      "sizes": "180x180",
       "type": "image/png"
     }
   ],

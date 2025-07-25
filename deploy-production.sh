@@ -36,9 +36,12 @@ FILES_TO_UPLOAD=(
     "src/pages/customizeLayout4.php"
     "src/pages/customizeLayout5.php"
     "src/pages/customizeLayout6.php"
-    "src/assets/icons/photobooth-new-logo.png"
+    "src/assets/icons/logo-gofotobox-new.jpeg"
+    "src/assets/icons/logo-gofotobox-new.png"
     "src/assets/icons/icon-192x192.png"
     "src/assets/icons/icon-512x512.png"
+    "src/assets/icons/apple-touch-icon.png"
+    "src/assets/icons/favicon.png"
 )
 
 echo "📋 Files to upload:"

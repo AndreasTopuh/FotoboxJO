@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test PWA Icons - GoFotobox</title>
+
+    <!-- PWA Test Icons -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#E28585">
+    <meta name="background-color" content="#FFE4EA">
+
+    <!-- Modern PWA meta tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-title" content="GoFotobox">
+
+    <!-- Apple specific -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="GoFotobox">
+    <link rel="apple-touch-icon" href="/src/assets/icons/logo-gofotobox-new-180.png">
+
+    <!-- Windows specific -->
+    <meta name="msapplication-TileColor" content="#E28585">
+    <meta name="msapplication-TileImage" content="/src/assets/icons/logo-gofotobox-new-192.png">
+    <meta name="msapplication-navbutton-color" content="#E28585">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #FFE4EA 0%, #E28585 100%);
+            min-height: 100vh;
+        }
+
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .icon-test {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .icon-item {
+            text-align: center;
+            padding: 20px;
+            border: 2px solid #E28585;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+
+        .icon-item img {
+            max-width: 100px;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .status.success {
+            background-color: #4CAF50;
+        }
+
+        .status.error {
+            background-color: #f44336;
+        }
+
+        .install-btn {
+            background: #E28585;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            display: none;
+            margin: 20px auto;
+        }
+
+        .install-btn:hover {
+            background: #d16666;
+        }
+
+        .pwa-status {
+            background: #E28585;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="test-container">
+        <h1>🧪 Test PWA Icons - GoFotobox</h1>
+
+        <div class="pwa-status" id="pwaStatus">
+            <strong>PWA Status:</strong> <span id="pwaStatusText">Checking...</span>
+        </div>
+
+        <button class="install-btn" id="installBtn">📱 Install PWA</button>
+
+        <h2>📱 Icon Tests</h2>
+
+        <div class="icon-test">
+            <div class="icon-item">
+                <h3>192x192 - Home Screen</h3>
+                <img src="/src/assets/icons/logo-gofotobox-new-192.png" alt="192x192 icon" id="icon192">
+                <div class="status" id="status192">Loading...</div>
+                <p>Used for: Home screen icon, Windows tile</p>
+            </div>
+
+            <div class="icon-item">
+                <h3>512x512 - Splash Screen</h3>
+                <img src="/src/assets/icons/logo-gofotobox-new-512.png" alt="512x512 icon" id="icon512">
+                <div class="status" id="status512">Loading...</div>
+                <p>Used for: Splash screen, large displays</p>
+            </div>
+
+            <div class="icon-item">
+                <h3>180x180 - Apple Touch</h3>
+                <img src="/src/assets/icons/logo-gofotobox-new-180.png" alt="180x180 icon" id="icon180">
+                <div class="status" id="status180">Loading...</div>
+                <p>Used for: Apple touch icon, iOS</p>
+            </div>
+        </div>
+
+        <h2>🔍 Manifest.json Test</h2>
+        <div id="manifestTest">Loading manifest...</div>
+
+        <h2>🔧 Service Worker Test</h2>
+        <div id="swTest">Checking service worker...</div>
+
+        <div style="margin-top: 30px; text-align: center;">
+            <a href="/"
+                style="background: #E28585; color: white; text-decoration: none; padding: 10px 20px; border-radius: 20px;">
+                🏠 Back to Home
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Test icon loading
+        function testIcon(iconId, statusId, size) {
+            const img = document.getElementById(iconId);
+            const status = document.getElementById(statusId);
+
+            img.onload = function () {
+                if (this.naturalWidth === size && this.naturalHeight === size) {
+                    status.textContent = `✅ ${size}x${size} OK`;
+                    status.className = 'status success';
+                } else {
+                    status.textContent = `❌ Wrong size: ${this.naturalWidth}x${this.naturalHeight}`;
+                    status.className = 'status error';
+                }
+            };
+
+            img.onerror = function () {
+                status.textContent = '❌ Failed to load';
+                status.className = 'status error';
+            };
+        }
+
+        // Test icons
+        testIcon('icon192', 'status192', 192);
+        testIcon('icon512', 'status512', 512);
+        testIcon('icon180', 'status180', 180);
+
+        // Test PWA status
+        function checkPWAStatus() {
+            const pwaStatusText = document.getElementById('pwaStatusText');
+
+            if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+                pwaStatusText.textContent = '✅ Running as PWA';
+                document.getElementById('pwaStatus').style.background = '#4CAF50';
+            } else {
+                pwaStatusText.textContent = '📱 Running in browser (can be installed)';
+            }
+        }
+
+        // Test manifest
+        function testManifest() {
+            fetch('/manifest.json')
+                .then(response => response.json())
+                .then(manifest => {
+                    document.getElementById('manifestTest').innerHTML = `
+                        <div class="status success">✅ Manifest loaded successfully</div>
+                        <p><strong>Name:</strong> ${manifest.name}</p>
+                        <p><strong>Short Name:</strong> ${manifest.short_name}</p>
+                        <p><strong>Icons:</strong> ${manifest.icons.length} icons defined</p>
+                        <p><strong>Start URL:</strong> ${manifest.start_url}</p>
+                        <p><strong>Display:</strong> ${manifest.display}</p>
+                    `;
+                })
+                .catch(error => {
+                    document.getElementById('manifestTest').innerHTML = `
+                        <div class="status error">❌ Manifest failed to load: ${error.message}</div>
+                    `;
+                });
+        }
+
+        // Test service worker
+        function testServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistration()
+                    .then(registration => {
+                        if (registration) {
+                            document.getElementById('swTest').innerHTML = `
+                                <div class="status success">✅ Service Worker registered</div>
+                                <p><strong>Scope:</strong> ${registration.scope}</p>
+                                <p><strong>State:</strong> ${registration.active ? registration.active.state : 'No active worker'}</p>
+                            `;
+                        } else {
+                            document.getElementById('swTest').innerHTML = `
+                                <div class="status error">❌ No Service Worker registered</div>
+                            `;
+                        }
+                    })
+                    .catch(error => {
+                        document.getElementById('swTest').innerHTML = `
+                            <div class="status error">❌ Service Worker error: ${error.message}</div>
+                        `;
+                    });
+            } else {
+                document.getElementById('swTest').innerHTML = `
+                    <div class="status error">❌ Service Worker not supported</div>
+                `;
+            }
+        }
+
+        // PWA Install prompt
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBtn').style.display = 'block';
+        });
+
+        document.getElementById('installBtn').addEventListener('click', () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        });
+
+        // Run tests
+        checkPWAStatus();
+        testManifest();
+        testServiceWorker();
+
+        // Register service worker for this test
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(() => console.log('SW registered for test'))
+                .catch(err => console.log('SW registration failed', err));
+        }
+    </script>
+</body>
+
+</html>

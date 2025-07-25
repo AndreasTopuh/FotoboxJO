@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gofotobox-v6-modern';
+const CACHE_NAME = 'gofotobox-v8-resized-logo';
 const IS_DEVELOPMENT = self.location.hostname === 'localhost' || self.location.hostname.includes('dev');
 const urlsToCache = [
   'https://gofotobox.online/',
@@ -24,9 +24,9 @@ const urlsToCache = [
   'https://gofotobox.online/src/pages/customizeLayout5.php',
   'https://gofotobox.online/src/pages/customizeLayout6.php',
   'https://gofotobox.online/src/pages/thankyou.php',
-  'https://gofotobox.online/src/assets/icons/photobooth-new-logo.png',
-  'https://gofotobox.online/src/assets/icons/icon-192x192.png',
-  'https://gofotobox.online/src/assets/icons/icon-512x512.png',
+  'https://gofotobox.online/src/assets/icons/logo-gofotobox-new-192.png',
+  'https://gofotobox.online/src/assets/icons/logo-gofotobox-new-512.png',
+  'https://gofotobox.online/src/assets/icons/logo-gofotobox-new-180.png',
   'https://gofotobox.online/src/assets/bca.png',
   'https://gofotobox.online/src/assets/qris.png',
   'https://gofotobox.online/manifest.json',
