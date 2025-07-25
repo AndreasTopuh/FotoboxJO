@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Production PWA Test - GoFotobox</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        pre {
+            background: #f1f1f1;
+            padding: 10px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🧪 Production PWA Test - GoFotobox</h1>
+        <p><strong>URL:</strong> https://gofotobox.online</p>
+
+        <div class="test-section">
+            <h3>📱 PWA Installation Test</h3>
+            <button onclick="testPWAInstall()" class="btn-primary">Check PWA Install</button>
+            <button onclick="testServiceWorker()" class="btn-primary">Check Service Worker</button>
+            <button onclick="testModernMetaTags()" class="btn-primary">Check Modern Meta Tags</button>
+            <div id="pwaResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>💳 Payment Flow Test</h3>
+            <button onclick="testPaymentSession()" class="btn-success">Test Payment Session</button>
+            <button onclick="testLayoutRedirect()" class="btn-success">Test Layout Redirect</button>
+            <div id="paymentResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔧 Session Debug</h3>
+            <button onclick="testSessionAPI()" class="btn-warning">Test Session API</button>
+            <button onclick="clearAllStorage()" class="btn-warning">Clear All Storage</button>
+            <div id="sessionResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 System Status</h3>
+            <div id="systemStatus">Loading...</div>
+        </div>
+    </div>
+
+    <script>
+        // Test Modern Meta Tags
+        function testModernMetaTags() {
+            const result = document.getElementById('pwaResult');
+            let html = '<div class="result">';
+
+            // Check modern meta tag
+            const modernMeta = document.querySelector('meta[name="mobile-web-app-capable"]');
+            if (modernMeta) {
+                html += '✅ Modern meta tag (mobile-web-app-capable) found<br>';
+            } else {
+                html += '❌ Modern meta tag (mobile-web-app-capable) missing<br>';
+            }
+
+            // Check deprecated meta tag
+            const appleMeta = document.querySelector('meta[name="apple-mobile-web-app-capable"]');
+            if (appleMeta) {
+                html += '✅ Apple meta tag (backward compatibility) found<br>';
+            } else {
+                html += '⚠️ Apple meta tag missing<br>';
+            }
+
+            // Check Windows meta tags
+            const msTile = document.querySelector('meta[name="msapplication-TileColor"]');
+            if (msTile) {
+                html += '✅ Windows meta tags found<br>';
+            } else {
+                html += '⚠️ Windows meta tags missing<br>';
+            }
+
+            // Check manifest
+            const manifest = document.querySelector('link[rel="manifest"]');
+            if (manifest) {
+                html += `✅ Manifest linked: ${manifest.href}<br>`;
+            } else {
+                html += '❌ Manifest not linked<br>';
+            }
+
+            result.innerHTML = html + '</div>';
+        }
+
+        // Test PWA Installation
+        function testPWAInstall() {
+            const result = document.getElementById('pwaResult');
+            let html = '<div class="result">';
+
+            // Check service worker
+            if ('serviceWorker' in navigator) {
+                html += '✅ Service Worker supported<br>';
+                navigator.serviceWorker.getRegistrations().then(regs => {
+                    html += `📱 Active service workers: ${regs.length}<br>`;
+                    regs.forEach((reg, i) => {
+                        html += `  ${i + 1}. Scope: ${reg.scope}<br>`;
+                    });
+                    result.innerHTML = html + '</div>';
+                });
+            } else {
+                html += '❌ Service Worker not supported<br>';
+            }
+
+            // Check manifest
+            const manifestLink = document.querySelector('link[rel="manifest"]');
+            if (manifestLink) {
+                html += '✅ Manifest link found<br>';
+            } else {
+                html += '❌ Manifest link not found<br>';
+            }
+
+            // Check install prompt
+            if (window.deferredPrompt) {
+                html += '✅ Install prompt available<br>';
+            } else {
+                html += '⚠️ Install prompt not available (may already be installed)<br>';
+            }
+
+            result.innerHTML = html + '</div>';
+        }
+
+        // Test Service Worker
+        function testServiceWorker() {
+            const result = document.getElementById('pwaResult');
+
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.ready.then(registration => {
+                    result.innerHTML = `
+                        <div class="result success">
+                            ✅ Service Worker Active<br>
+                            Scope: ${registration.scope}<br>
+                            State: ${registration.active.state}<br>
+                            Script URL: ${registration.active.scriptURL}
+                        </div>
+                    `;
+                }).catch(error => {
+                    result.innerHTML = `
+                        <div class="result error">
+                            ❌ Service Worker Error: ${error.message}
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        // Test Payment Session
+        async function testPaymentSession() {
+            const result = document.getElementById('paymentResult');
+            result.innerHTML = '<div class="result">Testing payment session...</div>';
+
+            try {
+                const response = await fetch('/src/api-fetch/set_session.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        payment_completed: true,
+                        session_type: 'layout_selection'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    result.innerHTML = `
+                        <div class="result success">
+                            ✅ Payment session test passed<br>
+                            Session ID: ${data.session_id}<br>
+                            Updated: ${data.updated_fields.join(', ')}<br>
+                            <pre>${JSON.stringify(data.current_session, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    result.innerHTML = `
+                        <div class="result error">
+                            ❌ Payment session test failed<br>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                result.innerHTML = `
+                    <div class="result error">
+                        ❌ Network error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Test Layout Redirect
+        function testLayoutRedirect() {
+            const result = document.getElementById('paymentResult');
+            result.innerHTML = '<div class="result">Testing layout redirect...</div>';
+
+            // Simulate payment success and redirect
+            testPaymentSession().then(() => {
+                setTimeout(() => {
+                    window.open('/src/pages/selectlayout.php', '_blank');
+                    result.innerHTML += '<div class="result warning">📱 Layout page opened in new tab</div>';
+                }, 1000);
+            });
+        }
+
+        // Test Session API
+        async function testSessionAPI() {
+            const result = document.getElementById('sessionResult');
+            result.innerHTML = '<div class="result">Testing session API...</div>';
+
+            try {
+                const response = await fetch('/debug_session_detailed.php');
+                const data = await response.json();
+
+                result.innerHTML = `
+                    <div class="result success">
+                        ✅ Session API working<br>
+                        Session ID: ${data.session_id}<br>
+                        Is PWA: ${data.is_pwa}<br>
+                        <pre>${JSON.stringify(data.session_data, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                result.innerHTML = `
+                    <div class="result error">
+                        ❌ Session API error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Clear All Storage
+        function clearAllStorage() {
+            const result = document.getElementById('sessionResult');
+
+            // Clear service worker caches
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => {
+                        caches.delete(name);
+                    });
+                });
+            }
+
+            // Clear localStorage
+            localStorage.clear();
+
+            // Clear sessionStorage
+            sessionStorage.clear();
+
+            result.innerHTML = `
+                <div class="result warning">
+                    ⚠️ All storage cleared<br>
+                    Please refresh the page and test again
+                </div>
+            `;
+        }
+
+        // Check System Status
+        function checkSystemStatus() {
+            const status = document.getElementById('systemStatus');
+            let html = '';
+
+            // Check HTTPS
+            if (location.protocol === 'https:') {
+                html += '✅ HTTPS enabled<br>';
+            } else {
+                html += '❌ HTTPS required for PWA<br>';
+            }
+
+            // Check domain
+            html += `🌐 Domain: ${location.hostname}<br>`;
+            html += `📍 Current URL: ${location.href}<br>`;
+
+            // Check user agent
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+            if (isStandalone) {
+                html += '📱 Running as PWA (standalone)<br>';
+            } else {
+                html += '🖥️ Running in browser<br>';
+            }
+
+            // Check network
+            if ('onLine' in navigator) {
+                html += `📶 Network: ${navigator.onLine ? 'Online' : 'Offline'}<br>`;
+            }
+
+            status.innerHTML = html;
+        }
+
+        // Run initial checks
+        checkSystemStatus();
+
+        // Auto-refresh status every 30 seconds
+        setInterval(checkSystemStatus, 30000);
+    </script>
+</body>
+
+</html>

@@ -13,11 +13,15 @@ $_SESSION['session_type'] = 'thankyou';
 
 // Hitung waktu tersisa
 $timeLeft = $_SESSION['thankyou_expired_time'] - time();
+
+// Include PWA helper
+require_once '../includes/pwa-helper.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+    <?php PWAHelper::addPWAHeaders(); ?>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GoFotobox - Terima Kasih</title>
@@ -140,6 +144,8 @@ $timeLeft = $_SESSION['thankyou_expired_time'] - time();
             box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
         }
     </style>
+    
+    <?php PWAHelper::addPWAScript(); ?>
 </body>
 
 </html>

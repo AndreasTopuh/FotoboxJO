@@ -1,16 +1,19 @@
 <?php
 session_start();
 
-// Auto create customize session jika belum ada atau expired
+// Auto create customize session jika belum ada atau expired (PWA-friendly)
 if (!isset($_SESSION['customize_expired_time']) || time() > $_SESSION['customize_expired_time']) {
     // Create new customize session
     $_SESSION['customize_start_time'] = time();
-    $_SESSION['customize_expired_time'] = time() + (3 * 60); // 3 menit
+    $_SESSION['customize_expired_time'] = time() + (15 * 60); // 15 menit untuk PWA
     $_SESSION['session_type'] = 'customize';
 }
 
 // Hitung waktu tersisa
 $timeLeft = $_SESSION['customize_expired_time'] - time();
+
+// Include PWA helper
+require_once '../includes/pwa-helper.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -18,6 +21,8 @@ $timeLeft = $_SESSION['customize_expired_time'] - time();
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <?php PWAHelper::addPWAHeaders(); ?>
     <meta name="description"
         content="Customize your Layout 1 photobooth photos. Add frames, stickers, and text to your 2-photo strip.">
     <meta name="keywords"
@@ -556,6 +561,8 @@ $timeLeft = $_SESSION['customize_expired_time'] - time();
         <!-- <script src="canvas.js"></script> -->
         <!-- <script src="main.js"></script> -->
         <!-- <script src="download.js"></script> -->
+        
+        <?php PWAHelper::addPWAScript(); ?>
 </body>
 
 </html>

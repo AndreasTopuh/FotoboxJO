@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test Payment Flow</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .success {
+            background: #28a745;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Test Payment Flow</h2>
+    <p>Simulasi flow payment untuk testing PWA</p>
+
+    <button class="btn" onclick="window.location.href='payment-qris.php'">1. Go to Payment QRIS</button><br>
+    <button class="btn" onclick="window.location.href='payment-bank.php'">2. Go to Payment Bank</button><br>
+
+    <hr>
+    <h3>Simulasi Payment Success</h3>
+    <button class="btn success" onclick="simulatePaymentSuccess()">Simulate Payment Success</button><br>
+    <button class="btn" onclick="window.location.href='selectlayout.php'">Go to Select Layout</button><br>
+
+    <hr>
+    <h3>Debug</h3>
+    <button class="btn" onclick="window.location.href='debug.php'">View Session Debug</button><br>
+    <button class="btn" onclick="window.location.href='selectlayout.php?debug=1'">Debug Layout Page</button>
+
+    <script>
+        function simulatePaymentSuccess() {
+            // Set session payment completed
+            fetch('../api-fetch/set_session.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    payment_completed: true,
+                    payment_expired_time: Math.floor(Date.now() / 1000) + (15 * 60)
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Payment success simulated! Session set.');
+                    window.location.href = 'selectlayout.php';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error setting session');
+                });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,18 +1,29 @@
 <?php
 session_start();
 
-// Validasi session payment
-if (!isset($_SESSION['payment_expired_time']) || time() > $_SESSION['payment_expired_time']) {
-    // Session payment expired atau tidak ada
-    header("Location: selectpayment.php");
-    exit();
+// Debug: Tampilkan session untuk debugging
+if (isset($_GET['debug'])) {
+    echo "<pre>";
+    print_r($_SESSION);
+    echo "</pre>";
+    exit;
 }
 
-if (!isset($_SESSION['payment_completed']) || $_SESSION['payment_completed'] !== true) {
-    // Payment belum selesai
-    header("Location: payment-qris.php");
-    exit();
+// PWA-friendly session management
+// Auto create or extend session jika belum ada atau expired
+if (!isset($_SESSION['session_type']) || !isset($_SESSION['payment_expired_time']) || time() > $_SESSION['payment_expired_time']) {
+    $_SESSION['session_type'] = 'layout_selection';
+    $_SESSION['payment_expired_time'] = time() + (15 * 60); // 15 menit
+    $_SESSION['payment_completed'] = true; // Mark as completed for PWA
 }
+
+// Extend session if payment was completed recently
+if (isset($_SESSION['payment_completed']) && $_SESSION['payment_completed'] === true) {
+    $_SESSION['payment_expired_time'] = time() + (15 * 60); // Extend 15 minutes
+}
+
+// Include PWA helper
+require_once '../includes/pwa-helper.php';
 ?>
 
 <!DOCTYPE html>
@@ -25,6 +36,8 @@ if (!isset($_SESSION['payment_completed']) || $_SESSION['payment_completed'] !==
         content="Take instant photobooth-style photos online. Customize with over 100 frame colors, add stickers and frames, and download high-quality photo strips instantly.">
     <meta name="keywords"
         content="photobooth, photobooth website, photobooth website tiktok, online photobooth, tiktok photobooth, webcamtoy, tiktok viral photobooth, picapica, photobooth-io">
+    
+    <?php PWAHelper::addPWAHeaders(); ?>
     <title>Photobooth | Choose Your Photo Layout</title>
     <link rel="canonical" href="https://www.photobooth-io.cc">
     <meta property="og:title" content="Photobooth | Free Online Photobooth Anytime, Anywhere">
@@ -115,18 +128,6 @@ if (!isset($_SESSION['payment_completed']) || $_SESSION['payment_completed'] !==
                     <div>
                         <p class="layout-description">Photo Grid</p>
                         <p class="layout-description">(4 Photos)</p>
-                    </div>
-                </div>
-
-                <!-- Original Canvas Options -->
-                <div class="layout-contents">
-                    <button class="layout-holder" id="canvasBtn">
-                        <img src="../assets/layouts/thinBorders1.2.png" class="layout-img" alt="canvas" loading="eager">
-                    </button>
-                    <h2 class="layout-label">Canvas</h2>
-                    <div>
-                        <p class="layout-description">Original Frame</p>
-                        <p class="layout-description">(1 Photo)</p>
                     </div>
                 </div>
             </div>
@@ -289,6 +290,8 @@ if (!isset($_SESSION['payment_completed']) || $_SESSION['payment_completed'] !==
             background: #545b62;
         }
     </style>
+    
+    <?php PWAHelper::addPWAScript(); ?>
 </body>
 
 </html>

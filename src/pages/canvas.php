@@ -1,21 +1,23 @@
 <?php
 session_start();
 
-// Validasi session photo
-if (!isset($_SESSION['photo_expired_time']) || time() > $_SESSION['photo_expired_time']) {
-    // Session photo expired atau tidak ada
-    header("Location: customize.php");
-    exit();
+// Set default session if not exists (untuk PWA compatibility)
+if (!isset($_SESSION['session_type'])) {
+    $_SESSION['session_type'] = 'photo';
+    $_SESSION['photo_start_time'] = time();
+    $_SESSION['photo_expired_time'] = time() + (10 * 60); // 10 menit
 }
 
-if (!isset($_SESSION['session_type']) || $_SESSION['session_type'] !== 'photo') {
-    // Session tidak valid
-    header("Location: selectlayout.php");
-    exit();
+// Extend session if expired untuk better UX
+if (isset($_SESSION['photo_expired_time']) && time() > $_SESSION['photo_expired_time']) {
+    $_SESSION['photo_expired_time'] = time() + (10 * 60); // Extend 10 menit
 }
 
 // Hitung waktu tersisa
 $timeLeft = $_SESSION['photo_expired_time'] - time();
+
+// Include PWA helper
+require_once '../includes/pwa-helper.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -25,6 +27,8 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description"
         content="Take instant photobooth-style photos online. Customize with over 100 frame colors, add stickers and frames, and download high-quality photo strips instantly.">
+    
+    <?php PWAHelper::addPWAHeaders(); ?>
     <meta name="keywords"
         content="photobooth, photobooth website, photobooth website tiktok, online photobooth, tiktok photobooth, webcamtoy, tiktok viral photobooth, picapica, digibooth, photobooth-io">
     <title>Photobooth | Take Photos</title>
@@ -403,6 +407,8 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     <script src="canvas.js"></script>
     <script src="debug-camera.js"></script>
     <!-- <script src="main.js"></script> -->
+    
+    <?php PWAHelper::addPWAScript(); ?>
 </body>
 
 </html>

@@ -1,12 +1,15 @@
 <?php
 session_start();
 
-// Auto create customize session jika belum ada atau expired
-if (!isset($_SESSION['customize_expired_time']) || time() > $_SESSION['customize_expired_time']) {
+// Include PWA helper
+require_once '../includes/pwa-helper.php';
+
+// Auto create customize session jika belum ada atau expired (PWA-friendly)
+if (!isset($_SESSION["customize_expired_time"]) || time() > $_SESSION["customize_expired_time"]) {
     // Create new customize session
-    $_SESSION['customize_start_time'] = time();
-    $_SESSION['customize_expired_time'] = time() + (3 * 60); // 3 menit
-    $_SESSION['session_type'] = 'customize';
+    $_SESSION["customize_start_time"] = time();
+    $_SESSION["customize_expired_time"] = time() + (15 * 60); // 15 menit untuk PWA
+    $_SESSION["session_type"] = "customize";
 }
 
 // Hitung waktu tersisa
@@ -17,6 +20,7 @@ $timeLeft = $_SESSION['customize_expired_time'] - time();
 <html>
 
 <head>
+    <?php PWAHelper::addPWAHeaders(); ?>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description"
@@ -203,6 +207,7 @@ $timeLeft = $_SESSION['customize_expired_time'] - time();
 
     <script src="https://cdn.jsdelivr.net/npm/vanilla-picker@2.12.1/dist/vanilla-picker.min.js"></script>
     <script src="customizeLayout5.js"></script>
+    <?php PWAHelper::addPWAScript(); ?>
 </body>
 
 </html>

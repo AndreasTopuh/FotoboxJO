@@ -1,0 +1,33 @@
+{
+  "name": "GoFotobox - Photo Booth Online",
+  "short_name": "GoFotobox",
+  "description": "Capture the moment, style your photo, and print it instantly",
+  "start_url": "https://gofotobox.online/",
+  "display": "standalone",
+  "background_color": "#FFE4EA",
+  "theme_color": "#E28585",
+  "orientation": "portrait",
+  "scope": "https://gofotobox.online/",
+  "icons": [
+    {
+      "src": "https://gofotobox.online/src/assets/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "https://gofotobox.online/src/assets/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "https://gofotobox.online/src/assets/icons/photobooth-new-logo.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["photo", "entertainment"],
+  "lang": "id",
+  "dir": "ltr"
+}

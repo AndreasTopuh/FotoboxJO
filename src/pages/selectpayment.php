@@ -5,6 +5,9 @@ session_start();
 session_unset();
 session_destroy();
 session_start();
+
+// Include PWA helper
+require_once '../includes/pwa-helper.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -12,7 +15,10 @@ session_start();
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pilih Metode Pembayaran</title>
+  <title>Pilih Metode Pembayaran - GoFotobox</title>
+  
+  <?php PWAHelper::addPWAHeaders(); ?>
+  
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="home-styles.css" />
 </head>
@@ -52,6 +58,8 @@ session_start();
       </div>
     </div>
   </div>
+  
+  <?php PWAHelper::addPWAScript(); ?>
 </body>
 
 </html>

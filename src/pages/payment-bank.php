@@ -10,6 +10,9 @@ session_start();
 $_SESSION['payment_start_time'] = time();
 $_SESSION['payment_expired_time'] = time() + (3 * 60); // 3 menit
 $_SESSION['session_type'] = 'payment';
+
+// Include PWA helper
+require_once '../includes/pwa-helper.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -17,7 +20,9 @@ $_SESSION['session_type'] = 'payment';
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pembayaran Virtual Bank BCA</title>
+  <title>Pembayaran Virtual Bank BCA - GoFotobox</title>
+  
+  <?php PWAHelper::addPWAHeaders(); ?>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="home-styles.css" />
 </head>
@@ -64,7 +69,7 @@ $_SESSION['session_type'] = 'payment';
             <p id="status" style="margin: 0; color: #333; font-weight: 600;">Status: Menunggu pembayaran...</p>
           </div>
           
-          <button id="next" class="start-btn" style="display:none;" onclick="location.href='selectlayout.php'">Lanjutkan</button>
+          <button id="next" class="start-btn" style="display:none;" onclick="proceedToLayout()">Lanjutkan</button>
         </div>
 
       </div>
@@ -143,6 +148,18 @@ $_SESSION['session_type'] = 'payment';
                             document.getElementById('timer').style.color = "#28a745";
                             document.getElementById('status').style.color = "#28a745";
                             document.getElementById('next').style.display = "block";
+                            
+                            // Set session payment completed untuk PWA
+                            fetch('../api-fetch/set_session.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ 
+                                    payment_completed: true,
+                                    payment_expired_time: Math.floor(Date.now() / 1000) + (15 * 60) // 15 menit
+                                })
+                            });
                         }
                     })
                     .catch(error => {
@@ -164,6 +181,43 @@ $_SESSION['session_type'] = 'payment';
             })
             .then(() => {
                 window.location.href = '../../index.html';
+            });
+        }
+
+        // Function untuk proceed ke layout selection
+        function proceedToLayout() {
+            console.log('proceedToLayout called from Bank payment');
+            
+            // Set session for layout selection via API
+            fetch('../api-fetch/set_session.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    payment_completed: true,
+                    session_type: 'layout_selection',
+                    payment_expired_time: Math.floor(Date.now() / 1000) + (15 * 60) // 15 minutes
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Session set result:', data);
+                if (data.success) {
+                    // Add small delay to ensure session is set
+                    setTimeout(() => {
+                        window.location.href = 'selectlayout.php';
+                    }, 500);
+                } else {
+                    console.error('Failed to set session:', data);
+                    // Fallback: try direct navigation
+                    window.location.href = 'selectlayout.php';
+                }
+            })
+            .catch(error => {
+                console.error('Error setting session:', error);
+                // Fallback: try direct navigation
+                window.location.href = 'selectlayout.php';
             });
         }
     </script>
@@ -221,6 +275,8 @@ $_SESSION['session_type'] = 'payment';
             background: #0056b3;
         }
     </style>
+    
+    <?php PWAHelper::addPWAScript(); ?>
 </body>
 
 </html>

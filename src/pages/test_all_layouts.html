@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test All Layouts - GoFotobox PWA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 8px 16px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn.canvas {
+            background: #28a745;
+        }
+
+        .btn.customize {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .btn.success {
+            background: #28a745;
+        }
+
+        .btn.info {
+            background: #17a2b8;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        h2 {
+            color: #666;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎉 GoFotobox PWA - All Layouts Test</h1>
+
+        <div class="status success">
+            ✅ All layouts now have PWA-friendly session management with extended timeouts!
+        </div>
+
+        <div class="section">
+            <h2>🏠 Main Pages</h2>
+            <div class="grid">
+                <a href="selectpayment.php" class="btn">Payment Selection</a>
+                <a href="selectlayout.php" class="btn">Layout Selection</a>
+                <a href="canvas.php" class="btn canvas">Main Canvas</a>
+                <a href="customize.php" class="btn customize">Main Customize</a>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📸 Canvas Layouts (1-6)</h2>
+            <p>Camera pages for photo capture - Now with 10 minute sessions</p>
+            <div class="grid">
+                <a href="canvasLayout1.php" class="btn canvas">Canvas Layout 1</a>
+                <a href="canvasLayout2.php" class="btn canvas">Canvas Layout 2</a>
+                <a href="canvasLayout3.php" class="btn canvas">Canvas Layout 3</a>
+                <a href="canvasLayout4.php" class="btn canvas">Canvas Layout 4</a>
+                <a href="canvasLayout5.php" class="btn canvas">Canvas Layout 5</a>
+                <a href="canvasLayout6.php" class="btn canvas">Canvas Layout 6</a>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🎨 Customize Layouts (1-6)</h2>
+            <p>Photo customization pages - Now with 15 minute sessions</p>
+            <div class="grid">
+                <a href="customizeLayout1.php" class="btn customize">Customize Layout 1</a>
+                <a href="customizeLayout2.php" class="btn customize">Customize Layout 2</a>
+                <a href="customizeLayout3.php" class="btn customize">Customize Layout 3</a>
+                <a href="customizeLayout4.php" class="btn customize">Customize Layout 4</a>
+                <a href="customizeLayout5.php" class="btn customize">Customize Layout 5</a>
+                <a href="customizeLayout6.php" class="btn customize">Customize Layout 6</a>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🧪 Testing Tools</h2>
+            <div class="grid">
+                <a href="test_flow.html" class="btn info">Test Payment Flow</a>
+                <a href="debug.php" class="btn info">Debug Session</a>
+                <a href="test_session.php" class="btn success">Create Test Session</a>
+                <button class="btn success" onclick="testAllLayouts()">Test All Layouts</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📱 PWA Features</h2>
+            <ul>
+                <li>✅ All pages have PWA support</li>
+                <li>✅ Extended session timeouts (10-15 minutes)</li>
+                <li>✅ Auto session creation if not exists</li>
+                <li>✅ Session extension on expiry</li>
+                <li>✅ PWA-friendly navigation</li>
+                <li>✅ Offline capability</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function testAllLayouts() {
+            const layouts = [
+                'canvasLayout1.php', 'canvasLayout2.php', 'canvasLayout3.php',
+                'canvasLayout4.php', 'canvasLayout5.php', 'canvasLayout6.php',
+                'customizeLayout1.php', 'customizeLayout2.php', 'customizeLayout3.php',
+                'customizeLayout4.php', 'customizeLayout5.php', 'customizeLayout6.php'
+            ];
+
+            let results = [];
+            let completed = 0;
+
+            alert('Testing all ' + layouts.length + ' layouts... Please wait.');
+
+            layouts.forEach(layout => {
+                fetch(layout, { method: 'HEAD' })
+                    .then(response => {
+                        results.push(layout + ': ' + (response.ok ? '✅ OK' : '❌ Error ' + response.status));
+                        completed++;
+
+                        if (completed === layouts.length) {
+                            alert('Test Results:\n\n' + results.join('\n'));
+                        }
+                    })
+                    .catch(error => {
+                        results.push(layout + ': ❌ Failed - ' + error.message);
+                        completed++;
+
+                        if (completed === layouts.length) {
+                            alert('Test Results:\n\n' + results.join('\n'));
+                        }
+                    });
+            });
+        }
+    </script>
+</body>
+
+</html>
