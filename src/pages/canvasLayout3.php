@@ -8,12 +8,15 @@ require_once '../includes/pwa-helper.php';
 if (!isset($_SESSION["session_type"])) {
     $_SESSION["session_type"] = "photo";
     $_SESSION["photo_start_time"] = time();
-    $_SESSION["photo_expired_time"] = time() + (10 * 60); // 10 menit
+    $_SESSION["photo_expired_time"] = time() + (7 * 60); // 7 menit untuk canvas
 }
 
-// Extend session if expired untuk better UX
-if (isset($_SESSION["photo_expired_time"]) && time() > $_SESSION["photo_expired_time"]) {
-    $_SESSION["photo_expired_time"] = time() + (10 * 60); // Extend 10 menit
+// Jika session expired, destroy session dan redirect ke home
+if (time() > $_SESSION['photo_expired_time']) {
+    session_unset();
+    session_destroy();
+    header("Location: ../../index.html");
+    exit();
 }
 
 // Hitung waktu tersisa
@@ -52,6 +55,81 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
         rel="stylesheet">
     <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png" />
         <style>
+        /* Timer Box Styling */
+        .timer-box {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 68, 68, 0.9);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-weight: bold;
+            z-index: 1000;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .timer-box #timer-display {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .timer-box p {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Modal Styling */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+            margin: 0 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content h2 {
+            color: #ff4444;
+            margin-bottom: 1rem;
+        }
+
+        .modal-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-top: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .modal-btn:hover {
+            background: #e03e3e;
+        }
+
         body {
             /* text-align: center;  */
             font-family: Arial, sans-serif;
@@ -311,11 +389,22 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
 </head>
 
 <body>
-    <main id="main-section">
-        <!-- Timer Session -->
-        <div id="session-timer" style="position: fixed; top: 20px; right: 20px; background: rgba(255, 68, 68, 0.9); color: white; padding: 10px 15px; border-radius: 8px; font-weight: bold; z-index: 1000;">
-            <div>Waktu Tersisa: <span id="timer"><?php echo sprintf('%02d:%02d', floor($timeLeft / 60), $timeLeft % 60); ?></span></div>
+    <!-- Timer Box -->
+    <div id="timer-box" class="timer-box">
+        <span id="timer-display">07:00</span>
+        <p>Sisa waktu untuk mengambil foto</p>
+    </div>
+
+    <!-- Timeout Modal -->
+    <div id="timeout-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Waktu Habis!</h2>
+            <p id="timeout-message">Sesi foto Anda telah berakhir.</p>
+            <button id="timeout-ok-btn" class="modal-btn">OK</button>
         </div>
+    </div>
+
+    <main id="main-section">
         
         <div class="canvas-centered">
             <div class="gradientBgCanvas"></div>
@@ -373,35 +462,17 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     </main>
     
     <script>
-        // Session timer
-        let timeLeft = <?php echo $timeLeft; ?>;
-        let timerInterval;
-
-        function startSessionTimer() {
-            timerInterval = setInterval(() => {
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                
-                document.getElementById('timer').textContent = 
-                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    alert('Waktu sesi foto habis! Melanjutkan ke halaman customize.');
-                    window.location.href = 'customizeLayout3.php';
-                }
-                
-                timeLeft--;
-            }, 1000);
-        }
-
-        // Mulai timer ketika halaman load
-        window.addEventListener('load', function() {
-            startSessionTimer();
+        console.log('🔧 PHP script loaded, about to load JS...');
+        // Add error handler for JS loading
+        window.addEventListener('error', function(e) {
+            console.error('❌ Script error:', e.error);
+            alert('Script error: ' + e.message);
         });
     </script>
-    
     <script src="canvasLayout3.js"></script>
+    <script>
+        console.log('✅ All scripts loaded');
+    </script>
     <?php PWAHelper::addPWAScript(); ?>
 </body>
 

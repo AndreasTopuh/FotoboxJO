@@ -15,7 +15,7 @@ require_once '../includes/pwa-helper.php';
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pilih Metode Pembayaran - GoFotobox</title>
+  <title>Pilih Metode Pembayaran - GoBooth</title>
   
   <?php PWAHelper::addPWAHeaders(); ?>
   

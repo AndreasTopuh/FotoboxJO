@@ -1,10 +1,10 @@
-document.addEventListener('DOMContentLoaded', function() {
-    
+document.addEventListener('DOMContentLoaded', function () {
+
     // Timer functionality
     const timerDisplay = document.getElementById('timer-display');
     const timeoutModal = document.getElementById('timeout-modal');
     const timeoutOkBtn = document.getElementById('timeout-ok-btn');
-    
+
     let timeLeft = 3 * 60; // 3 minutes in seconds
     let timerInterval;
 
@@ -12,16 +12,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const minutes = Math.floor(timeLeft / 60);
         const seconds = timeLeft % 60;
         const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        
+
         if (timerDisplay) {
             timerDisplay.textContent = display;
         }
-        
+
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
             showTimeoutModal();
         }
-        
+
         timeLeft--;
     }
 
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 🎯 PRIORITAS 1: LOAD FOTO TERLEBIH DAHULU
     console.log('🔄 Loading photos first for better UX...');
-    
+
     // Variables
     let storedImages = [];
     let imageArrayLength = 0;
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let backgroundType = 'color';
     let backgroundColor = '#FFFFFF';
     let backgroundImage = null;
-    
+
     // DOM Elements
     const photoCustomPreview = document.getElementById('photoPreview');
     const customBack = document.getElementById('customBack');
@@ -113,17 +113,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         console.log('🎨 Initializing canvas with photos...');
-        
+
         // Create and render canvas immediately
         redrawCanvas();
-        
+
         console.log('✅ Canvas initialized and rendered');
     }
 
     // Initialize basic controls (non-sticker related)
     function initializeControls() {
         console.log('🎛️ Initializing basic controls...');
-        
+
         // Back button
         if (customBack) {
             customBack.addEventListener('click', () => {
@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Date checkboxes
         const dateCheckbox = document.getElementById('dateCheckbox');
         const dateTimeCheckbox = document.getElementById('dateTimeCheckbox');
-        
+
         if (dateCheckbox) {
             dateCheckbox.addEventListener('change', () => {
                 redrawCanvas();
@@ -149,13 +149,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Frame color controls
         initializeFrameControls();
-        
+
         // Shape controls
         initializeShapeControls();
-        
+
         // Action buttons
         initializeActionButtons();
-        
+
         console.log('✅ Basic controls initialized');
     }
 
@@ -163,13 +163,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function initializeStickerControls() {
         setTimeout(() => {
             console.log('🎭 Initializing sticker controls...');
-            
+
             const stickerButtons = [
                 'noneSticker', 'kissSticker', 'ribbonSticker', 'sweetSticker',
                 'sparkleSticker', 'pearlSticker', 'softSticker', 'bunnySticker',
                 'classicSticker', 'classicBSticker', 'luckySticker', 'confettiSticker'
             ];
-            
+
             stickerButtons.forEach(buttonId => {
                 const button = document.getElementById(buttonId);
                 if (button) {
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
             });
-            
+
             console.log('✅ Sticker controls initialized');
         }, 100); // Small delay to not block photo rendering
     }
@@ -194,17 +194,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Frame controls
     function initializeFrameControls() {
         const colorButtons = [
-            {id: 'pinkBtnFrame', color: '#FFB6C1'},
-            {id: 'blueBtnFrame', color: '#87CEEB'},
-            {id: 'yellowBtnFrame', color: '#FFFFE0'},
-            {id: 'brownBtnFrame', color: '#D2691E'},
-            {id: 'redBtnFrame', color: '#FF6347'},
-            {id: 'matchaBtnFrame', color: '#9ACD32'},
-            {id: 'purpleBtnFrame', color: '#DDA0DD'},
-            {id: 'whiteBtnFrame', color: '#FFFFFF'},
-            {id: 'blackBtnFrame', color: '#000000'}
+            { id: 'pinkBtnFrame', color: '#FFB6C1' },
+            { id: 'blueBtnFrame', color: '#87CEEB' },
+            { id: 'yellowBtnFrame', color: '#FFFFE0' },
+            { id: 'brownBtnFrame', color: '#D2691E' },
+            { id: 'redBtnFrame', color: '#FF6347' },
+            { id: 'matchaBtnFrame', color: '#9ACD32' },
+            { id: 'purpleBtnFrame', color: '#DDA0DD' },
+            { id: 'whiteBtnFrame', color: '#FFFFFF' },
+            { id: 'blackBtnFrame', color: '#000000' }
         ];
-        
+
         colorButtons.forEach(btn => {
             const element = document.getElementById(btn.id);
             if (element) {
@@ -221,12 +221,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Shape controls
     function initializeShapeControls() {
         const shapeButtons = [
-            {id: 'noneFrameShape', shape: 'default'},
-            {id: 'softFrameShape', shape: 'rounded'},
-            {id: 'circleFrameShape', shape: 'circle'},
-            {id: 'heartFrameShape', shape: 'heart'}
+            { id: 'noneFrameShape', shape: 'default' },
+            { id: 'softFrameShape', shape: 'rounded' },
+            { id: 'circleFrameShape', shape: 'circle' },
+            { id: 'heartFrameShape', shape: 'heart' }
         ];
-        
+
         shapeButtons.forEach(btn => {
             const element = document.getElementById(btn.id);
             if (element) {
@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const emailBtn = document.getElementById('emailBtn');
         const printBtn = document.getElementById('printBtn');
         const continueBtn = document.getElementById('continueBtn');
-        
+
         if (downloadBtn) {
             downloadBtn.addEventListener('click', () => {
                 if (finalCanvas) {
@@ -255,7 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
-        
+
         if (printBtn) {
             printBtn.addEventListener('click', () => {
                 if (finalCanvas) {
@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
-        
+
         if (continueBtn) {
             continueBtn.addEventListener('click', () => {
                 window.location.href = 'thankyou.php';
@@ -291,31 +291,35 @@ document.addEventListener('DOMContentLoaded', function() {
         const stackedCanvas = document.createElement('canvas');
         const ctx = stackedCanvas.getContext('2d');
 
-        // Layout 3 dimensions (6 photos in 3x2 grid)
+        // Dimensi kanvas dan parameter tata letak
         const canvasWidth = 1200;   // 4R standard width
         const canvasHeight = 1800;  // 4R standard height
-        const borderWidth = 30;
-        const spacing = 12;
-        const bottomPadding = 100;
-        const expectedPhotos = 6;
+        const borderWidth = 62;     // Border kiri dan kanan
+        const marginTop = 120;      // Margin atas untuk semua foto
+        const spacing = 37;         // Spasi vertikal antar foto
+        const photoWidth = 477;     // Lebar foto
+        const photoHeight = 424;    // Tinggi foto
+        const expectedPhotos = 6;   // Jumlah foto yang diharapkan
 
-        const availableHeight = canvasHeight - (borderWidth * 2) - (spacing * 2) - bottomPadding;
-        const photoHeight = (availableHeight - spacing) / 2;
-        const photoWidth = (canvasWidth - (borderWidth * 2) - (spacing * 2)) / 3;
+        // Menghitung posisi x untuk kolom
+        const availableWidth = canvasWidth - (borderWidth * 2); // 1200 - 124 = 1076px
+        const centerSpacing = availableWidth - (photoWidth * 2); // 1076 - (477 * 2) = 122px
+        const leftColumnX = borderWidth; // x = 62px
+        const rightColumnX = borderWidth + photoWidth + centerSpacing; // x = 62 + 477 + 122 = 661px
 
         stackedCanvas.width = canvasWidth;
         stackedCanvas.height = canvasHeight;
 
-        // Clear the entire canvas first
+        // Membersihkan kanvas
         ctx.clearRect(0, 0, stackedCanvas.width, stackedCanvas.height);
 
-        // Set background
+        // Mengatur latar belakang
         if (backgroundType === 'color') {
             ctx.fillStyle = backgroundColor;
             ctx.fillRect(0, 0, stackedCanvas.width, stackedCanvas.height);
         } else if (backgroundImage) {
             const bgImg = new Image();
-            bgImg.onload = function() {
+            bgImg.onload = function () {
                 ctx.drawImage(bgImg, 0, 0, stackedCanvas.width, stackedCanvas.height);
                 drawPhotos();
             };
@@ -335,15 +339,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
             storedImages.slice(0, imagesToProcess).forEach((imageData, index) => {
                 const img = new Image();
-                img.onload = function() {
-                    // Layout 3/5: 3x2 grid
-                    const col = index % 3;
-                    const row = Math.floor(index / 3);
-                    const x = borderWidth + (col * (photoWidth + spacing));
-                    const y = borderWidth + (row * (photoHeight + spacing));
-                    
-                    drawPhotoWithShape(ctx, img, x, y, photoWidth, photoHeight, selectedShape);
-                    
+                img.onload = function () {
+                    // Posisi dan ukuran untuk setiap foto
+                    const positions = [
+                        // Kolom kiri: Foto 1, 2, 3
+                        { x: leftColumnX, y: marginTop, width: photoWidth, height: photoHeight }, // Foto 1: x: 62, y: 120
+                        { x: leftColumnX, y: marginTop + photoHeight + spacing, width: photoWidth, height: photoHeight }, // Foto 2: x: 62, y: 120 + 424 + 37 = 581
+                        { x: leftColumnX, y: marginTop + (photoHeight + spacing) * 2, width: photoWidth, height: photoHeight }, // Foto 3: x: 62, y: 120 + (424 + 37) * 2 = 1042
+                        // Kolom kanan: Foto 4, 5, 6
+                        { x: rightColumnX, y: marginTop, width: photoWidth, height: photoHeight }, // Foto 4: x: 661, y: 120
+                        { x: rightColumnX, y: marginTop + photoHeight + spacing, width: photoWidth, height: photoHeight }, // Foto 5: x: 661, y: 120 + 424 + 37 = 581
+                        { x: rightColumnX, y: marginTop + (photoHeight + spacing) * 2, width: photoWidth, height: photoHeight } // Foto 6: x: 661, y: 120 + (424 + 37) * 2 = 1042
+                    ];
+
+                    const pos = positions[index];
+                    drawPhotoWithShape(ctx, img, pos.x, pos.y, pos.width, pos.height, selectedShape);
+
                     loadedCount++;
                     if (loadedCount === imagesToProcess) {
                         drawStickersAndLogos(ctx, stackedCanvas);
@@ -353,11 +364,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Update preview with optimized canvas style
+        // Styling pratinjau kanvas
         if (photoCustomPreview) {
             photoCustomPreview.innerHTML = '';
-            
-            // Set canvas style for small preview display
+
             stackedCanvas.style.maxWidth = "300px";
             stackedCanvas.style.maxHeight = "450px";
             stackedCanvas.style.width = "auto";
@@ -367,7 +377,7 @@ document.addEventListener('DOMContentLoaded', function() {
             stackedCanvas.style.boxShadow = "0 4px 8px rgba(0,0,0,0.1)";
             stackedCanvas.style.display = "block";
             stackedCanvas.style.margin = "0 auto";
-            
+
             photoCustomPreview.appendChild(stackedCanvas);
         }
 
@@ -377,12 +387,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Helper function to draw photo with shape
     function drawPhotoWithShape(ctx, img, x, y, width, height, shape) {
         ctx.save();
-        
+
         if (shape === 'circle') {
             const centerX = x + width / 2;
             const centerY = y + height / 2;
             const radius = Math.min(width, height) / 2;
-            
+
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
             ctx.clip();
@@ -390,10 +400,10 @@ document.addEventListener('DOMContentLoaded', function() {
             roundedRect(ctx, x, y, width, height, 20);
             ctx.clip();
         } else if (shape === 'heart') {
-            heartShape(ctx, x + width/2, y + height/2, Math.min(width, height)/2);
+            heartShape(ctx, x + width / 2, y + height / 2, Math.min(width, height) / 2);
             ctx.clip();
         }
-        
+
         ctx.drawImage(img, x, y, width, height);
         ctx.restore();
     }
@@ -432,11 +442,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Draw selected sticker
         if (selectedSticker) {
             const stickerImg = new Image();
-            stickerImg.onload = function() {
+            stickerImg.onload = function () {
                 const stickerSize = 100;
                 const stickerX = canvas.width - stickerSize - 20;
                 const stickerY = canvas.height - stickerSize - 120;
-                
+
                 ctx.drawImage(stickerImg, stickerX, stickerY, stickerSize, stickerSize);
             };
             stickerImg.src = selectedSticker;
@@ -445,20 +455,20 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add date/time if checked
         const dateCheckbox = document.getElementById('dateCheckbox');
         const dateTimeCheckbox = document.getElementById('dateTimeCheckbox');
-        
+
         if (dateCheckbox && dateCheckbox.checked) {
             const now = new Date();
             const dateStr = now.toLocaleDateString();
-            
+
             ctx.fillStyle = 'white';
             ctx.font = '16px Arial';
             ctx.fillText(dateStr, 40, canvas.height - 40);
         }
-        
+
         if (dateTimeCheckbox && dateTimeCheckbox.checked) {
             const now = new Date();
             const timeStr = now.toLocaleTimeString();
-            
+
             ctx.fillStyle = 'white';
             ctx.font = '16px Arial';
             ctx.fillText(timeStr, 40, canvas.height - 20);

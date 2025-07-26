@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gofotobox-v8-resized-logo';
+const CACHE_NAME = 'gofotobox-v10';
 const IS_DEVELOPMENT = self.location.hostname === 'localhost' || self.location.hostname.includes('dev');
 const urlsToCache = [
   'https://gofotobox.online/',

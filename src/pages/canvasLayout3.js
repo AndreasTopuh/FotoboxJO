@@ -86,6 +86,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showTimeoutModal() {
         if (timeoutModal) {
+            const timeoutMessage = document.getElementById('timeout-message');
+            if (images.length === 0) {
+                timeoutMessage.textContent = 'Waktu habis! Tidak ada foto yang diambil. Anda akan diarahkan ke halaman utama.';
+            } else {
+                timeoutMessage.textContent = 'Waktu habis! Ada foto yang sudah diambil. Anda akan diarahkan ke halaman customize.';
+            }
             timeoutModal.style.display = 'flex';
         }
     }
@@ -99,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (timeoutOkBtn) {
         timeoutOkBtn.addEventListener('click', () => {
             hideTimeoutModal();
-            window.location.href = 'customizeLayout3.php';
+if (images.length === 0) {                fetch('../api-fetch/reset_session.php', { method: 'POST' }).then(() => {                    window.location.href = '../../index.html';                }).catch(() => {                    window.location.href = '../../index.html';                });            } else {                window.location.href = 'customizeLayout3.php';            }
         });
     }
 
@@ -283,32 +289,41 @@ document.addEventListener('DOMContentLoaded', () => {
             if (video) video.style.transform = 'scaleX(-1)'
         }
         else {
-            if (photoContainer) photoContainer.style.transform = 'scaleX(1)'
-            if (video) video.style.transform = 'scaleX(1)'
+            if (photoContainer) photoContainer.style.transform = 'scaleX(1)';
+            if (video) video.style.transform = 'scaleX(1)';
         }
     }
 
     async function startCamera() {
+        console.log('🎥 startCamera() called');
         stopCameraStream(); 
     
         try {
+            console.log('📱 Requesting camera permissions...');
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+            console.log('✅ Camera stream obtained:', stream);
+            
             if (video) {
+                console.log('📺 Setting video.srcObject...');
                 video.srcObject = stream;
         
                 // Ensure video is playing before hiding black screen
                 video.onloadedmetadata = () => {
+                    console.log('📽️ Video metadata loaded, starting playback...');
                     video.play();
                     setTimeout(() => {
                         if (blackScreen) {
+                            console.log('🎬 Hiding black screen');
                             blackScreen.style.opacity = 0;
                             setTimeout(() => blackScreen.style.display = 'none', 1000);
                         }
                     }, 500);
                 };
+            } else {
+                console.error('❌ Video element not found!');
             }
         } catch (err) {
-            console.error("Camera Access Denied", err);
+            console.error("❌ Camera Access Denied:", err);
             alert("Please enable camera permissions in your browser settings.");
         }
     }
@@ -321,7 +336,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Start camera if on canvasLayout3.php
-    if (window.location.pathname.endsWith("canvasLayout3.php") || window.location.pathname === "canvasLayout3.php") {
+    if (window.location.pathname.includes("canvasLayout3.php")) {
+    
         startCamera();
     }
 
@@ -424,7 +440,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Automatically trigger the countdown when option changes
     function updateCountdown() {
-        showCountdown();
+        const timerOptions = document.getElementById("timerOptions");
+        if (timerOptions) {
+            const selectedValue = parseInt(timerOptions.value);
+            showCountdown(selectedValue);
+        }
     }
 
     // Update Image Upload for Users to choose multiple images at once

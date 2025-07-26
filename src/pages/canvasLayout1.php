@@ -382,34 +382,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
         </div>
     </main>
     
-    <script>
-        // Session timer
-        let timeLeft = <?php echo $timeLeft; ?>;
-        let timerInterval;
 
-        function startSessionTimer() {
-            timerInterval = setInterval(() => {
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                
-                document.getElementById('timer').textContent = 
-                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    alert('Waktu sesi foto habis! Melanjutkan ke halaman customize.');
-                    window.location.href = 'customizeLayout1.php';
-                }
-                
-                timeLeft--;
-            }, 1000);
-        }
-
-        // Mulai timer ketika halaman load
-        window.addEventListener('load', function() {
-            startSessionTimer();
-        });
-    </script>
     
     <script src="canvasLayout1.js"></script>
     <script src="debug-camera.js"></script>

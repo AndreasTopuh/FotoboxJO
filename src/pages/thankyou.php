@@ -24,7 +24,7 @@ require_once '../includes/pwa-helper.php';
     <?php PWAHelper::addPWAHeaders(); ?>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GoFotobox - Terima Kasih</title>
+    <title>GoBooth - Terima Kasih</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="home-styles.css" />
 </head>
@@ -40,12 +40,12 @@ require_once '../includes/pwa-helper.php';
     <div class="container">
         <div class="glass-card">
             <div class="thank-you-content" style="text-align: center; padding: 2rem;">
-                <h1 class="hero-title" style="font-size: 3rem; margin-bottom: 1rem; color: #007bff;">GoFotobox</h1>
+                <h1 class="hero-title" style="font-size: 3rem; margin-bottom: 1rem; color: #007bff;">GoBooth</h1>
                 
                 <div class="thank-you-message" style="margin: 2rem 0;">
                     <h2 style="font-size: 2rem; color: #28a745; margin-bottom: 1rem;">✨ Terima Kasih! ✨</h2>
                     <p class="hero-subtitle" style="font-size: 1.2rem; line-height: 1.6;">
-                        Terima kasih sudah menggunakan GoFotobox.<br>
+                        Terima kasih sudah menggunakan GoBooth.<br>
                         Sampai jumpa lagi!
                     </p>
                 </div>
