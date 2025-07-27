@@ -1,10 +1,10 @@
-document.addEventListener('DOMContentLoaded', function() {
-    
+document.addEventListener('DOMContentLoaded', function () {
+
     // Timer functionality
     const timerDisplay = document.getElementById('timer-display');
     const timeoutModal = document.getElementById('timeout-modal');
     const timeoutOkBtn = document.getElementById('timeout-ok-btn');
-    
+
     let timeLeft = 3 * 60; // 3 minutes in seconds
     let timerInterval;
 
@@ -12,16 +12,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const minutes = Math.floor(timeLeft / 60);
         const seconds = timeLeft % 60;
         const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        
+
         if (timerDisplay) {
             timerDisplay.textContent = display;
         }
-        
+
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
             showTimeoutModal();
         }
-        
+
         timeLeft--;
     }
 
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 🎯 PRIORITAS 1: LOAD FOTO TERLEBIH DAHULU
     console.log('🔄 Loading photos first for better UX...');
-    
+
     // Variables
     let storedImages = [];
     let imageArrayLength = 0;
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let backgroundType = 'color';
     let backgroundColor = '#FFFFFF';
     let backgroundImage = null;
-    
+
     // DOM Elements
     const photoCustomPreview = document.getElementById('photoPreview');
     const customBack = document.getElementById('customBack');
@@ -113,17 +113,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         console.log('🎨 Initializing canvas with photos...');
-        
+
         // Create and render canvas immediately
         redrawCanvas();
-        
+
         console.log('✅ Canvas initialized and rendered');
     }
 
     // Initialize basic controls (non-sticker related)
     function initializeControls() {
         console.log('🎛️ Initializing basic controls...');
-        
+
         // Back button
         if (customBack) {
             customBack.addEventListener('click', () => {
@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Date checkboxes
         const dateCheckbox = document.getElementById('dateCheckbox');
         const dateTimeCheckbox = document.getElementById('dateTimeCheckbox');
-        
+
         if (dateCheckbox) {
             dateCheckbox.addEventListener('change', () => {
                 redrawCanvas();
@@ -149,13 +149,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Frame color controls
         initializeFrameControls();
-        
+
         // Shape controls
         initializeShapeControls();
-        
+
         // Action buttons
         initializeActionButtons();
-        
+
         console.log('✅ Basic controls initialized');
     }
 
@@ -163,13 +163,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function initializeStickerControls() {
         setTimeout(() => {
             console.log('🎭 Initializing sticker controls...');
-            
+
             const stickerButtons = [
                 'noneSticker', 'kissSticker', 'ribbonSticker', 'sweetSticker',
                 'sparkleSticker', 'pearlSticker', 'softSticker', 'bunnySticker',
                 'classicSticker', 'classicBSticker', 'luckySticker', 'confettiSticker'
             ];
-            
+
             stickerButtons.forEach(buttonId => {
                 const button = document.getElementById(buttonId);
                 if (button) {
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
             });
-            
+
             console.log('✅ Sticker controls initialized');
         }, 100); // Small delay to not block photo rendering
     }
@@ -194,17 +194,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Frame controls
     function initializeFrameControls() {
         const colorButtons = [
-            {id: 'pinkBtnFrame', color: '#FFB6C1'},
-            {id: 'blueBtnFrame', color: '#87CEEB'},
-            {id: 'yellowBtnFrame', color: '#FFFFE0'},
-            {id: 'brownBtnFrame', color: '#D2691E'},
-            {id: 'redBtnFrame', color: '#FF6347'},
-            {id: 'matchaBtnFrame', color: '#9ACD32'},
-            {id: 'purpleBtnFrame', color: '#DDA0DD'},
-            {id: 'whiteBtnFrame', color: '#FFFFFF'},
-            {id: 'blackBtnFrame', color: '#000000'}
+            { id: 'pinkBtnFrame', color: '#FFB6C1' },
+            { id: 'blueBtnFrame', color: '#87CEEB' },
+            { id: 'yellowBtnFrame', color: '#FFFFE0' },
+            { id: 'brownBtnFrame', color: '#D2691E' },
+            { id: 'redBtnFrame', color: '#FF6347' },
+            { id: 'matchaBtnFrame', color: '#9ACD32' },
+            { id: 'purpleBtnFrame', color: '#DDA0DD' },
+            { id: 'whiteBtnFrame', color: '#FFFFFF' },
+            { id: 'blackBtnFrame', color: '#000000' }
         ];
-        
+
         colorButtons.forEach(btn => {
             const element = document.getElementById(btn.id);
             if (element) {
@@ -221,12 +221,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Shape controls
     function initializeShapeControls() {
         const shapeButtons = [
-            {id: 'noneFrameShape', shape: 'default'},
-            {id: 'softFrameShape', shape: 'rounded'},
-            {id: 'circleFrameShape', shape: 'circle'},
-            {id: 'heartFrameShape', shape: 'heart'}
+            { id: 'noneFrameShape', shape: 'default' },
+            { id: 'softFrameShape', shape: 'rounded' },
+            { id: 'circleFrameShape', shape: 'circle' },
+            { id: 'heartFrameShape', shape: 'heart' }
         ];
-        
+
         shapeButtons.forEach(btn => {
             const element = document.getElementById(btn.id);
             if (element) {
@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const emailBtn = document.getElementById('emailBtn');
         const printBtn = document.getElementById('printBtn');
         const continueBtn = document.getElementById('continueBtn');
-        
+
         if (downloadBtn) {
             downloadBtn.addEventListener('click', () => {
                 if (finalCanvas) {
@@ -255,7 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
-        
+
         if (printBtn) {
             printBtn.addEventListener('click', () => {
                 if (finalCanvas) {
@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
-        
+
         if (continueBtn) {
             continueBtn.addEventListener('click', () => {
                 window.location.href = 'thankyou.php';
@@ -291,31 +291,29 @@ document.addEventListener('DOMContentLoaded', function() {
         const stackedCanvas = document.createElement('canvas');
         const ctx = stackedCanvas.getContext('2d');
 
-        // Layout 1 dimensions (2 photos in vertical strip)
+        // Dimensi kanvas dan parameter tata letak
         const canvasWidth = 1200;   // 4R standard width
         const canvasHeight = 1800;  // 4R standard height
-        const borderWidth = 30;
-        const spacing = 12;
-        const bottomPadding = 100;
-        const expectedPhotos = 2;
-
-        const availableHeight = canvasHeight - (borderWidth * 2) - (spacing * 2) - bottomPadding;
-        const photoHeight = availableHeight / expectedPhotos;
-        const photoWidth = canvasWidth - (borderWidth * 2);
+        const borderWidth = 62;     // Border kiri dan kanan
+        const marginTop = 120;      // Margin atas untuk semua foto
+        const spacing = 80;         // Spasi vertikal antar foto
+        const photoWidth = 1076;    // Lebar foto (1200 - 62 - 62 = 1076px)
+        const photoHeight = 639;    // Tinggi foto
+        const expectedPhotos = 2;   // Jumlah foto yang diharapkan
 
         stackedCanvas.width = canvasWidth;
         stackedCanvas.height = canvasHeight;
 
-        // Clear the entire canvas first
+        // Membersihkan kanvas
         ctx.clearRect(0, 0, stackedCanvas.width, stackedCanvas.height);
 
-        // Set background
+        // Mengatur latar belakang
         if (backgroundType === 'color') {
             ctx.fillStyle = backgroundColor;
             ctx.fillRect(0, 0, stackedCanvas.width, stackedCanvas.height);
         } else if (backgroundImage) {
             const bgImg = new Image();
-            bgImg.onload = function() {
+            bgImg.onload = function () {
                 ctx.drawImage(bgImg, 0, 0, stackedCanvas.width, stackedCanvas.height);
                 drawPhotos();
             };
@@ -335,13 +333,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
             storedImages.slice(0, imagesToProcess).forEach((imageData, index) => {
                 const img = new Image();
-                img.onload = function() {
-                    // Layout 1: Vertical strip
-                    const x = borderWidth;
-                    const y = borderWidth + (index * (photoHeight + spacing));
-                    
-                    drawPhotoWithShape(ctx, img, x, y, photoWidth, photoHeight, selectedShape);
-                    
+                img.onload = function () {
+                    // Posisi dan ukuran untuk setiap foto
+                    const positions = [
+                        // Foto 1: Atas
+                        { x: borderWidth, y: marginTop, width: photoWidth, height: photoHeight }, // x: 62, y: 120
+                        // Foto 2: Bawah
+                        { x: borderWidth, y: marginTop + photoHeight + spacing, width: photoWidth, height: photoHeight } // x: 62, y: 120 + 639 + 80 = 839
+                    ];
+
+                    const pos = positions[index];
+                    drawCroppedImage(ctx, img, pos.x, pos.y, pos.width, pos.height, selectedShape);
+
                     loadedCount++;
                     if (loadedCount === imagesToProcess) {
                         drawStickersAndLogos(ctx, stackedCanvas);
@@ -351,11 +354,101 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Update preview with optimized canvas style
+        function drawCroppedImage(ctx, img, x, y, targetWidth, targetHeight, shape) {
+            const imgAspect = img.width / img.height;
+            const targetAspect = targetWidth / targetHeight;
+
+            let sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight;
+
+            if (imgAspect > targetAspect) {
+                // Image is wider than target → crop sides
+                sHeight = img.height;
+                sWidth = sHeight * targetAspect;
+                sx = (img.width - sWidth) / 2;
+                sy = 0;
+                dx = x;
+                dy = y;
+                dWidth = targetWidth;
+                dHeight = targetHeight;
+            } else {
+                // Image is taller than target → crop top/bottom
+                sWidth = img.width;
+                sHeight = sWidth / targetAspect;
+                sx = 0;
+                sy = (img.height - sHeight) / 2;
+                dx = x;
+                dy = y;
+                dWidth = targetWidth;
+                dHeight = targetHeight;
+            }
+
+            // Draw the image with the specified shape
+            drawPhotoWithShape(ctx, img, dx, dy, dWidth, dHeight, shape, sx, sy, sWidth, sHeight);
+        }
+
+        function drawPhotoWithShape(ctx, img, x, y, width, height, shape, sx, sy, sWidth, sHeight) {
+            ctx.save();
+
+            // Create clipping path based on shape
+            if (shape === 'circle') {
+                const centerX = x + width / 2;
+                const centerY = y + height / 2;
+                const radius = Math.min(width, height) / 2;
+
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.clip();
+            } else if (shape === 'rounded') {
+                roundedRect(ctx, x, y, width, height, 20);
+                ctx.clip();
+            } else if (shape === 'heart') {
+                heartShape(ctx, x + width / 2, y + height / 2, Math.min(width, height) / 2);
+                ctx.clip();
+            } else {
+                // Default to rectangle if no shape specified
+                ctx.beginPath();
+                ctx.rect(x, y, width, height);
+                ctx.clip();
+            }
+
+            // Draw the cropped image within the clipped shape
+            ctx.drawImage(img, sx, sy, sWidth, sHeight, x, y, width, height);
+            ctx.restore();
+        }
+
+        function roundedRect(ctx, x, y, width, height, radius) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+        }
+
+        function heartShape(ctx, centerX, centerY, size) {
+            ctx.beginPath();
+            const x = centerX;
+            const y = centerY;
+            const width = size * 2;
+            const height = size * 2;
+
+            ctx.moveTo(x, y - height / 4);
+            ctx.bezierCurveTo(x, y - height / 2, x - width / 2, y - height / 2, x - width / 2, y);
+            ctx.bezierCurveTo(x - width / 2, y + height / 2, x, y + height, x, y + height);
+            ctx.bezierCurveTo(x, y + height, x + width / 2, y + height / 2, x + width / 2, y);
+            ctx.bezierCurveTo(x + width / 2, y - height / 2, x, y - height / 2, x, y - height / 4);
+            ctx.closePath();
+        }
+
+        // Styling pratinjau kanvas
         if (photoCustomPreview) {
             photoCustomPreview.innerHTML = '';
-            
-            // Set canvas style for small preview display
+
             stackedCanvas.style.maxWidth = "300px";
             stackedCanvas.style.maxHeight = "450px";
             stackedCanvas.style.width = "auto";
@@ -365,64 +458,11 @@ document.addEventListener('DOMContentLoaded', function() {
             stackedCanvas.style.boxShadow = "0 4px 8px rgba(0,0,0,0.1)";
             stackedCanvas.style.display = "block";
             stackedCanvas.style.margin = "0 auto";
-            
+
             photoCustomPreview.appendChild(stackedCanvas);
         }
 
         finalCanvas = stackedCanvas;
-    }
-
-    // Helper function to draw photo with shape
-    function drawPhotoWithShape(ctx, img, x, y, width, height, shape) {
-        ctx.save();
-        
-        if (shape === 'circle') {
-            const centerX = x + width / 2;
-            const centerY = y + height / 2;
-            const radius = Math.min(width, height) / 2;
-            
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-            ctx.clip();
-        } else if (shape === 'rounded') {
-            roundedRect(ctx, x, y, width, height, 20);
-            ctx.clip();
-        } else if (shape === 'heart') {
-            heartShape(ctx, x + width/2, y + height/2, Math.min(width, height)/2);
-            ctx.clip();
-        }
-        
-        ctx.drawImage(img, x, y, width, height);
-        ctx.restore();
-    }
-
-    // Helper functions for shapes
-    function roundedRect(ctx, x, y, width, height, radius) {
-        ctx.beginPath();
-        ctx.moveTo(x + radius, y);
-        ctx.lineTo(x + width - radius, y);
-        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-        ctx.lineTo(x + width, y + height - radius);
-        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-        ctx.lineTo(x + radius, y + height);
-        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-        ctx.lineTo(x, y + radius);
-        ctx.quadraticCurveTo(x, y, x + radius, y);
-        ctx.closePath();
-    }
-
-    function heartShape(ctx, x, y, size) {
-        ctx.beginPath();
-        ctx.moveTo(x, y + size / 4);
-        ctx.quadraticCurveTo(x, y, x + size / 4, y);
-        ctx.quadraticCurveTo(x + size / 2, y, x + size / 2, y + size / 4);
-        ctx.quadraticCurveTo(x + size / 2, y, x + size * 3 / 4, y);
-        ctx.quadraticCurveTo(x + size, y, x + size, y + size / 4);
-        ctx.quadraticCurveTo(x + size, y + size / 2, x + size * 3 / 4, y + size * 3 / 4);
-        ctx.lineTo(x + size / 2, y + size);
-        ctx.lineTo(x + size / 4, y + size * 3 / 4);
-        ctx.quadraticCurveTo(x, y + size / 2, x, y + size / 4);
-        ctx.closePath();
     }
 
     // Draw stickers and logos
@@ -430,11 +470,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Draw selected sticker
         if (selectedSticker) {
             const stickerImg = new Image();
-            stickerImg.onload = function() {
+            stickerImg.onload = function () {
                 const stickerSize = 100;
                 const stickerX = canvas.width - stickerSize - 20;
                 const stickerY = canvas.height - stickerSize - 120;
-                
+
                 ctx.drawImage(stickerImg, stickerX, stickerY, stickerSize, stickerSize);
             };
             stickerImg.src = selectedSticker;
@@ -443,20 +483,20 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add date/time if checked
         const dateCheckbox = document.getElementById('dateCheckbox');
         const dateTimeCheckbox = document.getElementById('dateTimeCheckbox');
-        
+
         if (dateCheckbox && dateCheckbox.checked) {
             const now = new Date();
             const dateStr = now.toLocaleDateString();
-            
+
             ctx.fillStyle = 'white';
             ctx.font = '16px Arial';
             ctx.fillText(dateStr, 40, canvas.height - 40);
         }
-        
+
         if (dateTimeCheckbox && dateTimeCheckbox.checked) {
             const now = new Date();
             const timeStr = now.toLocaleTimeString();
-            
+
             ctx.fillStyle = 'white';
             ctx.font = '16px Arial';
             ctx.fillText(timeStr, 40, canvas.height - 20);

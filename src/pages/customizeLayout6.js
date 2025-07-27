@@ -291,20 +291,20 @@ document.addEventListener('DOMContentLoaded', function () {
         const stackedCanvas = document.createElement('canvas');
         const ctx = stackedCanvas.getContext('2d');
 
-        // Dimensi kanvas dan parameter tata letak
-        const canvasWidth = 1200;   // 4R standard width
-        const canvasHeight = 1800;  // 4R standard height
-        const borderWidth = 62;     // Border kiri dan kanan
-        const marginTopLeft = 120;  // Margin atas untuk kolom kiri
-        const marginTopRight = 240; // Margin atas untuk kolom kanan
-        const spacing = 37;         // Spasi vertikal antar foto
-        const photoWidth = 477;     // Lebar foto
-        const photoHeight = 567;    // Tinggi foto
-        const expectedPhotos = 4;   // Jumlah foto yang diharapkan
-        const bottomSpaceLeft = 480; // Ruang kosong di bawah kolom kiri
-        const bottomSpaceRight = 370; // Ruang kosong di bawah kolom kanan
+        // Canvas dimensions and layout parameters
+        const canvasWidth = 1205;   // 4R standard width
+        const canvasHeight = 1795;  // 4R standard height
+        const borderWidth = 62;     // Border left and right
+        const marginTopLeft = 120;  // Top margin for left column
+        const marginTopRight = 240; // Top margin for right column
+        const spacing = 37;         // Vertical spacing between photos
+        const photoWidth = 477;     // Photo width
+        const photoHeight = 567;    // Photo height
+        const expectedPhotos = 4;    // Expected number of photos
+        const bottomSpaceLeft = 480; // Bottom space for left column
+        const bottomSpaceRight = 370; // Bottom space for right column
 
-        // Menghitung posisi x untuk kolom
+        // Calculate x positions for columns
         const availableWidth = canvasWidth - (borderWidth * 2); // 1200 - 124 = 1076px
         const centerSpacing = availableWidth - (photoWidth * 2); // 1076 - (477 * 2) = 122px
         const leftColumnX = borderWidth; // x = 62px
@@ -313,13 +313,14 @@ document.addEventListener('DOMContentLoaded', function () {
         stackedCanvas.width = canvasWidth;
         stackedCanvas.height = canvasHeight;
 
-        // Membersihkan kanvas
+        // Clear canvas
         ctx.clearRect(0, 0, stackedCanvas.width, stackedCanvas.height);
 
-        // Mengatur latar belakang
+        // Set background
         if (backgroundType === 'color') {
             ctx.fillStyle = backgroundColor;
             ctx.fillRect(0, 0, stackedCanvas.width, stackedCanvas.height);
+            drawPhotos();
         } else if (backgroundImage) {
             const bgImg = new Image();
             bgImg.onload = function () {
@@ -328,9 +329,9 @@ document.addEventListener('DOMContentLoaded', function () {
             };
             bgImg.src = backgroundImage;
             return;
+        } else {
+            drawPhotos();
         }
-
-        drawPhotos();
 
         function drawPhotos() {
             if (storedImages.length < expectedPhotos) {
@@ -343,21 +344,20 @@ document.addEventListener('DOMContentLoaded', function () {
             storedImages.slice(0, imagesToProcess).forEach((imageData, index) => {
                 const img = new Image();
                 img.onload = function () {
-                    // Posisi dan ukuran untuk setiap foto
+                    // Positions and sizes for each photo
                     const positions = [
-                        // Foto 1: Kiri atas
+                        // Photo 1: Left top
                         { x: leftColumnX, y: marginTopLeft, width: photoWidth, height: photoHeight }, // x: 62, y: 120
-                        // Foto 2: Kiri tengah
-                        { x: leftColumnX, y: marginTopLeft + photoHeight + spacing, width: photoWidth, height: photoHeight }, // x: 62, y: 120 + 567 + 37 = 724
-                        // Foto 3: Kanan atas
+                        // Photo 2: Left middle
+                        { x: leftColumnX, y: marginTopLeft + photoHeight + spacing, width: photoWidth, height: photoHeight }, // x: 62, y: 724
+                        // Photo 3: Right top
                         { x: rightColumnX, y: marginTopRight, width: photoWidth, height: photoHeight }, // x: 661, y: 240
-                        // Foto 4: Kanan tengah
-                        { x: rightColumnX, y: marginTopRight + photoHeight + spacing, width: photoWidth, height: photoHeight } // x: 661, y: 240 + 567 + 37 = 844
+                        // Photo 4: Right middle
+                        { x: rightColumnX, y: marginTopRight + photoHeight + spacing, width: photoWidth, height: photoHeight } // x: 661, y: 844
                     ];
 
                     const pos = positions[index];
                     drawCroppedImage(ctx, img, pos.x, pos.y, pos.width, pos.height, selectedShape);
-                    // drawPhotoWithShape(ctx, img, pos.x, pos.y, pos.width, pos.height, selectedShape);
 
                     loadedCount++;
                     if (loadedCount === imagesToProcess) {
@@ -368,7 +368,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        // Styling pratinjau kanvas
+        // Style canvas preview
         if (photoCustomPreview) {
             photoCustomPreview.innerHTML = '';
 
@@ -389,33 +389,42 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ✅ Helper: Draw image with auto-cropping (cover fit)
-    function drawCroppedImage(ctx, img, x, y, targetWidth, targetHeight) {
+    function drawCroppedImage(ctx, img, x, y, targetWidth, targetHeight, shape) {
         const imgAspect = img.width / img.height;
         const targetAspect = targetWidth / targetHeight;
 
         let sx, sy, sWidth, sHeight;
 
+        // Calculate cropping dimensions to maintain aspect ratio
         if (imgAspect > targetAspect) {
-            // Image is wider than target → crop sides
+            // Image is wider than target -> crop sides
             sHeight = img.height;
-            sWidth = sHeight * targetAspect;
+            sWidth = img.height * targetAspect;
             sx = (img.width - sWidth) / 2;
             sy = 0;
         } else {
-            // Image is taller than target → crop top/bottom
+            // Image is taller than target -> crop top/bottom
             sWidth = img.width;
-            sHeight = sWidth / targetAspect;
+            sHeight = img.width / targetAspect;
             sx = 0;
             sy = (img.height - sHeight) / 2;
         }
 
-        ctx.drawImage(img, sx, sy, sWidth, sHeight, x, y, targetWidth, targetHeight);
+        // Ensure source dimensions are positive and within image bounds
+        sWidth = Math.min(sWidth, img.width);
+        sHeight = Math.min(sHeight, img.height);
+        sx = Math.max(0, Math.min(sx, img.width - sWidth));
+        sy = Math.max(0, Math.min(sy, img.height - sHeight));
+
+        // Draw the image with the specified shape
+        drawPhotoWithShape(ctx, img, x, y, targetWidth, targetHeight, shape, sx, sy, sWidth, sHeight);
     }
 
     // Helper function to draw photo with shape
-    function drawPhotoWithShape(ctx, img, x, y, width, height, shape) {
+    function drawPhotoWithShape(ctx, img, x, y, width, height, shape, sx, sy, sWidth, sHeight) {
         ctx.save();
 
+        // Apply clipping based on the selected shape
         if (shape === 'circle') {
             const centerX = x + width / 2;
             const centerY = y + height / 2;
@@ -430,9 +439,15 @@ document.addEventListener('DOMContentLoaded', function () {
         } else if (shape === 'heart') {
             heartShape(ctx, x + width / 2, y + height / 2, Math.min(width, height) / 2);
             ctx.clip();
+        } else {
+            // Default to rectangle if no shape or invalid shape is specified
+            ctx.beginPath();
+            ctx.rect(x, y, width, height);
+            ctx.clip();
         }
 
-        ctx.drawImage(img, x, y, width, height);
+        // Draw the cropped image within the clipped shape
+        ctx.drawImage(img, sx, sy, sWidth, sHeight, x, y, width, height);
         ctx.restore();
     }
 
@@ -451,17 +466,18 @@ document.addEventListener('DOMContentLoaded', function () {
         ctx.closePath();
     }
 
-    function heartShape(ctx, x, y, size) {
+    function heartShape(ctx, centerX, centerY, size) {
         ctx.beginPath();
-        ctx.moveTo(x, y + size / 4);
-        ctx.quadraticCurveTo(x, y, x + size / 4, y);
-        ctx.quadraticCurveTo(x + size / 2, y, x + size / 2, y + size / 4);
-        ctx.quadraticCurveTo(x + size / 2, y, x + size * 3 / 4, y);
-        ctx.quadraticCurveTo(x + size, y, x + size, y + size / 4);
-        ctx.quadraticCurveTo(x + size, y + size / 2, x + size * 3 / 4, y + size * 3 / 4);
-        ctx.lineTo(x + size / 2, y + size);
-        ctx.lineTo(x + size / 4, y + size * 3 / 4);
-        ctx.quadraticCurveTo(x, y + size / 2, x, y + size / 4);
+        const x = centerX;
+        const y = centerY;
+        const width = size * 2;
+        const height = size * 2;
+
+        ctx.moveTo(x, y - height / 4);
+        ctx.bezierCurveTo(x, y - height / 2, x - width / 2, y - height / 2, x - width / 2, y);
+        ctx.bezierCurveTo(x - width / 2, y + height / 2, x, y + height, x, y + height);
+        ctx.bezierCurveTo(x, y + height, x + width / 2, y + height / 2, x + width / 2, y);
+        ctx.bezierCurveTo(x + width / 2, y - height / 2, x, y - height / 2, x, y - height / 4);
         ctx.closePath();
     }
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gofotobox-v10';
+const CACHE_NAME = 'gofotobox-v11';
 const IS_DEVELOPMENT = self.location.hostname === 'localhost' || self.location.hostname.includes('dev');
 const urlsToCache = [
   'https://gofotobox.online/',
@@ -9,14 +9,14 @@ const urlsToCache = [
   'https://gofotobox.online/src/pages/selectlayout.php',
   'https://gofotobox.online/src/pages/payment-bank.php',
   'https://gofotobox.online/src/pages/payment-qris.php',
-  'https://gofotobox.online/src/pages/canvas.php',
+  // 'https://gofotobox.online/src/pages/canvas.php',
   'https://gofotobox.online/src/pages/canvasLayout1.php',
   'https://gofotobox.online/src/pages/canvasLayout2.php',
   'https://gofotobox.online/src/pages/canvasLayout3.php',
   'https://gofotobox.online/src/pages/canvasLayout4.php',
   'https://gofotobox.online/src/pages/canvasLayout5.php',
   'https://gofotobox.online/src/pages/canvasLayout6.php',
-  'https://gofotobox.online/src/pages/customize.php',
+  // 'https://gofotobox.online/src/pages/customize.php',
   'https://gofotobox.online/src/pages/customizeLayout1.php',
   'https://gofotobox.online/src/pages/customizeLayout2.php',
   'https://gofotobox.online/src/pages/customizeLayout3.php',

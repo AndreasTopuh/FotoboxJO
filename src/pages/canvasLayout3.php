@@ -11,12 +11,9 @@ if (!isset($_SESSION["session_type"])) {
     $_SESSION["photo_expired_time"] = time() + (7 * 60); // 7 menit untuk canvas
 }
 
-// Jika session expired, destroy session dan redirect ke home
-if (time() > $_SESSION['photo_expired_time']) {
-    session_unset();
-    session_destroy();
-    header("Location: ../../index.html");
-    exit();
+// Extend session if expired untuk better UX
+if (isset($_SESSION["photo_expired_time"]) && time() > $_SESSION["photo_expired_time"]) {
+    $_SESSION["photo_expired_time"] = time() + (7 * 60); // Extend 10 menit
 }
 
 // Hitung waktu tersisa
@@ -54,7 +51,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     <link href="https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png" />
-        <style>
+    <style>
         /* Timer Box Styling */
         .timer-box {
             position: fixed;
@@ -470,9 +467,8 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
         });
     </script>
     <script src="canvasLayout3.js"></script>
-    <script>
-        console.log('✅ All scripts loaded');
-    </script>
+    <script src="debug-camera.js"></script>
+
     <?php PWAHelper::addPWAScript(); ?>
 </body>
 

@@ -41,7 +41,7 @@ $timeLeft = $_SESSION['customize_expired_time'] - time();
     <meta name="twitter:description"
         content="Customize your 4R photobooth photos. Add frames, stickers, and text.">
     <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png">
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="../../styles.css" />
     <link
         href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&display=swap"
         rel="stylesheet">
@@ -92,7 +92,7 @@ $timeLeft = $_SESSION['customize_expired_time'] - time();
                                                         <button id="whiteBtnFrame" class="buttonFrames"></button>
                                                         <button id="blackBtnFrame" class="buttonFrames"></button>
                                                         <!-- FRAMES -->
-                                                        <button id="pinkGlitter" class="buttonBgFrames"></button>
+                                                        <!-- <button id="pinkGlitter" class="buttonBgFrames"></button>
                                                         <button id="pinkPlaid" class="buttonBgFrames"></button>
                                                         <button id="bluePlaid" class="buttonBgFrames"></button>
                                                         <button id="black-cq" class="buttonBgFrames"></button>
@@ -136,7 +136,7 @@ $timeLeft = $_SESSION['customize_expired_time'] - time();
                                                         <button id="whiteTrashFrame" class="buttonBgFrames"></button>
                                                         <button id="partyDrapeFrame" class="buttonBgFrames"></button>
                                                         <button id="partyDotsFrame" class="buttonBgFrames"></button>
-                                                        <button id="blingDenimFrame" class="buttonBgFrames"></button>
+                                                        <button id="blingDenimFrame" class="buttonBgFrames"></button> -->
                                                 </div>
 
 
@@ -160,9 +160,9 @@ $timeLeft = $_SESSION['customize_expired_time'] - time();
                                                 </div>
                                                 <h3 class="options-label">Stickers</h3>
                                                 <div class="custom-buttons-container stickers-container">
-                                                        <button id="bunnySticker" class="buttonStickers">
+                                                        <!-- <button id="bunnySticker" class="buttonStickers">
                                                                 <img src="/src/assets/stickers/bunny1.png" alt="bunny" class="stickerIconSize" />
-                                                        </button>
+                                                        </button> -->
                                                         <!-- Add more stickers here as needed, using the correct path -->
                                                 </div>
                                                 <div class="custom-logo-holder">
@@ -207,6 +207,7 @@ $timeLeft = $_SESSION['customize_expired_time'] - time();
 
     <script src="https://cdn.jsdelivr.net/npm/vanilla-picker@2.12.1/dist/vanilla-picker.min.js"></script>
     <script src="customizeLayout3.js"></script>
+    <script src="canvas.js"></script>
     <?php PWAHelper::addPWAScript(); ?>
 </body>
 

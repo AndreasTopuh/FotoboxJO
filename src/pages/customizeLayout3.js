@@ -344,16 +344,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     const positions = [
                         // Kolom kiri: Foto 1, 2, 3
                         { x: leftColumnX, y: marginTop, width: photoWidth, height: photoHeight }, // Foto 1: x: 62, y: 120
-                        { x: leftColumnX, y: marginTop + photoHeight + spacing, width: photoWidth, height: photoHeight }, // Foto 2: x: 62, y: 120 + 424 + 37 = 581
-                        { x: leftColumnX, y: marginTop + (photoHeight + spacing) * 2, width: photoWidth, height: photoHeight }, // Foto 3: x: 62, y: 120 + (424 + 37) * 2 = 1042
+                        { x: leftColumnX, y: marginTop + photoHeight + spacing, width: photoWidth, height: photoHeight }, // Foto 2: x: 62, y: 581
+                        { x: leftColumnX, y: marginTop + (photoHeight + spacing) * 2, width: photoWidth, height: photoHeight }, // Foto 3: x: 62, y: 1042
                         // Kolom kanan: Foto 4, 5, 6
                         { x: rightColumnX, y: marginTop, width: photoWidth, height: photoHeight }, // Foto 4: x: 661, y: 120
-                        { x: rightColumnX, y: marginTop + photoHeight + spacing, width: photoWidth, height: photoHeight }, // Foto 5: x: 661, y: 120 + 424 + 37 = 581
-                        { x: rightColumnX, y: marginTop + (photoHeight + spacing) * 2, width: photoWidth, height: photoHeight } // Foto 6: x: 661, y: 120 + (424 + 37) * 2 = 1042
+                        { x: rightColumnX, y: marginTop + photoHeight + spacing, width: photoWidth, height: photoHeight }, // Foto 5: x: 661, y: 581
+                        { x: rightColumnX, y: marginTop + (photoHeight + spacing) * 2, width: photoWidth, height: photoHeight } // Foto 6: x: 661, y: 1042
                     ];
 
                     const pos = positions[index];
-                    drawPhotoWithShape(ctx, img, pos.x, pos.y, pos.width, pos.height, selectedShape);
+                    drawCroppedImage(ctx, img, pos.x, pos.y, pos.width, pos.height, selectedShape);
 
                     loadedCount++;
                     if (loadedCount === imagesToProcess) {
@@ -384,10 +384,42 @@ document.addEventListener('DOMContentLoaded', function () {
         finalCanvas = stackedCanvas;
     }
 
-    // Helper function to draw photo with shape
-    function drawPhotoWithShape(ctx, img, x, y, width, height, shape) {
+    function drawCroppedImage(ctx, img, x, y, targetWidth, targetHeight, shape) {
+        const imgAspect = img.width / img.height;
+        const targetAspect = targetWidth / targetHeight;
+
+        let sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight;
+
+        if (imgAspect > targetAspect) {
+            // Image is wider than target → crop sides
+            sHeight = img.height;
+            sWidth = sHeight * targetAspect;
+            sx = (img.width - sWidth) / 2;
+            sy = 0;
+            dx = x;
+            dy = y;
+            dWidth = targetWidth;
+            dHeight = targetHeight;
+        } else {
+            // Image is taller than target → crop top/bottom
+            sWidth = img.width;
+            sHeight = sWidth / targetAspect;
+            sx = 0;
+            sy = (img.height - sHeight) / 2;
+            dx = x;
+            dy = y;
+            dWidth = targetWidth;
+            dHeight = targetHeight;
+        }
+
+        // Draw the image with the specified shape
+        drawPhotoWithShape(ctx, img, dx, dy, dWidth, dHeight, shape, sx, sy, sWidth, sHeight);
+    }
+
+    function drawPhotoWithShape(ctx, img, x, y, width, height, shape, sx, sy, sWidth, sHeight) {
         ctx.save();
 
+        // Create clipping path based on shape
         if (shape === 'circle') {
             const centerX = x + width / 2;
             const centerY = y + height / 2;
@@ -402,13 +434,18 @@ document.addEventListener('DOMContentLoaded', function () {
         } else if (shape === 'heart') {
             heartShape(ctx, x + width / 2, y + height / 2, Math.min(width, height) / 2);
             ctx.clip();
+        } else {
+            // Default to rectangle if no shape specified
+            ctx.beginPath();
+            ctx.rect(x, y, width, height);
+            ctx.clip();
         }
 
-        ctx.drawImage(img, x, y, width, height);
+        // Draw the cropped image within the clipped shape
+        ctx.drawImage(img, sx, sy, sWidth, sHeight, x, y, width, height);
         ctx.restore();
     }
 
-    // Helper functions for shapes
     function roundedRect(ctx, x, y, width, height, radius) {
         ctx.beginPath();
         ctx.moveTo(x + radius, y);
@@ -423,17 +460,18 @@ document.addEventListener('DOMContentLoaded', function () {
         ctx.closePath();
     }
 
-    function heartShape(ctx, x, y, size) {
+    function heartShape(ctx, centerX, centerY, size) {
         ctx.beginPath();
-        ctx.moveTo(x, y + size / 4);
-        ctx.quadraticCurveTo(x, y, x + size / 4, y);
-        ctx.quadraticCurveTo(x + size / 2, y, x + size / 2, y + size / 4);
-        ctx.quadraticCurveTo(x + size / 2, y, x + size * 3 / 4, y);
-        ctx.quadraticCurveTo(x + size, y, x + size, y + size / 4);
-        ctx.quadraticCurveTo(x + size, y + size / 2, x + size * 3 / 4, y + size * 3 / 4);
-        ctx.lineTo(x + size / 2, y + size);
-        ctx.lineTo(x + size / 4, y + size * 3 / 4);
-        ctx.quadraticCurveTo(x, y + size / 2, x, y + size / 4);
+        const x = centerX;
+        const y = centerY;
+        const width = size * 2;
+        const height = size * 2;
+
+        ctx.moveTo(x, y - height / 4);
+        ctx.bezierCurveTo(x, y - height / 2, x - width / 2, y - height / 2, x - width / 2, y);
+        ctx.bezierCurveTo(x - width / 2, y + height / 2, x, y + height, x, y + height);
+        ctx.bezierCurveTo(x, y + height, x + width / 2, y + height / 2, x + width / 2, y);
+        ctx.bezierCurveTo(x + width / 2, y - height / 2, x, y - height / 2, x, y - height / 4);
         ctx.closePath();
     }
 

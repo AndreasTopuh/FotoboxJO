@@ -279,7 +279,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Main canvas drawing function
     function redrawCanvas() {
         if (!storedImages || storedImages.length === 0) {
             console.warn('⚠️ No images available for redraw');
@@ -351,7 +350,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     ];
 
                     const pos = positions[index];
-                    drawPhotoWithShape(ctx, img, pos.x, pos.y, pos.width, pos.height, selectedShape);
+                    drawCroppedImage(ctx, img, pos.x, pos.y, pos.width, pos.height, selectedShape);
 
                     loadedCount++;
                     if (loadedCount === imagesToProcess) {
@@ -360,6 +359,97 @@ document.addEventListener('DOMContentLoaded', function () {
                 };
                 img.src = imageData;
             });
+        }
+
+        function drawCroppedImage(ctx, img, x, y, targetWidth, targetHeight, shape) {
+            const imgAspect = img.width / img.height;
+            const targetAspect = targetWidth / targetHeight;
+
+            let sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight;
+
+            if (imgAspect > targetAspect) {
+                // Image is wider than target → crop sides
+                sHeight = img.height;
+                sWidth = sHeight * targetAspect;
+                sx = (img.width - sWidth) / 2;
+                sy = 0;
+                dx = x;
+                dy = y;
+                dWidth = targetWidth;
+                dHeight = targetHeight;
+            } else {
+                // Image is taller than target → crop top/bottom
+                sWidth = img.width;
+                sHeight = sWidth / targetAspect;
+                sx = 0;
+                sy = (img.height - sHeight) / 2;
+                dx = x;
+                dy = y;
+                dWidth = targetWidth;
+                dHeight = targetHeight;
+            }
+
+            // Draw the image with the specified shape
+            drawPhotoWithShape(ctx, img, dx, dy, dWidth, dHeight, shape, sx, sy, sWidth, sHeight);
+        }
+
+        function drawPhotoWithShape(ctx, img, x, y, width, height, shape, sx, sy, sWidth, sHeight) {
+            ctx.save();
+
+            // Create clipping path based on shape
+            if (shape === 'circle') {
+                const centerX = x + width / 2;
+                const centerY = y + height / 2;
+                const radius = Math.min(width, height) / 2;
+
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.clip();
+            } else if (shape === 'rounded') {
+                roundedRect(ctx, x, y, width, height, 20);
+                ctx.clip();
+            } else if (shape === 'heart') {
+                heartShape(ctx, x + width / 2, y + height / 2, Math.min(width, height) / 2);
+                ctx.clip();
+            } else {
+                // Default to rectangle if no shape specified
+                ctx.beginPath();
+                ctx.rect(x, y, width, height);
+                ctx.clip();
+            }
+
+            // Draw the cropped image within the clipped shape
+            ctx.drawImage(img, sx, sy, sWidth, sHeight, x, y, width, height);
+            ctx.restore();
+        }
+
+        function roundedRect(ctx, x, y, width, height, radius) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+        }
+
+        function heartShape(ctx, centerX, centerY, size) {
+            ctx.beginPath();
+            const x = centerX;
+            const y = centerY;
+            const width = size * 2;
+            const height = size * 2;
+
+            ctx.moveTo(x, y - height / 4);
+            ctx.bezierCurveTo(x, y - height / 2, x - width / 2, y - height / 2, x - width / 2, y);
+            ctx.bezierCurveTo(x - width / 2, y + height / 2, x, y + height, x, y + height);
+            ctx.bezierCurveTo(x, y + height, x + width / 2, y + height / 2, x + width / 2, y);
+            ctx.bezierCurveTo(x + width / 2, y - height / 2, x, y - height / 2, x, y - height / 4);
+            ctx.closePath();
         }
 
         // Styling pratinjau kanvas
@@ -380,59 +470,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         finalCanvas = stackedCanvas;
-    }
-
-    // Helper function to draw photo with shape
-    function drawPhotoWithShape(ctx, img, x, y, width, height, shape) {
-        ctx.save();
-
-        if (shape === 'circle') {
-            const centerX = x + width / 2;
-            const centerY = y + height / 2;
-            const radius = Math.min(width, height) / 2;
-
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-            ctx.clip();
-        } else if (shape === 'rounded') {
-            roundedRect(ctx, x, y, width, height, 20);
-            ctx.clip();
-        } else if (shape === 'heart') {
-            heartShape(ctx, x + width / 2, y + height / 2, Math.min(width, height) / 2);
-            ctx.clip();
-        }
-
-        ctx.drawImage(img, x, y, width, height);
-        ctx.restore();
-    }
-
-    // Helper functions for shapes
-    function roundedRect(ctx, x, y, width, height, radius) {
-        ctx.beginPath();
-        ctx.moveTo(x + radius, y);
-        ctx.lineTo(x + width - radius, y);
-        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-        ctx.lineTo(x + width, y + height - radius);
-        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-        ctx.lineTo(x + radius, y + height);
-        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-        ctx.lineTo(x, y + radius);
-        ctx.quadraticCurveTo(x, y, x + radius, y);
-        ctx.closePath();
-    }
-
-    function heartShape(ctx, x, y, size) {
-        ctx.beginPath();
-        ctx.moveTo(x, y + size / 4);
-        ctx.quadraticCurveTo(x, y, x + size / 4, y);
-        ctx.quadraticCurveTo(x + size / 2, y, x + size / 2, y + size / 4);
-        ctx.quadraticCurveTo(x + size / 2, y, x + size * 3 / 4, y);
-        ctx.quadraticCurveTo(x + size, y, x + size, y + size / 4);
-        ctx.quadraticCurveTo(x + size, y + size / 2, x + size * 3 / 4, y + size * 3 / 4);
-        ctx.lineTo(x + size / 2, y + size);
-        ctx.lineTo(x + size / 4, y + size * 3 / 4);
-        ctx.quadraticCurveTo(x, y + size / 2, x, y + size / 4);
-        ctx.closePath();
     }
 
     // Draw stickers and logos
