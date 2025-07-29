@@ -8,12 +8,12 @@ require_once '../includes/pwa-helper.php';
 if (!isset($_SESSION["session_type"])) {
     $_SESSION["session_type"] = "photo";
     $_SESSION["photo_start_time"] = time();
-    $_SESSION["photo_expired_time"] = time() + (7 * 60); // 10 menit
+    $_SESSION["photo_expired_time"] = time() + (7 * 60); // 7 menit
 }
 
 // Extend session if expired untuk better UX
 if (isset($_SESSION["photo_expired_time"]) && time() > $_SESSION["photo_expired_time"]) {
-    $_SESSION["photo_expired_time"] = time() + (7 * 60); // Extend 10 menit
+    $_SESSION["photo_expired_time"] = time() + (7 * 60); // Extend 7 menit
 }
 
 // Hitung waktu tersisa
@@ -43,11 +43,11 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     <meta name="twitter:description"
         content="Take instant photobooth-style photos online with Layout 1. Perfect for 2-photo strips." />
     <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png" />
+    <link rel="stylesheet" href="/styles.css?v=<?php echo time();?>"/>
     <!-- Cache Control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <!-- <link rel="stylesheet" href="/styles.css?v=<?php echo time(); ?>" /> -->
     <link
         href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&display=swap"
         rel="stylesheet" />
@@ -131,9 +131,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
         }
 
         body {
-            /* text-align: center;  */
             font-family: Arial, sans-serif;
-            /* margin: 0;  */
             padding: 20px;
         }
 
@@ -233,7 +231,6 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             gap: 10px;
             margin-top: 10px;
             width: 170px;
-            /* transform: scaleX(-1); */
         }
 
         #progressCounter {
@@ -267,10 +264,6 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             display: none;
         }
 
-        /* video {
-                transform: scaleX(-1);
-            } */
-
         .credits-container {
             display: flex;
             justify-content: center;
@@ -291,9 +284,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             padding: 20px 25px;
             border-radius: 10px;
             opacity: 0;
-            /* Initially hidden */
             transition: opacity 0.5s ease-in-out;
-            /* Smooth fade effect */
             z-index: 2;
         }
 
@@ -309,9 +300,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             padding: 10px 15px;
             border-radius: 10px;
             opacity: 0;
-            /* Initially hidden */
             transition: opacity 0.5s ease-in-out;
-            /* Smooth fade effect */
             z-index: 2;
         }
 
@@ -331,9 +320,65 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             gap: 20px;
         }
 
-        @media only screen and (max-width: 768px) {
+        /* Grid Overlay Styling */
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 columns */
+            grid-template-rows: repeat(3, 1fr); /* 3 rows */
+            pointer-events: none; /* Allow clicks to pass through */
+            z-index: 1; /* Above video, below UI elements */
+            opacity: 50; /* Semi-transparent */
+        }
 
-            /* canvas */
+        .grid-overlay::before,
+        .grid-overlay::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3); /* White lines with transparency */
+        }
+
+        .grid-overlay::before {
+            width: 100%;
+            height: 3px;
+            top: 33.33%; /* Horizontal line at 1/3 */
+        }
+
+        .grid-overlay::after {
+            width: 100%;
+            height: 3px;
+            top: 66.67%; /* Horizontal line at 2/3 */
+        }
+
+        .grid-overlay > div {
+            border-right: 3px solid rgba(255, 255, 255, 0.3); /* Vertical lines */
+        }
+
+        .grid-overlay > div:nth-child(3n) {
+            border-right: none; /* Remove border on last column */
+        }
+
+        #gridToggleBtn {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        #gridToggleBtn:hover {
+            background: #e03e3e;
+        }
+
+        @media only screen and (max-width: 768px) {
             .camera-container {
                 display: flex;
                 flex-direction: column;
@@ -359,8 +404,6 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
         }
 
         @media only screen and (max-width: 540px) {
-
-            /* canvas */
             .camera-container {
                 display: flex;
                 flex-direction: column;
@@ -423,6 +466,11 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             <section class="camera-container">
                 <div id="videoContainer">
                     <video id="video" autoplay playsinline></video>
+                    <div id="gridOverlay" class="grid-overlay" style="display: none;">
+                        <div></div><div></div><div></div>
+                        <div></div><div></div><div></div>
+                        <div></div><div></div><div></div>
+                    </div>
                     <div id="flash"></div>
                     <div id="fullscreenMessage">Press SPACE to Start</div>
                     <div id="filterMessage"></div>
@@ -443,9 +491,10 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                     <button id="sepiaFilterId" class="filterBtn"></button>
                     <button id="normalFilterId" class="filterBtn"></button>
                     <button id="invertBtn"><img src="/src/assets/mirror-icon.svg" alt="mirror icon" id="mirror-icon"></button>
+                    <button id="gridToggleBtn">Show Grid</button>
                 </div>
                 <div>
-                    <h3 class="options-label">Choose a filter </h3>
+                    <h3 class="options-label">Choose a filter</h3>
                 </div>
                 <div class="start-done-btn">
                     <button id="startBtn">START</button>
@@ -453,11 +502,8 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                 </div>
             </div>
             <div id="photoPreview"></div>
-            <!-- <div id="flash"></div> -->
         </div>
     </main>
-    
-
     
     <script src="canvasLayout1.js"></script>
     <script src="debug-camera.js"></script>

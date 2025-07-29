@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             console.log('✅ Sticker controls initialized');
-        }, 100); // Small delay to not block photo rendering
+        }, 100);
     }
 
     // Frame controls
@@ -245,29 +245,102 @@ document.addEventListener('DOMContentLoaded', function () {
         const printBtn = document.getElementById('printBtn');
         const continueBtn = document.getElementById('continueBtn');
 
-        if (downloadBtn) {
-            downloadBtn.addEventListener('click', () => {
-                if (finalCanvas) {
-                    const link = document.createElement('a');
-                    link.download = 'fotoboks-layout1.png';
-                    link.href = finalCanvas.toDataURL();
-                    link.click();
-                }
-            });
-        }
-
         if (printBtn) {
             printBtn.addEventListener('click', () => {
                 if (finalCanvas) {
-                    const printWindow = window.open('', '', 'width=800,height=600');
-                    printWindow.document.write(`
+                    printBtn.classList.add('loading');
+                    printBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+
+                    setTimeout(() => {
+                        // Create a new window for printing
+                        const printWindow = window.open('', '_blank');
+                        if (!printWindow) {
+                            alert('Popup blocked. Please allow popups for this site.');
+                            printBtn.classList.remove('loading');
+                            printBtn.innerHTML = '<i class="fas fa-print"></i> Print';
+                            return;
+                        }
+
+                        // Convert canvas to data URL
+                        const dataUrl = finalCanvas.toDataURL('image/jpeg', 1.0);
+
+                        // HTML for printing with correct aspect ratio (2:3 like canvas)
+                        printWindow.document.write(`
                         <html>
-                            <head><title>Print Photo</title></head>
-                            <body style="margin:0; display:flex; justify-content:center; align-items:center;">
-                                <img src="${finalCanvas.toDataURL()}" style="max-width:100%; max-height:100vh;" onload="window.print(); window.close();">
-                            </body>
+                        <head>
+                            <title>Print Photo</title>
+                            <style>
+                                @media print {
+                                    @page {
+                                        size: 10cm 15cm; /* 4x6 inch */
+                                        margin: 0;
+                                    }
+                                    html {
+                                        width: 10cm;
+                                        height: 15cm;
+                                        margin: 0;
+                                        padding: 0;
+                                        background: #fff;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                    }
+                                    body {
+                                        width: 10cm;
+                                        height: 15cm;
+                                        margin: 0;
+                                        padding: 0;
+                                        background: #fff;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                    }
+                    
+                                    .print-photo {
+                                        width: 10cm;
+                                        height: 15cm;
+                                        object-fit: fill;
+                                        display: block;
+                                    }
+                                }
+                                html, body {
+                                    width: 10cm;
+                                    height: 15cm;
+                                    margin: 0;
+                                    padding: 0;
+                                    background: #fff;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                }
+                                .print-photo {
+                                    width: 10cm;
+                                    height: 15cm;
+                                    object-fit: fill;
+                                    display: block;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <img src="${dataUrl}" class="print-photo" />
+                            <script>
+                                window.onload = function() {
+                                    setTimeout(function() {
+                                        window.print();
+                                        window.close();
+                                    }, 300);
+                                };
+                            </script>
+                        </body>
                         </html>
                     `);
+                        printWindow.document.close();
+
+                        printBtn.classList.remove('loading');
+                        printBtn.innerHTML = '<i class="fas fa-print"></i> Print';
+                    }, 500);
+                } else {
+                    console.error('No canvas available for printing');
                 }
             });
         }
@@ -286,7 +359,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        console.log(`Redrawing canvas with background: ${backgroundType}`);
+        console.log(`Redrawing canvas with background: ${backgroundType} `);
 
         const stackedCanvas = document.createElement('canvas');
         const ctx = stackedCanvas.getContext('2d');
@@ -325,7 +398,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         function drawPhotos() {
             if (storedImages.length < expectedPhotos) {
-                console.warn(`⚠️ Layout ${expectedPhotos} requires ${expectedPhotos} photos, only found: ${storedImages.length}`);
+                console.warn(`⚠️ Layout ${expectedPhotos} requires ${expectedPhotos} photos, only found: ${storedImages.length} `);
             }
 
             let loadedCount = 0;

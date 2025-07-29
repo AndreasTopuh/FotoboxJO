@@ -105,7 +105,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (timeoutOkBtn) {
         timeoutOkBtn.addEventListener('click', () => {
             hideTimeoutModal();
-if (images.length === 0) {                fetch('../api-fetch/reset_session.php', { method: 'POST' }).then(() => {                    window.location.href = '../../index.html';                }).catch(() => {                    window.location.href = '../../index.html';                });            } else {                window.location.href = 'customizeLayout3.php';            }
+            if (images.length === 0) {
+                fetch('../api-fetch/reset_session.php', { method: 'POST' }).then(() => {
+                    window.location.href = '../../index.html';
+                }).catch(() => {
+                    window.location.href = '../../index.html';
+                });
+            } else {
+                window.location.href = 'customizeLayout3.php';
+            }
         });
     }
 
@@ -122,6 +130,8 @@ if (images.length === 0) {                fetch('../api-fetch/reset_session.php'
     const doneBtn = document.getElementById('doneBtn');
     const flash = document.getElementById('flash');
     const photoContainer = document.getElementById('photoContainer');
+    const gridOverlay = document.getElementById('gridOverlay');
+    const gridToggleBtn = document.getElementById('gridToggleBtn');
 
     const bnwFilter = document.getElementById('bnwFilterId');
     const sepiaFilter = document.getElementById('sepiaFilterId');
@@ -135,7 +145,6 @@ if (images.length === 0) {                fetch('../api-fetch/reset_session.php'
     const fullscreenMessage = document.getElementById("fullscreenMessage");
     const filterMessage = document.getElementById("filterMessage");
     const fullscreenImg = fullscreenBtn && fullscreenBtn.querySelector("img");
-
     const uploadInput = document.getElementById('uploadInput');
     const uploadBtn = document.getElementById('uploadBtn');
 
@@ -209,42 +218,42 @@ if (images.length === 0) {                fetch('../api-fetch/reset_session.php'
     if(bnwFilter) {
         bnwFilter.addEventListener('click', () => {
             applyFilter("grayscale");
-            filterText("BNW")
+            filterText("BNW");
         });
     }
 
     if(sepiaFilter) {
         sepiaFilter.addEventListener('click', () => {
             applyFilter("sepia");
-            filterText("cyber")
+            filterText("cyber");
         });
     }
 
     if(smoothFilter) {
         smoothFilter.addEventListener('click', () => {
             applyFilter("smooth");
-            filterText("smooth")
+            filterText("smooth");
         });
     }
 
     if(grayFilter) {
         grayFilter.addEventListener('click', () => {
             applyFilter("gray");
-            filterText("grayscale")
+            filterText("grayscale");
         });
     }
 
     if(vintageFilter) {
         vintageFilter.addEventListener('click', () => {
             applyFilter("vintage");
-            filterText("vintage")
+            filterText("vintage");
         });
     }
 
     if(normalFilter) {
         normalFilter.addEventListener('click', () => {
             applyFilter("none");
-            filterText("none")
+            filterText("none");
         });
     }
 
@@ -252,7 +261,7 @@ if (images.length === 0) {                fetch('../api-fetch/reset_session.php'
         if (!video) return;
         
         // Remove existing filters
-        video.classList.remove("sepia", "grayscale","smooth","gray","vintage");
+        video.classList.remove("sepia", "grayscale", "smooth", "gray", "vintage");
 
         // Apply new filter if not 'none'
         if (filterClass !== "none") {
@@ -277,18 +286,17 @@ if (images.length === 0) {                fetch('../api-fetch/reset_session.php'
 
     if(invertBtn) {
         invertBtn.addEventListener('click', () => {
-            invertBtnState =!invertBtnState;
-            cameraInvertSwitch()
-            filterText("invert")
+            invertBtnState = !invertBtnState;
+            cameraInvertSwitch();
+            filterText("invert");
         });
     }
 
     function cameraInvertSwitch() {
         if (invertBtnState == true) {
-            if (photoContainer) photoContainer.style.transform = 'scaleX(-1)'
-            if (video) video.style.transform = 'scaleX(-1)'
-        }
-        else {
+            if (photoContainer) photoContainer.style.transform = 'scaleX(-1)';
+            if (video) video.style.transform = 'scaleX(-1)';
+        } else {
             if (photoContainer) photoContainer.style.transform = 'scaleX(1)';
             if (video) video.style.transform = 'scaleX(1)';
         }
@@ -317,6 +325,11 @@ if (images.length === 0) {                fetch('../api-fetch/reset_session.php'
                             blackScreen.style.opacity = 0;
                             setTimeout(() => blackScreen.style.display = 'none', 1000);
                         }
+                        // Show grid overlay when camera starts
+                        if (gridOverlay) {
+                            gridOverlay.style.display = 'grid';
+                            if (gridToggleBtn) gridToggleBtn.textContent = 'Hide Grid';
+                        }
                     }, 500);
                 };
             } else {
@@ -333,16 +346,30 @@ if (images.length === 0) {                fetch('../api-fetch/reset_session.php'
             video.srcObject.getTracks().forEach(track => track.stop());
             video.srcObject = null;
         }
+        // Hide grid when camera stops
+        if (gridOverlay) {
+            gridOverlay.style.display = 'none';
+            if (gridToggleBtn) gridToggleBtn.textContent = 'Show Grid';
+        }
     }
     
     // Start camera if on canvasLayout3.php
     if (window.location.pathname.includes("canvasLayout3.php")) {
-    
         startCamera();
     }
 
+    // Toggle grid visibility
+    if (gridToggleBtn) {
+        gridToggleBtn.addEventListener('click', () => {
+            if (gridOverlay) {
+                gridOverlay.style.display = gridOverlay.style.display === 'grid' ? 'none' : 'grid';
+                gridToggleBtn.textContent = gridOverlay.style.display === 'grid'? 'Hide Grid' : 'Show Grid';
+            }
+        });
+    }
+
     async function startPhotobooth() {
-        const photoCount = 6; // Layout 3 has 2 photos
+        const photoCount = 6; // Layout 3 has 6 photos
         
         if (images.length > 0) {
             const confirmReset = confirm("You already have pictures. Do you want to retake them?");
@@ -427,6 +454,11 @@ if (images.length === 0) {                fetch('../api-fetch/reset_session.php'
     async function showCountdown(selectedValue) {
         if (!countdownText) return;
         
+        // Hide grid during countdown
+        if (gridOverlay) {
+            gridOverlay.style.display = 'none';
+        }
+        
         countdownText.style.display = "flex";
         for (let countdown = selectedValue; countdown > 0; countdown--) {
             countdownText.textContent = countdown;
@@ -436,6 +468,12 @@ if (images.length === 0) {                fetch('../api-fetch/reset_session.php'
             await new Promise(res => setTimeout(res, 1000));
         }
         countdownText.style.display = "none";
+        
+        // Show grid again after countdown
+        if (gridOverlay) {
+            gridOverlay.style.display = 'grid';
+            if (gridToggleBtn) gridToggleBtn.textContent = 'Hide Grid';
+        }
     }
     
     // Automatically trigger the countdown when option changes
@@ -449,7 +487,7 @@ if (images.length === 0) {                fetch('../api-fetch/reset_session.php'
 
     // Update Image Upload for Users to choose multiple images at once
     function handleImageUpload(event) {
-        const photoCount = 6; // Layout 3 has 2 photos
+        const photoCount = 6; // Layout 3 has 6 photos
         const files = Array.from(event.target.files); // Get all selected files
 
         if (files.length === 0) {
@@ -508,7 +546,7 @@ if (images.length === 0) {                fetch('../api-fetch/reset_session.php'
 
     // 🚀 OPTIMIZED STORE IMAGE FUNCTION - Layout 3 (6 PHOTOS)
     async function storeImageArray() {
-        const photoCount = 6; // Layout 3 has 6 photos ✅
+        const photoCount = 6; // Layout 3 has 6 photos
         const doneBtn = document.getElementById('doneBtn');
         const startTime = Date.now();
         

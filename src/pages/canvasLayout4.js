@@ -8,27 +8,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 🔥 FAST COMPRESSION FUNCTION
     function compressImage(base64Data, type = 'session') {
-        return new Promise((resolve) => {
-            const config = COMPRESSION_CONFIG[type];
-            const img = new Image();
-            
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
+        return new Promise((resolve, reject) => {
+            try {
+                const config = COMPRESSION_CONFIG[type];
+                const img = new Image();
                 
-                // Calculate new dimensions
-                const ratio = Math.min(config.maxWidth / img.width, config.maxWidth / img.height);
-                canvas.width = img.width * (ratio > 1 ? 1 : ratio);
-                canvas.height = img.height * (ratio > 1 ? 1 : ratio);
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Calculate new dimensions
+                    const ratio = Math.min(config.maxWidth / img.width, config.maxWidth / img.height);
+                    canvas.width = img.width * (ratio > 1 ? 1 : ratio);
+                    canvas.height = img.height * (ratio > 1 ? 1 : ratio);
+                    
+                    // Draw and compress
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const compressed = canvas.toDataURL('image/jpeg', config.quality);
+                    
+                    resolve(compressed);
+                };
                 
-                // Draw and compress
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                const compressed = canvas.toDataURL('image/jpeg', config.quality);
-                
-                resolve(compressed);
-            };
-            
-            img.src = base64Data;
+                img.onerror = () => reject(new Error('Failed to load image'));
+                img.src = base64Data;
+            } catch (error) {
+                reject(error);
+            }
         });
     }
 
@@ -59,6 +64,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showTimeoutModal() {
         if (timeoutModal) {
+            const timeoutMessage = document.getElementById('timeout-message');
+            if (images.length === 0) {
+                timeoutMessage.textContent = 'Waktu habis! Tidak ada foto yang diambil. Anda akan diarahkan ke halaman utama.';
+            } else {
+                timeoutMessage.textContent = 'Waktu habis! Ada foto yang sudah diambil. Anda akan diarahkan ke halaman customize.';
+            }
             timeoutModal.style.display = 'flex';
         }
     }
@@ -72,7 +83,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (timeoutOkBtn) {
         timeoutOkBtn.addEventListener('click', () => {
             hideTimeoutModal();
-            window.location.href = 'customizeLayout4.php';
+            if (images.length === 0) {
+                fetch('../api-fetch/reset_session.php', { method: 'POST' }).then(() => {
+                    window.location.href = '../../index.html';
+                }).catch(() => {
+                    window.location.href = '../../index.html';
+                });
+            } else {
+                window.location.href = 'customizeLayout4.php';
+            }
         });
     }
 
@@ -89,6 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const doneBtn = document.getElementById('doneBtn');
     const flash = document.getElementById('flash');
     const photoContainer = document.getElementById('photoContainer');
+    const gridOverlay = document.getElementById('gridOverlay');
+    const gridToggleBtn = document.getElementById('gridToggleBtn');
 
     const bnwFilter = document.getElementById('bnwFilterId');
     const sepiaFilter = document.getElementById('sepiaFilterId');
@@ -114,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener("beforeunload", () => {
         let stream = document.querySelector("video")?.srcObject;
         if (stream) {
-          stream.getTracks().forEach((track) => track.stop());
+            stream.getTracks().forEach((track) => track.stop());
         }
     });
 
@@ -176,42 +197,42 @@ document.addEventListener('DOMContentLoaded', () => {
     if(bnwFilter) {
         bnwFilter.addEventListener('click', () => {
             applyFilter("grayscale");
-            filterText("BNW")
+            filterText("BNW");
         });
     }
 
     if(sepiaFilter) {
         sepiaFilter.addEventListener('click', () => {
             applyFilter("sepia");
-            filterText("cyber")
+            filterText("cyber");
         });
     }
 
     if(smoothFilter) {
         smoothFilter.addEventListener('click', () => {
             applyFilter("smooth");
-            filterText("smooth")
+            filterText("smooth");
         });
     }
 
     if(grayFilter) {
         grayFilter.addEventListener('click', () => {
             applyFilter("gray");
-            filterText("grayscale")
+            filterText("grayscale");
         });
     }
 
     if(vintageFilter) {
         vintageFilter.addEventListener('click', () => {
             applyFilter("vintage");
-            filterText("vintage")
+            filterText("vintage");
         });
     }
 
     if(normalFilter) {
         normalFilter.addEventListener('click', () => {
             applyFilter("none");
-            filterText("none")
+            filterText("none");
         });
     }
 
@@ -219,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!video) return;
         
         // Remove existing filters
-        video.classList.remove("sepia", "grayscale","smooth","gray","vintage");
+        video.classList.remove("sepia", "grayscale", "smooth", "gray", "vintage");
 
         // Apply new filter if not 'none'
         if (filterClass !== "none") {
@@ -244,44 +265,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if(invertBtn) {
         invertBtn.addEventListener('click', () => {
-            invertBtnState =!invertBtnState;
-            cameraInvertSwitch()
-            filterText("invert")
+            invertBtnState = !invertBtnState;
+            cameraInvertSwitch();
+            filterText("invert");
         });
     }
 
     function cameraInvertSwitch() {
-        if (invertBtnState == true) {
-            if (photoContainer) photoContainer.style.transform = 'scaleX(-1)'
-            if (video) video.style.transform = 'scaleX(-1)'
-        }
-        else {
-            if (photoContainer) photoContainer.style.transform = 'scaleX(1)'
-            if (video) video.style.transform = 'scaleX(1)'
+        if (invertBtnState === true) {
+            if (photoContainer) photoContainer.style.transform = 'scaleX(-1)';
+            if (video) video.style.transform = 'scaleX(-1)';
+        } else {
+            if (photoContainer) photoContainer.style.transform = 'scaleX(1)';
+            if (video) video.style.transform = 'scaleX(1)';
         }
     }
 
     async function startCamera() {
+        console.log('🎥 startCamera() called');
         stopCameraStream(); 
     
         try {
+            console.log('📱 Requesting camera permissions...');
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+            console.log('✅ Camera stream obtained:', stream);
+            
             if (video) {
+                console.log('📺 Setting video.srcObject...');
                 video.srcObject = stream;
         
                 // Ensure video is playing before hiding black screen
                 video.onloadedmetadata = () => {
+                    console.log('📽️ Video metadata loaded, starting playback...');
                     video.play();
                     setTimeout(() => {
                         if (blackScreen) {
+                            console.log('🎬 Hiding black screen');
                             blackScreen.style.opacity = 0;
                             setTimeout(() => blackScreen.style.display = 'none', 1000);
                         }
+                        // Show grid overlay when camera starts
+                        if (gridOverlay) {
+                            gridOverlay.style.display = 'grid';
+                            if (gridToggleBtn) gridToggleBtn.textContent = 'Hide Grid';
+                        }
                     }, 500);
                 };
+            } else {
+                console.error('❌ Video element not found!');
             }
         } catch (err) {
-            console.error("Camera Access Denied", err);
+            console.error("❌ Camera Access Denied:", err);
             alert("Please enable camera permissions in your browser settings.");
         }
     }
@@ -291,15 +325,30 @@ document.addEventListener('DOMContentLoaded', () => {
             video.srcObject.getTracks().forEach(track => track.stop());
             video.srcObject = null;
         }
+        // Hide grid when camera stops
+        if (gridOverlay) {
+            gridOverlay.style.display = 'none';
+            if (gridToggleBtn) gridToggleBtn.textContent = 'Show Grid';
+        }
     }
     
     // Start camera if on canvasLayout4.php
-    if (window.location.pathname.endsWith("canvasLayout4.php") || window.location.pathname === "canvasLayout4.php") {
+    if (window.location.pathname.includes("canvasLayout4.php")) {
         startCamera();
     }
 
+    // Toggle grid visibility
+    if (gridToggleBtn) {
+        gridToggleBtn.addEventListener('click', () => {
+            if (gridOverlay) {
+                gridOverlay.style.display = gridOverlay.style.display === 'grid' ? 'none' : 'grid';
+                gridToggleBtn.textContent = gridOverlay.style.display === 'grid' ? 'Hide Grid' : 'Show Grid';
+            }
+        });
+    }
+
     async function startPhotobooth() {
-        const photoCount = 8; // Layout 4 has 2 photos
+        const photoCount = 8; // Layout 4 has 8 photos
         
         if (images.length > 0) {
             const confirmReset = confirm("You already have pictures. Do you want to retake them?");
@@ -384,6 +433,11 @@ document.addEventListener('DOMContentLoaded', () => {
     async function showCountdown(selectedValue) {
         if (!countdownText) return;
         
+        // Hide grid during countdown
+        if (gridOverlay) {
+            gridOverlay.style.display = 'none';
+        }
+        
         countdownText.style.display = "flex";
         for (let countdown = selectedValue; countdown > 0; countdown--) {
             countdownText.textContent = countdown;
@@ -393,16 +447,26 @@ document.addEventListener('DOMContentLoaded', () => {
             await new Promise(res => setTimeout(res, 1000));
         }
         countdownText.style.display = "none";
+        
+        // Show grid again after countdown
+        if (gridOverlay) {
+            gridOverlay.style.display = 'grid';
+            if (gridToggleBtn) gridToggleBtn.textContent = 'Hide Grid';
+        }
     }
     
     // Automatically trigger the countdown when option changes
     function updateCountdown() {
-        showCountdown();
+        const timerOptions = document.getElementById("timerOptions");
+        if (timerOptions) {
+            const selectedValue = parseInt(timerOptions.value);
+            showCountdown(selectedValue);
+        }
     }
 
     // Update Image Upload for Users to choose multiple images at once
     function handleImageUpload(event) {
-        const photoCount = 8; // Layout 4 has 2 photos
+        const photoCount = 8; // Layout 4 has 8 photos
         const files = Array.from(event.target.files); // Get all selected files
 
         if (files.length === 0) {
@@ -461,7 +525,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 🚀 OPTIMIZED STORE IMAGE FUNCTION - Layout 4 (8 PHOTOS)
     async function storeImageArray() {
-        const photoCount = 8; // Layout 4 has 8 photos ✅
+        const photoCount = 8; // Layout 4 has 8 photos
         const doneBtn = document.getElementById('doneBtn');
         const startTime = Date.now();
         

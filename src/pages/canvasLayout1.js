@@ -130,6 +130,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const doneBtn = document.getElementById('doneBtn');
     const flash = document.getElementById('flash');
     const photoContainer = document.getElementById('photoContainer');
+    const gridOverlay = document.getElementById('gridOverlay');
+    const gridToggleBtn = document.getElementById('gridToggleBtn');
 
     const bnwFilter = document.getElementById('bnwFilterId');
     const sepiaFilter = document.getElementById('sepiaFilterId');
@@ -285,20 +287,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if(invertBtn) {
         invertBtn.addEventListener('click', () => {
-            invertBtnState =!invertBtnState;
-            cameraInvertSwitch()
-            filterText("invert")
+            invertBtnState = !invertBtnState;
+            cameraInvertSwitch();
+            filterText("invert");
         });
     }
 
     function cameraInvertSwitch() {
         if (invertBtnState == true) {
-            if (photoContainer) photoContainer.style.transform = 'scaleX(-1)'
-            if (video) video.style.transform = 'scaleX(-1)'
-        }
-        else {
-            if (photoContainer) photoContainer.style.transform = 'scaleX(1)'
-            if (video) video.style.transform = 'scaleX(1)'
+            if (photoContainer) photoContainer.style.transform = 'scaleX(-1)';
+            if (video) video.style.transform = 'scaleX(-1)';
+        } else {
+            if (photoContainer) photoContainer.style.transform = 'scaleX(1)';
+            if (video) video.style.transform = 'scaleX(1)';
         }
     }
 
@@ -318,6 +319,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             blackScreen.style.opacity = 0;
                             setTimeout(() => blackScreen.style.display = 'none', 1000);
                         }
+                        // Show grid overlay when camera starts
+                        if (gridOverlay) {
+                            gridOverlay.style.display = 'grid';
+                            if (gridToggleBtn) gridToggleBtn.textContent = 'Hide Grid';
+                        }
                     }, 500);
                 };
             }
@@ -332,11 +338,26 @@ document.addEventListener('DOMContentLoaded', () => {
             video.srcObject.getTracks().forEach(track => track.stop());
             video.srcObject = null;
         }
+        // Hide grid when camera stops
+        if (gridOverlay) {
+            gridOverlay.style.display = 'none';
+            if (gridToggleBtn) gridToggleBtn.textContent = 'Show Grid';
+        }
     }
     
     // Start camera if on canvasLayout1.php
     if (window.location.pathname.endsWith("canvasLayout1.php") || window.location.pathname === "canvasLayout1.php") {
         startCamera();
+    }
+
+    // Toggle grid visibility
+    if (gridToggleBtn) {
+        gridToggleBtn.addEventListener('click', () => {
+            if (gridOverlay) {
+                gridOverlay.style.display = gridOverlay.style.display === 'grid' ? 'none' : 'grid';
+                gridToggleBtn.textContent = gridOverlay.style.display === 'grid' ? 'Hide Grid' : 'Show Grid';
+            }
+        });
     }
 
     async function startPhotobooth() {
@@ -425,6 +446,11 @@ document.addEventListener('DOMContentLoaded', () => {
     async function showCountdown(selectedValue) {
         if (!countdownText) return;
         
+        // Hide grid during countdown
+        if (gridOverlay) {
+            gridOverlay.style.display = 'none';
+        }
+        
         countdownText.style.display = "flex";
         for (let countdown = selectedValue; countdown > 0; countdown--) {
             countdownText.textContent = countdown;
@@ -434,6 +460,12 @@ document.addEventListener('DOMContentLoaded', () => {
             await new Promise(res => setTimeout(res, 1000));
         }
         countdownText.style.display = "none";
+        
+        // Show grid again after countdown
+        if (gridOverlay) {
+            gridOverlay.style.display = 'grid';
+            if (gridToggleBtn) gridToggleBtn.textContent = 'Hide Grid';
+        }
     }
     
     // Automatically trigger the countdown when option changes
