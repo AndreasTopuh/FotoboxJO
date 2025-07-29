@@ -1461,13 +1461,64 @@ input[type=checkbox] {
     background-position: 0 0, 5px 5px;
 }
 
+/* Logo Button Styling */
+.logoCustomBtn {
+    width: 60px;
+    height: 60px;
+    border: none;
+    border-radius: 8px;
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin: 5px;
+}
+
+.logoCustomBtn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.logoCustomBtn.active {
+    border: 2px solid #007bff;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+}
+
+#engLogo {
+    background-image: url(/src/assets/logos/blackLogo.png);
+}
+
+#korLogo {
+    background-image: url(/src/assets/logos/whiteLogo.png);
+}
+
+#noneLogo {
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #333;
+    font-weight: bold;
+}
+
 #matcha {
     background-image: url(/src/assets/frame-backgrounds/matcha.jpg);
     background-size: 190%;
     background-position: center;
 }
 
+#blackStar {
+    background-image: url(/src/assets/frame-backgrounds/blackStar.jpg);
+    background-size: 190%;
+    background-position: center;
+}
 
+#blueStripe {
+    background-image: url(/src/assets/frame-backgrounds/blueStripe.jpg);
+    background-size: 190%;
+    background-position: center;
+}
 
 /* Shape Frames */
 .buttonShapes {
@@ -2514,4 +2565,142 @@ body.blur {
         max-width: 200px !important;
         max-height: 300px !important;
     }
+}
+
+.carousel-container {
+    position: relative;
+    max-width: 1000px;
+    /* Memperlebar modal */
+    width: 90%;
+    background: white;
+    padding: 40px;
+    /* Meningkatkan padding untuk ruang lebih lega */
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.carousel-image-container {
+    position: relative;
+    display: inline-block;
+    /* Mengatur kontainer gambar agar tidak terlalu sempit */
+}
+
+.carousel-image {
+    max-width: 100%;
+    /* Mengatur ukuran gambar agar responsif */
+    max-height: 600px;
+    /* Meningkatkan tinggi maksimum */
+    object-fit: contain;
+    border-radius: 10px;
+    margin: 20px 0;
+    /* Memberi ruang di atas dan bawah */
+}
+
+.carousel-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 68, 68, 0.9);
+    color: white;
+    border: none;
+    padding: 15px;
+    /* Meningkatkan padding tombol */
+    font-size: 1.8rem;
+    /* Meningkatkan ukuran teks */
+    cursor: pointer;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.3s ease;
+    z-index: 10;
+    /* Pastikan di atas gambar */
+}
+
+.carousel-nav-btn:hover {
+    background: #e03e3e;
+}
+
+.carousel-nav-btn:disabled {
+    background: rgba(255, 68, 68, 0.5);
+    cursor: not-allowed;
+}
+
+.prev-btn {
+    left: 20px;
+    /* Meningkatkan jarak dari tepi */
+}
+
+.next-btn {
+    right: 20px;
+    /* Meningkatkan jarak dari tepi */
+}
+
+.carousel-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #ff4444;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.3s ease;
+}
+
+.carousel-close-btn:hover {
+    background: #e03e3e;
+}
+
+.carousel-retake-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 20;
+    padding: 0;
+}
+
+.carousel-retake-btn img {
+    width: 25px;
+    height: 25px;
+    display: block;
+}
+
+.carousel-indicators {
+    position: absolute;
+    bottom: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    /* Meningkatkan jarak antar indikator */
+}
+
+.carousel-indicator {
+    width: 12px;
+    height: 12px;
+    background: #ccc;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.carousel-indicator.active {
+    background: #ff4444;
 }

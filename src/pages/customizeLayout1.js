@@ -159,6 +159,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // Action buttons
         initializeActionButtons();
 
+        // Initialize email modal
+        initializeEmailModal();
+
         console.log('✅ Basic controls initialized');
     }
 
@@ -170,7 +173,8 @@ document.addEventListener('DOMContentLoaded', function () {
             const stickerButtons = [
                 'noneSticker', 'kissSticker', 'ribbonSticker', 'sweetSticker',
                 'sparkleSticker', 'pearlSticker', 'softSticker', 'bunnySticker',
-                'classicSticker', 'classicBSticker', 'luckySticker', 'confettiSticker'
+                'classicSticker', 'classicBSticker', 'luckySticker', 'confettiSticker',
+                'bintang1'
             ];
 
             stickerButtons.forEach(buttonId => {
@@ -225,11 +229,13 @@ document.addEventListener('DOMContentLoaded', function () {
     function initializeBackgroundFrameControls() {
         const backgroundFrameButtons = [
             { id: 'matcha', src: '/src/assets/frame-backgrounds/matcha.jpg' },
+            { id: 'blackStar', src: '/src/assets/frame-backgrounds/blackStar.jpg' },
+            { id: 'blueStripe', src: '/src/assets/frame-backgrounds/blueStripe.jpg' }
         ];
 
         console.log('🖼️ Initializing background frame controls...');
         console.log('🔍 Available buttons:', backgroundFrameButtons.map(btn => btn.id));
-        
+
         backgroundFrameButtons.forEach(btn => {
             const element = document.getElementById(btn.id);
             if (element) {
@@ -237,14 +243,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 element.addEventListener('click', () => {
                     console.log(`🎨 CLICKED BACKGROUND FRAME: ${btn.id}`);
                     console.log(`🎨 Setting background image: ${btn.src}`);
-                    
+
                     // Set background variables
                     backgroundType = 'image';
                     backgroundImage = btn.src;
                     backgroundColor = null;
-                    
+
                     console.log(`📝 Updated variables: backgroundType=${backgroundType}, backgroundImage=${backgroundImage}`);
-                    
+
                     // Redraw canvas
                     redrawCanvas();
                 });
@@ -282,6 +288,18 @@ document.addEventListener('DOMContentLoaded', function () {
         const printBtn = document.getElementById('printBtn');
         const continueBtn = document.getElementById('continueBtn');
 
+        // Email button functionality
+        if (emailBtn) {
+            emailBtn.addEventListener('click', () => {
+                if (finalCanvas) {
+                    showEmailModal();
+                } else {
+                    console.error('No canvas available for email');
+                    alert('Tidak ada gambar untuk dikirim ke email');
+                }
+            });
+        }
+
         if (printBtn) {
             printBtn.addEventListener('click', () => {
                 if (finalCanvas) {
@@ -300,6 +318,108 @@ document.addEventListener('DOMContentLoaded', function () {
                 window.location.href = 'thankyou.php';
             });
         }
+    }
+
+    // Email Modal Functions
+    function showEmailModal() {
+        const emailModal = document.getElementById('emailModal');
+        if (emailModal) {
+            emailModal.style.display = 'flex';
+        }
+    }
+
+    function hideEmailModal() {
+        const emailModal = document.getElementById('emailModal');
+        if (emailModal) {
+            emailModal.style.display = 'none';
+        }
+    }
+
+    // Initialize email modal controls
+    function initializeEmailModal() {
+        const closeEmailModal = document.getElementById('closeEmailModal');
+        const sendEmailBtn = document.getElementById('sendEmailBtn');
+        const emailInput = document.getElementById('emailInput');
+
+        if (closeEmailModal) {
+            closeEmailModal.addEventListener('click', hideEmailModal);
+        }
+
+        if (sendEmailBtn) {
+            sendEmailBtn.addEventListener('click', () => {
+                const email = emailInput.value.trim();
+                if (!email) {
+                    alert('Mohon masukkan alamat email');
+                    return;
+                }
+
+                if (!validateEmail(email)) {
+                    alert('Format email tidak valid');
+                    return;
+                }
+
+                sendPhotoEmail(email);
+            });
+        }
+
+        // Close modal when clicking outside
+        const emailModal = document.getElementById('emailModal');
+        if (emailModal) {
+            emailModal.addEventListener('click', (e) => {
+                if (e.target === emailModal) {
+                    hideEmailModal();
+                }
+            });
+        }
+    }
+
+    function validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    function sendPhotoEmail(email) {
+        if (!finalCanvas) {
+            alert('Tidak ada foto untuk dikirim');
+            return;
+        }
+
+        // Show loading state
+        const sendBtn = document.getElementById('sendEmailBtn');
+        const originalText = sendBtn.textContent;
+        sendBtn.textContent = 'Mengirim...';
+        sendBtn.disabled = true;
+
+        // Convert canvas to blob
+        finalCanvas.toBlob((blob) => {
+            const formData = new FormData();
+            formData.append('photo', blob, 'photo.jpg');
+            formData.append('email', email);
+
+            fetch('../api-fetch/send_email.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Email berhasil dikirim!');
+                    hideEmailModal();
+                    document.getElementById('emailInput').value = '';
+                } else {
+                    alert('Gagal mengirim email: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Email send error:', error);
+                alert('Terjadi kesalahan saat mengirim email');
+            })
+            .finally(() => {
+                // Reset button state
+                sendBtn.textContent = originalText;
+                sendBtn.disabled = false;
+            });
+        }, 'image/jpeg', 0.9);
     }
 
     // Main canvas drawing function
@@ -342,7 +462,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log('✅ Background image loaded successfully');
                 ctx.drawImage(bgImg, 0, 0, stackedCanvas.width, stackedCanvas.height);
                 drawPhotos();
-                
+
                 // Update canvas preview AFTER background image is drawn
                 updateCanvasPreview(stackedCanvas);
             };
@@ -352,7 +472,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 ctx.fillStyle = '#FFFFFF';
                 ctx.fillRect(0, 0, stackedCanvas.width, stackedCanvas.height);
                 drawPhotos();
-                
+
                 // Update canvas preview even on error
                 updateCanvasPreview(stackedCanvas);
             };
@@ -364,7 +484,7 @@ document.addEventListener('DOMContentLoaded', function () {
             ctx.fillRect(0, 0, stackedCanvas.width, stackedCanvas.height);
             drawPhotos();
         }
-        
+
         // Update canvas preview for color backgrounds and default
         updateCanvasPreview(stackedCanvas);
 
@@ -396,7 +516,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 };
                 img.src = imageData;
-                });
+            });
         }
 
         function drawCroppedImage(ctx, img, x, y, targetWidth, targetHeight, shape) {
@@ -444,7 +564,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
                 ctx.clip();
             } else if (shape === 'rounded') {
-                roundedRect(ctx, x, y, width, height, 30);
+                roundedRect(ctx, x, y, width, height, 20);
                 ctx.clip();
             } else if (shape === 'heart') {
                 heartShape(ctx, x + width / 2, y + height / 2, Math.min(width, height) / 2);
@@ -489,11 +609,11 @@ document.addEventListener('DOMContentLoaded', function () {
             ctx.bezierCurveTo(x + width / 2, y - height / 2, x, y - height / 2, x, y - height / 4);
             ctx.closePath();
         }
-        
+
         // Update canvas preview for color backgrounds and default
         updateCanvasPreview(stackedCanvas);
     }
-    
+
     // Helper function to update canvas preview
     function updateCanvasPreview(stackedCanvas) {
         // Styling pratinjau kanvas
@@ -518,15 +638,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Draw stickers and logos
     function drawStickersAndLogos(ctx, canvas) {
-        // Draw selected sticker
+        // Draw selected sticker as overlay frame (covers entire canvas)
         if (selectedSticker) {
             const stickerImg = new Image();
             stickerImg.onload = function () {
-                const stickerSize = 100;
-                const stickerX = canvas.width - stickerSize - 20;
-                const stickerY = canvas.height - stickerSize - 120;
-
-                ctx.drawImage(stickerImg, stickerX, stickerY, stickerSize, stickerSize);
+                // Draw sticker as full canvas overlay - sticker will be on top layer
+                ctx.drawImage(stickerImg, 0, 0, canvas.width, canvas.height);
             };
             stickerImg.src = selectedSticker;
         }
@@ -552,198 +669,6 @@ document.addEventListener('DOMContentLoaded', function () {
             ctx.font = '16px Arial';
             ctx.fillText(timeStr, 40, canvas.height - 20);
         }
-    }
-
-    // Create high-resolution canvas for printing
-    function createPrintCanvas() {
-        return new Promise((resolve) => {
-            if (!storedImages || storedImages.length === 0) {
-                resolve(null);
-                return;
-            }
-
-            const printCanvas = document.createElement('canvas');
-            const ctx = printCanvas.getContext('2d');
-
-            // High resolution for print quality (300 DPI equivalent)
-            // 4x6 inch at 300 DPI = 1200x1800 pixels (same as our canvas)
-            const canvasWidth = 1200;
-            const canvasHeight = 1800;
-            const borderWidth = 62;
-            const marginTop = 120;
-            const spacing = 80;
-            const photoWidth = 1076;
-            const photoHeight = 639;
-            const expectedPhotos = 2;
-
-            printCanvas.width = canvasWidth;
-            printCanvas.height = canvasHeight;
-
-            // Clear canvas
-            ctx.clearRect(0, 0, printCanvas.width, printCanvas.height);
-
-            // Set background
-            if (backgroundType === 'color') {
-                ctx.fillStyle = backgroundColor;
-                ctx.fillRect(0, 0, printCanvas.width, printCanvas.height);
-            } else if (backgroundImage) {
-                const bgImg = new Image();
-                bgImg.onload = function () {
-                    ctx.drawImage(bgImg, 0, 0, printCanvas.width, printCanvas.height);
-                    drawPhotosForPrint();
-                };
-                bgImg.src = backgroundImage;
-                return;
-            }
-
-            drawPhotosForPrint();
-
-            function drawPhotosForPrint() {
-                let loadedCount = 0;
-                const imagesToProcess = Math.min(storedImages.length, expectedPhotos);
-
-                if (imagesToProcess === 0) {
-                    resolve(printCanvas);
-                    return;
-                }
-
-                storedImages.slice(0, imagesToProcess).forEach((imageData, index) => {
-                    const img = new Image();
-                    img.onload = function () {
-                        const positions = [
-                            { x: borderWidth, y: marginTop, width: photoWidth, height: photoHeight },
-                            { x: borderWidth, y: marginTop + photoHeight + spacing, width: photoWidth, height: photoHeight }
-                        ];
-
-                        const pos = positions[index];
-                        drawCroppedImageForPrint(ctx, img, pos.x, pos.y, pos.width, pos.height, selectedShape);
-
-                        loadedCount++;
-                        if (loadedCount === imagesToProcess) {
-                            drawStickersAndLogosForPrint(ctx, printCanvas);
-                            resolve(printCanvas);
-                        }
-                    };
-                    img.src = imageData;
-                });
-            }
-
-            function drawCroppedImageForPrint(ctx, img, x, y, targetWidth, targetHeight, shape) {
-                const imgAspect = img.width / img.height;
-                const targetAspect = targetWidth / targetHeight;
-
-                let sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight;
-
-                if (imgAspect > targetAspect) {
-                    sHeight = img.height;
-                    sWidth = sHeight * targetAspect;
-                    sx = (img.width - sWidth) / 2;
-                    sy = 0;
-                    dx = x;
-                    dy = y;
-                    dWidth = targetWidth;
-                    dHeight = targetHeight;
-                } else {
-                    sWidth = img.width;
-                    sHeight = sWidth / targetAspect;
-                    sx = 0;
-                    sy = (img.height - sHeight) / 2;
-                    dx = x;
-                    dy = y;
-                    dWidth = targetWidth;
-                    dHeight = targetHeight;
-                }
-
-                drawPhotoWithShapeForPrint(ctx, img, dx, dy, dWidth, dHeight, shape, sx, sy, sWidth, sHeight);
-            }
-
-            function drawPhotoWithShapeForPrint(ctx, img, x, y, width, height, shape, sx, sy, sWidth, sHeight) {
-                ctx.save();
-
-                if (shape === 'circle') {
-                    const centerX = x + width / 2;
-                    const centerY = y + height / 2;
-                    const radius = Math.min(width, height) / 2;
-                    ctx.beginPath();
-                    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-                    ctx.clip();
-                } else if (shape === 'rounded') {
-                    roundedRectForPrint(ctx, x, y, width, height, 20);
-                    ctx.clip();
-                } else if (shape === 'heart') {
-                    heartShapeForPrint(ctx, x + width / 2, y + height / 2, Math.min(width, height) / 2);
-                    ctx.clip();
-                } else {
-                    ctx.beginPath();
-                    ctx.rect(x, y, width, height);
-                    ctx.clip();
-                }
-
-                ctx.drawImage(img, sx, sy, sWidth, sHeight, x, y, width, height);
-                ctx.restore();
-            }
-
-            function roundedRectForPrint(ctx, x, y, width, height, radius) {
-                ctx.beginPath();
-                ctx.moveTo(x + radius, y);
-                ctx.lineTo(x + width - radius, y);
-                ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-                ctx.lineTo(x + width, y + height - radius);
-                ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-                ctx.lineTo(x + radius, y + height);
-                ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-                ctx.lineTo(x, y + radius);
-                ctx.quadraticCurveTo(x, y, x + radius, y);
-                ctx.closePath();
-            }
-
-            function heartShapeForPrint(ctx, centerX, centerY, size) {
-                ctx.beginPath();
-                const x = centerX;
-                const y = centerY;
-                const width = size * 2;
-                const height = size * 2;
-
-                ctx.moveTo(x, y - height / 4);
-                ctx.bezierCurveTo(x, y - height / 2, x - width / 2, y - height / 2, x - width / 2, y);
-                ctx.bezierCurveTo(x - width / 2, y + height / 2, x, y + height, x, y + height);
-                ctx.bezierCurveTo(x, y + height, x + width / 2, y + height / 2, x + width / 2, y);
-                ctx.bezierCurveTo(x + width / 2, y - height / 2, x, y - height / 2, x, y - height / 4);
-                ctx.closePath();
-            }
-
-            function drawStickersAndLogosForPrint(ctx, canvas) {
-                if (selectedSticker) {
-                    const stickerImg = new Image();
-                    stickerImg.onload = function () {
-                        const stickerSize = 100;
-                        const stickerX = canvas.width - stickerSize - 20;
-                        const stickerY = canvas.height - stickerSize - 120;
-                        ctx.drawImage(stickerImg, stickerX, stickerY, stickerSize, stickerSize);
-                    };
-                    stickerImg.src = selectedSticker;
-                }
-
-                const dateCheckbox = document.getElementById('dateCheckbox');
-                const dateTimeCheckbox = document.getElementById('dateTimeCheckbox');
-
-                if (dateCheckbox && dateCheckbox.checked) {
-                    const now = new Date();
-                    const dateStr = now.toLocaleDateString();
-                    ctx.fillStyle = 'white';
-                    ctx.font = '16px Arial';
-                    ctx.fillText(dateStr, 40, canvas.height - 40);
-                }
-
-                if (dateTimeCheckbox && dateTimeCheckbox.checked) {
-                    const now = new Date();
-                    const timeStr = now.toLocaleTimeString();
-                    ctx.fillStyle = 'white';
-                    ctx.font = '16px Arial';
-                    ctx.fillText(timeStr, 40, canvas.height - 20);
-                }
-            }
-        });
     }
 
     // Simple print popup function

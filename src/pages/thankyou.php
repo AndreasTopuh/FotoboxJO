@@ -1,21 +1,9 @@
 <?php
-session_start();
-
-// Reset previous sessions dan buat thank you session 1 menit
-session_unset();
-session_destroy();
-session_start();
-
-// Set session thank you dengan waktu expired 1 menit
-$_SESSION['thankyou_start_time'] = time();
-$_SESSION['thankyou_expired_time'] = time() + (1 * 60); // 1 menit
-$_SESSION['session_type'] = 'thankyou';
-
-// Hitung waktu tersisa
-$timeLeft = $_SESSION['thankyou_expired_time'] - time();
-
 // Include PWA helper
 require_once '../includes/pwa-helper.php';
+
+// Set timer untuk auto redirect (1 menit)
+$timeLeft = 60; // 1 menit dalam detik
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -33,28 +21,23 @@ require_once '../includes/pwa-helper.php';
     <div class="gradientBgCanvas"></div>
 
     <!-- Timer Session -->
-    <div id="session-timer" style="position: fixed; top: 20px; right: 20px; background: rgba(255, 68, 68, 0.9); color: white; padding: 10px 15px; border-radius: 8px; font-weight: bold; z-index: 1000;">
+    <div id="session-timer">
         <div>Waktu Tersisa: <span id="timer"><?php echo sprintf('%02d:%02d', floor($timeLeft / 60), $timeLeft % 60); ?></span></div>
     </div>
 
     <div class="container">
         <div class="glass-card">
-            <div class="thank-you-content" style="text-align: center; padding: 2rem;">
-                <h1 class="hero-title" style="font-size: 3rem; margin-bottom: 1rem; color: #007bff;">GoBooth</h1>
+            <div class="thank-you-content">
+                <h1 class="hero-title">GoFotobox</h1>
                 
-                <div class="thank-you-message" style="margin: 2rem 0;">
-                    <h2 style="font-size: 2rem; color: #28a745; margin-bottom: 1rem;">✨ Terima Kasih! ✨</h2>
-                    <p class="hero-subtitle" style="font-size: 1.2rem; line-height: 1.6;">
+                <div class="thank-you-message">
+                    <h2 class="thank-you-title">✨ Terima Kasih! ✨</h2>
+                    <p class="hero-subtitle">
                         Terima kasih sudah menggunakan GoBooth.<br>
                         Sampai jumpa lagi!
                     </p>
                 </div>
-
-                <div class="celebration-icons" style="font-size: 2rem; margin: 2rem 0;">
-                    📸 🎉 💖 🌟 📷
-                </div>
-
-                <button id="finishBtn" class="start-btn" style="font-size: 1.5rem; padding: 1rem 2rem; margin-top: 2rem;">
+                <button id="finishBtn" class="start-btn">
                     Selesai
                 </button>
             </div>
@@ -64,10 +47,9 @@ require_once '../includes/pwa-helper.php';
     <script>
         // Session timer
         let timeLeft = <?php echo $timeLeft; ?>;
-        let timerInterval;
 
         function startSessionTimer() {
-            timerInterval = setInterval(() => {
+            const timerInterval = setInterval(() => {
                 const minutes = Math.floor(timeLeft / 60);
                 const seconds = timeLeft % 60;
                 
@@ -76,7 +58,6 @@ require_once '../includes/pwa-helper.php';
                 
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
-                    // Auto redirect when time is up
                     finishSession();
                 }
                 
@@ -86,32 +67,75 @@ require_once '../includes/pwa-helper.php';
 
         function finishSession() {
             // Reset session and redirect to index
-            fetch('../api-fetch/reset_session.php', {
-                method: 'POST'
-            })
-            .then(() => {
-                window.location.href = '../../index.html';
-            })
-            .catch(() => {
-                // Fallback redirect even if reset fails
-                window.location.href = '../../index.html';
-            });
+            fetch('../api-fetch/reset_session.php', { method: 'POST' })
+                .finally(() => window.location.href = '/');
         }
 
-        // Event listener for finish button
-        document.getElementById('finishBtn').addEventListener('click', finishSession);
-
-        // Start timer when page loads
-        window.addEventListener('load', function() {
-            startSessionTimer();
-        });
+        // Event listeners
+        document.getElementById('finishBtn').onclick = finishSession;
+        window.onload = startSessionTimer;
     </script>
 
     <style>
+        /* Timer styles */
+        #session-timer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 68, 68, 0.9);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            z-index: 1000;
+        }
+
+        /* Thank you content styles */
         .thank-you-content {
+            text-align: center;
+            padding: 2rem;
             animation: fadeInUp 1s ease-out;
         }
 
+        .hero-title {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #007bff;
+        }
+
+        .thank-you-message {
+            margin: 2rem 0;
+        }
+
+        .thank-you-title {
+            font-size: 2rem;
+            color: #28a745;
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        .celebration-icons {
+            font-size: 2rem;
+            margin: 2rem 0;
+            animation: bounce 2s infinite;
+        }
+
+        .start-btn {
+            font-size: 1.5rem;
+            padding: 1rem 2rem;
+            margin-top: 2rem;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+        }
+
+        /* Animations */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -121,10 +145,6 @@ require_once '../includes/pwa-helper.php';
                 opacity: 1;
                 transform: translateY(0);
             }
-        }
-
-        .celebration-icons {
-            animation: bounce 2s infinite;
         }
 
         @keyframes bounce {
@@ -137,11 +157,6 @@ require_once '../includes/pwa-helper.php';
             60% {
                 transform: translateY(-5px);
             }
-        }
-
-        .start-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
         }
     </style>
     

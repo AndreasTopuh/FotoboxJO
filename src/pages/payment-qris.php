@@ -8,7 +8,7 @@ session_start();
 
 // Set session payment dengan waktu expired 3 menit
 $_SESSION['payment_start_time'] = time();
-$_SESSION['payment_expired_time'] = time() + (3 * 60); // 3 menit
+$_SESSION['payment_expired_time'] = time() + (3 * 60);
 $_SESSION['session_type'] = 'payment';
 
 // Include PWA helper

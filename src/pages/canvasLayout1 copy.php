@@ -22,7 +22,6 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
 
 <!DOCTYPE html>
 <html>
-
 <head>
     <?php PWAHelper::addPWAHeaders(); ?>
     <meta charset="UTF-8" />
@@ -44,8 +43,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     <meta name="twitter:description"
         content="Take instant photobooth-style photos online with Layout 1. Perfect for 2-photo strips." />
     <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png" />
-    <link rel="stylesheet" href="/styles.css?v=<?php echo time(); ?>" />
-    <link rel="stylesheet" href="/carousel.css?v=<?php echo time(); ?>" />
+    <link rel="stylesheet" href="/styles.css?v=<?php echo time();?>"/>
     <!-- Cache Control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
@@ -108,6 +106,11 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             max-width: 400px;
             margin: 0 1rem;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content h2 {
+            color: #ff4444;
+            margin-bottom: 1rem;
         }
 
         .modal-btn {
@@ -244,33 +247,10 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             width: 150px;
             max-width: 150px;
             border: 2px solid black;
+            display: block;
             border-radius: 12px;
             height: 109.76px;
             object-fit: cover;
-            cursor: pointer;
-            /* Tambahkan cursor pointer untuk indikasi klik */
-            position: relative;
-        }
-
-        .retake-btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 30px;
-            height: 30px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            z-index: 10;
-            padding: 0;
-            /* Pastikan tidak ada padding tambahan */
-        }
-
-        .retake-btn img {
-            width: 20px;
-            height: 20px;
-            display: block;
-            /* Pastikan ikon berada di sudut dengan baik */
         }
 
         button {
@@ -348,48 +328,38 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             width: 100%;
             height: 100%;
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            /* 3 columns */
-            grid-template-rows: repeat(3, 1fr);
-            /* 3 rows */
-            pointer-events: none;
-            /* Allow clicks to pass through */
-            z-index: 1;
-            /* Above video, below UI elements */
-            opacity: 50;
-            /* Semi-transparent */
+            grid-template-columns: repeat(3, 1fr); /* 3 columns */
+            grid-template-rows: repeat(3, 1fr); /* 3 rows */
+            pointer-events: none; /* Allow clicks to pass through */
+            z-index: 1; /* Above video, below UI elements */
+            opacity: 50; /* Semi-transparent */
         }
 
         .grid-overlay::before,
         .grid-overlay::after {
             content: '';
             position: absolute;
-            background: rgba(255, 255, 255, 0.3);
-            /* White lines with transparency */
+            background: rgba(255, 255, 255, 0.3); /* White lines with transparency */
         }
 
         .grid-overlay::before {
             width: 100%;
             height: 3px;
-            top: 33.33%;
-            /* Horizontal line at 1/3 */
+            top: 33.33%; /* Horizontal line at 1/3 */
         }
 
         .grid-overlay::after {
             width: 100%;
             height: 3px;
-            top: 66.67%;
-            /* Horizontal line at 2/3 */
+            top: 66.67%; /* Horizontal line at 2/3 */
         }
 
-        .grid-overlay>div {
-            border-right: 3px solid rgba(255, 255, 255, 0.3);
-            /* Vertical lines */
+        .grid-overlay > div {
+            border-right: 3px solid rgba(255, 255, 255, 0.3); /* Vertical lines */
         }
 
-        .grid-overlay>div:nth-child(3n) {
-            border-right: none;
-            /* Remove border on last column */
+        .grid-overlay > div:nth-child(3n) {
+            border-right: none; /* Remove border on last column */
         }
 
         #gridToggleBtn {
@@ -424,16 +394,6 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                 object-fit: cover;
             }
 
-            .retake-btn {
-                width: 25px;
-                height: 25px;
-            }
-
-            .retake-btn img {
-                width: 15px;
-                height: 15px;
-            }
-
             #photoContainer {
                 display: flex;
                 flex-direction: row;
@@ -459,16 +419,6 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                 object-fit: cover;
             }
 
-            .retake-btn {
-                width: 25px;
-                height: 25px;
-            }
-
-            .retake-btn img {
-                width: 15px;
-                height: 15px;
-            }
-
             #photoContainer {
                 display: flex;
                 flex-direction: row;
@@ -479,7 +429,6 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
         }
     </style>
 </head>
-
 <body>
     <!-- Timer Box -->
     <div id="timer-box" class="timer-box">
@@ -493,20 +442,6 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             <h2>Waktu Habis!</h2>
             <p id="timeout-message">Sesi foto Anda telah berakhir.</p>
             <button id="timeout-ok-btn" class="modal-btn">OK</button>
-        </div>
-    </div>
-
-    <!-- Carousel Modal -->
-    <div id="carousel-modal" class="modal" style="display: none;">
-        <div class="carousel-container">
-            <button id="carousel-close-btn" class="carousel-close-btn">✕</button>
-            <button id="carousel-prev-btn" class="carousel-nav-btn prev-btn">←</button>
-            <div class="carousel-image-container">
-                <img id="carousel-image" class="carousel-image" src="" alt="Photo Preview">
-                <button id="carousel-retake-btn" class="carousel-retake-btn"><img src="/src/assets/retake.png" alt="retake icon"></button>
-            </div>
-            <button id="carousel-next-btn" class="carousel-nav-btn next-btn">→</button>
-            <div id="carousel-indicators" class="carousel-indicators"></div>
         </div>
     </div>
 
@@ -532,15 +467,9 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                 <div id="videoContainer">
                     <video id="video" autoplay playsinline></video>
                     <div id="gridOverlay" class="grid-overlay" style="display: none;">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
+                        <div></div><div></div><div></div>
+                        <div></div><div></div><div></div>
+                        <div></div><div></div><div></div>
                     </div>
                     <div id="flash"></div>
                     <div id="fullscreenMessage">Press SPACE to Start</div>
@@ -575,10 +504,9 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             <div id="photoPreview"></div>
         </div>
     </main>
-
+    
     <script src="canvasLayout1.js"></script>
     <script src="debug-camera.js"></script>
     <?php PWAHelper::addPWAScript(); ?>
 </body>
-
 </html>

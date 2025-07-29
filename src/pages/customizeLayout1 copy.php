@@ -37,17 +37,20 @@ require_once '../includes/pwa-helper.php';
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
         }
+
         .timer-box #timer-display {
             font-size: 1.5rem;
             font-weight: 700;
             display: block;
             margin-bottom: 5px;
         }
+
         .timer-box p {
             margin: 0;
             font-size: 0.9rem;
             opacity: 0.9;
         }
+
         .modal {
             position: fixed;
             top: 0;
@@ -60,6 +63,7 @@ require_once '../includes/pwa-helper.php';
             align-items: center;
             z-index: 2000;
         }
+
         .modal-content {
             background: white;
             padding: 2rem;
@@ -69,10 +73,12 @@ require_once '../includes/pwa-helper.php';
             margin: 0 1rem;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
+
         .modal-content h2 {
             color: #ff4444;
             margin-bottom: 1rem;
         }
+
         .modal-btn {
             background: #ff4444;
             color: white;
@@ -85,9 +91,11 @@ require_once '../includes/pwa-helper.php';
             margin-top: 1rem;
             transition: background 0.3s ease;
         }
+
         .modal-btn:hover {
             background: #e03e3e;
         }
+
         .main-button {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border-radius: 12px;
@@ -102,24 +110,30 @@ require_once '../includes/pwa-helper.php';
             gap: 8px;
             min-height: 52px;
         }
+
         .main-button:hover {
             transform: translateY(-2px) scale(1.02);
             filter: brightness(1.1);
         }
+
         .main-button:active {
             transform: translateY(0) scale(0.98);
             transition: all 0.1s;
         }
+
         .email-button:hover {
             box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4) !important;
         }
+
         .continue-button:hover {
             box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4) !important;
         }
+
         .main-button.loading {
             pointer-events: none;
             opacity: 0.7;
         }
+
         .main-button.loading::after {
             content: '';
             position: absolute;
@@ -131,31 +145,41 @@ require_once '../includes/pwa-helper.php';
             animation: spin 1s linear infinite;
             margin-left: 8px;
         }
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
-   @media print {
-        body {
-            margin: 0 !important;
-            padding: 0 !important;
+
+        @media print {
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            img,
+            .print-img {
+                width: 100vw !important;
+                height: 100vh !important;
+                max-width: 100vw !important;
+                max-height: 100vh !important;
+                object-fit: contain !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                display: block;
+                margin: 0 auto !important;
+            }
+
+            @page {
+                size: 4in 6in;
+                margin: 0;
+            }
         }
-        img, .print-img {
-            width: 100vw !important;
-            height: 100vh !important;
-            max-width: 100vw !important;
-            max-height: 100vh !important;
-            object-fit: contain !important;
-            page-break-inside: avoid !important;
-            break-inside: avoid !important;
-            display: block;
-            margin: 0 auto !important;
-        }
-        @page {
-            size: 4in 6in;
-            margin: 0;
-        }
-    }
     </style>
 </head>
 
@@ -199,12 +223,12 @@ require_once '../includes/pwa-helper.php';
                             <h3 class="options-label">Photo Shape:</h3>
                             <div class="custom-buttons-container">
                                 <button id="noneFrameShape" class="buttonShapes"><img
-                                    src="assets/frame-shapes/noneShape.png" alt="None"
-                                    class="btnShapeSize"></button>
+                                        src="assets/frame-shapes/noneShape.png" alt="None"
+                                        class="btnShapeSize"></button>
                                 <button id="softFrameShape" class="buttonShapes"><img
-                                    src="assets/frame-shapes/squareShape.png" alt="Soft Edge Frame"
-                                    class="btnShapeSize"></button>
-                                 </div>
+                                        src="assets/frame-shapes/squareShape.png" alt="Soft Edge Frame"
+                                        class="btnShapeSize"></button>
+                            </div>
                         </div>
                         <h3 class="options-label">Stickers</h3>
                         <div class="custom-buttons-container stickers-container">
@@ -263,8 +287,8 @@ require_once '../includes/pwa-helper.php';
     </div>
 
     <script src="customizeLayout1.js"></script>
-    
+
     <?php PWAHelper::addPWAScript(); ?>
 </body>
 
-</html>
+</html> 
