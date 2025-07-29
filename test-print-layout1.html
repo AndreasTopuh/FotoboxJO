@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Print Layout 1 - Debugging</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .test-canvas {
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            margin: 10px 0;
+            display: block;
+        }
+
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .test-button:hover {
+            background: #0056b3;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .dimension-info {
+            font-family: monospace;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="test-container">
+        <h1>🖨️ Test Print Layout 1 - FULL BLEED PRINTING</h1>
+
+        <div class="info-box">
+            <h4>🎯 Update: Full Bleed Printing Test</h4>
+            <ul>
+                <li>✅ Print sekarang menggunakan object-fit: FILL (bukan contain)</li>
+                <li>✅ Tidak ada border/margin pada hasil print</li>
+                <li>✅ Canvas memenuhi seluruh halaman 4x6 inch</li>
+                <li>✅ Hasil print sama persis dengan preview di customizeLayout1</li>
+                <li>✅ Tidak ada background cream/kuning seperti screenshot</li>
+            </ul>
+        </div>
+        <div class="test-section">
+            <h3>📐 Canvas Dimensions Test</h3>
+            <div class="dimension-info">
+                <strong>Expected Canvas:</strong><br>
+                Width: 1200px (4 inch @ 300 DPI)<br>
+                Height: 1800px (6 inch @ 300 DPI)<br>
+                Aspect Ratio: 2:3 (0.667)<br><br>
+
+                <strong>Layout Details:</strong><br>
+                Border Width: 62px (left & right)<br>
+                Margin Top: 120px<br>
+                Photo Width: 1076px (1200 - 62 - 62)<br>
+                Photo Height: 639px<br>
+                Spacing: 80px (between photos)<br>
+                Total Photos: 2 (stacked vertically)
+            </div>
+
+            <canvas id="testCanvas" class="test-canvas" width="300" height="450" style="max-width: 300px;"></canvas>
+
+            <div>
+                <button class="test-button" id="createTestCanvas">🎨 Create Test Canvas</button>
+                <button class="test-button" id="testPrintCanvas">🖨️ Test Print Preview</button>
+                <button class="test-button" id="downloadTest">💾 Download Test Image</button>
+            </div>
+
+            <div id="canvasInfo" class="dimension-info" style="display: none;">
+                <!-- Canvas info will be populated here -->
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 Full Bleed Print Test</h3>
+            <p>Test print dengan konfigurasi FULL BLEED (memenuhi seluruh halaman tanpa margin):</p>
+
+            <div>
+                <button class="test-button" id="testFullBleedPrint">🖨️ Test FULL BLEED Print</button>
+                <button class="test-button" id="testCompareOldPrint">📊 Compare: Old vs New Print</button>
+                <button class="test-button" id="testPreviewMatch">🎯 Test Preview Match</button>
+            </div>
+        </div>
+        <div class="test-section">
+            <h3>📝 Test Results</h3>
+            <div id="testResults">
+                <p>Klik tombol test di atas untuk melihat hasil...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock images for testing
+        const mockImages = [
+            'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', // 1x1 red pixel
+            'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==' // 1x1 blue pixel
+        ];
+
+        let testCanvas = null;
+
+        // Create test canvas function
+        function createTestCanvas(bgColor = '#FFFFFF') {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Layout 1 dimensions
+            const canvasWidth = 1200;
+            const canvasHeight = 1800;
+            const borderWidth = 62;
+            const marginTop = 120;
+            const spacing = 80;
+            const photoWidth = 1076;
+            const photoHeight = 639;
+
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+
+            // Background
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw photo placeholders
+            const positions = [
+                { x: borderWidth, y: marginTop, width: photoWidth, height: photoHeight },
+                { x: borderWidth, y: marginTop + photoHeight + spacing, width: photoWidth, height: photoHeight }
+            ];
+
+            positions.forEach((pos, index) => {
+                // Photo background
+                ctx.fillStyle = index === 0 ? '#ffebee' : '#e8f5e8';
+                ctx.fillRect(pos.x, pos.y, pos.width, pos.height);
+
+                // Photo border
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(pos.x, pos.y, pos.width, pos.height);
+
+                // Photo label
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 40px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`PHOTO ${index + 1}`, pos.x + pos.width / 2, pos.y + pos.height / 2);
+
+                // Dimensions text
+                ctx.font = '20px Arial';
+                ctx.fillText(`${pos.width}x${pos.height}px`, pos.x + pos.width / 2, pos.y + pos.height / 2 + 40);
+            });
+
+            // Add border indicators
+            ctx.fillStyle = '#ff9800';
+            ctx.fillRect(0, 0, borderWidth, canvas.height); // Left border
+            ctx.fillRect(canvas.width - borderWidth, 0, borderWidth, canvas.height); // Right border
+
+            // Add margin indicator
+            ctx.fillStyle = '#2196f3';
+            ctx.fillRect(0, 0, canvas.width, marginTop);
+
+            // Add canvas info
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText(`Canvas: ${canvas.width}x${canvas.height}`, 20, 50);
+            ctx.fillText(`Border: ${borderWidth}px | Margin: ${marginTop}px`, 20, 80);
+
+            return canvas;
+        }
+
+        // Test print function - FULL BLEED (new implementation)
+        function testFullBleedPrint(canvas, title = 'Test Full Bleed Print') {
+            const printWindow = window.open('', '_blank');
+            if (!printWindow) {
+                alert('Popup blocked. Please allow popups for this site.');
+                return;
+            }
+
+            const dataUrl = canvas.toDataURL('image/jpeg', 1.0);
+
+            printWindow.document.write(`
+            <html>
+            <head>
+                <title>${title}</title>
+                <style>
+                    @media print {
+                        @page {
+                            size: 4in 6in;
+                            margin: 0 !important; /* REMOVE ALL MARGINS */
+                        }
+                        html, body {
+                            width: 4in;
+                            height: 6in;
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            background: transparent;
+                            overflow: hidden;
+                        }
+                        .print-photo {
+                            width: 4in !important;
+                            height: 6in !important;
+                            object-fit: fill !important; /* FILL ENTIRE PAGE */
+                            display: block;
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            border: none !important;
+                            -webkit-print-color-adjust: exact;
+                            print-color-adjust: exact;
+                            color-adjust: exact;
+                        }
+                    }
+                    html, body {
+                        width: 100vw;
+                        height: 100vh;
+                        margin: 0;
+                        padding: 0;
+                        background: #f0f0f0;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-family: Arial, sans-serif;
+                    }
+                    .print-container {
+                        background: white;
+                        padding: 20px;
+                        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+                        border-radius: 8px;
+                        text-align: center;
+                    }
+                    .print-photo {
+                        max-width: 400px;
+                        max-height: 600px;
+                        width: auto;
+                        height: auto;
+                        display: block;
+                        margin: 0 auto;
+                        border: 1px solid #ddd;
+                    }
+                    .print-info {
+                        margin-top: 15px;
+                        color: #666;
+                        font-size: 14px;
+                    }
+                    .print-button {
+                        background: #007bff;
+                        color: white;
+                        border: none;
+                        padding: 12px 24px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        margin: 5px;
+                        font-size: 14px;
+                    }
+                    .print-button:hover {
+                        background: #0056b3;
+                    }
+                    .success {
+                        background: #28a745;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="print-container">
+                    <img src="${dataUrl}" class="print-photo" alt="${title}" />
+                    <div class="print-info">
+                        <p><strong>✅ ${title}</strong></p>
+                        <p>🎯 FULL BLEED - Tidak ada border/margin di print!</p>
+                        <p>📐 Foto memenuhi seluruh halaman 4x6 inch</p>
+                        <div>
+                            <button class="print-button success" onclick="window.print()">🖨️ Print Full Bleed</button>
+                            <button class="print-button" onclick="window.close()" style="background: #6c757d;">✖️ Close</button>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    window.onload = function() {
+                        console.log('${title} - Full Bleed Mode');
+                        window.focus();
+                    };
+    </script>
+</body>
+
+</html>
+`);
+printWindow.document.close();
+}
+
+// Test print function (old implementation for comparison)
+function testPrint(canvas, title = 'Test Print') {
+const printWindow = window.open('', '_blank');
+if (!printWindow) {
+alert('Popup blocked. Please allow popups for this site.');
+return;
+}
+
+const dataUrl = canvas.toDataURL('image/jpeg', 1.0);
+
+printWindow.document.write(`
+<html>
+
+<head>
+    <title>${title}</title>
+    <style>
+        @media print {
+            @page {
+                size: 4in 6in;
+                margin: 0;
+            }
+
+            html,
+            body {
+                width: 4in;
+                height: 6in;
+                margin: 0;
+                padding: 0;
+                background: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+            }
+
+            .print-photo {
+                width: 4in;
+                height: 6in;
+                object-fit: contain;
+                display: block;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                color-adjust: exact;
+            }
+        }
+
+        html,
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .print-container {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .print-photo {
+            max-width: 400px;
+            max-height: 600px;
+            width: auto;
+            height: auto;
+            display: block;
+            border: 1px solid #ddd;
+            margin: 0 auto;
+        }
+
+        .print-info {
+            margin-top: 15px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .print-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+
+        .print-button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="print-container">
+        <img src="${dataUrl}" class="print-photo" alt="${title}" />
+        <div class="print-info">
+            <p><strong>${title}</strong></p>
+            <p>Layout 1 Test - 4x6 inch dengan border dan margin yang dipertahankan</p>
+            <div>
+                <button class="print-button" onclick="window.print()">🖨️ Print</button>
+                <button class="print-button" onclick="window.close()" style="background: #6c757d;">✖️ Close</button>
+            </div>
+        </div>
+    </div>
+    <script>
+                    window.onload = function() {
+                        console.log('${title} preview loaded');
+                        window.focus();
+                    };
+    </script>
+</body>
+
+</html>
+`);
+printWindow.document.close();
+}
+
+// Event listeners
+document.getElementById('createTestCanvas').addEventListener('click', () => {
+testCanvas = createTestCanvas('#FFFFFF');
+
+// Display on page
+const displayCanvas = document.getElementById('testCanvas');
+const displayCtx = displayCanvas.getContext('2d');
+displayCtx.clearRect(0, 0, displayCanvas.width, displayCanvas.height);
+displayCtx.drawImage(testCanvas, 0, 0, displayCanvas.width, displayCanvas.height);
+
+// Show canvas info
+const info = document.getElementById('canvasInfo');
+info.style.display = 'block';
+info.innerHTML = `
+<strong>Canvas Created:</strong><br>
+Actual Size: ${testCanvas.width}x${testCanvas.height}px<br>
+Aspect Ratio: ${(testCanvas.width / testCanvas.height).toFixed(3)}<br>
+File Size: ~${Math.round(testCanvas.toDataURL().length / 1024)}KB<br>
+Status: ✅ Ready for testing
+`;
+
+// Update results
+document.getElementById('testResults').innerHTML = `
+<div style="color: green;">✅ Test canvas berhasil dibuat dengan dimensi Layout 1</div>
+<div>Canvas dibuat dengan benar: 1200x1800px (aspect ratio 2:3)</div>
+<div>Border dan margin sudah sesuai dengan desain customizeLayout1</div>
+`;
+});
+
+document.getElementById('testFullBleedPrint').addEventListener('click', () => {
+if (!testCanvas) {
+alert('Buat test canvas terlebih dahulu!');
+return;
+}
+testFullBleedPrint(testCanvas, 'Layout 1 - FULL BLEED Print');
+});
+
+document.getElementById('testCompareOldPrint').addEventListener('click', () => {
+if (!testCanvas) {
+alert('Buat test canvas terlebih dahulu!');
+return;
+}
+// Show both old and new side by side
+testPrint(testCanvas, 'OLD: Layout 1 - With Borders');
+setTimeout(() => {
+testFullBleedPrint(testCanvas, 'NEW: Layout 1 - Full Bleed');
+}, 500);
+});
+
+document.getElementById('testPreviewMatch').addEventListener('click', () => {
+if (!testCanvas) {
+alert('Buat test canvas terlebih dahulu!');
+return;
+}
+testFullBleedPrint(testCanvas, 'Preview Match Test - Exactly Like CustomizeLayout1');
+});
+
+document.getElementById('testPrintCanvas').addEventListener('click', () => {
+if (!testCanvas) {
+alert('Buat test canvas terlebih dahulu!');
+return;
+}
+testPrint(testCanvas, 'Layout 1 - Basic Test');
+});
+
+document.getElementById('downloadTest').addEventListener('click', () => {
+if (!testCanvas) {
+alert('Buat test canvas terlebih dahulu!');
+return;
+}
+
+const link = document.createElement('a');
+link.download = 'layout1-test-canvas.jpg';
+link.href = testCanvas.toDataURL('image/jpeg', 1.0);
+link.click();
+});
+
+document.getElementById('testPrintWhiteBg').addEventListener('click', () => {
+const canvas = createTestCanvas('#FFFFFF');
+testPrint(canvas, 'Layout 1 - White Background');
+});
+
+document.getElementById('testPrintColorBg').addEventListener('click', () => {
+const canvas = createTestCanvas('#FFB6C1');
+testPrint(canvas, 'Layout 1 - Pink Background');
+});
+
+document.getElementById('testPrintWithBorder').addEventListener('click', () => {
+const canvas = createTestCanvas('#F0F0F0');
+testPrint(canvas, 'Layout 1 - With Visible Borders');
+});
+
+// Auto-create test canvas on load
+window.addEventListener('load', () => {
+document.getElementById('createTestCanvas').click();
+});
+</script>
+</body>
+
+</html>

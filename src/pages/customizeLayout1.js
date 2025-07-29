@@ -150,6 +150,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // Frame color controls
         initializeFrameControls();
 
+        // Background frame controls
+        initializeBackgroundFrameControls();
+
         // Shape controls
         initializeShapeControls();
 
@@ -218,6 +221,85 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Background frame controls
+    function initializeBackgroundFrameControls() {
+        const backgroundFrameButtons = [
+            { id: 'matcha', src: '/src/assets/frame-backgrounds/matcha.jpg' },
+            // Uncomment these as you upload the corresponding image files:
+            // { id: 'pinkPlaid', src: '/src/assets/frame-backgrounds/pink-plaid.jpg' },
+            // { id: 'bluePlaid', src: '/src/assets/frame-backgrounds/blue-plaid.jpg' },
+            // { id: 'black-cq', src: '/src/assets/frame-backgrounds/black-couqutte.jpg' },
+            // { id: 'white-cq', src: '/src/assets/frame-backgrounds/white-couquette.jpg' },
+            // { id: 'pinkLeather', src: '/src/assets/frame-backgrounds/pink-diamond-leather.jpg' },
+            // { id: 'brownKnittedFrame', src: '/src/assets/frame-backgrounds/brown-knitted-cloth.jpg' },
+            // { id: 'hotPinkKnittedFrame', src: '/src/assets/frame-backgrounds/hot-pink-knitted.jpg' },
+            // { id: 'redKnittedFrame', src: '/src/assets/frame-backgrounds/red-knitted.jpg' },
+            // { id: 'pinkKnittedFrame', src: '/src/assets/frame-backgrounds/pink-knitted.jpg' },
+            // { id: 'redStripesFrame', src: '/src/assets/frame-backgrounds/red-stripes.jpg' },
+            // { id: 'greenStripesFrame', src: '/src/assets/frame-backgrounds/green-stripes.jpg' },
+            // { id: 'blueStripesFrame', src: '/src/assets/frame-backgrounds/blue-stripes.jpg' },
+            // { id: 'vsPinkFrame', src: '/src/assets/frame-backgrounds/vs-pink.jpg' },
+            // { id: 'vsYellowFrame', src: '/src/assets/frame-backgrounds/vs-yellow.jpg' },
+            // { id: 'blueYellowSquares', src: '/src/assets/frame-backgrounds/blue-yellow-squares.jpg' },
+            // { id: 'blueWhiteSquares', src: '/src/assets/frame-backgrounds/blue-white-squares.jpg' },
+            // { id: 'brownLeopard', src: '/src/assets/frame-backgrounds/brown-leopard.jpg' },
+            // { id: 'cowPrint', src: '/src/assets/frame-backgrounds/cow-print.jpg' },
+            // { id: 'redLeather', src: '/src/assets/frame-backgrounds/red-leather.jpg' },
+            // { id: 'pinkGumamela', src: '/src/assets/frame-backgrounds/pink-gumamela.jpg' },
+            // { id: 'pinkLiliesFrame', src: '/src/assets/frame-backgrounds/pink-lilies.jpg' },
+            // { id: 'whiteKnitted', src: '/src/assets/frame-backgrounds/white-knitted-cloth.jpg' },
+            // { id: 'ribbonSweaterFrame', src: '/src/assets/frame-backgrounds/ribbon-sweater.jpg' },
+            // { id: 'ribbonDenim', src: '/src/assets/frame-backgrounds/ribbon-denim.jpg' },
+            // { id: 'blackPinkRibbon', src: '/src/assets/frame-backgrounds/black-pink-ribbon.jpg' },
+            // { id: 'fourLockers', src: '/src/assets/frame-backgrounds/4-lockers.jpg' },
+            // { id: 'gridPaperFrame', src: '/src/assets/frame-backgrounds/grid-paper.jpg' },
+            // { id: 'crumpledPaper', src: '/src/assets/frame-backgrounds/crumpled-paper.jpg' },
+            // { id: 'roughTextureFrame', src: '/src/assets/frame-backgrounds/rough-texture.jpg' },
+            // { id: 'blueBackdrop', src: '/src/assets/frame-backgrounds/blue-backdrop.jpg' },
+            // { id: 'greenHills', src: '/src/assets/frame-backgrounds/green-hills.jpg' },
+            // { id: 'sandShells', src: '/src/assets/frame-backgrounds/sand-shells.jpg' },
+            // { id: 'waterBeach', src: '/src/assets/frame-backgrounds/water.jpg' },
+            // { id: 'cocoTrees', src: '/src/assets/frame-backgrounds/coco-trees.jpg' },
+            // { id: 'stardustFrame', src: '/src/assets/frame-backgrounds/stardust.jpg' },
+            // { id: 'roseCardFrame', src: '/src/assets/frame-backgrounds/rose-card.jpg' },
+            // { id: 'princessVintageFrame', src: '/src/assets/frame-backgrounds/princess-vintage.jpg' },
+            // { id: 'redRosesPaintFrame', src: '/src/assets/frame-backgrounds/red-roses-paint.jpg' },
+            // { id: 'grayTrashFrame', src: '/src/assets/frame-backgrounds/gray-trash.jpg' },
+            // { id: 'blackTrashFrame', src: '/src/assets/frame-backgrounds/black-trash.jpg' },
+            // { id: 'whiteTrashFrame', src: '/src/assets/frame-backgrounds/white-trash.jpg' },
+            // { id: 'partyDrapeFrame', src: '/src/assets/frame-backgrounds/party-drape.jpg' },
+            // { id: 'partyDotsFrame', src: '/src/assets/frame-backgrounds/party-dots.jpg' },
+            // { id: 'blingDenimFrame', src: '/src/assets/frame-backgrounds/bling-denim.jpg' }
+        ];
+
+        console.log('🖼️ Initializing background frame controls...');
+        console.log('🔍 Available buttons:', backgroundFrameButtons.map(btn => btn.id));
+        
+        backgroundFrameButtons.forEach(btn => {
+            const element = document.getElementById(btn.id);
+            if (element) {
+                console.log(`✅ Found background frame button: ${btn.id}`);
+                element.addEventListener('click', () => {
+                    console.log(`🎨 CLICKED BACKGROUND FRAME: ${btn.id}`);
+                    console.log(`🎨 Setting background image: ${btn.src}`);
+                    
+                    // Set background variables
+                    backgroundType = 'image';
+                    backgroundImage = btn.src;
+                    backgroundColor = null;
+                    
+                    console.log(`📝 Updated variables: backgroundType=${backgroundType}, backgroundImage=${backgroundImage}`);
+                    
+                    // Redraw canvas
+                    redrawCanvas();
+                });
+            } else {
+                console.warn(`⚠️ Background frame button not found: ${btn.id}`);
+            }
+        });
+        console.log('✅ Background frame controls initialized');
+    }
+
     // Shape controls
     function initializeShapeControls() {
         const shapeButtons = [
@@ -248,99 +330,12 @@ document.addEventListener('DOMContentLoaded', function () {
         if (printBtn) {
             printBtn.addEventListener('click', () => {
                 if (finalCanvas) {
-                    printBtn.classList.add('loading');
-                    printBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
-
-                    setTimeout(() => {
-                        // Create a new window for printing
-                        const printWindow = window.open('', '_blank');
-                        if (!printWindow) {
-                            alert('Popup blocked. Please allow popups for this site.');
-                            printBtn.classList.remove('loading');
-                            printBtn.innerHTML = '<i class="fas fa-print"></i> Print';
-                            return;
-                        }
-
-                        // Convert canvas to data URL
-                        const dataUrl = finalCanvas.toDataURL('image/jpeg', 1.0);
-
-                        // HTML for printing with correct aspect ratio (2:3 like canvas)
-                        printWindow.document.write(`
-                        <html>
-                        <head>
-                            <title>Print Photo</title>
-                            <style>
-                                @media print {
-                                    @page {
-                                        size: 10cm 15cm; /* 4x6 inch */
-                                        margin: 0;
-                                    }
-                                    html {
-                                        width: 10cm;
-                                        height: 15cm;
-                                        margin: 0;
-                                        padding: 0;
-                                        background: #fff;
-                                        display: flex;
-                                        align-items: center;
-                                        justify-content: center;
-                                    }
-                                    body {
-                                        width: 10cm;
-                                        height: 15cm;
-                                        margin: 0;
-                                        padding: 0;
-                                        background: #fff;
-                                        display: flex;
-                                        align-items: center;
-                                        justify-content: center;
-                                    }
-                    
-                                    .print-photo {
-                                        width: 10cm;
-                                        height: 15cm;
-                                        object-fit: fill;
-                                        display: block;
-                                    }
-                                }
-                                html, body {
-                                    width: 10cm;
-                                    height: 15cm;
-                                    margin: 0;
-                                    padding: 0;
-                                    background: #fff;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                }
-                                .print-photo {
-                                    width: 10cm;
-                                    height: 15cm;
-                                    object-fit: fill;
-                                    display: block;
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            <img src="${dataUrl}" class="print-photo" />
-                            <script>
-                                window.onload = function() {
-                                    setTimeout(function() {
-                                        window.print();
-                                        window.close();
-                                    }, 300);
-                                };
-                            </script>
-                        </body>
-                        </html>
-                    `);
-                        printWindow.document.close();
-
-                        printBtn.classList.remove('loading');
-                        printBtn.innerHTML = '<i class="fas fa-print"></i> Print';
-                    }, 500);
+                    // Convert finalCanvas to data URL
+                    const dataUrl = finalCanvas.toDataURL('image/jpeg', 1.0);
+                    showSimplePrintPopup(dataUrl);
                 } else {
                     console.error('No canvas available for printing');
+                    alert('Tidak ada gambar untuk di-print');
                 }
             });
         }
@@ -384,17 +379,39 @@ document.addEventListener('DOMContentLoaded', function () {
         if (backgroundType === 'color') {
             ctx.fillStyle = backgroundColor;
             ctx.fillRect(0, 0, stackedCanvas.width, stackedCanvas.height);
+            drawPhotos();
         } else if (backgroundImage) {
+            console.log('🎨 Loading background image:', backgroundImage);
             const bgImg = new Image();
             bgImg.onload = function () {
+                console.log('✅ Background image loaded successfully');
                 ctx.drawImage(bgImg, 0, 0, stackedCanvas.width, stackedCanvas.height);
                 drawPhotos();
+                
+                // Update canvas preview AFTER background image is drawn
+                updateCanvasPreview(stackedCanvas);
+            };
+            bgImg.onerror = function () {
+                console.error('❌ Failed to load background image:', backgroundImage);
+                // Fallback to white background if image fails to load
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(0, 0, stackedCanvas.width, stackedCanvas.height);
+                drawPhotos();
+                
+                // Update canvas preview even on error
+                updateCanvasPreview(stackedCanvas);
             };
             bgImg.src = backgroundImage;
-            return;
+            return; // Don't continue to the preview update below
+        } else {
+            // Default white background
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, stackedCanvas.width, stackedCanvas.height);
+            drawPhotos();
         }
-
-        drawPhotos();
+        
+        // Update canvas preview for color backgrounds and default
+        updateCanvasPreview(stackedCanvas);
 
         function drawPhotos() {
             if (storedImages.length < expectedPhotos) {
@@ -424,7 +441,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 };
                 img.src = imageData;
-            });
+                });
         }
 
         function drawCroppedImage(ctx, img, x, y, targetWidth, targetHeight, shape) {
@@ -517,7 +534,13 @@ document.addEventListener('DOMContentLoaded', function () {
             ctx.bezierCurveTo(x + width / 2, y - height / 2, x, y - height / 2, x, y - height / 4);
             ctx.closePath();
         }
-
+        
+        // Update canvas preview for color backgrounds and default
+        updateCanvasPreview(stackedCanvas);
+    }
+    
+    // Helper function to update canvas preview
+    function updateCanvasPreview(stackedCanvas) {
         // Styling pratinjau kanvas
         if (photoCustomPreview) {
             photoCustomPreview.innerHTML = '';
@@ -574,5 +597,314 @@ document.addEventListener('DOMContentLoaded', function () {
             ctx.font = '16px Arial';
             ctx.fillText(timeStr, 40, canvas.height - 20);
         }
+    }
+
+    // Create high-resolution canvas for printing
+    function createPrintCanvas() {
+        return new Promise((resolve) => {
+            if (!storedImages || storedImages.length === 0) {
+                resolve(null);
+                return;
+            }
+
+            const printCanvas = document.createElement('canvas');
+            const ctx = printCanvas.getContext('2d');
+
+            // High resolution for print quality (300 DPI equivalent)
+            // 4x6 inch at 300 DPI = 1200x1800 pixels (same as our canvas)
+            const canvasWidth = 1200;
+            const canvasHeight = 1800;
+            const borderWidth = 62;
+            const marginTop = 120;
+            const spacing = 80;
+            const photoWidth = 1076;
+            const photoHeight = 639;
+            const expectedPhotos = 2;
+
+            printCanvas.width = canvasWidth;
+            printCanvas.height = canvasHeight;
+
+            // Clear canvas
+            ctx.clearRect(0, 0, printCanvas.width, printCanvas.height);
+
+            // Set background
+            if (backgroundType === 'color') {
+                ctx.fillStyle = backgroundColor;
+                ctx.fillRect(0, 0, printCanvas.width, printCanvas.height);
+            } else if (backgroundImage) {
+                const bgImg = new Image();
+                bgImg.onload = function () {
+                    ctx.drawImage(bgImg, 0, 0, printCanvas.width, printCanvas.height);
+                    drawPhotosForPrint();
+                };
+                bgImg.src = backgroundImage;
+                return;
+            }
+
+            drawPhotosForPrint();
+
+            function drawPhotosForPrint() {
+                let loadedCount = 0;
+                const imagesToProcess = Math.min(storedImages.length, expectedPhotos);
+
+                if (imagesToProcess === 0) {
+                    resolve(printCanvas);
+                    return;
+                }
+
+                storedImages.slice(0, imagesToProcess).forEach((imageData, index) => {
+                    const img = new Image();
+                    img.onload = function () {
+                        const positions = [
+                            { x: borderWidth, y: marginTop, width: photoWidth, height: photoHeight },
+                            { x: borderWidth, y: marginTop + photoHeight + spacing, width: photoWidth, height: photoHeight }
+                        ];
+
+                        const pos = positions[index];
+                        drawCroppedImageForPrint(ctx, img, pos.x, pos.y, pos.width, pos.height, selectedShape);
+
+                        loadedCount++;
+                        if (loadedCount === imagesToProcess) {
+                            drawStickersAndLogosForPrint(ctx, printCanvas);
+                            resolve(printCanvas);
+                        }
+                    };
+                    img.src = imageData;
+                });
+            }
+
+            function drawCroppedImageForPrint(ctx, img, x, y, targetWidth, targetHeight, shape) {
+                const imgAspect = img.width / img.height;
+                const targetAspect = targetWidth / targetHeight;
+
+                let sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight;
+
+                if (imgAspect > targetAspect) {
+                    sHeight = img.height;
+                    sWidth = sHeight * targetAspect;
+                    sx = (img.width - sWidth) / 2;
+                    sy = 0;
+                    dx = x;
+                    dy = y;
+                    dWidth = targetWidth;
+                    dHeight = targetHeight;
+                } else {
+                    sWidth = img.width;
+                    sHeight = sWidth / targetAspect;
+                    sx = 0;
+                    sy = (img.height - sHeight) / 2;
+                    dx = x;
+                    dy = y;
+                    dWidth = targetWidth;
+                    dHeight = targetHeight;
+                }
+
+                drawPhotoWithShapeForPrint(ctx, img, dx, dy, dWidth, dHeight, shape, sx, sy, sWidth, sHeight);
+            }
+
+            function drawPhotoWithShapeForPrint(ctx, img, x, y, width, height, shape, sx, sy, sWidth, sHeight) {
+                ctx.save();
+
+                if (shape === 'circle') {
+                    const centerX = x + width / 2;
+                    const centerY = y + height / 2;
+                    const radius = Math.min(width, height) / 2;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                    ctx.clip();
+                } else if (shape === 'rounded') {
+                    roundedRectForPrint(ctx, x, y, width, height, 20);
+                    ctx.clip();
+                } else if (shape === 'heart') {
+                    heartShapeForPrint(ctx, x + width / 2, y + height / 2, Math.min(width, height) / 2);
+                    ctx.clip();
+                } else {
+                    ctx.beginPath();
+                    ctx.rect(x, y, width, height);
+                    ctx.clip();
+                }
+
+                ctx.drawImage(img, sx, sy, sWidth, sHeight, x, y, width, height);
+                ctx.restore();
+            }
+
+            function roundedRectForPrint(ctx, x, y, width, height, radius) {
+                ctx.beginPath();
+                ctx.moveTo(x + radius, y);
+                ctx.lineTo(x + width - radius, y);
+                ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+                ctx.lineTo(x + width, y + height - radius);
+                ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+                ctx.lineTo(x + radius, y + height);
+                ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+                ctx.lineTo(x, y + radius);
+                ctx.quadraticCurveTo(x, y, x + radius, y);
+                ctx.closePath();
+            }
+
+            function heartShapeForPrint(ctx, centerX, centerY, size) {
+                ctx.beginPath();
+                const x = centerX;
+                const y = centerY;
+                const width = size * 2;
+                const height = size * 2;
+
+                ctx.moveTo(x, y - height / 4);
+                ctx.bezierCurveTo(x, y - height / 2, x - width / 2, y - height / 2, x - width / 2, y);
+                ctx.bezierCurveTo(x - width / 2, y + height / 2, x, y + height, x, y + height);
+                ctx.bezierCurveTo(x, y + height, x + width / 2, y + height / 2, x + width / 2, y);
+                ctx.bezierCurveTo(x + width / 2, y - height / 2, x, y - height / 2, x, y - height / 4);
+                ctx.closePath();
+            }
+
+            function drawStickersAndLogosForPrint(ctx, canvas) {
+                if (selectedSticker) {
+                    const stickerImg = new Image();
+                    stickerImg.onload = function () {
+                        const stickerSize = 100;
+                        const stickerX = canvas.width - stickerSize - 20;
+                        const stickerY = canvas.height - stickerSize - 120;
+                        ctx.drawImage(stickerImg, stickerX, stickerY, stickerSize, stickerSize);
+                    };
+                    stickerImg.src = selectedSticker;
+                }
+
+                const dateCheckbox = document.getElementById('dateCheckbox');
+                const dateTimeCheckbox = document.getElementById('dateTimeCheckbox');
+
+                if (dateCheckbox && dateCheckbox.checked) {
+                    const now = new Date();
+                    const dateStr = now.toLocaleDateString();
+                    ctx.fillStyle = 'white';
+                    ctx.font = '16px Arial';
+                    ctx.fillText(dateStr, 40, canvas.height - 40);
+                }
+
+                if (dateTimeCheckbox && dateTimeCheckbox.checked) {
+                    const now = new Date();
+                    const timeStr = now.toLocaleTimeString();
+                    ctx.fillStyle = 'white';
+                    ctx.font = '16px Arial';
+                    ctx.fillText(timeStr, 40, canvas.height - 20);
+                }
+            }
+        });
+    }
+
+    // Simple print popup function
+    function showSimplePrintPopup(imageDataUrl) {
+        // Remove existing popup if any
+        const existingPopup = document.getElementById('simplePrintPopup');
+        if (existingPopup) {
+            existingPopup.remove();
+        }
+
+        // Create simple popup overlay
+        const popup = document.createElement('div');
+        popup.id = 'simplePrintPopup';
+        popup.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        `;
+
+        // Create popup box
+        const popupBox = document.createElement('div');
+        popupBox.style.cssText = `
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 450px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        `;
+
+        popupBox.innerHTML = `
+            <h3 style="margin: 0 0 15px 0; color: #333;">Print Preview</h3>
+            <img src="${imageDataUrl}" style="max-width: 350px; height: auto; border: 2px solid #ddd; border-radius: 5px; margin-bottom: 20px;" alt="Print Preview" />
+            <div>
+                <button id="directPrintBtn" style="
+                    background: #28a745;
+                    color: white;
+                    border: none;
+                    padding: 12px 25px;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-size: 16px;
+                    margin-right: 10px;
+                    font-weight: bold;
+                ">🖨️ Print</button>
+                <button id="closePopupBtn" style="
+                    background: #6c757d;
+                    color: white;
+                    border: none;
+                    padding: 12px 25px;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-size: 16px;
+                    font-weight: bold;
+                ">✖️ Close</button>
+            </div>
+        `;
+
+        popup.appendChild(popupBox);
+        document.body.appendChild(popup);
+
+        // Add event listeners
+        document.getElementById('directPrintBtn').addEventListener('click', () => {
+            // Create temporary print element directly with window.print()
+            const originalContents = document.body.innerHTML;
+
+            // Create print content
+            const printContent = `
+                <div style="margin: 0; padding: 0; text-align: center;">
+                    <img src="${imageDataUrl}" style="width: 100%; height: auto; max-width: 100%;" alt="Print Image" />
+                </div>
+                <style>
+                    @media print {
+                        body { margin: 0; padding: 0; }
+                        img { width: 100%; height: auto; page-break-inside: avoid; }
+                    }
+                </style>
+            `;
+
+            // Replace body content temporarily
+            document.body.innerHTML = printContent;
+
+            // Print
+            window.print();
+
+            // Restore original content
+            document.body.innerHTML = originalContents;
+
+            // Re-attach event listeners by triggering DOMContentLoaded
+            location.reload();
+        });
+
+        document.getElementById('closePopupBtn').addEventListener('click', () => {
+            popup.remove();
+        });
+
+        // Close popup when clicking outside
+        popup.addEventListener('click', (e) => {
+            if (e.target === popup) {
+                popup.remove();
+            }
+        });
+
+        // Close popup with Escape key
+        document.addEventListener('keydown', function escapeHandler(e) {
+            if (e.key === 'Escape') {
+                popup.remove();
+                document.removeEventListener('keydown', escapeHandler);
+            }
+        });
     }
 });

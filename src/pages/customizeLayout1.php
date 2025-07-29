@@ -108,23 +108,6 @@ require_once '../includes/pwa-helper.php';
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        @media print {
-            .timer-box,
-            .customization-container {
-                display: none !important;
-            }
-            
-            canvas {
-                width: 10cm !important;
-                height: 15cm !important;
-                max-width: none !important;
-                max-height: none !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-                color-adjust: exact;
-            }
-        }
     </style>
 </head>
 
@@ -167,7 +150,7 @@ require_once '../includes/pwa-helper.php';
                             <button id="whiteBtnFrame" class="buttonFrames"></button>
                             <button id="blackBtnFrame" class="buttonFrames"></button>
                             <!-- FRAMES -->
-                            <button id="frameBG1" class="buttonBgFrames"></button>
+                            <button id="matcha" class="buttonBgFrames"></button>
                             <button id="pinkPlaid" class="buttonBgFrames"></button>
                             <button id="bluePlaid" class="buttonBgFrames"></button>
                             <button id="black-cq" class="buttonBgFrames"></button>

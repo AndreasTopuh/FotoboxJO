@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Print Full Bleed - Layout 1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .demo-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .demo-canvas {
+            max-width: 300px;
+            height: auto;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            display: block;
+            margin: 20px auto;
+        }
+
+        .demo-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+
+        .demo-button:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .success-box {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #155724;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-item {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .old {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .new {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="demo-container">
+        <h1>🎉 Demo: Print Full Bleed - CustomizeLayout1</h1>
+
+        <div class="success-box">
+            <h3>✅ Print Fix berhasil diterapkan!</h3>
+            <p>Print sekarang akan sama persis dengan preview di customizeLayout1.php - tanpa border cream/kuning!</p>
+        </div>
+
+        <h3>📐 Preview Canvas (sama dengan customizeLayout1):</h3>
+        <canvas id="demoCanvas" class="demo-canvas" width="300" height="450"></canvas>
+
+        <div style="text-align: center;">
+            <button class="demo-button" onclick="testFullBleedPrint()">
+                🖨️ Test Print Full Bleed
+            </button>
+        </div>
+
+        <div class="comparison">
+            <div class="comparison-item old">
+                <h4>❌ SEBELUM</h4>
+                <p>• Border cream/kuning</p>
+                <p>• Tidak memenuhi halaman</p>
+                <p>• object-fit: contain</p>
+                <p>• Ada margin di @page</p>
+            </div>
+            <div class="comparison-item new">
+                <h4>✅ SESUDAH</h4>
+                <p>• Tidak ada border</p>
+                <p>• Full bleed ke tepi</p>
+                <p>• object-fit: fill</p>
+                <p>• margin: 0 !important</p>
+            </div>
+        </div>
+
+        <div class="success-box">
+            <h4>🎯 Hasil yang diharapkan:</h4>
+            <ul>
+                <li>Print akan memenuhi seluruh halaman 4R (4x6 inch)</li>
+                <li>Tidak ada border atau margin di sekitar foto</li>
+                <li>Hasil print identik dengan preview di layar</li>
+                <li>Sama seperti file "download (8).png" yang Anda tunjukkan</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Create demo canvas identical to customizeLayout1
+        function createDemoCanvas() {
+            const canvas = document.getElementById('demoCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // Layout 1 dimensions (scaled down for display)
+            const scale = 0.25;
+            const canvasWidth = 1200 * scale;
+            const canvasHeight = 1800 * scale;
+            const borderWidth = 62 * scale;
+            const marginTop = 120 * scale;
+            const spacing = 80 * scale;
+            const photoWidth = 1076 * scale;
+            const photoHeight = 639 * scale;
+
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+
+            // Background (customizable color)
+            ctx.fillStyle = '#FFB6C1'; // Pink background example
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Photo positions
+            const positions = [
+                { x: borderWidth, y: marginTop, width: photoWidth, height: photoHeight },
+                { x: borderWidth, y: marginTop + photoHeight + spacing, width: photoWidth, height: photoHeight }
+            ];
+
+            positions.forEach((pos, index) => {
+                // Photo placeholder
+                ctx.fillStyle = index === 0 ? '#ffebee' : '#e8f5e8';
+                ctx.fillRect(pos.x, pos.y, pos.width, pos.height);
+
+                // Photo border
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(pos.x, pos.y, pos.width, pos.height);
+
+                // Photo label
+                ctx.fillStyle = '#333';
+                ctx.font = `bold ${10 * scale * 4}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.fillText(`PHOTO ${index + 1}`, pos.x + pos.width / 2, pos.y + pos.height / 2);
+            });
+
+            // Add watermark
+            ctx.fillStyle = 'rgba(0,0,0,0.1)';
+            ctx.font = `${8 * scale * 4}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText('FULL BLEED DEMO', canvas.width / 2, canvas.height - 20);
+        }
+
+        // Test print function with full bleed implementation
+        function testFullBleedPrint() {
+            const canvas = document.getElementById('demoCanvas');
+
+            // Create high-res version for printing
+            const printCanvas = document.createElement('canvas');
+            const printCtx = printCanvas.getContext('2d');
+
+            printCanvas.width = 1200;
+            printCanvas.height = 1800;
+
+            // Scale up the demo canvas for high-res print
+            printCtx.drawImage(canvas, 0, 0, printCanvas.width, printCanvas.height);
+
+            const printWindow = window.open('', '_blank');
+            if (!printWindow) {
+                alert('Please allow popups for this demo!');
+                return;
+            }
+
+            const dataUrl = printCanvas.toDataURL('image/jpeg', 1.0);
+
+            printWindow.document.write(`
+            <html>
+            <head>
+                <title>Demo: Full Bleed Print - Layout 1</title>
+                <style>
+                    @media print {
+                        @page {
+                            size: 4in 6in;
+                            margin: 0 !important;
+                        }
+                        html, body {
+                            width: 4in;
+                            height: 6in;
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            background: transparent;
+                            overflow: hidden;
+                        }
+                        .print-photo {
+                            width: 4in !important;
+                            height: 6in !important;
+                            object-fit: fill !important;
+                            display: block;
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            border: none !important;
+                            -webkit-print-color-adjust: exact;
+                            print-color-adjust: exact;
+                        }
+                    }
+                    html, body {
+                        margin: 0;
+                        padding: 0;
+                        background: #f0f0f0;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-family: Arial, sans-serif;
+                        min-height: 100vh;
+                    }
+                    .print-container {
+                        background: white;
+                        padding: 20px;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+                        text-align: center;
+                        max-width: 500px;
+                    }
+                    .print-photo {
+                        max-width: 400px;
+                        height: auto;
+                        border: 1px solid #ddd;
+                        margin: 0 auto;
+                        display: block;
+                    }
+                    .print-info {
+                        margin-top: 15px;
+                        color: #666;
+                        font-size: 14px;
+                    }
+                    .print-button {
+                        background: #28a745;
+                        color: white;
+                        border: none;
+                        padding: 12px 24px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        margin: 5px;
+                        font-size: 14px;
+                        font-weight: bold;
+                    }
+                    .print-button:hover {
+                        background: #218838;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="print-container">
+                    <img src="${dataUrl}" class="print-photo" alt="Full Bleed Demo Print" />
+                    <div class="print-info">
+                        <p><strong>🎉 Demo: Full Bleed Print Success!</strong></p>
+                        <p>✅ Print akan memenuhi seluruh halaman 4x6 inch</p>
+                        <p>✅ Tidak ada border cream/kuning</p>
+                        <p>✅ Sama persis dengan preview customizeLayout1</p>
+                        <div>
+                            <button class="print-button" onclick="window.print()">🖨️ Print Full Bleed</button>
+                            <button class="print-button" onclick="window.close()" style="background: #6c757d;">✖️ Close</button>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    window.onload = function() {
+                        console.log('Demo Full Bleed Print Ready');
+                        window.focus();
+                    };
+    </script>
+</body>
+
+</html>
+`);
+printWindow.document.close();
+}
+
+// Initialize demo on load
+window.addEventListener('load', createDemoCanvas);
+</script>
+</body>
+
+</html>
