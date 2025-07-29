@@ -108,6 +108,27 @@ require_once '../includes/pwa-helper.php';
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        @media print {
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            img, .print-img {
+                width: 100vw !important;
+                height: 100vh !important;
+                max-width: 100vw !important;
+                max-height: 100vh !important;
+                object-fit: contain !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                display: block;
+                margin: 0 auto !important;
+            }
+            @page {
+                size: 4in 6in;
+                margin: 0;
+            }
+        }
     </style>
 </head>
 
