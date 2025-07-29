@@ -139,7 +139,6 @@ require_once '../includes/pwa-helper.php';
                     <div class="custom-options-container">
                         <h3 class="options-label">Frame Color</h3>
                         <div class="custom-buttons-container">
-                            <div id="colorPickerBtn" class="buttonFrames"></div>
                             <button id="pinkBtnFrame" class="buttonFrames"></button>
                             <button id="blueBtnFrame" class="buttonFrames"></button>
                             <button id="yellowBtnFrame" class="buttonFrames"></button>
@@ -151,53 +150,9 @@ require_once '../includes/pwa-helper.php';
                             <button id="blackBtnFrame" class="buttonFrames"></button>
                             <!-- FRAMES -->
                             <button id="matcha" class="buttonBgFrames"></button>
-                            <button id="pinkPlaid" class="buttonBgFrames"></button>
-                            <button id="bluePlaid" class="buttonBgFrames"></button>
-                            <button id="black-cq" class="buttonBgFrames"></button>
-                            <button id="white-cq" class="buttonBgFrames"></button>
-                            <button id="pinkLeather" class="buttonBgFrames"></button>
-                            <button id="brownKnittedFrame" class="buttonBgFrames"></button>
-                            <button id="hotPinkKnittedFrame" class="buttonBgFrames"></button>
-                            <button id="redKnittedFrame" class="buttonBgFrames"></button>
-                            <button id="pinkKnittedFrame" class="buttonBgFrames"></button>
-                            <button id="redStripesFrame" class="buttonBgFrames"></button>
-                            <button id="greenStripesFrame" class="buttonBgFrames"></button>
-                            <button id="blueStripesFrame" class="buttonBgFrames"></button>
-                            <button id="vsPinkFrame" class="buttonBgFrames"></button>
-                            <button id="vsYellowFrame" class="buttonBgFrames"></button>
-                            <button id="blueYellowSquares" class="buttonBgFrames"></button>
-                            <button id="blueWhiteSquares" class="buttonBgFrames"></button>
-                            <button id="brownLeopard" class="buttonBgFrames"></button>
-                            <button id="cowPrint" class="buttonBgFrames"></button>
-                            <button id="redLeather" class="buttonBgFrames"></button>
-                            <button id="pinkGumamela" class="buttonBgFrames"></button>
-                            <button id="pinkLiliesFrame" class="buttonBgFrames"></button>
-                            <button id="whiteKnitted" class="buttonBgFrames"></button>
-                            <button id="ribbonSweaterFrame" class="buttonBgFrames"></button>
-                            <button id="ribbonDenim" class="buttonBgFrames"></button>
-                            <button id="blackPinkRibbon" class="buttonBgFrames"></button>
-                            <button id="fourLockers" class="buttonBgFrames"></button>
-                            <button id="gridPaperFrame" class="buttonBgFrames"></button>
-                            <button id="crumpledPaper" class="buttonBgFrames"></button>
-                            <button id="roughTextureFrame" class="buttonBgFrames"></button>
-                            <button id="blueBackdrop" class="buttonBgFrames"></button>
-                            <button id="greenHills" class="buttonBgFrames"></button>
-                            <button id="sandShells" class="buttonBgFrames"></button>
-                            <button id="waterBeach" class="buttonBgFrames"></button>
-                            <button id="cocoTrees" class="buttonBgFrames"></button>
-                            <button id="stardustFrame" class="buttonBgFrames"></button>
-                            <button id="roseCardFrame" class="buttonBgFrames"></button>
-                            <button id="princessVintageFrame" class="buttonBgFrames"></button>
-                            <button id="redRosesPaintFrame" class="buttonBgFrames"></button>
-                            <button id="grayTrashFrame" class="buttonBgFrames"></button>
-                            <button id="blackTrashFrame" class="buttonBgFrames"></button>
-                            <button id="whiteTrashFrame" class="buttonBgFrames"></button>
-                            <button id="partyDrapeFrame" class="buttonBgFrames"></button>
-                            <button id="partyDotsFrame" class="buttonBgFrames"></button>
-                            <button id="blingDenimFrame" class="buttonBgFrames"></button>
                         </div>
                         <div class="">
-                            <h3 class="options-label">Photo HALAO:</h3>
+                            <h3 class="options-label">Photo Shape:</h3>
                             <div class="custom-buttons-container">
                                 <button id="noneFrameShape" class="buttonShapes"><img
                                     src="assets/frame-shapes/noneShape.png" alt="None"
@@ -205,13 +160,7 @@ require_once '../includes/pwa-helper.php';
                                 <button id="softFrameShape" class="buttonShapes"><img
                                     src="assets/frame-shapes/squareShape.png" alt="Soft Edge Frame"
                                     class="btnShapeSize"></button>
-                                <button id="circleFrameShape" class="buttonShapes"><img
-                                    src="assets/frame-shapes/circleShape.png" alt="Circle Frame"
-                                    class="btnShapeSize"></button>
-                                <button id="heartFrameShape" class="buttonShapes"><img
-                                    src="assets/frame-shapes/heartShape.png" alt="Heart Frame"
-                                    class="btnShapeSize"></button>
-                            </div>
+                                 </div>
                         </div>
                         <h3 class="options-label">Stickers</h3>
                         <div class="custom-buttons-container stickers-container">
@@ -263,9 +212,7 @@ require_once '../includes/pwa-helper.php';
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/vanilla-picker@2.12.1/dist/vanilla-picker.min.js"></script>
     <script src="customizeLayout1.js"></script>
-    <script src="layout.js"></script>
     
     <?php PWAHelper::addPWAScript(); ?>
 </body>

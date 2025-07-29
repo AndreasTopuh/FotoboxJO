@@ -225,51 +225,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function initializeBackgroundFrameControls() {
         const backgroundFrameButtons = [
             { id: 'matcha', src: '/src/assets/frame-backgrounds/matcha.jpg' },
-            // Uncomment these as you upload the corresponding image files:
-            // { id: 'pinkPlaid', src: '/src/assets/frame-backgrounds/pink-plaid.jpg' },
-            // { id: 'bluePlaid', src: '/src/assets/frame-backgrounds/blue-plaid.jpg' },
-            // { id: 'black-cq', src: '/src/assets/frame-backgrounds/black-couqutte.jpg' },
-            // { id: 'white-cq', src: '/src/assets/frame-backgrounds/white-couquette.jpg' },
-            // { id: 'pinkLeather', src: '/src/assets/frame-backgrounds/pink-diamond-leather.jpg' },
-            // { id: 'brownKnittedFrame', src: '/src/assets/frame-backgrounds/brown-knitted-cloth.jpg' },
-            // { id: 'hotPinkKnittedFrame', src: '/src/assets/frame-backgrounds/hot-pink-knitted.jpg' },
-            // { id: 'redKnittedFrame', src: '/src/assets/frame-backgrounds/red-knitted.jpg' },
-            // { id: 'pinkKnittedFrame', src: '/src/assets/frame-backgrounds/pink-knitted.jpg' },
-            // { id: 'redStripesFrame', src: '/src/assets/frame-backgrounds/red-stripes.jpg' },
-            // { id: 'greenStripesFrame', src: '/src/assets/frame-backgrounds/green-stripes.jpg' },
-            // { id: 'blueStripesFrame', src: '/src/assets/frame-backgrounds/blue-stripes.jpg' },
-            // { id: 'vsPinkFrame', src: '/src/assets/frame-backgrounds/vs-pink.jpg' },
-            // { id: 'vsYellowFrame', src: '/src/assets/frame-backgrounds/vs-yellow.jpg' },
-            // { id: 'blueYellowSquares', src: '/src/assets/frame-backgrounds/blue-yellow-squares.jpg' },
-            // { id: 'blueWhiteSquares', src: '/src/assets/frame-backgrounds/blue-white-squares.jpg' },
-            // { id: 'brownLeopard', src: '/src/assets/frame-backgrounds/brown-leopard.jpg' },
-            // { id: 'cowPrint', src: '/src/assets/frame-backgrounds/cow-print.jpg' },
-            // { id: 'redLeather', src: '/src/assets/frame-backgrounds/red-leather.jpg' },
-            // { id: 'pinkGumamela', src: '/src/assets/frame-backgrounds/pink-gumamela.jpg' },
-            // { id: 'pinkLiliesFrame', src: '/src/assets/frame-backgrounds/pink-lilies.jpg' },
-            // { id: 'whiteKnitted', src: '/src/assets/frame-backgrounds/white-knitted-cloth.jpg' },
-            // { id: 'ribbonSweaterFrame', src: '/src/assets/frame-backgrounds/ribbon-sweater.jpg' },
-            // { id: 'ribbonDenim', src: '/src/assets/frame-backgrounds/ribbon-denim.jpg' },
-            // { id: 'blackPinkRibbon', src: '/src/assets/frame-backgrounds/black-pink-ribbon.jpg' },
-            // { id: 'fourLockers', src: '/src/assets/frame-backgrounds/4-lockers.jpg' },
-            // { id: 'gridPaperFrame', src: '/src/assets/frame-backgrounds/grid-paper.jpg' },
-            // { id: 'crumpledPaper', src: '/src/assets/frame-backgrounds/crumpled-paper.jpg' },
-            // { id: 'roughTextureFrame', src: '/src/assets/frame-backgrounds/rough-texture.jpg' },
-            // { id: 'blueBackdrop', src: '/src/assets/frame-backgrounds/blue-backdrop.jpg' },
-            // { id: 'greenHills', src: '/src/assets/frame-backgrounds/green-hills.jpg' },
-            // { id: 'sandShells', src: '/src/assets/frame-backgrounds/sand-shells.jpg' },
-            // { id: 'waterBeach', src: '/src/assets/frame-backgrounds/water.jpg' },
-            // { id: 'cocoTrees', src: '/src/assets/frame-backgrounds/coco-trees.jpg' },
-            // { id: 'stardustFrame', src: '/src/assets/frame-backgrounds/stardust.jpg' },
-            // { id: 'roseCardFrame', src: '/src/assets/frame-backgrounds/rose-card.jpg' },
-            // { id: 'princessVintageFrame', src: '/src/assets/frame-backgrounds/princess-vintage.jpg' },
-            // { id: 'redRosesPaintFrame', src: '/src/assets/frame-backgrounds/red-roses-paint.jpg' },
-            // { id: 'grayTrashFrame', src: '/src/assets/frame-backgrounds/gray-trash.jpg' },
-            // { id: 'blackTrashFrame', src: '/src/assets/frame-backgrounds/black-trash.jpg' },
-            // { id: 'whiteTrashFrame', src: '/src/assets/frame-backgrounds/white-trash.jpg' },
-            // { id: 'partyDrapeFrame', src: '/src/assets/frame-backgrounds/party-drape.jpg' },
-            // { id: 'partyDotsFrame', src: '/src/assets/frame-backgrounds/party-dots.jpg' },
-            // { id: 'blingDenimFrame', src: '/src/assets/frame-backgrounds/bling-denim.jpg' }
         ];
 
         console.log('🖼️ Initializing background frame controls...');
@@ -489,7 +444,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
                 ctx.clip();
             } else if (shape === 'rounded') {
-                roundedRect(ctx, x, y, width, height, 20);
+                roundedRect(ctx, x, y, width, height, 30);
                 ctx.clip();
             } else if (shape === 'heart') {
                 heartShape(ctx, x + width / 2, y + height / 2, Math.min(width, height) / 2);
