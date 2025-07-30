@@ -1,18 +1,35 @@
 <?php
-session_start();
-
-// Reset session sebelumnya jika ada
-session_unset();
-session_destroy();
-session_start();
-
-// Set session payment dengan waktu expired 3 menit
-$_SESSION['payment_start_time'] = time();
-$_SESSION['payment_expired_time'] = time() + (3 * 60);
-$_SESSION['session_type'] = 'payment';
-
-// Include PWA helper
+// Include session manager dan PWA helper
+require_once '../includes/session-manager.php';
 require_once '../includes/pwa-helper.php';
+
+session_start();
+
+// Strict validation - only allow if in payment pending state
+if (!SessionManager::canAccessPaymentPage()) {
+    $currentState = SessionManager::getSessionState();
+    
+    if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
+        // Already paid, redirect to layout
+        header('Location: selectlayout.php');
+        exit();
+    } elseif ($currentState === SessionManager::STATE_LAYOUT_SELECTED) {
+        // Layout already selected
+        header('Location: selectlayout.php');
+        exit();
+    } elseif ($currentState === SessionManager::STATE_PHOTO_SESSION) {
+        // Already in photo session
+        header('Location: selectlayout.php');
+        exit();
+    } else {
+        // Invalid access, redirect to payment selection
+        header('Location: selectpayment.php');
+        exit();
+    }
+}
+
+// Additional validation using the original method
+SessionManager::requireValidPaymentSession();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -57,7 +74,7 @@ require_once '../includes/pwa-helper.php';
           <!-- Timer (Hidden saat loading) -->
           <div id="timer-container" class="timer-container" style="text-align: center; margin-bottom: 1rem; display: none;">
             <h3 style="color: #ff4444; margin: 0;">Waktu Tersisa:</h3>
-            <div id="timer" style="font-size: 2rem; font-weight: bold; color: #ff4444;">03:00</div>
+            <div id="timer" style="font-size: 2rem; font-weight: bold; color: #ff4444;">05:00</div>
           </div>
           
           <!-- Loading Spinner -->
@@ -71,26 +88,60 @@ require_once '../includes/pwa-helper.php';
           
           <!-- QR Container (Hidden saat loading) -->
           <div id="qr-container" class="qr-container" style="display: none;">
-            <img id="qris-img" src="" style="width: 180px; height: 180px; object-fit: contain;" alt="QRIS Code">
+            <div style="text-align: center; margin-bottom: 1rem;">
+              <h4 style="margin: 0.5rem 0;">Scan QR Code untuk Pembayaran:</h4>
+              <img id="qris-img" src="" alt="QRIS QR Code" style="max-width: 250px; width: 100%; height: auto; border: 2px solid #007bff; border-radius: 8px;">
+            </div>
           </div>
           
           <!-- Status Container (Hidden saat loading) -->
           <div id="status-container" class="status-container" style="display: none;">
             <p id="status" style="margin: 0; color: #333; font-weight: 600;">Status: Menunggu pembayaran...</p>
-          </div>
-          
-          <button id="next" class="start-btn" style="display:none;" onclick="proceedToLayout()">Lanjutkan</button>
+          </div>          <button id="next" class="start-btn" style="display:none;" onclick="proceedToLayout()">Lanjutkan</button>
         </div>
 
       </div>
     </div>
   </div>
 
-    <script>
+        <script>
         let orderId = "";
-        let timeLeft = 180; // 3 menit dalam detik
+        let timeLeft = 300; // 5 menit dalam detik
         let timerInterval;
         let statusInterval;
+        let sessionInterval;
+
+        // Session monitoring - check setiap 10 detik
+        function startSessionMonitoring() {
+            sessionInterval = setInterval(() => {
+                fetch('../api-fetch/session_status.php')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (!data.valid || data.expired) {
+                            // Session expired, redirect ke index
+                            clearAllIntervals();
+                            alert('Session telah berakhir. Anda akan diarahkan ke halaman utama.');
+                            window.location.href = '/index.php';
+                            return;
+                        }
+                        
+                        // Update timer dari server
+                        if (data.time_remaining !== undefined) {
+                            timeLeft = data.time_remaining;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Session monitoring error:', error);
+                    });
+            }, 10000); // Check setiap 10 detik
+        }
+
+        // Clear all intervals
+        function clearAllIntervals() {
+            if (timerInterval) clearInterval(timerInterval);
+            if (statusInterval) clearInterval(statusInterval);
+            if (sessionInterval) clearInterval(sessionInterval);
+        }
 
         // Timer countdown
         function startTimer() {
@@ -102,11 +153,9 @@ require_once '../includes/pwa-helper.php';
                     `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
                 
                 if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    clearInterval(statusInterval);
-                    
-                    // Tampilkan popup modal
+                    clearAllIntervals();
                     showTimeoutModal();
+                    return;
                 }
                 
                 timeLeft--;
@@ -122,6 +171,10 @@ require_once '../includes/pwa-helper.php';
             document.getElementById('timer-container').style.display = 'block';
             document.getElementById('qr-container').style.display = 'block';
             document.getElementById('status-container').style.display = 'block';
+            
+            // Start timer dan session monitoring
+            startTimer();
+            startSessionMonitoring();
         }
 
         // Fetch QR code dengan loading
@@ -151,9 +204,6 @@ require_once '../includes/pwa-helper.php';
                 // Simulasi loading delay (2 detik) untuk UX yang lebih baik
                 setTimeout(() => {
                     showQRCode();
-                    
-                    // Mulai timer dan polling status setelah QR muncul
-                    startTimer();
                     pollStatus();
                 }, 2000);
             })
@@ -172,23 +222,26 @@ require_once '../includes/pwa-helper.php';
                     .then(data => {
                         document.getElementById('status').innerText = "Status: " + data.transaction_status;
                         if (data.transaction_status === "settlement") {
-                            clearInterval(timerInterval);
-                            clearInterval(statusInterval);
-                            document.getElementById('timer').textContent = "LUNAS";
-                            document.getElementById('timer').style.color = "#28a745";
-                            document.getElementById('status').style.color = "#28a745";
-                            document.getElementById('next').style.display = "block";
+                            clearAllIntervals();
                             
-                            // Set session payment completed untuk PWA
-                            fetch('../api-fetch/set_session.php', {
+                            // Complete payment in session
+                            fetch('../api-fetch/complete_payment.php', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
                                 },
-                                body: JSON.stringify({ 
-                                    payment_completed: true,
-                                    payment_expired_time: Math.floor(Date.now() / 1000) + (15 * 60) // 15 menit
-                                })
+                                body: JSON.stringify({ order_id: orderId })
+                            })
+                            .then(response => response.json())
+                            .then(result => {
+                                if (result.success) {
+                                    document.getElementById('timer').textContent = "LUNAS";
+                                    document.getElementById('timer').style.color = "#28a745";
+                                    document.getElementById('status').style.color = "#28a745";
+                                    document.getElementById('next').style.display = "block";
+                                } else {
+                                    console.error('Failed to complete payment:', result);
+                                }
                             });
                         }
                     })
@@ -200,39 +253,13 @@ require_once '../includes/pwa-helper.php';
 
         // Function untuk proceed ke layout selection
         function proceedToLayout() {
-            console.log('proceedToLayout called');
+            console.log('Payment completed, transitioning to layout selection');
             
-            // Set session for layout selection via API
-            fetch('../api-fetch/set_session.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    payment_completed: true,
-                    session_type: 'layout_selection',
-                    payment_expired_time: Math.floor(Date.now() / 1000) + (15 * 60) // 15 minutes
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Session set result:', data);
-                if (data.success) {
-                    // Add small delay to ensure session is set
-                    setTimeout(() => {
-                        window.location.href = './selectlayout.php';
-                    }, 500);
-                } else {
-                    console.error('Failed to set session:', data);
-                    // Fallback: try direct navigation
-                    window.location.href = './selectlayout.php';
-                }
-            })
-            .catch(error => {
-                console.error('Error setting session:', error);
-                // Fallback: try direct navigation
-                window.location.href = './selectlayout.php';
-            });
+            // Clear intervals before navigation
+            clearAllIntervals();
+            
+            // Navigate langsung karena payment sudah completed via complete_payment.php
+            window.location.href = './selectlayout.php';
         }
 
         // Function untuk menampilkan modal timeout
@@ -243,13 +270,19 @@ require_once '../includes/pwa-helper.php';
 
         // Function untuk reset session dan kembali ke index
         function continueAfterTimeout() {
+            clearAllIntervals();
             fetch('../api-fetch/reset_session.php', {
                 method: 'POST'
             })
             .then(() => {
-                window.location.href = '../../index.html';
+                window.location.href = '/index.php';
             });
         }
+
+        // Handle page unload
+        window.addEventListener('beforeunload', () => {
+            clearAllIntervals();
+        });
     </script>
 
     <!-- Modal Timeout -->

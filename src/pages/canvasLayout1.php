@@ -1,19 +1,14 @@
 <?php
-session_start();
+// Include session protection - ini akan memastikan user sudah bayar
+
 
 // Include PWA helper
 require_once '../includes/pwa-helper.php';
 
-// Set default session if not exists (untuk PWA compatibility)
-if (!isset($_SESSION["session_type"])) {
-    $_SESSION["session_type"] = "photo";
+// Set photo session timing - 7 menit untuk foto
+if (!isset($_SESSION["photo_start_time"])) {
     $_SESSION["photo_start_time"] = time();
-    $_SESSION["photo_expired_time"] = time() + (7 * 60); // 7 menit
-}
-
-// Extend session if expired untuk better UX
-if (isset($_SESSION["photo_expired_time"]) && time() > $_SESSION["photo_expired_time"]) {
-    $_SESSION["photo_expired_time"] = time() + (7 * 60); // Extend 7 menit
+    $_SESSION["photo_expired_time"] = time() + (7 * 60); // 7 menit untuk foto
 }
 
 // Hitung waktu tersisa
@@ -578,6 +573,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
 
     <script src="canvasLayout1.js"></script>
     <script src="debug-camera.js"></script>
+    <script src="../includes/session-monitor.js"></script>
     <?php PWAHelper::addPWAScript(); ?>
 </body>
 

@@ -1,13 +1,27 @@
 <?php
-session_start();
-
-// Reset session sebelumnya jika ada
-session_unset();
-session_destroy();
-session_start();
-
-// Include PWA helper
+// Include session manager and PWA helper
+require_once '../includes/session-manager.php';
 require_once '../includes/pwa-helper.php';
+
+// Check current state and handle redirects
+$currentState = SessionManager::getSessionState();
+
+if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
+    // Already paid, redirect to layout
+    header('Location: selectlayout.php');
+    exit();
+} elseif ($currentState === SessionManager::STATE_LAYOUT_SELECTED) {
+    // Layout already selected, let user access layout page
+    header('Location: selectlayout.php');
+    exit();
+} elseif ($currentState === SessionManager::STATE_PHOTO_SESSION) {
+    // Already in photo session, redirect to layout
+    header('Location: selectlayout.php');
+    exit();
+}
+
+// Start payment session if in valid state
+SessionManager::startPaymentSession();
 ?>
 <!DOCTYPE html>
 <html lang="en">

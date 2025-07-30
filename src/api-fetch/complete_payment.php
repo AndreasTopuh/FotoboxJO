@@ -16,42 +16,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
     
-    if (!isset($input['layout'])) {
+    // Validate session state - should be in payment pending
+    if (SessionManager::getSessionState() !== SessionManager::STATE_PAYMENT_PENDING) {
         echo json_encode([
             'success' => false,
-            'error' => 'Layout ID is required'
-        ]);
-        exit();
-    }
-    
-    $layoutId = $input['layout'];
-    
-    // Validate current session state
-    if (!SessionManager::canAccessLayoutSelection()) {
-        echo json_encode([
-            'success' => false,
-            'error' => 'Invalid session state for layout selection',
+            'error' => 'Invalid session state for payment completion',
             'current_state' => SessionManager::getSessionState()
         ]);
         exit();
     }
     
-    // Select layout and transition state
-    $success = SessionManager::selectLayout($layoutId);
+    // Validate session
+    if (!SessionManager::isValidSession()) {
+        echo json_encode([
+            'success' => false,
+            'error' => 'Invalid or expired session'
+        ]);
+        exit();
+    }
+    
+    // Complete payment and transition to layout selection state
+    $orderId = $input['order_id'] ?? null;
+    $success = SessionManager::completePayment($orderId);
     
     if ($success) {
         echo json_encode([
             'success' => true,
-            'message' => 'Layout selected successfully',
-            'layout' => $layoutId,
+            'message' => 'Payment completed successfully',
+            'order_id' => $orderId,
             'session_state' => SessionManager::getSessionState(),
             'session_info' => SessionManager::getSessionInfo()
         ]);
     } else {
         echo json_encode([
             'success' => false,
-            'error' => 'Failed to select layout',
-            'current_state' => SessionManager::getSessionState()
+            'error' => 'Failed to complete payment'
         ]);
     }
 } else {

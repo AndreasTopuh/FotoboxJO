@@ -1,29 +1,26 @@
 <?php
+// Include session manager dan PWA helper
+require_once '../includes/session-manager.php';
+require_once '../includes/pwa-helper.php';
+
 session_start();
 
 // Debug: Tampilkan session untuk debugging
 if (isset($_GET['debug'])) {
     echo "<pre>";
+    echo "=== SESSION DEBUG INFO ===\n";
+    echo "Current State: " . SessionManager::getSessionState() . "\n";
+    echo "State Display: " . SessionManager::getStateDisplayName() . "\n";
+    echo "Session Info:\n";
+    print_r(SessionManager::getSessionInfo());
+    echo "\nRaw Session:\n";
     print_r($_SESSION);
     echo "</pre>";
     exit;
 }
 
-// PWA-friendly session management
-// Auto create or extend session jika belum ada atau expired
-if (!isset($_SESSION['session_type']) || !isset($_SESSION['payment_expired_time']) || time() > $_SESSION['payment_expired_time']) {
-    $_SESSION['session_type'] = 'layout_selection';
-    $_SESSION['payment_expired_time'] = time() + (15 * 60); // 15 menit
-    $_SESSION['payment_completed'] = true; // Mark as completed for PWA
-}
-
-// Extend session if payment was completed recently
-if (isset($_SESSION['payment_completed']) && $_SESSION['payment_completed'] === true) {
-    $_SESSION['payment_expired_time'] = time() + (15 * 60); // Extend 15 minutes
-}
-
-// Include PWA helper
-require_once '../includes/pwa-helper.php';
+// Validasi bahwa user sudah menyelesaikan pembayaran
+SessionManager::requirePayment();
 ?>
 
 <!DOCTYPE html>
@@ -168,15 +165,30 @@ require_once '../includes/pwa-helper.php';
             document.getElementById('layoutPopup').style.display = 'none';
         });
         
-        // Confirm button - create new session and navigate
+        // Confirm button - select layout and transition state
         document.getElementById('confirmBtn').addEventListener('click', function() {
-            // Create photo session
-            fetch('../api-fetch/create_photo_session.php', {
+            // First, select layout and update session state
+            fetch('../api-fetch/select_layout.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ layout: selectedLayout })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Create photo session
+                    return fetch('../api-fetch/create_photo_session.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ layout: selectedLayout })
+                    });
+                } else {
+                    throw new Error('Failed to select layout: ' + data.error);
+                }
             })
             .then(response => response.json())
             .then(data => {
@@ -198,8 +210,12 @@ require_once '../includes/pwa-helper.php';
                     }
                     window.location.href = targetPage;
                 } else {
-                    alert('Error: ' + data.error);
+                    alert('Error creating photo session: ' + data.error);
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
             });
         });
     </script>

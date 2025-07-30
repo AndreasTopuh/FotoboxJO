@@ -51,6 +51,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $updated_fields[] = 'auto_payment_expired_time';
     }
     
+    // Handle manual session expires (for testing)
+    if (isset($input['session_expires'])) {
+        $_SESSION['session_expires'] = $input['session_expires'];
+        $updated_fields[] = 'session_expires';
+    }
+    
     // Set session type to layout selection if payment completed
     if (isset($input['payment_completed']) && $input['payment_completed'] === true) {
         $_SESSION['session_type'] = 'layout_selection';

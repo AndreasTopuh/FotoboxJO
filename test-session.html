@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Session Flow - GoFotobox</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #FFE4EA, #E28585);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .test-section {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        .test-section h3 {
+            color: #E28585;
+            margin-top: 0;
+        }
+        
+        button {
+            background: #E28585;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+        }
+        
+        button:hover {
+            background: #d16b6b;
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            border-left: 4px solid #E28585;
+        }
+        
+        .status {
+            font-weight: bold;
+        }
+        
+        .status.valid {
+            color: #28a745;
+        }
+        
+        .status.invalid {
+            color: #dc3545;
+        }
+        
+        pre {
+            background: #f1f1f1;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Session Flow - GoFotobox</h1>
+        
+        <!-- Session Status -->
+        <div class="test-section">
+            <h3>📊 Session Status</h3>
+            <button onclick="checkSession()">Check Session</button>
+            <button onclick="resetSession()">Reset Session</button>
+            <div id="sessionStatus" class="info-box">
+                <p>Klik "Check Session" untuk melihat status session saat ini</p>
+            </div>
+        </div>
+        
+        <!-- Test Navigation -->
+        <div class="test-section">
+            <h3>🧭 Test Navigation Flow</h3>
+            <p>Test flow normal aplikasi:</p>
+            <button onclick="window.location.href='/index.php'">1. Index (Home)</button>
+            <button onclick="window.location.href='/src/pages/selectpayment.php'">2. Select Payment</button>
+            <button onclick="window.location.href='/src/pages/payment-qris.php'">3. Payment QRIS</button>
+            <button onclick="window.location.href='/src/pages/selectlayout.php'">4. Select Layout</button>
+            <button onclick="window.location.href='/src/pages/canvasLayout1.php'">5. Canvas Layout 1</button>
+        </div>
+        
+        <!-- State Transition Test -->
+        <div class="test-section">
+            <h3>🔄 State Transition Test</h3>
+            <p>Test manual state transitions:</p>
+            <button onclick="transitionToPaymentPending()">→ Payment Pending</button>
+            <button onclick="transitionToPaymentCompleted()">→ Payment Completed</button>
+            <button onclick="transitionToLayoutSelected()">→ Layout Selected</button>
+            <button onclick="transitionToPhotoSession()">→ Photo Session</button>
+            <div id="stateTransitionResult" class="info-box">
+                <p>Klik tombol untuk test transisi state</p>
+            </div>
+        </div>
+        
+        <!-- Force Actions -->
+        <div class="test-section">
+            <h3>🔧 Force Actions (Testing Only)</h3>
+            <p><strong>Perhatian:</strong> Ini untuk testing, akan bypass session normal</p>
+            <button onclick="forceCompletePayment()">Force Complete Payment</button>
+            <button onclick="forceExpireSession()">Force Expire Session</button>
+        </div>
+        
+        <!-- Debug Info -->
+        <div class="test-section">
+            <h3>🐛 Debug Information</h3>
+            <button onclick="showDebugInfo()">Show PHP Session Debug</button>
+            <div id="debugInfo"></div>
+        </div>
+    </div>
+
+    <script>
+        let timerInterval;
+        
+        async function checkSession() {
+            try {
+                const response = await fetch('/src/api-fetch/session_status.php');
+                const data = await response.json();
+                
+                const statusElement = document.getElementById('sessionStatus');
+                const statusClass = data.valid ? 'valid' : 'invalid';
+                
+                statusElement.innerHTML = `
+                    <p class="status ${statusClass}">Status: ${data.valid ? 'Valid' : 'Invalid/Expired'}</p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                
+                if (data.valid && data.time_remaining) {
+                    startTimerDisplay(data.time_remaining);
+                }
+                
+            } catch (error) {
+                document.getElementById('sessionStatus').innerHTML = 
+                    `<p class="status invalid">Error: ${error.message}</p>`;
+            }
+        }
+        
+        async function resetSession() {
+            try {
+                const response = await fetch('/src/api-fetch/reset_session.php', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                alert('Session reset: ' + (data.success ? 'Success' : 'Failed'));
+                checkSession();
+                
+            } catch (error) {
+                alert('Error resetting session: ' + error.message);
+            }
+        }
+        
+        async function startPaymentSession() {
+            // Redirect ke select payment untuk start session properly
+            window.location.href = '/src/pages/selectpayment.php';
+        }
+        
+        async function completePayment() {
+            try {
+                const response = await fetch('/src/api-fetch/complete_payment.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ order_id: 'test-order-' + Date.now() })
+                });
+                const data = await response.json();
+                
+                alert('Complete payment: ' + (data.success ? 'Success' : 'Failed - ' + data.error));
+                checkSession();
+                
+            } catch (error) {
+                alert('Error completing payment: ' + error.message);
+            }
+        }
+        
+        async function forceCompletePayment() {
+            // Simulate completed payment
+            try {
+                const response = await fetch('/src/api-fetch/set_session.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        payment_completed: true,
+                        session_type: 'layout_selection',
+                        order_id: 'force-test-' + Date.now()
+                    })
+                });
+                const data = await response.json();
+                
+                alert('Force complete: ' + (data.success ? 'Success' : 'Failed'));
+                checkSession();
+                
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        async function forceExpireSession() {
+            // Force session expiration
+            try {
+                const response = await fetch('/src/api-fetch/set_session.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        session_expires: Math.floor(Date.now() / 1000) - 1 // Expired 1 second ago
+                    })
+                });
+                const data = await response.json();
+                
+                alert('Force expire: ' + (data.success ? 'Success' : 'Failed'));
+                checkSession();
+                
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        function startTimerDisplay(timeLeft) {
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                
+                document.getElementById('timerDisplay').innerHTML = 
+                    `<p><strong>Timer:</strong> ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}</p>`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('timerDisplay').innerHTML = 
+                        `<p class="status invalid"><strong>Timer:</strong> EXPIRED</p>`;
+                }
+                
+                timeLeft--;
+            }, 1000);
+        }
+        
+        async function showDebugInfo() {
+            try {
+                const response = await fetch('/src/pages/selectlayout.php?debug=1');
+                const text = await response.text();
+                
+                document.getElementById('debugInfo').innerHTML = `<pre>${text}</pre>`;
+                
+            } catch (error) {
+                document.getElementById('debugInfo').innerHTML = 
+                    `<p class="status invalid">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // State transition testing functions
+        async function transitionToPaymentPending() {
+            window.location.href = '/src/pages/selectpayment.php';
+        }
+        
+        async function transitionToPaymentCompleted() {
+            try {
+                const response = await fetch('/src/api-fetch/complete_payment.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ order_id: 'test-transition-' + Date.now() })
+                });
+                const data = await response.json();
+                
+                document.getElementById('stateTransitionResult').innerHTML = 
+                    `<pre>Transition to Payment Completed:\n${JSON.stringify(data, null, 2)}</pre>`;
+                    
+                checkSession();
+            } catch (error) {
+                document.getElementById('stateTransitionResult').innerHTML = 
+                    `<p class="status invalid">Error: ${error.message}</p>`;
+            }
+        }
+        
+        async function transitionToLayoutSelected() {
+            try {
+                const response = await fetch('/src/api-fetch/select_layout.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ layout: 'layout1' })
+                });
+                const data = await response.json();
+                
+                document.getElementById('stateTransitionResult').innerHTML = 
+                    `<pre>Transition to Layout Selected:\n${JSON.stringify(data, null, 2)}</pre>`;
+                    
+                checkSession();
+            } catch (error) {
+                document.getElementById('stateTransitionResult').innerHTML = 
+                    `<p class="status invalid">Error: ${error.message}</p>`;
+            }
+        }
+        
+        async function transitionToPhotoSession() {
+            try {
+                // First ensure we're in layout selected state
+                await transitionToLayoutSelected();
+                
+                // Then start photo session (this happens automatically when accessing canvas)
+                document.getElementById('stateTransitionResult').innerHTML += 
+                    `<p>Photo session starts automatically when accessing canvas pages</p>`;
+                    
+            } catch (error) {
+                document.getElementById('stateTransitionResult').innerHTML = 
+                    `<p class="status invalid">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Auto-check session on load
+        document.addEventListener('DOMContentLoaded', () => {
+            checkSession();
+        });
+    </script>
+</body>
+</html>
