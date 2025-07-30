@@ -18,7 +18,7 @@ require_once '../includes/pwa-helper.php';
     <meta name="description" content="Customize your Layout 1 photobooth photos with frames, stickers, and text.">
     <title>Photobooth | Customize Layout 1</title>
     <link rel="stylesheet" href="/styles.css" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Syne:wght@400;700&display=swap" rel="stylesheet">
     <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png" />
     <style>
@@ -59,16 +59,228 @@ require_once '../includes/pwa-helper.php';
             justify-content: center;
             align-items: center;
             z-index: 2000;
+            backdrop-filter: blur(5px);
         }
+        
         .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
             text-align: center;
-            max-width: 400px;
+            max-width: 500px;
             margin: 0 1rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
         }
+        
+        .email-modal-content {
+            max-width: 650px;
+            padding: 2.5rem;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            background: none;
+            border: none;
+            font-size: 30px;
+            cursor: pointer;
+            color: #999;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .close-btn:hover {
+            color: #333;
+            transform: scale(1.1);
+        }
+        
+        .modal-header {
+            margin-bottom: 2rem;
+        }
+        
+        .modal-title {
+            color: #333;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .modal-subtitle {
+            color: #666;
+            font-size: 1rem;
+            margin: 0;
+            line-height: 1.5;
+        }
+        
+        .email-input-container {
+            margin-bottom: 2rem;
+        }
+        
+        .email-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: 2px solid rgba(222, 226, 230, 0.5);
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-family: 'Poppins', sans-serif;
+            background: rgba(248, 249, 250, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            caret-color: #007bff;
+            text-align: left;
+        }
+        
+        .email-input:focus {
+            outline: none;
+            border-color: #007bff;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+        
+        .input-validation {
+            margin-top: 0.5rem;
+            text-align: left;
+        }
+        
+        .input-validation span {
+            color: #dc3545;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .input-validation span.success {
+            color: #28a745;
+        }
+        
+        /* Virtual Keyboard Styles */
+        .virtual-keyboard {
+            background: rgba(248, 249, 250, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border: 2px solid rgba(233, 236, 239, 0.5);
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .keyboard-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .key-btn {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 2px solid rgba(222, 226, 230, 0.8);
+            border-radius: 8px;
+            padding: 0.75rem;
+            min-width: 45px;
+            min-height: 45px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #495057;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Poppins', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            outline: none;
+        }
+        
+        .key-btn:hover {
+            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+            border-color: #007bff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+        }
+        
+        .key-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
+        }
+        
+        .key-space {
+            flex: 1;
+            max-width: 200px;
+        }
+        
+        .key-backspace, .key-caps {
+            min-width: 60px;
+            font-size: 0.9rem;
+        }
+        
+        .key-caps.active {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            border-color: #0056b3;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+        
+        .btn-primary, .btn-secondary {
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #545b62 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #545b62 0%, #495057 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+        }
+        
         .modal-content h2 {
             color: #ff4444;
             margin-bottom: 1rem;
@@ -135,7 +347,7 @@ require_once '../includes/pwa-helper.php';
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-   @media print {
+       @media print {
         body {
             margin: 0 !important;
             padding: 0 !important;
@@ -154,6 +366,77 @@ require_once '../includes/pwa-helper.php';
         @page {
             size: 4in 6in;
             margin: 0;
+        }
+    }
+    
+    /* Mobile Responsive untuk Virtual Keyboard */
+    @media (max-width: 768px) {
+        .email-modal-content {
+            max-width: 95%;
+            padding: 2rem;
+            max-height: 95vh;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+        }
+        
+        .modal-subtitle {
+            font-size: 0.9rem;
+        }
+        
+        .virtual-keyboard {
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .keyboard-row {
+            gap: 0.3rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .key-btn {
+            min-width: 35px;
+            min-height: 35px;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .key-backspace, .key-caps {
+            min-width: 50px;
+            font-size: 0.8rem;
+        }
+        
+        .modal-actions {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .btn-primary, .btn-secondary {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .email-modal-content {
+            padding: 1.5rem;
+        }
+        
+        .key-btn {
+            min-width: 30px;
+            min-height: 30px;
+            padding: 0.4rem;
+            font-size: 0.8rem;
+        }
+        
+        .keyboard-row {
+            gap: 0.2rem;
+        }
+        
+        .virtual-keyboard {
+            padding: 0.75rem;
         }
     }
     </style>
@@ -186,6 +469,7 @@ require_once '../includes/pwa-helper.php';
                             <!-- FRAMES -->
                             <button id="matcha" class="buttonBgFrames"></button>
                             <button id="blackStar" class="buttonBgFrames"></button>
+                            <button id="blueStripe" class="buttonBgFrames"></button>
                         </div>
                         <div class="">
                             <h3 class="options-label">Photo Shape:</h3>
@@ -242,14 +526,83 @@ require_once '../includes/pwa-helper.php';
         </section>
     </main>
 
-    <!-- Email Modal -->
+    <!-- Email Modal dengan Virtual Keyboard -->
     <div id="emailModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <button id="closeEmailModal" class="modal-btn" style="position: absolute; top: 10px; right: 15px; background: transparent; color: #666; font-size: 24px; padding: 0; width: 30px; height: 30px; border-radius: 50%;">&times;</button>
-            <h3>Masukan Email Anda</h3>
-            <input type="email" id="emailInput" placeholder="contoh@email.com" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 5px; margin: 1rem 0; box-sizing: border-box;">
-            <div style="margin-top: 1rem;">
-                <button id="sendEmailBtn" class="modal-btn">Kirim</button>
+        <div class="modal-content email-modal-content">
+            <button id="closeEmailModal" class="close-btn">&times;</button>
+            <div class="modal-header">
+                <h3 class="modal-title">Masukan Email Anda</h3>
+                <p class="modal-subtitle">Foto akan dikirim ke alamat email yang Anda masukkan</p>
+            </div>
+            <div class="email-input-container">
+                <input type="email" id="emailInput" placeholder="contoh@email.com" class="email-input">
+                <div class="input-validation" style="display: none;">
+                    <span id="validation-message">Format email tidak valid</span>
+                </div>
+            </div>
+            
+            <!-- Virtual Keyboard -->
+            <div id="virtualKeyboard" class="virtual-keyboard">
+                <div class="keyboard-row">
+                    <button class="key-btn" data-key="1">1</button>
+                    <button class="key-btn" data-key="2">2</button>
+                    <button class="key-btn" data-key="3">3</button>
+                    <button class="key-btn" data-key="4">4</button>
+                    <button class="key-btn" data-key="5">5</button>
+                    <button class="key-btn" data-key="6">6</button>
+                    <button class="key-btn" data-key="7">7</button>
+                    <button class="key-btn" data-key="8">8</button>
+                    <button class="key-btn" data-key="9">9</button>
+                    <button class="key-btn" data-key="0">0</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key-btn" data-key="q">Q</button>
+                    <button class="key-btn" data-key="w">W</button>
+                    <button class="key-btn" data-key="e">E</button>
+                    <button class="key-btn" data-key="r">R</button>
+                    <button class="key-btn" data-key="t">T</button>
+                    <button class="key-btn" data-key="y">Y</button>
+                    <button class="key-btn" data-key="u">U</button>
+                    <button class="key-btn" data-key="i">I</button>
+                    <button class="key-btn" data-key="o">O</button>
+                    <button class="key-btn" data-key="p">P</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key-btn" data-key="a">A</button>
+                    <button class="key-btn" data-key="s">S</button>
+                    <button class="key-btn" data-key="d">D</button>
+                    <button class="key-btn" data-key="f">F</button>
+                    <button class="key-btn" data-key="g">G</button>
+                    <button class="key-btn" data-key="h">H</button>
+                    <button class="key-btn" data-key="j">J</button>
+                    <button class="key-btn" data-key="k">K</button>
+                    <button class="key-btn" data-key="l">L</button>
+                    <button class="key-btn" data-key="@">@</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key-btn key-caps" data-key="caps">CAPS</button>
+                    <button class="key-btn" data-key="z">Z</button>
+                    <button class="key-btn" data-key="x">X</button>
+                    <button class="key-btn" data-key="c">C</button>
+                    <button class="key-btn" data-key="v">V</button>
+                    <button class="key-btn" data-key="b">B</button>
+                    <button class="key-btn" data-key="n">N</button>
+                    <button class="key-btn" data-key="m">M</button>
+                    <button class="key-btn key-backspace" data-key="backspace">⌫</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key-btn key-space" data-key="space">SPACE</button>
+                    <button class="key-btn" data-key=".">.</button>
+                    <button class="key-btn" data-key="-">-</button>
+                    <button class="key-btn" data-key="_">_</button>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button id="cancelEmailBtn" class="btn-secondary">Batal</button>
+                <button id="sendEmailBtn" class="btn-primary">
+                    <i class="fas fa-paper-plane"></i> Kirim
+                </button>
             </div>
         </div>
     </div>

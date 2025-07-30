@@ -42,7 +42,12 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     <meta name="twitter:description"
         content="Take instant photobooth-style photos online with Layout 4. Perfect for 8-photo grids." />
     <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png" />
-    <link rel="stylesheet" href="../../styles.css" />
+    <link rel="stylesheet" href="/styles.css?v=<?php echo time(); ?>" />
+    <link rel="stylesheet" href="/carousel.css?v=<?php echo time(); ?>" />
+    <!-- Cache Control -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <link
         href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&display=swap"
         rel="stylesheet" />
@@ -123,6 +128,34 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
 
         .modal-btn:hover {
             background: #e03e3e;
+        }
+
+        /* Upload Button Styling */
+        .uploadBtnStyling {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .uploadBtnStyling:hover {
+            background: linear-gradient(135deg, #45a049, #3d8b40);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .icons-size {
+            width: 16px;
+            height: 16px;
         }
 
         body {
@@ -499,9 +532,46 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             <div id="photoPreview"></div>
         </div>
     </main>
+    
+    <!-- Carousel Modal -->
+    <div id="carousel-modal" class="modal" style="display: none;">
+        <div class="carousel-container">
+            <button id="carousel-close-btn" class="carousel-close-btn">✕</button>
+            <button id="carousel-prev-btn" class="carousel-nav-btn prev-btn">←</button>
+            <div class="carousel-image-container">
+                <img id="carousel-image" class="carousel-image" src="" alt="Photo Preview">
+                <button id="carousel-retake-btn" class="carousel-retake-btn"><img src="/src/assets/retake.png" alt="retake icon"></button>
+            </div>
+            <button id="carousel-next-btn" class="carousel-nav-btn next-btn">→</button>
+            <div id="carousel-indicators" class="carousel-indicators"></div>
+        </div>
+    </div>
 
     <script src="canvasLayout4.js"></script>
     <script src="debug-camera.js"></script>
+    
+    <!-- Session Timer Script -->
+    <script src="../includes/session-timer.js"></script>
+    
+    <script>
+        // Custom timer expired handler for canvas page
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.sessionTimer) {
+                window.sessionTimer.onExpired = function(page) {
+                    // From canvas page, check photo count first
+                    const photoElements = document.querySelectorAll('#photoPreview img, #photoPreview canvas, .photo');
+                    if (photoElements.length > 0) {
+                        // Has photos, go to customize
+                        window.location.href = 'customizeLayout4.php';
+                    } else {
+                        // No photos, reset and go to index
+                        window.location.href = '/';
+                    }
+                };
+            }
+        });
+    </script>
+    
     <?php PWAHelper::addPWAScript(); ?>
 </body>
 </html>

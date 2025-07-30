@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeBtn = document.getElementById('closeBtn');
 
     // Add click event listeners to all layout buttons
-    document.querySelectorAll('.layout-holder').forEach(button => {
+    document.querySelectorAll('.layout-card').forEach(button => {
         button.addEventListener('click', function() {
             selectedLayout = this.id.replace('Btn', '');
             layoutPopup.style.display = 'flex';
@@ -49,8 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     case 'layout4': targetPage = 'canvasLayout4.php'; break;
                     case 'layout5': targetPage = 'canvasLayout5.php'; break;
                     case 'layout6': targetPage = 'canvasLayout6.php'; break;
-                    case 'canvas': targetPage = 'canvas.php'; break;
-                    default: targetPage = 'canvas.php'; break;
+                    default: targetPage = 'canvasLayout2.php'; break;
                 }
                 window.location.href = targetPage;
             } else {
@@ -63,37 +62,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Legacy direct navigation (backup)
-    const layoutBtn1 = document.querySelector('#layout1Btn')
-    const layoutBtn2 = document.querySelector('#layout2Btn')
-    const layoutBtn3 = document.querySelector('#layout3Btn')
-    const layoutBtn4 = document.querySelector('#layout4Btn')
-    const layoutBtn5 = document.querySelector('#layout5Btn')
-    const layoutBtn6 = document.querySelector('#layout6Btn')
-
-    // Original Canvas Buttons
-    const canvas2Btn = document.querySelector('#canvas2Btn')
-    const canvas4Btn = document.querySelector('#canvas4Btn')
-    const canvas6Btn = document.querySelector('#canvas6Btn')
-
-    if (canvas2Btn) {
-        canvas2Btn.addEventListener('click', (e) => {
-            e.preventDefault()
-            window.location.href = './canvas2.php' // Canvas 2 - 2 photos
-        })
-    }
-
-    if (canvas4Btn) {
-        canvas4Btn.addEventListener('click', (e) => {
-            e.preventDefault()
-            window.location.href = './canvas4.php' // Canvas 4 - 4 photos
-        })
-    }
-
-    if (canvas6Btn) {
-        canvas6Btn.addEventListener('click', (e) => {
-            e.preventDefault()
-            window.location.href = './canvas6.php' // Canvas 6 - 6 photos
-        })
-    }
+    // Legacy direct navigation removed to prevent conflicts with popup system
 });

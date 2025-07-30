@@ -149,7 +149,8 @@ SessionManager::requirePayment();
         </div>
     </div>
 
-    <script src="./layout.js"></script>
+    <!-- Script untuk layout.js di-comment untuk mencegah konflik dengan inline script -->
+    <!-- <script src="./layout.js"></script> -->
     <script>
         // Popup functionality dengan preview layout
         let selectedLayout = '';
@@ -731,7 +732,7 @@ SessionManager::requirePayment();
                     
                     // Show popup with reset option
                     alert('Sesi Anda telah berakhir. Silakan mulai ulang dari pembayaran.');
-                    window.location.href = '/index.php';
+                    window.location.href = '/';
                 };
             }
         });

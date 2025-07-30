@@ -213,7 +213,7 @@ require_once '../includes/pwa-helper.php';
             }
 
             // Redirect to index
-            window.location.href = '/index.php';
+            window.location.href = '/';
         }
 
         // Add event listener to finish button

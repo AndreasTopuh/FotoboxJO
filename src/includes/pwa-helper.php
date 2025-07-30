@@ -44,6 +44,8 @@ class PWAHelper {
                     navigator.serviceWorker.register("/sw.js")
                         .then((registration) => {
                             console.log("SW registered: ", registration);
+                            // Force update check
+                            registration.update();
                         })
                         .catch((registrationError) => {
                             console.log("SW registration failed: ", registrationError);

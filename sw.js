@@ -1,47 +1,60 @@
-const CACHE_NAME = 'gofotobox-v13';
+const CACHE_NAME = 'gofotobox-v16-fixed';
 const IS_DEVELOPMENT = self.location.hostname === 'localhost' || self.location.hostname.includes('dev');
+
+// Essential files that should be cached
 const urlsToCache = [
-  'https://gofotobox.online/',
-  'https://gofotobox.online/index.html',
-  'https://gofotobox.online/offline.html',
-  'https://gofotobox.online/src/pages/home-styles.css',
-  'https://gofotobox.online/src/pages/selectpayment.php',
-  'https://gofotobox.online/src/pages/selectlayout.php',
-  'https://gofotobox.online/src/pages/payment-bank.php',
-  'https://gofotobox.online/src/pages/payment-qris.php',
-  'https://gofotobox.online/src/pages/canvasLayout1.php',
-  'https://gofotobox.online/src/pages/canvasLayout2.php',
-  'https://gofotobox.online/src/pages/canvasLayout3.php',
-  'https://gofotobox.online/src/pages/canvasLayout4.php',
-  'https://gofotobox.online/src/pages/canvasLayout5.php',
-  'https://gofotobox.online/src/pages/canvasLayout6.php',
-  'https://gofotobox.online/src/pages/customizeLayout1.php',
-  'https://gofotobox.online/src/pages/customizeLayout2.php',
-  'https://gofotobox.online/src/pages/customizeLayout3.php',
-  'https://gofotobox.online/src/pages/customizeLayout4.php',
-  'https://gofotobox.online/src/pages/customizeLayout5.php',
-  'https://gofotobox.online/src/pages/customizeLayout6.php',
-  'https://gofotobox.online/src/pages/thankyou.php',
-  'https://gofotobox.online/src/assets/icons/logo-gofotobox-new-192.png',
-  'https://gofotobox.online/src/assets/icons/logo-gofotobox-new-512.png',
-  'https://gofotobox.online/src/assets/icons/logo-gofotobox-new-180.png',
-  'https://gofotobox.online/src/assets/bca.png',
-  'https://gofotobox.online/src/assets/qris.png',
-  'https://gofotobox.online/manifest.json',
-  'https://gofotobox.online/styles.css'
+  '/',
+  '/index.php',
+  '/offline.html',
+  '/manifest.json',
+  '/styles.css',
+  '/src/pages/home-styles.css',
+  '/src/assets/icons/logo-gofotobox-new-192.png',
+  '/src/assets/icons/logo-gofotobox-new-512.png',
+  '/src/assets/icons/logo-gofotobox-new-180.png',
+  '/src/assets/bca.png',
+  '/src/assets/qris.png'
 ];
 
-// Install event - cache resources
+// Additional pages to cache (these will be cached dynamically)
+const pagesToCache = [
+  '/src/pages/selectpayment.php',
+  '/src/pages/selectlayout.php',
+  '/src/pages/payment-bank.php',
+  '/src/pages/payment-qris.php',
+  '/src/pages/thankyou.php'
+];
+
+// Install event - cache resources with better error handling
 self.addEventListener('install', (event) => {
   console.log('[ServiceWorker] Install');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('[ServiceWorker] Caching app shell');
-        return cache.addAll(urlsToCache);
+        
+        // Cache files one by one with error handling
+        return Promise.allSettled(
+          urlsToCache.map(url => {
+            return cache.add(url).catch(error => {
+              console.warn('[ServiceWorker] Failed to cache:', url, error);
+              return null; // Continue with other files
+            });
+          })
+        );
       })
-      .then(() => {
+      .then((results) => {
+        const failed = results.filter(result => result.status === 'rejected');
+        if (failed.length > 0) {
+          console.warn('[ServiceWorker] Some files failed to cache:', failed.length);
+        } else {
+          console.log('[ServiceWorker] All essential files cached successfully');
+        }
         return self.skipWaiting();
+      })
+      .catch(error => {
+        console.error('[ServiceWorker] Install failed:', error);
+        return self.skipWaiting(); // Still activate even if some caching fails
       })
   );
 });
@@ -94,7 +107,13 @@ self.addEventListener('fetch', (event) => {
   
   if (shouldSkipCache) {
     console.log('[ServiceWorker] Bypassing cache for:', event.request.url);
-    event.respondWith(fetch(event.request));
+    event.respondWith(fetch(event.request).catch(() => {
+      // Return offline page for navigation requests
+      if (event.request.mode === 'navigate') {
+        return caches.match('/offline.html');
+      }
+      throw error;
+    }));
     return;
   }
 
@@ -117,15 +136,24 @@ self.addEventListener('fetch', (event) => {
           // Clone the response
           const responseToCache = response.clone();
 
+          // Cache the response
           caches.open(CACHE_NAME)
             .then((cache) => {
-              cache.put(event.request, responseToCache);
+              cache.put(event.request, responseToCache).catch(error => {
+                console.warn('[ServiceWorker] Failed to cache response:', error);
+              });
             });
 
           return response;
         });
-      }
-    )
+      })
+      .catch(() => {
+        // If network fails and no cache, return offline page for navigation
+        if (event.request.mode === 'navigate') {
+          return caches.match('/offline.html');
+        }
+        throw error;
+      })
   );
 });
 

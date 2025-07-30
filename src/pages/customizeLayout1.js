@@ -290,6 +290,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize email modal controls
     function initializeEmailModal() {
         const closeEmailModal = document.getElementById('closeEmailModal');
+        const cancelEmailBtn = document.getElementById('cancelEmailBtn');
         const sendEmailBtn = document.getElementById('sendEmailBtn');
         const emailInput = document.getElementById('emailInput');
 
@@ -297,19 +298,24 @@ document.addEventListener('DOMContentLoaded', function () {
             closeEmailModal.addEventListener('click', hideEmailModal);
         }
 
+        if (cancelEmailBtn) {
+            cancelEmailBtn.addEventListener('click', hideEmailModal);
+        }
+
         if (sendEmailBtn) {
             sendEmailBtn.addEventListener('click', () => {
                 const email = emailInput.value.trim();
                 if (!email) {
-                    alert('Mohon masukkan alamat email');
+                    showValidationError('Mohon masukkan alamat email');
                     return;
                 }
 
                 if (!validateEmail(email)) {
-                    alert('Format email tidak valid');
+                    showValidationError('Format email tidak valid');
                     return;
                 }
 
+                hideValidationError();
                 sendPhotoEmail(email);
             });
         }
@@ -322,6 +328,135 @@ document.addEventListener('DOMContentLoaded', function () {
                     hideEmailModal();
                 }
             });
+        }
+
+        // Initialize Virtual Keyboard
+        initializeVirtualKeyboard();
+    }
+
+    // Virtual Keyboard Functions
+    function initializeVirtualKeyboard() {
+        const emailInput = document.getElementById('emailInput');
+        const keyboardKeys = document.querySelectorAll('.key-btn');
+        let capsLock = false;
+
+        keyboardKeys.forEach(key => {
+            key.addEventListener('click', (e) => {
+                e.preventDefault(); // Prevent any default behavior
+                const keyValue = key.getAttribute('data-key');
+                handleKeyPress(keyValue, emailInput);
+            });
+        });
+
+        // Update cursor position when user clicks on input
+        emailInput.addEventListener('click', () => {
+            // Small delay to ensure cursor position is updated
+            setTimeout(() => {
+                emailInput.focus();
+            }, 10);
+        });
+
+        // Prevent input from losing focus when clicking virtual keyboard
+        const virtualKeyboard = document.getElementById('virtualKeyboard');
+        if (virtualKeyboard) {
+            virtualKeyboard.addEventListener('mousedown', (e) => {
+                e.preventDefault(); // Prevent input from losing focus
+            });
+        }
+
+        function handleKeyPress(key, input) {
+            let currentValue = input.value;
+            let cursorPos = input.selectionStart || input.value.length; // Default to end if no selection
+
+            switch(key) {
+                case 'backspace':
+                    if (cursorPos > 0) {
+                        // Remove character before cursor
+                        input.value = currentValue.slice(0, cursorPos - 1) + currentValue.slice(cursorPos);
+                        // Set cursor to position after deletion
+                        setTimeout(() => {
+                            input.setSelectionRange(cursorPos - 1, cursorPos - 1);
+                        }, 0);
+                    }
+                    break;
+                
+                case 'space':
+                    // Insert space at cursor position
+                    input.value = currentValue.slice(0, cursorPos) + ' ' + currentValue.slice(cursorPos);
+                    // Move cursor after the inserted space
+                    setTimeout(() => {
+                        input.setSelectionRange(cursorPos + 1, cursorPos + 1);
+                    }, 0);
+                    break;
+                
+                case 'caps':
+                    capsLock = !capsLock;
+                    updateCapsLockState();
+                    return; // Don't focus or hide validation for caps lock
+                
+                default:
+                    let charToAdd = capsLock ? key.toUpperCase() : key.toLowerCase();
+                    // Insert character at cursor position
+                    input.value = currentValue.slice(0, cursorPos) + charToAdd + currentValue.slice(cursorPos);
+                    // Move cursor after the inserted character
+                    setTimeout(() => {
+                        input.setSelectionRange(cursorPos + 1, cursorPos + 1);
+                    }, 0);
+                    break;
+            }
+
+            // Hide validation error when user types
+            hideValidationError();
+            
+            // Focus back to input and trigger input event
+            setTimeout(() => {
+                input.focus();
+                // Trigger input event for any listeners
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            }, 0);
+        }
+
+        function updateCapsLockState() {
+            const capsKey = document.querySelector('[data-key="caps"]');
+            const letterKeys = document.querySelectorAll('[data-key]');
+            
+            if (capsLock) {
+                capsKey.classList.add('active');
+                letterKeys.forEach(key => {
+                    const keyValue = key.getAttribute('data-key');
+                    if (keyValue.length === 1 && keyValue.match(/[a-z]/i)) {
+                        key.textContent = keyValue.toUpperCase();
+                    }
+                });
+            } else {
+                capsKey.classList.remove('active');
+                letterKeys.forEach(key => {
+                    const keyValue = key.getAttribute('data-key');
+                    if (keyValue.length === 1 && keyValue.match(/[a-z]/i)) {
+                        key.textContent = keyValue.toLowerCase();
+                    }
+                });
+            }
+        }
+
+        // Initialize keyboard state
+        updateCapsLockState();
+    }
+
+    function showValidationError(message) {
+        const validationDiv = document.querySelector('.input-validation');
+        const validationMessage = document.getElementById('validation-message');
+        
+        if (validationDiv && validationMessage) {
+            validationMessage.textContent = message;
+            validationDiv.style.display = 'block';
+        }
+    }
+
+    function hideValidationError() {
+        const validationDiv = document.querySelector('.input-validation');
+        if (validationDiv) {
+            validationDiv.style.display = 'none';
         }
     }
 
@@ -338,8 +473,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Show loading state
         const sendBtn = document.getElementById('sendEmailBtn');
-        const originalText = sendBtn.textContent;
-        sendBtn.textContent = 'Mengirim...';
+        const originalHtml = sendBtn.innerHTML;
+        sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
         sendBtn.disabled = true;
 
         // Convert canvas to blob
@@ -355,20 +490,27 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Email berhasil dikirim!');
-                    hideEmailModal();
-                    document.getElementById('emailInput').value = '';
+                    // Show success message
+                    showValidationError('Email berhasil dikirim! ✅');
+                    document.querySelector('.input-validation span').style.color = '#28a745';
+                    
+                    // Hide modal after delay
+                    setTimeout(() => {
+                        hideEmailModal();
+                        document.getElementById('emailInput').value = '';
+                        hideValidationError();
+                    }, 2000);
                 } else {
-                    alert('Gagal mengirim email: ' + (data.message || 'Unknown error'));
+                    showValidationError('Gagal mengirim email: ' + (data.message || 'Terjadi kesalahan'));
                 }
             })
             .catch(error => {
                 console.error('Email send error:', error);
-                alert('Terjadi kesalahan saat mengirim email');
+                showValidationError('Terjadi kesalahan saat mengirim email');
             })
             .finally(() => {
                 // Reset button state
-                sendBtn.textContent = originalText;
+                sendBtn.innerHTML = originalHtml;
                 sendBtn.disabled = false;
             });
         }, 'image/jpeg', 0.9);

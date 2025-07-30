@@ -420,10 +420,22 @@ document.addEventListener('DOMContentLoaded', () => {
     
             // Display captured image in preview
             if (photoContainer) {
+                const container = document.createElement('div'); // Container untuk foto dan tombol retake
+                container.style.position = 'relative'; // Untuk posisi tombol retake
                 const imgElement = document.createElement('img');
                 imgElement.src = imageData;
                 imgElement.classList.add('photo');
-                photoContainer.appendChild(imgElement);
+                imgElement.addEventListener('click', () => openCarousel(i)); // Tambahkan event listener untuk membuka carousel
+                const retakeBtn = document.createElement('button');
+                retakeBtn.classList.add('retake-btn');
+                retakeBtn.innerHTML = `<img src="/src/assets/retake.png" alt="retake icon">`;
+                retakeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Cegah klik retake memicu carousel
+                    retakeSinglePhoto(i);
+                });
+                container.appendChild(imgElement);
+                container.appendChild(retakeBtn);
+                photoContainer.appendChild(container);
             }
     
             if (progressCounter) progressCounter.textContent = `${i + 1}/${photoCount}`;
@@ -436,11 +448,184 @@ document.addEventListener('DOMContentLoaded', () => {
         if (images.length === photoCount) {
             if (startBtn) {
                 startBtn.disabled = false;
-                startBtn.innerHTML = 'Retake';
+                startBtn.innerHTML = 'Retake All';
             }
             if (uploadBtn) uploadBtn.disabled = false;
             if (doneBtn) doneBtn.style.display = 'block';
         }
+    }
+
+    async function retakeSinglePhoto(index) {
+        const photoCount = 4;
+        const timerOptions = document.getElementById("timerOptions");
+        const selectedValue = parseInt(timerOptions?.value) || 3;
+
+        // Disable buttons to prevent multiple actions
+        if (startBtn) startBtn.disabled = true;
+        if (uploadBtn) uploadBtn.disabled = true;
+        if (doneBtn) doneBtn.disabled = true;
+
+        // Countdown
+        await showCountdown(selectedValue);
+
+        // Flash Effect
+        if (flash) {
+            flash.style.opacity = 1;
+            setTimeout(() => flash.style.opacity = 0, 200);
+        }
+
+        // Ensure video dimensions are loaded
+        if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
+            console.error("Video not ready yet.");
+            alert("Camera not ready. Please try again.");
+            if (startBtn) startBtn.disabled = false;
+            if (uploadBtn) uploadBtn.disabled = false;
+            if (doneBtn) doneBtn.disabled = false;
+            return;
+        }
+
+        // Capture Image with Filter Applied
+        const ctx = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        // Apply current video filter to the canvas
+        ctx.filter = getComputedStyle(video).filter;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Slight delay for iOS fix
+        await new Promise(res => setTimeout(res, 100));
+
+        const imageData = canvas.toDataURL('image/png');
+        console.log(`Retake Image ${index + 1}: `, imageData);
+
+        // Update images array
+        images[index] = imageData;
+
+        // Update photo in container
+        if (photoContainer) {
+            const containers = photoContainer.querySelectorAll('div');
+            if (containers[index]) {
+                const imgElement = containers[index].querySelector('.photo');
+                if (imgElement) imgElement.src = imageData;
+            }
+        }
+
+        // Update progress counter
+        if (progressCounter) progressCounter.textContent = `${images.length}/${photoCount}`;
+
+        // Reset buttons
+        if (startBtn) startBtn.disabled = false;
+        if (uploadBtn) uploadBtn.disabled = false;
+        if (doneBtn) doneBtn.disabled = false;
+    }
+
+    async function showCountdown(selectedValue) {
+        if (!countdownText) return;
+        
+        // Hide grid during countdown
+        if (gridOverlay) {
+            gridOverlay.style.display = 'none';
+        }
+        
+        countdownText.style.display = "flex";
+        for (let countdown = selectedValue; countdown > 0; countdown--) {
+            countdownText.textContent = countdown;
+            countdownText.classList.remove("bounce");
+            void countdownText.offsetWidth; // Trigger reflow for animation
+            countdownText.classList.add("bounce");
+            await new Promise(res => setTimeout(res, 1000));
+        }
+        countdownText.style.display = "none";
+        
+        // Show grid again after countdown
+        if (gridOverlay) {
+            gridOverlay.style.display = 'grid';
+            if (gridToggleBtn) gridToggleBtn.textContent = 'Hide Grid';
+        }
+    }
+    
+    // Automatically trigger the countdown when option changes
+    function updateCountdown() {
+        showCountdown();
+    }
+
+    // Carousel functionality
+    const carouselModal = document.getElementById('carousel-modal');
+    const carouselImage = document.getElementById('carousel-image');
+    const carouselPrevBtn = document.getElementById('carousel-prev-btn');
+    const carouselNextBtn = document.getElementById('carousel-next-btn');
+    const carouselCloseBtn = document.getElementById('carousel-close-btn');
+    const carouselRetakeBtn = document.getElementById('carousel-retake-btn');
+    const carouselIndicators = document.getElementById('carousel-indicators');
+    let currentImageIndex = 0;
+
+    function openCarousel(index) {
+        if (!carouselModal || !carouselImage || images.length === 0) return;
+        
+        currentImageIndex = index;
+        updateCarousel();
+        carouselModal.style.display = 'flex';
+    }
+
+    function updateCarousel() {
+        if (!carouselImage || !carouselIndicators || !carouselRetakeBtn) return;
+        
+        // Update image
+        carouselImage.src = images[currentImageIndex];
+        
+        // Update indicators
+        carouselIndicators.innerHTML = '';
+        images.forEach((_, i) => {
+            const indicator = document.createElement('span');
+            indicator.classList.add('carousel-indicator');
+            if (i === currentImageIndex) {
+                indicator.classList.add('active');
+            }
+            carouselIndicators.appendChild(indicator);
+        });
+        
+        // Update button states
+        if (carouselPrevBtn) {
+            carouselPrevBtn.disabled = currentImageIndex === 0;
+        }
+        if (carouselNextBtn) {
+            carouselNextBtn.disabled = currentImageIndex === images.length - 1;
+        }
+        if (carouselRetakeBtn) {
+            carouselRetakeBtn.style.display = 'block'; // Pastikan tombol retake muncul
+            carouselRetakeBtn.onclick = (e) => {
+                e.stopPropagation(); // Cegah klik memicu carousel
+                retakeSinglePhoto(currentImageIndex);
+                carouselModal.style.display = 'none'; // Tutup modal setelah retake
+            };
+        }
+    }
+
+    if (carouselPrevBtn) {
+        carouselPrevBtn.addEventListener('click', () => {
+            if (currentImageIndex > 0) {
+                currentImageIndex--;
+                updateCarousel();
+            }
+        });
+    }
+
+    if (carouselNextBtn) {
+        carouselNextBtn.addEventListener('click', () => {
+            if (currentImageIndex < images.length - 1) {
+                currentImageIndex++;
+                updateCarousel();
+            }
+        });
+    }
+
+    if (carouselCloseBtn) {
+        carouselCloseBtn.addEventListener('click', () => {
+            if (carouselModal) {
+                carouselModal.style.display = 'none';
+            }
+        });
     }
 
     async function showCountdown(selectedValue) {
@@ -511,16 +696,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 images.push(imageData);
 
                 if (photoContainer) {
+                    const container = document.createElement('div');
+                    container.style.position = 'relative';
                     const imgElement = document.createElement('img');
                     imgElement.src = imageData;
                     imgElement.classList.add('photo');
-                    photoContainer.appendChild(imgElement);
+                    imgElement.addEventListener('click', () => openCarousel(images.length - 1));
+                    const retakeBtn = document.createElement('button');
+                    retakeBtn.classList.add('retake-btn');
+                    retakeBtn.innerHTML = `<img src="/src/assets/retake.png" alt="retake icon">`;
+                    retakeBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        retakeSinglePhoto(images.length - 1);
+                    });
+                    container.appendChild(imgElement);
+                    container.appendChild(retakeBtn);
+                    photoContainer.appendChild(container);
                 }
 
                 if (progressCounter) progressCounter.textContent = `${images.length}/${photoCount}`;
 
                 if (images.length === photoCount) {
-                    if (startBtn) startBtn.innerHTML = 'Retake';
+                    if (startBtn) startBtn.innerHTML = 'Retake All';
                     if (doneBtn) doneBtn.style.display = 'block';
                 }
             };
