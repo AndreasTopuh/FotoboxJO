@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Timer Test - GoFotobox</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #E28585, #FFE4EA);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #E28585;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .test-section {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+        }
+        
+        .test-section h3 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #E28585, #FF6B9D);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(226, 133, 133, 0.3);
+        }
+        
+        .status {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-family: monospace;
+        }
+        
+        .nav-links a {
+            display: inline-block;
+            margin: 5px;
+            padding: 8px 15px;
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .nav-links a:hover {
+            background: #545b62;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Session Timer Test Dashboard</h1>
+        
+        <div class="test-section">
+            <h3>📊 Current Session Status</h3>
+            <button onclick="checkSessionStatus()">Check Session Status</button>
+            <div id="sessionStatus" class="status">Click "Check Session Status" to see current state</div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🎬 Test Session Flow</h3>
+            <button onclick="startPaymentSession('qris')">Start Payment Session (QRIS)</button>
+            <button onclick="startPaymentSession('bank')">Start Payment Session (Bank)</button>
+            <button onclick="completePayment()">Complete Payment</button>
+            <button onclick="selectLayout(1)">Select Layout 1</button>
+            <button onclick="resetSession()">Reset Session</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>🧭 Navigation Links</h3>
+            <div class="nav-links">
+                <a href="/index.php">Index</a>
+                <a href="/src/pages/description.php">Description</a>
+                <a href="/src/pages/selectpayment.php">Select Payment</a>
+                <a href="/src/pages/payment-qris.php">Payment QRIS</a>
+                <a href="/src/pages/selectlayout.php">Select Layout</a>
+                <a href="/src/pages/canvasLayout1.php">Canvas Layout 1</a>
+                <a href="/src/pages/customizeLayout1.php">Customize Layout 1</a>
+                <a href="/src/pages/thankyou.php">Thank You</a>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>⏱️ Timer Controls</h3>
+            <button onclick="setTimerTime(1200)">Set 20 Minutes</button>
+            <button onclick="setTimerTime(300)">Set 5 Minutes</button>
+            <button onclick="setTimerTime(60)">Set 1 Minute</button>
+            <button onclick="setTimerTime(10)">Set 10 Seconds</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>📝 Test Scenarios</h3>
+            <p><strong>Scenario 1:</strong> Normal Flow</p>
+            <ol>
+                <li>Start Payment Session → Complete Payment → Select Layout → Canvas → Customize → Thank You</li>
+            </ol>
+            
+            <p><strong>Scenario 2:</strong> Timer Expiry at Payment</p>
+            <ol>
+                <li>Start Payment Session → Wait for timer to expire</li>
+            </ol>
+            
+            <p><strong>Scenario 3:</strong> Timer Expiry at Canvas (No Photos)</p>
+            <ol>
+                <li>Complete flow to Canvas → Wait for timer to expire (without taking photos)</li>
+            </ol>
+            
+            <p><strong>Scenario 4:</strong> Timer Expiry at Customize</p>
+            <ol>
+                <li>Complete flow to Customize → Wait for timer to expire</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        async function checkSessionStatus() {
+            try {
+                const response = await fetch('/src/api-fetch/session_status.php');
+                const data = await response.json();
+                
+                document.getElementById('sessionStatus').innerHTML = `
+                    <strong>Session Status:</strong> ${data.session_active ? 'Active' : 'Inactive'}<br>
+                    <strong>State:</strong> ${data.session_state || 'N/A'}<br>
+                    <strong>State Display:</strong> ${data.state_display || 'N/A'}<br>
+                    <strong>Time Remaining:</strong> ${data.time_remaining ? formatTime(data.time_remaining) : '0'}<br>
+                    <strong>Payment Completed:</strong> ${data.payment_completed || false}<br>
+                    <strong>Selected Layout:</strong> ${data.selected_layout || 'None'}<br>
+                    <strong>Expires At:</strong> ${data.expires_at || 'N/A'}<br>
+                    <strong>Can Access Payment:</strong> ${data.can_access_payment || false}<br>
+                    <strong>Can Access Layout:</strong> ${data.can_access_layout || false}<br>
+                    <strong>Can Access Canvas:</strong> ${data.can_access_canvas || false}
+                `;
+            } catch (error) {
+                document.getElementById('sessionStatus').innerHTML = `Error: ${error.message}`;
+            }
+        }
+        
+        async function startPaymentSession(method) {
+            try {
+                const response = await fetch('/src/api-fetch/set_session.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'start_payment',
+                        payment_method: method
+                    })
+                });
+                
+                const result = await response.json();
+                alert(`Payment session started: ${result.message}`);
+                checkSessionStatus();
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            }
+        }
+        
+        async function completePayment() {
+            try {
+                const response = await fetch('/src/api-fetch/set_session.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'complete_payment',
+                        order_id: 'TEST_ORDER_' + Date.now()
+                    })
+                });
+                
+                const result = await response.json();
+                alert(`Payment completed: ${result.message}`);
+                checkSessionStatus();
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            }
+        }
+        
+        async function selectLayout(layoutId) {
+            try {
+                const response = await fetch('/src/api-fetch/set_session.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'select_layout',
+                        layout_id: layoutId
+                    })
+                });
+                
+                const result = await response.json();
+                alert(`Layout selected: ${result.message}`);
+                checkSessionStatus();
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            }
+        }
+        
+        async function resetSession() {
+            try {
+                const response = await fetch('/src/api-fetch/reset_session.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'reset' })
+                });
+                
+                const result = await response.json();
+                alert(`Session reset: ${result.message}`);
+                checkSessionStatus();
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            }
+        }
+        
+        async function setTimerTime(seconds) {
+            try {
+                const response = await fetch('/src/api-fetch/set_session.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_expires: Math.floor(Date.now() / 1000) + seconds
+                    })
+                });
+                
+                const result = await response.json();
+                alert(`Timer set to ${formatTime(seconds)}`);
+                checkSessionStatus();
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            }
+        }
+        
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // Auto-refresh status every 5 seconds
+        setInterval(checkSessionStatus, 5000);
+        
+        // Initial status check
+        checkSessionStatus();
+    </script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Layout - Enhanced Popup Test</title>
+    <style>
+        body { font-family: Arial; padding: 2rem; background: #f5f5f5; }
+        .test-card { background: white; padding: 2rem; margin: 1rem 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .status { padding: 0.5rem 1rem; border-radius: 4px; margin: 1rem 0; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button { background: #007bff; color: white; border: none; padding: 1rem 2rem; border-radius: 5px; cursor: pointer; margin: 0.5rem; }
+        button:hover { background: #0056b3; }
+        .feature-list { text-align: left; }
+        .feature-list li { margin: 0.5rem 0; }
+    </style>
+</head>
+<body>
+    <h1>🎯 Select Layout - Enhanced Popup Test</h1>
+    
+    <div class="test-card">
+        <h3>📋 Perubahan yang Diterapkan</h3>
+        <div class="status success">
+            <strong>✅ Enhanced Popup Features:</strong>
+            <ul class="feature-list">
+                <li><strong>Layout Preview</strong> - Menampilkan gambar layout yang dipilih</li>
+                <li><strong>Layout Information</strong> - Judul, deskripsi, dan jumlah foto</li>
+                <li><strong>Konfirmasi Explicit</strong> - User harus tekan "Lanjutkan" untuk proceed</li>
+                <li><strong>Cancel Option</strong> - Tombol "Batal" dan "X" untuk membatalkan</li>
+                <li><strong>Loading State</strong> - Button loading saat memproses</li>
+                <li><strong>Session Timer</strong> - Display timer sesi di pojok kanan atas</li>
+                <li><strong>Mobile Responsive</strong> - Layout stack vertical di mobile</li>
+                <li><strong>Enhanced UI</strong> - Better shadows, gradients, dan animations</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h3>🎨 UI/UX Improvements</h3>
+        <div class="status info">
+            <strong>Design Enhancements:</strong><br>
+            • <strong>Preview Section</strong>: Layout image + info side by side<br>
+            • <strong>Responsive</strong>: Stack vertical di mobile devices<br>
+            • <strong>Visual Feedback</strong>: Loading state dengan emoji ⏳<br>
+            • <strong>Better Buttons</strong>: Gradient backgrounds dengan hover effects<br>
+            • <strong>Specs Display</strong>: Photo count dengan emoji 📸<br>
+            • <strong>Close Handlers</strong>: Multiple ways untuk close popup<br>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h3>⚙️ Technical Features</h3>
+        <div class="status info">
+            <strong>Functionality:</strong><br>
+            • <strong>Layout Data Object</strong>: Centralized layout information<br>
+            • <strong>Dynamic Preview</strong>: Auto-populate berdasarkan selection<br>
+            • <strong>Error Handling</strong>: Proper error states dengan button reset<br>
+            • <strong>Session Integration</strong>: Timer display dan expiration handling<br>
+            • <strong>API Calls</strong>: select_layout.php + create_photo_session.php<br>
+            • <strong>Progressive Enhancement</strong>: Graceful degradation<br>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h3>🧪 Testing Instructions</h3>
+        <div class="status info">
+            <strong>Manual Test Steps:</strong><br>
+            1. ✅ Buka <a href="src/pages/selectlayout.php" target="_blank">selectlayout.php</a><br>
+            2. ✅ Klik salah satu layout button<br>
+            3. ✅ Verify popup menampilkan preview yang benar<br>
+            4. ✅ Check layout title, description, dan photo count<br>
+            5. ✅ Test tombol "Batal" dan "X" untuk close<br>
+            6. ✅ Test tombol "Lanjutkan" - should show loading state<br>
+            7. ✅ Verify redirect ke canvas page yang sesuai<br>
+            8. ✅ Test responsive di mobile viewport<br>
+            9. ✅ Check session timer di pojok kanan atas<br>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h3>📱 Mobile Test</h3>
+        <button onclick="testMobile()">🔍 Test Mobile View</button>
+        <div id="mobile-result" style="margin-top: 1rem;"></div>
+    </div>
+
+    <script>
+        function testMobile() {
+            const resultDiv = document.getElementById('mobile-result');
+            resultDiv.innerHTML = `
+                <div class="status info">
+                    <strong>Mobile Testing:</strong><br>
+                    • Resize browser window to < 768px width<br>
+                    • Layout preview should stack vertically<br>
+                    • Buttons should be full-width<br>
+                    • Popup should be 90% width dengan padding<br>
+                    • Session timer should remain visible<br>
+                </div>
+            `;
+        }
+
+        // Auto-redirect button
+        document.addEventListener('DOMContentLoaded', () => {
+            const link = document.createElement('button');
+            link.textContent = '🚀 Open Select Layout Page';
+            link.style.fontSize = '1.2rem';
+            link.style.padding = '1rem 2rem';
+            link.style.background = 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)';
+            link.onclick = () => window.open('src/pages/selectlayout.php', '_blank');
+            
+            document.body.appendChild(link);
+        });
+    </script>
+</body>
+</html>

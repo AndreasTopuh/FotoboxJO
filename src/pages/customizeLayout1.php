@@ -160,18 +160,10 @@ require_once '../includes/pwa-helper.php';
 </head>
 
 <body>
-    <div id="timer-box" class="timer-box">
-        <span id="timer-display">03:00</span>
-        <p>Time left to customize</p>
+    <div id="session-timer-container" class="timer-box">
+        <span id="session-timer-display">20:00</span>
+        <p>Sisa waktu sesi</p>
     </div>
-    <div id="timeout-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h2>Time's Up!</h2>
-            <p>Your customization session has ended. Redirecting to homepage.</p>
-            <button id="timeout-ok-btn" class="modal-btn">OK</button>
-        </div>
-    </div>
-
     <main id="main-section">
         <div class="gradientBgCanvas"></div>
         <section class="custom-main">
@@ -263,6 +255,21 @@ require_once '../includes/pwa-helper.php';
     </div>
 
     <script src="customizeLayout1.js"></script>
+    
+    <!-- Session Timer Script -->
+    <script src="../includes/session-timer.js"></script>
+    
+    <script>
+        // Custom timer expired handler for customize page
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.sessionTimer) {
+                window.sessionTimer.onExpired = function(page) {
+                    // From customize page, go directly to thank you
+                    window.location.href = 'thankyou.php';
+                };
+            }
+        });
+    </script>
     
     <?php PWAHelper::addPWAScript(); ?>
 </body>

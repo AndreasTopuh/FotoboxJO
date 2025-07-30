@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Timer Fix Test        <div class="status info">
+            <strong>Langkah Testing:</strong><br>
+            1. ✅ Buka <a href="src/pages/description.php" target="_blank">description.php</a> (Responsive check)<br>
+            2. ✅ Pilih <a href="src/pages/selectpayment.php" target="_blank">selectpayment.php</a> (Session timer start)<br>
+            3. ✅ Test <a href="src/pages/payment-qris.php" target="_blank">payment-qris.php</a> (No timer conflict)<br>
+            4. ✅ Test <a href="src/pages/payment-bank.php" target="_blank">payment-bank.php</a> (No timer conflict)<br>
+            5. ✅ Test <a href="src/pages/canvasLayout1.php" target="_blank">canvasLayout1.php</a> (Session timer only)<br>
+            6. ✅ Test <a href="src/pages/customizeLayout1.php" target="_blank">customizeLayout1.php</a> (Session timer only)<br>
+            7. ✅ Refresh halaman beberapa kali - timer harus konsisten<br>
+            8. ✅ Tunggu lebih dari 30 detik - tidak boleh ada alert prematur
+        </div>    <style>
+        body { font-family: Arial; padding: 2rem; background: #f5f5f5; }
+        .test-card { background: white; padding: 2rem; margin: 1rem 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .status { padding: 0.5rem 1rem; border-radius: 4px; margin: 1rem 0; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button { background: #007bff; color: white; border: none; padding: 1rem 2rem; border-radius: 5px; cursor: pointer; margin: 0.5rem; }
+        button:hover { background: #0056b3; }
+        .timer-display { font-size: 2rem; font-weight: bold; color: #ff4444; padding: 1rem; background: #f8f9fa; border-radius: 8px; text-align: center; margin: 1rem 0; }
+    </style>
+</head>
+<body>
+    <h1>🛠️ Timer Fix Test - Session Timer System</h1>
+    
+    <div class="test-card">
+        <h3>📋 Test Checklist</h3>
+        <div class="status info">
+            <strong>Masalah yang diperbaiki:</strong><br>
+            ❌ Timer menampilkan 5 menit tapi session expired setelah 30 detik<br>
+            ❌ Konflik antara timer pembayaran (5 menit) dan session timer (20 menit)<br>
+            ❌ Multiple setInterval causing memory leaks dan alert prematur
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h3>🔧 Perubahan yang Diterapkan</h3>
+        <div class="status success">
+            ✅ Menghapus timer pembayaran lama (timeLeft, timerInterval)<br>
+            ✅ Menghapus session monitoring lama (sessionInterval)<br>
+            ✅ Menghapus timer foto lama di canvas (7 menit timer)<br>
+            ✅ Menghapus timer customize lama (3 menit timer)<br>
+            ✅ Menggunakan SessionTimer universal dari session-timer.js<br>
+            ✅ Timer session 20 menit dimulai saat pilih metode pembayaran<br>
+            ✅ Menghapus modal timeout dan fungsi continueAfterTimeout<br>
+            ✅ Konsisten di semua halaman: payment, canvas, customize
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h3>⏱️ Session Timer Demo</h3>
+        <div id="session-timer-container">
+            <h4>Waktu Sesi Tersisa:</h4>
+            <div id="session-timer-display" class="timer-display">20:00</div>
+        </div>
+        
+        <button onclick="testSessionStatus()">🔍 Cek Status Session</button>
+        <button onclick="testPaymentFlow()">💳 Test Payment Flow</button>
+        
+        <div id="test-results" style="margin-top: 1rem;"></div>
+    </div>
+
+    <div class="test-card">
+        <h3>🎯 Test Manual</h3>
+        <div class="status info">
+            <strong>Langkah Testing:</strong><br>
+            1. Buka <a href="src/pages/description.php" target="_blank">description.php</a> (Responsive check)<br>
+            2. Pilih <a href="src/pages/selectpayment.php" target="_blank">selectpayment.php</a> (Session timer start)<br>
+            3. Test <a href="src/pages/payment-qris.php" target="_blank">payment-qris.php</a> (No timer conflict)<br>
+            4. Test <a href="src/pages/payment-bank.php" target="_blank">payment-bank.php</a> (No timer conflict)<br>
+            5. Refresh halaman beberapa kali - timer harus konsisten<br>
+            6. Tunggu lebih dari 30 detik - tidak boleh ada alert prematur
+        </div>
+    </div>
+
+    <script src="src/includes/session-timer.js"></script>
+    <script>
+        function testSessionStatus() {
+            const resultDiv = document.getElementById('test-results');
+            resultDiv.innerHTML = '<p>🔄 Mengecek status session...</p>';
+            
+            fetch('src/api-fetch/session_status.php')
+                .then(res => res.json())
+                .then(data => {
+                    let result = '<div class="status ' + (data.valid ? 'success' : 'error') + '">';
+                    result += '<strong>Status Session:</strong><br>';
+                    result += `Valid: ${data.valid ? '✅' : '❌'}<br>`;
+                    result += `Expired: ${data.expired ? '❌' : '✅'}<br>`;
+                    result += `Time Remaining: ${data.time_remaining || 'N/A'} seconds<br>`;
+                    result += `Main Timer Start: ${data.main_timer_start || 'Not started'}<br>`;
+                    result += '</div>';
+                    resultDiv.innerHTML = result;
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = '<div class="status error">❌ Error: ' + error.message + '</div>';
+                });
+        }
+
+        function testPaymentFlow() {
+            const resultDiv = document.getElementById('test-results');
+            resultDiv.innerHTML = '<p>🔄 Testing payment session start...</p>';
+            
+            // Simulate payment method selection
+            fetch('src/api-fetch/set_session.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    payment_method: 'qris',
+                    start_main_timer: true 
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                let result = '<div class="status success">';
+                result += '<strong>Payment Session Started:</strong><br>';
+                result += `Success: ${data.success ? '✅' : '❌'}<br>`;
+                result += `Message: ${data.message || 'OK'}<br>`;
+                result += 'Timer 20 menit dimulai!<br>';
+                result += '</div>';
+                resultDiv.innerHTML = result;
+                
+                // Refresh session status
+                setTimeout(() => testSessionStatus(), 1000);
+            })
+            .catch(error => {
+                resultDiv.innerHTML = '<div class="status error">❌ Error: ' + error.message + '</div>';
+            });
+        }
+
+        // Auto-check session status on load
+        document.addEventListener('DOMContentLoaded', () => {
+            testSessionStatus();
+        });
+    </script>
+</body>
+</html>

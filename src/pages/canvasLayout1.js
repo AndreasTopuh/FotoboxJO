@@ -21,105 +21,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function compressImage(imageData, mode = 'session') {
         return new Promise((resolve, reject) => {
             try {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    
-                    let { width, height } = img;
-                    let quality, maxWidth, maxHeight;
-                    
-                    switch(mode) {
-                        case 'session':
-                            quality = COMPRESSION_CONFIG.SESSION_QUALITY;
-                            maxWidth = COMPRESSION_CONFIG.SESSION_MAX_WIDTH;
-                            maxHeight = COMPRESSION_CONFIG.SESSION_MAX_HEIGHT;
-                            break;
-                        case 'download':
-                            quality = COMPRESSION_CONFIG.DOWNLOAD_QUALITY;
-                            maxWidth = COMPRESSION_CONFIG.DOWNLOAD_MAX_WIDTH;
-                            maxHeight = COMPRESSION_CONFIG.DOWNLOAD_MAX_HEIGHT;
-                            break;
-                        case 'thumb':
-                            quality = COMPRESSION_CONFIG.THUMB_QUALITY;
-                            maxWidth = COMPRESSION_CONFIG.THUMB_MAX_WIDTH;
-                            maxHeight = COMPRESSION_CONFIG.THUMB_MAX_HEIGHT;
-                            break;
-                        default:
-                            quality = 0.8;
-                            maxWidth = 1200;
-                            maxHeight = 800;
-                    }
-                    
-                    // Resize jika perlu
-                    if (width > maxWidth || height > maxHeight) {
-                        const ratio = Math.min(maxWidth / width, maxHeight / height);
-                        width *= ratio;
-                        height *= ratio;
-                    }
-                    
-                    canvas.width = width;
-                    canvas.height = height;
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    const compressedData = canvas.toDataURL('image/jpeg', quality);
-                    resolve(compressedData);
-                };
-                img.onerror = () => reject(new Error('Failed to load image'));
-                img.src = imageData;
+                // Simple compression placeholder
+                resolve(imageData);
             } catch (error) {
                 reject(error);
             }
         });
     }
-
-    // Timer functionality
-    const timerDisplay = document.getElementById('timer-display');
-    const timeoutModal = document.getElementById('timeout-modal');
-    const timeoutOkBtn = document.getElementById('timeout-ok-btn');
-    
-    let timeLeft = 7 * 60; // 7 minutes in seconds
-    let timerInterval;
-
-    function updateTimer() {
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        
-        if (timerDisplay) {
-            timerDisplay.textContent = display;
-        }
-        
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            showTimeoutModal();
-        }
-        
-        timeLeft--;
-    }
-
-    function showTimeoutModal() {
-        if (timeoutModal) {
-            timeoutModal.style.display = 'flex';
-        }
-    }
-
-    function hideTimeoutModal() {
-        if (timeoutModal) {
-            timeoutModal.style.display = 'none';
-        }
-    }
-
-    if (timeoutOkBtn) {
-        timeoutOkBtn.addEventListener('click', () => {
-            hideTimeoutModal();
-            window.location.href = 'customizeLayout1.php';
-        });
-    }
-
-    // Start the timer
-    timerInterval = setInterval(updateTimer, 1000);
-    updateTimer(); // Initial call to set display
 
     const video = document.getElementById('video');
     const blackScreen = document.getElementById('blackScreen');

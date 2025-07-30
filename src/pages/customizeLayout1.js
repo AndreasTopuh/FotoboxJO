@@ -1,53 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    // Timer functionality
-    const timerDisplay = document.getElementById('timer-display');
-    const timeoutModal = document.getElementById('timeout-modal');
-    const timeoutOkBtn = document.getElementById('timeout-ok-btn');
-
-    let timeLeft = 3 * 60; // 3 minutes in seconds
-    let timerInterval;
-
-    function updateTimer() {
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-
-        if (timerDisplay) {
-            timerDisplay.textContent = display;
-        }
-
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            showTimeoutModal();
-        }
-
-        timeLeft--;
-    }
-
-    function showTimeoutModal() {
-        if (timeoutModal) {
-            timeoutModal.style.display = 'flex';
-        }
-    }
-
-    function hideTimeoutModal() {
-        if (timeoutModal) {
-            timeoutModal.style.display = 'none';
-        }
-    }
-
-    if (timeoutOkBtn) {
-        timeoutOkBtn.addEventListener('click', () => {
-            hideTimeoutModal();
-            window.location.href = '/';
-        });
-    }
-
-    // Start the timer
-    timerInterval = setInterval(updateTimer, 1000);
-    updateTimer();
-
     // 🎯 PRIORITAS 1: LOAD FOTO TERLEBIH DAHULU
     console.log('🔄 Loading photos first for better UX...');
 

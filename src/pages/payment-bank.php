@@ -42,116 +42,293 @@ SessionManager::requireValidPaymentSession();
   <?php PWAHelper::addPWAHeaders(); ?>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="home-styles.css" />
+  <style>
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .payment-card {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      padding: 3rem;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .back-button {
+      background: rgba(226, 133, 133, 0.1);
+      color: #E28585;
+      border: 2px solid #E28585;
+      border-radius: 25px;
+      padding: 10px 20px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s ease;
+      margin-bottom: 2rem;
+    }
+
+    .back-button:hover {
+      background: #E28585;
+      color: white;
+    }
+
+    .payment-content {
+      display: flex;
+      gap: 3rem;
+      align-items: flex-start;
+    }
+
+    .payment-left {
+      flex: 1;
+    }
+
+    .payment-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .payment-title {
+      color: #333;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .payment-instructions {
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .payment-instructions ol {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .payment-instructions li {
+      margin-bottom: 0.5rem;
+    }
+
+    .va-container, .qr-container {
+      background: rgba(226, 133, 133, 0.1);
+      border: 2px solid #E28585;
+      border-radius: 15px;
+      padding: 2rem;
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .va-number {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #E28585;
+      padding: 1.2rem;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      border: 2px solid #E28585;
+      letter-spacing: 1px;
+      margin: 1rem 0;
+      word-break: break-all;
+      line-height: 1.4;
+      font-family: 'Courier New', monospace;
+    }
+
+    .status-container {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(226, 133, 133, 0.1);
+      border-radius: 10px;
+      border-left: 4px solid #E28585;
+    }
+
+    .loading-container {
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .loading-spinner {
+      border: 4px solid rgba(226, 133, 133, 0.3);
+      border-radius: 50%;
+      border-top: 4px solid #E28585;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-progress {
+      width: 100%;
+      height: 6px;
+      background: rgba(226, 133, 133, 0.3);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 1rem;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: #E28585;
+      border-radius: 3px;
+      animation: progress 2s ease-in-out;
+    }
+
+    @keyframes progress {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+
+    .start-btn {
+      background: #E28585;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 12px 30px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+    }
+
+    .start-btn:hover {
+      background: #d16969;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(226, 133, 133, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .payment-content {
+        flex-direction: column;
+        gap: 2rem;
+      }
+      
+      .container {
+        padding: 1rem;
+      }
+      
+      .payment-card {
+        padding: 2rem;
+      }
+    }
+  </style>
 </head>
 
 <body>
   <div class="gradientBgCanvas"></div>
 
   <div class="container">
-    <div class="glass-card">
-      <div class="select-payment">
-
+    <div class="payment-card">
+      <!-- Back Button with Session Reset -->
+      <a href="#" onclick="resetSessionAndGoHome()" class="back-button">← Kembali ke Home</a>
+      
+      <div class="payment-content">
         <!-- Kiri -->
-        <div class="select-payment-left">
-          <h1 class="hero-title" style="font-size: 2rem; margin-bottom: 1rem;">Pembayaran Virtual Bank BCA</h1>
-          <div class="hero-subtitle payment-bank-instructions" style="text-align: left; margin-top: 0;">
+        <div class="payment-left">
+          <h1 class="payment-title">Pembayaran Virtual Bank BCA</h1>
+          <div class="payment-instructions">
             <p style="margin-bottom: 0.5rem;"><strong>Cara Pembayaran:</strong></p>
-            <ol style="margin: 0; padding-left: 20px; line-height: 1.4;">
-              <li style="margin-bottom: 0.3rem;">Buka aplikasi mobile banking BCA atau ATM BCA</li>
-              <li style="margin-bottom: 0.3rem;">Pilih menu "Transfer" atau "Virtual Account"</li>
-              <li style="margin-bottom: 0.3rem;">Masukkan nomor Virtual Account di sebelah kanan</li>
-              <li style="margin-bottom: 0.3rem;">Konfirmasi nominal pembayaran</li>
-              <li style="margin-bottom: 0;">Selesaikan transaksi pembayaran</li>
+            <ol>
+              <li>Buka aplikasi mobile banking BCA atau ATM BCA</li>
+              <li>Pilih menu "Transfer" atau "Virtual Account"</li>
+              <li>Masukkan nomor Virtual Account di sebelah kanan</li>
+              <li>Konfirmasi nominal pembayaran</li>
+              <li>Selesaikan transaksi pembayaran</li>
             </ol>
           </div>
         </div>
 
-        <!-- Divider -->
-        <div class="select-payment-divider"></div>
-
         <!-- Kanan -->
-        <div class="select-payment-right">
-          <!-- Timer -->
-          <div class="timer-container" style="text-align: center; margin-bottom: 1rem;">
-            <h3 style="color: #ff4444; margin: 0;">Waktu Tersisa:</h3>
-            <div id="timer" style="font-size: 2rem; font-weight: bold; color: #ff4444;">05:00</div>
+        <div class="payment-right">
+          <!-- Loading Spinner -->
+          <div id="loading-container" class="loading-container">
+            <div class="loading-spinner"></div>
+            <p style="color: #333; font-weight: 600;">Membuat Virtual Account...</p>
+            <div class="loading-progress">
+              <div class="progress-bar"></div>
+            </div>
           </div>
           
-          <div class="va-container" style="text-align: center; margin-bottom: 1rem;">
-            <h4 style="margin: 0.5rem 0;">Nomor Virtual Account BCA:</h4>
-            <div id="va" style="font-size: 1.5rem; font-weight: bold; color: #007bff; padding: 1rem; background: #f8f9fa; border-radius: 8px; border: 2px dashed #007bff;">Loading...</div>
+          <!-- VA Container (Hidden saat loading) -->
+          <div id="va-container" class="va-container" style="display: none;">
+            <h4 style="margin: 0 0 1rem 0; color: #333;">Nomor Virtual Account BCA:</h4>
+            <div id="va" class="va-number"></div>
           </div>
           
-          <div class="status-container">
+          <!-- Status Container (Hidden saat loading) -->
+          <div id="status-container" class="status-container" style="display: none;">
             <p id="status" style="margin: 0; color: #333; font-weight: 600;">Status: Menunggu pembayaran...</p>
           </div>
-          
+
           <button id="next" class="start-btn" style="display:none;" onclick="proceedToLayout()">Lanjutkan</button>
         </div>
-
       </div>
     </div>
   </div>
 
     <script>
         let orderId = "";
-        let timeLeft = 300; // 5 menit dalam detik
-        let timerInterval;
         let statusInterval;
-        let sessionInterval;
 
-        // Session monitoring - check setiap 10 detik
-        function startSessionMonitoring() {
-            sessionInterval = setInterval(() => {
-                fetch('../api-fetch/session_status.php')
-                    .then(res => res.json())
-                    .then(data => {
-                        if (!data.valid || data.expired) {
-                            // Session expired, redirect ke index
-                            clearAllIntervals();
-                            alert('Session telah berakhir. Anda akan diarahkan ke halaman utama.');
-                            window.location.href = '/index.php';
-                            return;
-                        }
-                        
-                        // Update timer dari server
-                        if (data.time_remaining !== undefined) {
-                            timeLeft = data.time_remaining;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Session monitoring error:', error);
-                    });
-            }, 10000); // Check setiap 10 detik
+        // Function untuk reset session dan kembali ke home
+        function resetSessionAndGoHome() {
+            // Clear all intervals first
+            clearAllIntervals();
+            
+            // Reset session via API
+            fetch('../api-fetch/reset_session.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(result => {
+                console.log('Session reset result:', result);
+                // Navigate to home regardless of reset result
+                window.location.href = '/index.php';
+            })
+            .catch(error => {
+                console.error('Error resetting session:', error);
+                // Navigate to home even if reset fails
+                window.location.href = '/index.php';
+            });
         }
 
         // Clear all intervals
         function clearAllIntervals() {
-            if (timerInterval) clearInterval(timerInterval);
             if (statusInterval) clearInterval(statusInterval);
-            if (sessionInterval) clearInterval(sessionInterval);
         }
 
-        // Timer countdown
-        function startTimer() {
-            timerInterval = setInterval(() => {
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                
-                document.getElementById('timer').textContent = 
-                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                
-                if (timeLeft <= 0) {
-                    clearAllIntervals();
-                    showTimeoutModal();
-                    return;
-                }
-                
-                timeLeft--;
-            }, 1000);
+        // Function untuk hide loading dan show VA
+        function showVirtualAccount() {
+            // Hide loading
+            document.getElementById('loading-container').style.display = 'none';
+            
+            // Show VA dan status (timer dihandle oleh session-timer.js)
+            document.getElementById('va-container').style.display = 'block';
+            document.getElementById('status-container').style.display = 'block';
         }
 
-        // Fetch Virtual Account dan mulai timer
+        // Fetch Virtual Account dengan loading
         fetch('../api-fetch/charge_bank.php')
             .then(res => res.json())
             .then(data => {
@@ -174,14 +351,18 @@ SessionManager::requireValidPaymentSession();
                 // Tampilkan Virtual Account
                 document.getElementById('va').textContent = data.va_number;
 
-                // Mulai timer, session monitoring dan polling status
-                startTimer();
-                startSessionMonitoring();
-                pollStatus();
+                // Simulasi loading delay (2 detik) untuk UX yang lebih baik
+                setTimeout(() => {
+                    showVirtualAccount();
+                    pollStatus();
+                }, 2000);
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Terjadi kesalahan saat memuat nomor Virtual Account');
+                alert('Terjadi kesalahan saat membuat Virtual Account');
+                
+                // Hide loading jika error
+                document.getElementById('loading-container').style.display = 'none';
             });
 
         function pollStatus() {
@@ -204,8 +385,6 @@ SessionManager::requireValidPaymentSession();
                             .then(response => response.json())
                             .then(result => {
                                 if (result.success) {
-                                    document.getElementById('timer').textContent = "LUNAS";
-                                    document.getElementById('timer').style.color = "#28a745";
                                     document.getElementById('status').style.color = "#28a745";
                                     document.getElementById('next').style.display = "block";
                                 } else {
@@ -220,23 +399,6 @@ SessionManager::requireValidPaymentSession();
             }, 3000);
         }
 
-        // Function untuk menampilkan modal timeout
-        function showTimeoutModal() {
-            const modal = document.getElementById('timeoutModal');
-            modal.style.display = 'flex';
-        }
-
-        // Function untuk reset session dan kembali ke index
-        function continueAfterTimeout() {
-            clearAllIntervals();
-            fetch('../api-fetch/reset_session.php', {
-                method: 'POST'
-            })
-            .then(() => {
-                window.location.href = '/index.php';
-            });
-        }
-
         // Function untuk proceed ke layout selection
         function proceedToLayout() {
             console.log('Payment completed, transitioning to layout selection');
@@ -245,7 +407,7 @@ SessionManager::requireValidPaymentSession();
             clearAllIntervals();
             
             // Navigate langsung karena payment sudah completed via complete_payment.php
-            window.location.href = 'selectlayout.php';
+            window.location.href = './selectlayout.php';
         }
 
         // Handle page unload
@@ -254,59 +416,8 @@ SessionManager::requireValidPaymentSession();
         });
     </script>
 
-    <!-- Modal Timeout -->
-    <div id="timeoutModal" class="modal-overlay" style="display: none;">
-        <div class="modal-content">
-            <h3>Waktu Pembayaran Habis</h3>
-            <p>Waktu pembayaran telah berakhir. Silakan coba lagi.</p>
-            <button onclick="continueAfterTimeout()" class="continue-btn">Lanjutkan</button>
-        </div>
-    </div>
-
-    <style>
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            text-align: center;
-            max-width: 400px;
-            margin: 0 1rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-        
-        .modal-content h3 {
-            color: #ff4444;
-            margin-bottom: 1rem;
-        }
-        
-        .continue-btn {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 600;
-            margin-top: 1rem;
-        }
-        
-        .continue-btn:hover {
-            background: #0056b3;
-        }
-    </style>
+    <!-- Session Timer Script -->
+    <script src="../includes/session-timer.js"></script>
     
     <?php PWAHelper::addPWAScript(); ?>
 </body>

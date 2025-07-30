@@ -131,7 +131,7 @@
                 <h1 class="hero-title">GoFotobox</h1>
             </div>
             <p class="hero-subtitle">Capture the moment, style your photo, and print it instantly.</p>
-            <a href="./src/pages/selectpayment.php">
+            <a href="./src/pages/description.php">
                 <button class="start-btn">Mulai</button>
             </a>
             <p class="instruction-text">Tekan untuk memulai sesi foto</p>

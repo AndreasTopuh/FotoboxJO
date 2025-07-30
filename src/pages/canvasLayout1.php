@@ -1,6 +1,6 @@
 <?php
 // Include session protection - ini akan memastikan user sudah bayar
-
+require_once '../includes/session-protection.php';
 
 // Include PWA helper
 require_once '../includes/pwa-helper.php';
@@ -476,19 +476,10 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
 </head>
 
 <body>
-    <!-- Timer Box -->
-    <div id="timer-box" class="timer-box">
-        <span id="timer-display">07:00</span>
-        <p>Sisa waktu untuk mengambil foto</p>
-    </div>
-
-    <!-- Timeout Modal -->
-    <div id="timeout-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h2>Waktu Habis!</h2>
-            <p id="timeout-message">Sesi foto Anda telah berakhir.</p>
-            <button id="timeout-ok-btn" class="modal-btn">OK</button>
-        </div>
+    <!-- Session Timer Box -->
+    <div id="session-timer-container" class="timer-box">
+        <span id="session-timer-display">20:00</span>
+        <p>Sisa waktu sesi</p>
     </div>
 
     <!-- Carousel Modal -->
@@ -573,7 +564,29 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
 
     <script src="canvasLayout1.js"></script>
     <script src="debug-camera.js"></script>
-    <script src="../includes/session-monitor.js"></script>
+    
+    <!-- Session Timer Script -->
+    <script src="../includes/session-timer.js"></script>
+    
+    <script>
+        // Custom timer expired handler for canvas page
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.sessionTimer) {
+                window.sessionTimer.onExpired = function(page) {
+                    // From canvas page, check photo count first
+                    const photoElements = document.querySelectorAll('#photoPreview img, #photoPreview canvas, .photo');
+                    if (photoElements.length > 0) {
+                        // Has photos, go to customize
+                        window.location.href = 'customizeLayout1.php';
+                    } else {
+                        // No photos, reset and go to index
+                        window.location.href = '/';
+                    }
+                };
+            }
+        });
+    </script>
+    
     <?php PWAHelper::addPWAScript(); ?>
 </body>
 

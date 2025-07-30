@@ -2,7 +2,8 @@
 class SessionManager {
     
     // Timer constants
-    const PAYMENT_TIMEOUT = 300; // 5 menit dalam detik
+    const SESSION_TIMEOUT = 1200; // 20 menit dalam detik (total session time)
+    const PAYMENT_TIMEOUT = 300; // 5 menit untuk pembayaran
     const LAYOUT_TIMEOUT = 900; // 15 menit untuk layout selection
     
     // Session states - progressive flow
@@ -59,12 +60,12 @@ class SessionManager {
         session_destroy();
         session_start();
         
-        // Set session payment dengan timer 5 menit
+        // Set session dengan timer 20 menit total
         $_SESSION['session_type'] = 'payment';
         $_SESSION['session_start'] = time();
-        $_SESSION['session_expires'] = time() + self::PAYMENT_TIMEOUT;
+        $_SESSION['session_expires'] = time() + self::SESSION_TIMEOUT; // 20 menit total
         $_SESSION['payment_completed'] = false;
-        $_SESSION['payment_timer'] = time() + self::PAYMENT_TIMEOUT;
+        $_SESSION['main_timer_start'] = time(); // Main timer dimulai saat pilih metode pembayaran
         
         self::setSessionState(self::STATE_PAYMENT_PENDING);
         
@@ -76,12 +77,11 @@ class SessionManager {
             return false;
         }
         
-        // Mark payment as completed
+        // Mark payment as completed - timer tetap menggunakan main timer (tidak direset)
         $_SESSION['payment_completed'] = true;
         $_SESSION['payment_completed_at'] = time();
         $_SESSION['session_type'] = 'layout_selection';
-        $_SESSION['session_expires'] = time() + self::LAYOUT_TIMEOUT; // Extend untuk layout selection
-        $_SESSION['layout_timer'] = time() + self::LAYOUT_TIMEOUT;
+        // Tidak mengubah session_expires karena tetap menggunakan timer 20 menit dari awal
         
         if ($orderId) {
             $_SESSION['order_id'] = $orderId;
@@ -99,8 +99,7 @@ class SessionManager {
         
         $_SESSION['selected_layout'] = $layoutId;
         $_SESSION['layout_selected_at'] = time();
-        $_SESSION['photo_timer'] = time() + self::LAYOUT_TIMEOUT; // 15 minutes for photo session
-        $_SESSION['session_expires'] = time() + self::LAYOUT_TIMEOUT;
+        // Tidak mengubah session_expires karena tetap menggunakan timer 20 menit dari awal
         
         self::setSessionState(self::STATE_LAYOUT_SELECTED);
         
@@ -228,6 +227,21 @@ class SessionManager {
         
         $remaining = $_SESSION['session_expires'] - time();
         return max(0, $remaining);
+    }
+    
+    public static function getMainTimerRemaining() {
+        self::initializeSession();
+        
+        if (!isset($_SESSION['main_timer_start']) || !isset($_SESSION['session_expires'])) {
+            return 0;
+        }
+        
+        $remaining = $_SESSION['session_expires'] - time();
+        return max(0, $remaining);
+    }
+    
+    public static function isMainTimerExpired() {
+        return self::getMainTimerRemaining() <= 0;
     }
     
     public static function destroySession() {

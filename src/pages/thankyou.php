@@ -2,8 +2,8 @@
 // Include PWA helper
 require_once '../includes/pwa-helper.php';
 
-// Set timer untuk auto redirect (1 menit)
-$timeLeft = 60; // 1 menit dalam detik
+// Tidak menggunakan session timer di halaman thank you
+// Halaman ini mengabaikan semua session timer
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -20,29 +20,65 @@ $timeLeft = 60; // 1 menit dalam detik
 <body>
     <div class="gradientBgCanvas"></div>
 
-    <!-- Timer Session -->
-    <div id="session-timer">
-        <div>Waktu Tersisa: <span id="timer"><?php echo sprintf('%02d:%02d', floor($timeLeft / 60), $timeLeft % 60); ?></span></div>
-    </div>
-
     <div class="container">
         <div class="glass-card">
             <div class="thank-you-content">
-                <h1 class="hero-title">GoFotobox</h1>
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <img src="/src/assets/icons/logo-gofotobox-new-180.png" alt="GoFotobox Logo" style="width: 80px; height: 80px; border-radius: 12px; object-fit: cover;">
+                </div>
                 
-                <div class="thank-you-message">
-                    <h2 class="thank-you-title">✨ Terima Kasih! ✨</h2>
-                    <p class="hero-subtitle">
-                        Terima kasih sudah menggunakan GoBooth.<br>
-                        Sampai jumpa lagi!
+                <h1 class="hero-title" style="text-align: center; margin-bottom: 1rem;">GoFotobox</h1>
+                
+                <div class="thank-you-message" style="text-align: center; margin-bottom: 2rem;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">✨</div>
+                    <h2 class="thank-you-title" style="color: #E28585; font-size: 2rem; margin-bottom: 1rem;">Terima Kasih!</h2>
+                    <p class="hero-subtitle" style="font-size: 1.1rem; line-height: 1.6;">
+                        Foto Anda telah berhasil diproses dan dicetak.<br>
+                        Silakan ambil hasil cetakan Anda.<br><br>
+                        Terima kasih sudah menggunakan GoFotobox!
                     </p>
                 </div>
-                <button id="finishBtn" class="start-btn">
-                    Selesai
-                </button>
+                
+                <div style="text-align: center;">
+                    <button id="finishBtn" class="start-btn" style="
+                        background: linear-gradient(135deg, #E28585, #FF6B9D);
+                        color: white;
+                        border: none;
+                        border-radius: 25px;
+                        padding: 15px 40px;
+                        font-weight: 600;
+                        font-size: 1.1rem;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        min-width: 200px;
+                    ">
+                        Selesai
+                    </button>
+                </div>
             </div>
         </div>
     </div>
+
+    <style>
+        .thank-you-content {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(226, 133, 133, 0.4);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
 
     <script>
         // Session timer
@@ -159,6 +195,30 @@ $timeLeft = 60; // 1 menit dalam detik
             }
         }
     </style>
+
+    <script>
+        // Reset session and redirect to index
+        async function resetSessionAndRedirect() {
+            try {
+                // Reset session on server
+                await fetch('../api-fetch/reset_session.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ action: 'reset' })
+                });
+            } catch (error) {
+                console.error('Error resetting session:', error);
+            }
+
+            // Redirect to index
+            window.location.href = '/index.php';
+        }
+
+        // Add event listener to finish button
+        document.getElementById('finishBtn').addEventListener('click', resetSessionAndRedirect);
+    </script>
     
     <?php PWAHelper::addPWAScript(); ?>
 </body>

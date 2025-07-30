@@ -1,11 +1,5 @@
 <?php
-// Set proper session configuration for PWA Production
-ini_set('session.cookie_httponly', 1);
-ini_set('session.cookie_secure', 1); // HTTPS in production
-ini_set('session.cookie_samesite', 'Lax');
-ini_set('session.use_strict_mode', 0);
-
-session_start();
+require_once '../includes/session-manager.php';
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -20,6 +14,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
     
+    // Handle start payment action
+    if (isset($input['action']) && $input['action'] === 'start_payment') {
+        $paymentMethod = $input['payment_method'] ?? 'unknown';
+        
+        // Start the 20-minute session timer
+        $session = SessionManager::startPaymentSession();
+        
+        // Store payment method
+        $_SESSION['selected_payment_method'] = $paymentMethod;
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Payment session started',
+            'session_state' => SessionManager::getSessionState(),
+            'time_remaining' => SessionManager::getMainTimerRemaining(),
+            'payment_method' => $paymentMethod,
+            'session_start' => $_SESSION['main_timer_start']
+        ]);
+        exit();
+    }
+    
+    // Handle payment completion
+    if (isset($input['action']) && $input['action'] === 'complete_payment') {
+        $orderId = $input['order_id'] ?? null;
+        
+        if (SessionManager::completePayment($orderId)) {
+            echo json_encode([
+                'success' => true,
+                'message' => 'Payment completed',
+                'session_state' => SessionManager::getSessionState(),
+                'time_remaining' => SessionManager::getMainTimerRemaining()
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to complete payment'
+            ]);
+        }
+        exit();
+    }
+    
+    // Handle layout selection
+    if (isset($input['action']) && $input['action'] === 'select_layout') {
+        $layoutId = $input['layout_id'] ?? null;
+        
+        if ($layoutId && SessionManager::selectLayout($layoutId)) {
+            echo json_encode([
+                'success' => true,
+                'message' => 'Layout selected',
+                'session_state' => SessionManager::getSessionState(),
+                'time_remaining' => SessionManager::getMainTimerRemaining(),
+                'selected_layout' => $layoutId
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to select layout'
+            ]);
+        }
+        exit();
+    }
+    
+    // Legacy support for backward compatibility
     $updated_fields = [];
     
     // Handle order ID setting
@@ -39,16 +96,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($input['session_type'])) {
         $_SESSION['session_type'] = $input['session_type'];
         $updated_fields[] = 'session_type';
-    }
-    
-    // Handle extended session time for PWA
-    if (isset($input['payment_expired_time'])) {
-        $_SESSION['payment_expired_time'] = $input['payment_expired_time'];
-        $updated_fields[] = 'payment_expired_time';
-    } elseif (isset($input['payment_completed']) && $input['payment_completed'] === true) {
-        // Auto-set expiration time if payment completed
-        $_SESSION['payment_expired_time'] = time() + (15 * 60); // 15 minutes
-        $updated_fields[] = 'auto_payment_expired_time';
     }
     
     // Handle manual session expires (for testing)
