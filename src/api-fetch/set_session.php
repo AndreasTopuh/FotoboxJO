@@ -34,6 +34,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
         exit();
     }
+
+    // Handle developer session - skip payment with same 20 minute timer
+    if (isset($input['action']) && $input['action'] === 'start_developer_session') {
+        // Start the 20-minute session timer (same as payment)
+        $session = SessionManager::startPaymentSession();
+        
+        // Automatically complete payment for developer
+        SessionManager::completePayment('DEV_ACCESS_' . time());
+        
+        // Mark as developer session
+        $_SESSION['is_developer_session'] = true;
+        $_SESSION['selected_payment_method'] = 'developer';
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Developer session started',
+            'session_state' => SessionManager::getSessionState(),
+            'time_remaining' => SessionManager::getMainTimerRemaining(),
+            'payment_method' => 'developer',
+            'is_developer' => true,
+            'session_start' => $_SESSION['main_timer_start']
+        ]);
+        exit();
+    }
     
     // Handle payment completion
     if (isset($input['action']) && $input['action'] === 'complete_payment') {

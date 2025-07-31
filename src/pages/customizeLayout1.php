@@ -17,7 +17,7 @@ require_once '../includes/pwa-helper.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Customize your Layout 1 photobooth photos with frames, stickers, and text.">
     <title>Photobooth | Customize Layout 1</title>
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="home-styles.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Syne:wght@400;700&display=swap" rel="stylesheet">
     <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png" />
@@ -606,6 +606,16 @@ require_once '../includes/pwa-helper.php';
             </div>
         </div>
     </div>
+
+    <!-- EmailJS Scripts -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function(){
+            emailjs.init({
+                publicKey: "9SDzOfKjxuULQ5ZW8",
+            });
+        })();
+    </script>
 
     <script src="customizeLayout1.js"></script>
     

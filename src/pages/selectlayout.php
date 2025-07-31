@@ -64,6 +64,12 @@ SessionManager::requirePayment();
         <section id="choose-layout">
             <div class="gradientBgCanvas"></div>
             <div class="content-container">
+                <?php if (isset($_SESSION['is_developer_session']) && $_SESSION['is_developer_session']): ?>
+                    <div style="position: fixed; top: 10px; right: 10px; background: rgba(226, 133, 133, 0.9); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; z-index: 1000;">
+                        Developer Mode
+                    </div>
+                <?php endif; ?>
+                
                 <h1 class="custom-heading layout-heading">choose your layout</h1>
                 <p class="layout-subtext">NOTE: you have 3 seconds for each shot</p>
                 

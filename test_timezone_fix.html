@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Timezone Fix</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        .success { border-left: 4px solid #4CAF50; }
+        .info { border-left: 4px solid #2196F3; }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover { background: #45a049; }
+        .result { margin-top: 20px; padding: 10px; background: #f0f0f0; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="test-box info">
+        <h2>🕒 Test Timezone Fix - Waktu Makassar</h2>
+        <p>Test ini akan memverifikasi bahwa sistem sekarang menggunakan timezone Makassar (WITA) dengan benar.</p>
+    </div>
+
+    <div class="test-box success">
+        <h3>Informasi Waktu Server</h3>
+        <div id="serverTime">
+            <?php
+            // Set timezone to Makassar (WITA)
+            date_default_timezone_set('Asia/Makassar');
+            
+            echo "<strong>Timezone:</strong> " . date_default_timezone_get() . "<br>";
+            echo "<strong>Waktu Sekarang:</strong> " . date('Y-m-d H:i:s') . "<br>";
+            echo "<strong>Timestamp:</strong> " . time() . "<br>";
+            echo "<strong>30 Menit Kedepan:</strong> " . date('Y-m-d H:i:s', time() + (30 * 60)) . "<br>";
+            ?>
+        </div>
+    </div>
+
+    <div class="test-box">
+        <h3>Test Save Photo dengan Timezone Baru</h3>
+        <button onclick="testSavePhoto()">Test Save Photo</button>
+        <div id="saveResult" class="result" style="display:none;"></div>
+    </div>
+
+    <script>
+        async function testSavePhoto() {
+            try {
+                // Create a simple test canvas
+                const canvas = document.createElement('canvas');
+                canvas.width = 400;
+                canvas.height = 300;
+                const ctx = canvas.getContext('2d');
+                
+                // Draw test content
+                ctx.fillStyle = '#4CAF50';
+                ctx.fillRect(0, 0, 400, 300);
+                ctx.fillStyle = 'white';
+                ctx.font = '20px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('TIMEZONE TEST', 200, 150);
+                ctx.fillText(new Date().toLocaleString('id-ID', {timeZone: 'Asia/Makassar'}), 200, 180);
+                
+                const imageData = canvas.toDataURL('image/png');
+                
+                const response = await fetch('/src/api-fetch/save_final_photo.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        image: imageData
+                    })
+                });
+                
+                const result = await response.text();
+                console.log('Raw response:', result);
+                
+                const data = JSON.parse(result);
+                
+                const resultDiv = document.getElementById('saveResult');
+                resultDiv.style.display = 'block';
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div style="color: green;">
+                            <strong>✅ SUCCESS!</strong><br>
+                            <strong>URL:</strong> <a href="${data.url}" target="_blank">${data.url}</a><br>
+                            <strong>Token:</strong> ${data.token}<br>
+                            <strong>Expires at:</strong> ${data.expires_at} (Waktu Makassar)<br>
+                            <br>
+                            <a href="${data.url}" target="_blank" style="background: #2196F3; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px;">
+                                🔗 Buka Link Foto
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div style="color: red;"><strong>❌ ERROR:</strong> ${data.error}</div>`;
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                const resultDiv = document.getElementById('saveResult');
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `<div style="color: red;"><strong>❌ ERROR:</strong> ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

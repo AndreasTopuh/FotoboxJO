@@ -41,7 +41,7 @@ $timeLeft = $_SESSION['customize_expired_time'] - time();
     <meta name="twitter:description"
         content="Customize your 4R photobooth photos. Add frames, stickers, and text.">
     <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png">
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="home-styles.css" />
     <link
         href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&display=swap"
         rel="stylesheet">
@@ -207,6 +207,16 @@ $timeLeft = $_SESSION['customize_expired_time'] - time();
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/vanilla-picker@2.12.1/dist/vanilla-picker.min.js"></script>
+    <!-- EmailJS Scripts -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function(){
+            emailjs.init({
+                publicKey: "9SDzOfKjxuULQ5ZW8",
+            });
+        })();
+    </script>
+
     <script src="customizeLayout2.js"></script>
     <?php PWAHelper::addPWAScript(); ?>
 </body>

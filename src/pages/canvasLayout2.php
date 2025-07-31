@@ -38,7 +38,6 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     <meta name="twitter:description"
         content="Take instant photobooth-style photos online with Layout 2. Perfect for 4-photo grids." />
     <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png" />
-    <link rel="stylesheet" href="/styles.css?v=<?php echo time(); ?>" />
     <link rel="stylesheet" href="home-styles.css?v=<?php echo time(); ?>" />
     <!-- Cache Control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
@@ -263,7 +262,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             align-items: center;
             justify-content: center;
             width: 100%;
-            max-width: 800px;
+            max-width: 100%;
             height: auto;
             background: rgba(0, 0, 0, 0.8);
             border-radius: 20px;
@@ -1058,7 +1057,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                     <button id="bnwFilterId" class="filterBtn"></button>
                     <button id="sepiaFilterId" class="filterBtn"></button>
                     <button id="normalFilterId" class="filterBtn"></button>
-                    <button id="invertBtn"><img src="/src/assets/mirror-icon.svg" alt="mirror icon" id="mirror-icon"></button>
+                    <!-- <button id="invertBtn"><img src="/src/assets/mirror-icon.svg" alt="mirror icon" id="mirror-icon"></button> -->
                     <button id="gridToggleBtn">Show Grid</button>
                 </div>
                 <div>

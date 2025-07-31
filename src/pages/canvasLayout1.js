@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
     const blackScreen = document.getElementById('blackScreen');
     const countdownText = document.getElementById('countdownText');
     const progressCounter = document.getElementById('progressCounter');
@@ -189,9 +190,251 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
 
-    const canvas = document.createElement('canvas');
     let images = [];
+    let currentPhotoIndex = 0;
+    const expectedPhotos = 2; // Layout 1 has 2 photos
     let invertBtnState = false;
+
+    // Update UI state
+    function updateUI() {
+        const progressCounter = document.getElementById('progressCounter');
+        const startBtn = document.getElementById('startBtn');
+        const retakeAllBtn = document.getElementById('retakeAllBtn');
+        const doneBtn = document.getElementById('doneBtn');
+        
+        if (progressCounter) {
+            progressCounter.textContent = `${images.length}/${expectedPhotos}`;
+        }
+        
+        // Enable/disable retake all button
+        if (retakeAllBtn) {
+            retakeAllBtn.disabled = images.length === 0;
+        }
+        
+        // Show done button when all photos are taken
+        if (images.length === expectedPhotos) {
+            if (startBtn) startBtn.style.display = 'none';
+            if (doneBtn) doneBtn.style.display = 'block';
+        } else {
+            if (startBtn) startBtn.style.display = 'block';
+            if (doneBtn) doneBtn.style.display = 'none';
+        }
+        
+        // Update start button text
+        if (startBtn && images.length < expectedPhotos) {
+            startBtn.textContent = `CAPTURE PHOTO ${images.length + 1}`;
+        }
+    }
+
+    // Update photo preview slots
+    function updatePhotoPreview(index, imageData) {
+        const photoSlot = document.querySelector(`.photo-preview-slot[data-index="${index}"]`);
+        if (!photoSlot) return;
+        
+        // Clear existing content
+        photoSlot.innerHTML = '';
+        
+        // Add image
+        const img = document.createElement('img');
+        img.src = imageData;
+        img.alt = `Photo ${index + 1}`;
+        photoSlot.appendChild(img);
+        
+        // Add retake button
+        const retakeBtn = document.createElement('button');
+        retakeBtn.className = 'retake-photo-btn';
+        retakeBtn.innerHTML = '↻';
+        retakeBtn.onclick = () => retakeSinglePhoto(index);
+        photoSlot.appendChild(retakeBtn);
+        
+        // Add filled class
+        photoSlot.classList.add('filled');
+    }
+
+    // Clear photo preview slot
+    function clearPhotoPreview(index) {
+        const photoSlot = document.querySelector(`.photo-preview-slot[data-index="${index}"]`);
+        if (!photoSlot) return;
+        
+        photoSlot.innerHTML = `<div class="photo-placeholder">Photo ${index + 1}</div>`;
+        photoSlot.classList.remove('filled');
+    }
+
+    // Single photo capture function
+    async function capturePhoto() {
+        if (images.length >= expectedPhotos) {
+            alert('All photos have been captured!');
+            return;
+        }
+        
+        const startBtn = document.getElementById('startBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
+        
+        // Disable buttons during capture
+        if (startBtn) {
+            startBtn.disabled = true;
+            startBtn.textContent = 'Capturing...';
+        }
+        if (uploadBtn) uploadBtn.disabled = true;
+        
+        try {
+            // Get the selected timer value
+            const timerOptions = document.getElementById("timerOptions");
+            const selectedValue = parseInt(timerOptions?.value) || 3;
+            
+            // Countdown
+            await showCountdown(selectedValue);
+            
+            // Flash Effect
+            if (flash) {
+                flash.style.opacity = 1;
+                setTimeout(() => flash.style.opacity = 0, 200);
+            }
+            
+            // Ensure video dimensions are loaded
+            if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
+                throw new Error("Camera not ready. Please try again.");
+            }
+            
+            // Ensure canvas exists
+            if (!canvas) {
+                throw new Error("Canvas element not found. Please refresh the page.");
+            }
+            
+            // Capture Image with Filter Applied
+            const ctx = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            // Apply current video filter to the canvas
+            ctx.filter = getComputedStyle(video).filter;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Apply mirror effect if enabled
+            let imageData = canvas.toDataURL('image/png');
+            if (invertBtnState) {
+                imageData = await applyMirrorEffect(imageData);
+            }
+            
+            // Add to images array
+            images.push(imageData);
+            console.log(`Captured Photo ${images.length}: `, imageData);
+            
+            // Update photo preview
+            updatePhotoPreview(images.length - 1, imageData);
+            
+            // Update UI
+            updateUI();
+            
+        } catch (error) {
+            console.error('Error capturing photo:', error);
+            alert(error.message || 'Error capturing photo. Please try again.');
+        } finally {
+            // Re-enable buttons
+            if (startBtn) {
+                startBtn.disabled = false;
+                if (images.length < expectedPhotos) {
+                    startBtn.textContent = `CAPTURE PHOTO ${images.length + 1}`;
+                }
+            }
+            if (uploadBtn) uploadBtn.disabled = false;
+        }
+    }
+
+    // Retake single photo function
+    async function retakeSinglePhoto(index) {
+        if (index < 0 || index >= images.length) return;
+        
+        const startBtn = document.getElementById('startBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const doneBtn = document.getElementById('doneBtn');
+        
+        // Disable buttons during retake
+        if (startBtn) startBtn.disabled = true;
+        if (uploadBtn) uploadBtn.disabled = true;
+        if (doneBtn) doneBtn.disabled = true;
+        
+        try {
+            // Get the selected timer value
+            const timerOptions = document.getElementById("timerOptions");
+            const selectedValue = parseInt(timerOptions?.value) || 3;
+            
+            // Countdown
+            await showCountdown(selectedValue);
+            
+            // Flash Effect
+            if (flash) {
+                flash.style.opacity = 1;
+                setTimeout(() => flash.style.opacity = 0, 200);
+            }
+            
+            // Ensure video dimensions are loaded
+            if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
+                throw new Error("Camera not ready. Please try again.");
+            }
+            
+            // Ensure canvas exists
+            if (!canvas) {
+                throw new Error("Canvas element not found. Please refresh the page.");
+            }
+            
+            // Capture Image with Filter Applied
+            const ctx = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            // Apply current video filter to the canvas
+            ctx.filter = getComputedStyle(video).filter;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Apply mirror effect if enabled
+            let imageData = canvas.toDataURL('image/png');
+            if (invertBtnState) {
+                imageData = await applyMirrorEffect(imageData);
+            }
+            
+            // Update images array
+            images[index] = imageData;
+            console.log(`Retake Photo ${index + 1}: `, imageData);
+            
+            // Update photo preview
+            updatePhotoPreview(index, imageData);
+            
+            // Update UI
+            updateUI();
+            
+        } catch (error) {
+            console.error('Error retaking photo:', error);
+            alert(error.message || 'Error retaking photo. Please try again.');
+        } finally {
+            // Re-enable buttons
+            if (startBtn) startBtn.disabled = false;
+            if (uploadBtn) uploadBtn.disabled = false;
+            if (doneBtn) doneBtn.disabled = false;
+        }
+    }
+
+    // Retake all photos function
+    function retakeAllPhotos() {
+        const confirmReset = confirm("Are you sure you want to retake all photos?");
+        if (!confirmReset) return;
+        
+        // Clear all images
+        images = [];
+        
+        // Clear all photo previews
+        for (let i = 0; i < expectedPhotos; i++) {
+            clearPhotoPreview(i);
+        }
+        
+        // Update UI
+        updateUI();
+        
+        console.log('All photos cleared for retake');
+    }
+
+    // Global function for HTML onclick
+    window.retakeSinglePhoto = retakeSinglePhoto;
 
     if(invertBtn) {
         invertBtn.addEventListener('click', () => {
@@ -268,165 +511,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Legacy function - not used in new single-capture system
+    // Keeping for backward compatibility only
     async function startPhotobooth() {
-        const photoCount = 2; // Layout 1 has 2 photos
-        
-        if (images.length > 0) {
-            const confirmReset = confirm("You already have pictures. Do you want to retake them?");
-            if (!confirmReset) return;
-    
-            images = [];
-            if (photoContainer) photoContainer.innerHTML = '';
-            if (progressCounter) progressCounter.textContent = `0/${photoCount}`;
-            if (doneBtn) doneBtn.style.display = 'none';
-        }
-    
-        // Disable buttons to prevent multiple actions
-        if (startBtn) {
-            startBtn.disabled = true;
-            startBtn.innerHTML = 'Capturing...';
-        }
-        if (uploadBtn) uploadBtn.disabled = true;
-        if (progressCounter) progressCounter.textContent = `0/${photoCount}`;
-    
-        // Get the selected timer value
-        const timerOptions = document.getElementById("timerOptions");
-        const selectedValue = parseInt(timerOptions?.value) || 3; // Default to 3 if no value is selected
-    
-        for (let i = 0; i < photoCount; i++) {
-            // Countdown using selected timer
-            await showCountdown(selectedValue);
-    
-            // Flash Effect
-            if (flash) {
-                flash.style.opacity = 1;
-                setTimeout(() => flash.style.opacity = 0, 200);
-            }
-    
-            // Ensure video dimensions are loaded before capturing
-            if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
-                console.error("Video not ready yet.");
-                alert("Camera not ready. Please try again.");
-                return;
-            }
-    
-            // Capture Image with Filter Applied
-            const ctx = canvas.getContext('2d');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-    
-            // Apply current video filter to the canvas
-            ctx.filter = getComputedStyle(video).filter;
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
-            // Slight delay for iOS fix
-            await new Promise(res => setTimeout(res, 100)); 
-    
-            const imageData = canvas.toDataURL('image/png');
-            console.log("Captured Image: ", imageData);
-            images.push(imageData);
-    
-            // Display captured image in preview
-            if (photoContainer) {
-                const container = document.createElement('div'); // Container untuk foto dan tombol retake
-                container.style.position = 'relative'; // Untuk posisi tombol retake
-                const imgElement = document.createElement('img');
-                imgElement.src = imageData;
-                imgElement.classList.add('photo');
-                imgElement.addEventListener('click', () => openCarousel(i)); // Tambahkan event listener untuk membuka carousel
-                const retakeBtn = document.createElement('button');
-                retakeBtn.classList.add('retake-btn');
-                retakeBtn.innerHTML = `<img src="/src/assets/retake.png" alt="retake icon">`;
-                retakeBtn.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Cegah klik retake memicu carousel
-                    retakeSinglePhoto(i);
-                });
-                container.appendChild(imgElement);
-                container.appendChild(retakeBtn);
-                photoContainer.appendChild(container);
-            }
-    
-            if (progressCounter) progressCounter.textContent = `${i + 1}/${photoCount}`;
-    
-            // Wait before next capture if not the last one
-            if (i < photoCount - 1) await new Promise(res => setTimeout(res, 500)); 
-        }
-    
-        // Reset buttons
-        if (images.length === photoCount) {
-            if (startBtn) {
-                startBtn.disabled = false;
-                startBtn.innerHTML = 'Retake All';
-            }
-            if (uploadBtn) uploadBtn.disabled = false;
-            if (doneBtn) doneBtn.style.display = 'block';
-        }
+        console.log('Legacy startPhotobooth called - redirecting to single capture');
+        await capturePhoto();
     }
 
-    async function retakeSinglePhoto(index) {
-        const photoCount = 2;
-        const timerOptions = document.getElementById("timerOptions");
-        const selectedValue = parseInt(timerOptions?.value) || 3;
-
-        // Disable buttons to prevent multiple actions
-        if (startBtn) startBtn.disabled = true;
-        if (uploadBtn) uploadBtn.disabled = true;
-        if (doneBtn) doneBtn.disabled = true;
-
-        // Countdown
-        await showCountdown(selectedValue);
-
-        // Flash Effect
-        if (flash) {
-            flash.style.opacity = 1;
-            setTimeout(() => flash.style.opacity = 0, 200);
-        }
-
-        // Ensure video dimensions are loaded
-        if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
-            console.error("Video not ready yet.");
-            alert("Camera not ready. Please try again.");
-            if (startBtn) startBtn.disabled = false;
-            if (uploadBtn) uploadBtn.disabled = false;
-            if (doneBtn) doneBtn.disabled = false;
-            return;
-        }
-
-        // Capture Image with Filter Applied
-        const ctx = canvas.getContext('2d');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-
-        // Apply current video filter to the canvas
-        ctx.filter = getComputedStyle(video).filter;
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        // Slight delay for iOS fix
-        await new Promise(res => setTimeout(res, 100));
-
-        const imageData = canvas.toDataURL('image/png');
-        console.log(`Retake Image ${index + 1}: `, imageData);
-
-        // Update images array
-        images[index] = imageData;
-
-        // Update photo in container
-        if (photoContainer) {
-            const containers = photoContainer.querySelectorAll('div');
-            if (containers[index]) {
-                const imgElement = containers[index].querySelector('.photo');
-                if (imgElement) imgElement.src = imageData;
-            }
-        }
-
-        // Update progress counter
-        if (progressCounter) progressCounter.textContent = `${images.length}/${photoCount}`;
-
-        // Reset buttons
-        if (startBtn) startBtn.disabled = false;
-        if (uploadBtn) uploadBtn.disabled = false;
-        if (doneBtn) doneBtn.disabled = false;
-    }
+    // Legacy function - already implemented above in new system
 
     async function showCountdown(selectedValue) {
         if (!countdownText) return;
@@ -759,20 +851,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
+    // Event Listeners
     if(startBtn) {
-        startBtn.addEventListener('click', () => startPhotobooth());
+        startBtn.addEventListener('click', () => capturePhoto());
+    }
+
+    // Add retake all button listener
+    const retakeAllBtn = document.getElementById('retakeAllBtn');
+    if (retakeAllBtn) {
+        retakeAllBtn.addEventListener('click', () => retakeAllPhotos());
     }
 
     document.addEventListener('keydown', (event) => {
         if (event.code === "Space") {
             event.preventDefault(); // Prevents scrolling when spacebar is pressed
-            startPhotobooth();
+            capturePhoto();
         }
     });
 
     if (doneBtn) {
         doneBtn.addEventListener('click', () => storeImageArray());
     }
+
+    // Initialize UI
+    updateUI();
 
     if (uploadBtn) {
         uploadBtn.addEventListener('click', () => {

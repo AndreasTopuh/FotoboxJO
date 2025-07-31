@@ -44,8 +44,8 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     <meta name="twitter:description"
         content="Take instant photobooth-style photos online with Layout 6. Perfect for 4-photo grids.">
     <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png">
-    <link rel="stylesheet" href="/styles.css?v=<?php echo time(); ?>" />
-    <link rel="stylesheet" href="/carousel.css?v=<?php echo time(); ?>" />
+    <link rel="stylesheet" href="home-styles.css?v=<?php echo time(); ?>" />
+    <link rel="stylesheet" href="
     <!-- Cache Control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />

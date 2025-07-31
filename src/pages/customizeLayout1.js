@@ -474,46 +474,112 @@ document.addEventListener('DOMContentLoaded', function () {
         // Show loading state
         const sendBtn = document.getElementById('sendEmailBtn');
         const originalHtml = sendBtn.innerHTML;
-        sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
+        sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan & Mengirim...';
         sendBtn.disabled = true;
 
-        // Convert canvas to blob
-        finalCanvas.toBlob((blob) => {
-            const formData = new FormData();
-            formData.append('photo', blob, 'photo.jpg');
-            formData.append('email', email);
+        console.log('🔄 Starting email process...');
 
-            fetch('../api-fetch/send_email.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Show success message
-                    showValidationError('Email berhasil dikirim! ✅');
-                    document.querySelector('.input-validation span').style.color = '#28a745';
+        // Convert canvas to base64
+        finalCanvas.toBlob((blob) => {
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                const base64data = reader.result;
+                
+                console.log('🔄 Saving photo to server, data size:', base64data.length);
+                
+                // Save photo to server and get link - USING NEW API
+                fetch('../api-fetch/save_final_photo_v2.php', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ image: base64data })
+                })
+                .then(response => {
+                    console.log('📡 Server response status:', response.status);
+                    return response.text(); // Get as text first to handle errors
+                })
+                .then(text => {
+                    console.log('📡 Server response text:', text.substring(0, 200) + '...');
                     
-                    // Hide modal after delay
-                    setTimeout(() => {
-                        hideEmailModal();
-                        document.getElementById('emailInput').value = '';
-                        hideValidationError();
-                    }, 2000);
-                } else {
-                    showValidationError('Gagal mengirim email: ' + (data.message || 'Terjadi kesalahan'));
-                }
-            })
-            .catch(error => {
-                console.error('Email send error:', error);
-                showValidationError('Terjadi kesalahan saat mengirim email');
-            })
-            .finally(() => {
-                // Reset button state
-                sendBtn.innerHTML = originalHtml;
-                sendBtn.disabled = false;
-            });
-        }, 'image/jpeg', 0.9);
+                    // Check if response looks like HTML (error page)
+                    if (text.trim().startsWith('<') || text.includes('<br />') || text.includes('<b>')) {
+                        throw new Error('Server returned HTML error page: ' + text.substring(0, 300));
+                    }
+                    
+                    let data;
+                    try {
+                        data = JSON.parse(text);
+                    } catch (parseError) {
+                        console.error('❌ JSON Parse Error:', parseError);
+                        console.error('📄 Raw response:', text);
+                        throw new Error('Invalid JSON response from server: ' + text.substring(0, 200));
+                    }
+                    
+                    if (data.success) {
+                        console.log('✅ Photo saved successfully:', data);
+                        // Send email via EmailJS
+                        const photoLink = window.location.origin + data.url;
+                        console.log('🔗 Sending email to:', email, 'with link:', photoLink);
+                        
+                        // EmailJS parameters - PASTI BENAR berdasarkan template
+                        const emailParams = {
+                            // Field utama untuk email tujuan - coba semua kemungkinan
+                            email: email,
+                            to_email: email,
+                            recipient_email: email,
+                            
+                            // Field untuk link foto
+                            link: photoLink,
+                            photo_link: photoLink,
+                            url: photoLink,
+                            
+                            // Field tambahan
+                            name: "Sobat",
+                            user_name: "Sobat",
+                            to_name: "Sobat",
+                            from_name: "GOFOTOBOX",
+                            
+                            // Field pesan
+                            message: `Halo Sobat! Link foto Anda: ${photoLink}`
+                        };
+                        
+                        console.log('📧 EmailJS parameters (ALL FIELDS):', emailParams);
+                        
+                        return emailjs.send("service_gtqjb2j", "template_pp5i4hm", emailParams).then(() => {
+                            console.log('✅ Email sent successfully via EmailJS');
+                            // Show success message
+                            showValidationError('Email berhasil dikirim! ✅ Cek inbox Anda.');
+                            document.querySelector('.input-validation span').style.color = '#28a745';
+                            
+                            // Hide modal after delay
+                            setTimeout(() => {
+                                hideEmailModal();
+                                document.getElementById('emailInput').value = '';
+                                hideValidationError();
+                            }, 3000);
+                        }, (emailError) => {
+                            console.error('❌ EmailJS error:', emailError);
+                            throw new Error('Gagal mengirim email: ' + (emailError.text || emailError.message || 'Unknown EmailJS error'));
+                        });
+                    } else {
+                        console.error('❌ Save photo failed:', data);
+                        throw new Error('Gagal menyimpan foto: ' + (data.message || 'Server error'));
+                    }
+                })
+                .catch(error => {
+                    console.error('❌ Full error details:', error);
+                    showValidationError('Error: ' + error.message);
+                })
+                .finally(() => {
+                    // Reset button state
+                    sendBtn.innerHTML = originalHtml;
+                    sendBtn.disabled = false;
+                });
+            };
+            reader.readAsDataURL(blob);
+        }, 'image/png');
     }
 
     // Main canvas drawing function

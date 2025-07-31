@@ -58,6 +58,7 @@ try {
     }
     
     $filename = "{$photoDir}/{$token}.png";
+    $metaFile = "{$photoDir}/{$token}.meta"; // NEW: metadata file
     $expire = time() + (30 * 60); // 30 minutes from now
     
     // Save image
@@ -71,12 +72,25 @@ try {
         throw new Exception('Failed to save image to file system');
     }
     
-    // Initialize photo_tokens session if not exists
+    // NEW: Save metadata to file (more reliable than session)
+    $metadata = [
+        'token' => $token,
+        'expire' => $expire,
+        'filename' => $filename,
+        'created' => time(),
+        'timezone' => date_default_timezone_get()
+    ];
+    
+    $metaWritten = @file_put_contents($metaFile, json_encode($metadata));
+    if ($metaWritten === false) {
+        throw new Exception('Failed to save metadata file');
+    }
+    
+    // KEEP: Also save to session for backward compatibility
     if (!isset($_SESSION['photo_tokens'])) {
         $_SESSION['photo_tokens'] = [];
     }
     
-    // Save token and expire time
     $_SESSION['photo_tokens'][$token] = [
         'expire' => $expire,
         'filename' => $filename,
@@ -86,9 +100,10 @@ try {
     // Return success response
     $response = [
         'success' => true,
-        'url' => "/src/pages/yourphotos.php?token={$token}",
+        'url' => "/src/pages/yourphotos_v2.php?token={$token}",
         'token' => $token,
-        'expires_at' => date('Y-m-d H:i:s', $expire)
+        'expires_at' => date('Y-m-d H:i:s', $expire),
+        'storage_method' => 'file_and_session'
     ];
     
     // Clean output buffer and send JSON
@@ -102,12 +117,15 @@ try {
     
     $errorResponse = [
         'success' => false,
-        'message' => $e->getMessage(),
-        'timestamp' => date('Y-m-d H:i:s')
+        'error' => $e->getMessage(),
+        'debug' => [
+            'timezone' => date_default_timezone_get(),
+            'time' => date('Y-m-d H:i:s'),
+            'timestamp' => time()
+        ]
     ];
     
     echo json_encode($errorResponse);
     exit;
 }
-?>
 ?>
