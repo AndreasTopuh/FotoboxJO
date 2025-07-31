@@ -55,19 +55,16 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
 </head>
 
 <body>
-    <!-- Enhanced Carousel Modal -->
-    <div id="carousel-modal" class="modal" role="dialog" aria-modal="true" style="display: none;">
+    <!-- Carousel Modal -->
+    <div id="carousel-modal" class="modal" style="display: none;">
         <div class="carousel-container">
-            <button id="carousel-close-btn" class="carousel-close-btn" aria-label="Close Carousel" title="Close (Esc)">✕</button>
-            <button id="carousel-prev-btn" class="carousel-nav-btn prev-btn" aria-label="Previous Image" title="Previous (←)">←</button>
+            <button id="carousel-close-btn" class="carousel-close-btn">✕</button>
+            <button id="carousel-prev-btn" class="carousel-nav-btn prev-btn">←</button>
             <div class="carousel-image-container">
                 <img id="carousel-image" class="carousel-image" src="" alt="Photo Preview">
+                <button id="carousel-retake-btn" class="carousel-retake-btn"><img src="/src/assets/retake.png" alt="retake icon"></button>
             </div>
-            <button id="carousel-next-btn" class="carousel-nav-btn next-btn" aria-label="Next Image" title="Next (→)">→</button>
-            <button id="carousel-retake-btn" class="carousel-retake-btn" aria-label="Retake Photo" title="Retake this photo">
-                <img src="/src/assets/retake.png" alt="Retake icon">
-                <span>Retake Photo</span>
-            </button>
+            <button id="carousel-next-btn" class="carousel-nav-btn next-btn">→</button>
             <div id="carousel-indicators" class="carousel-indicators"></div>
         </div>
     </div>
@@ -114,41 +111,30 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                             </div>
                         </div>
                         <script>
-                            // Enhanced photo container initialization with modal support
+                            // Misal: window.photoCount sudah di-set di JS (canvasLayout1.js)
                             document.addEventListener('DOMContentLoaded', function() {
-                                var photoCount = window.photoCount || 2; // fallback to 2 if not set
+                                var photoCount = window.photoCount || 2; // fallback ke 2 jika tidak ada
                                 var container = document.getElementById('photoContainer');
-                                
-                                if (container) {
-                                    container.innerHTML = '';
-                                    
-                                    for (let i = 0; i < photoCount; i++) {
-                                        var slot = document.createElement('div');
-                                        slot.className = 'photo-preview-slot';
-                                        slot.setAttribute('data-index', i);
-                                        slot.setAttribute('data-photo-slot', 'true');
+                                container.innerHTML = '';
+                                for (let i = 0; i < photoCount; i++) {
+                                    var slot = document.createElement('div');
+                                    slot.className = 'photo-preview-slot';
+                                    slot.setAttribute('data-index', i);
 
-                                        var placeholder = document.createElement('div');
-                                        placeholder.className = 'photo-placeholder';
-                                        placeholder.textContent = 'Photo ' + (i + 1);
+                                    var placeholder = document.createElement('div');
+                                    placeholder.className = 'photo-placeholder';
+                                    placeholder.textContent = 'Photo ' + (i + 1);
 
-                                        var btn = document.createElement('button');
-                                        btn.className = 'retake-photo-btn';
-                                        btn.innerHTML = '↻';
-                                        btn.title = 'Retake Photo ' + (i + 1);
-                                        btn.onclick = function(e) {
-                                            e.stopPropagation();
-                                            if (typeof retakeSinglePhoto === 'function') {
-                                                retakeSinglePhoto(i);
-                                            }
-                                        };
+                                    var btn = document.createElement('button');
+                                    btn.className = 'retake-photo-btn';
+                                    btn.innerHTML = '↻';
+                                    btn.onclick = function() {
+                                        retakeSinglePhoto(i);
+                                    };
 
-                                        slot.appendChild(placeholder);
-                                        slot.appendChild(btn);
-                                        container.appendChild(slot);
-                                    }
-                                    
-                                    console.log('Photo container initialized with', photoCount, 'slots');
+                                    slot.appendChild(placeholder);
+                                    slot.appendChild(btn);
+                                    container.appendChild(slot);
                                 }
                             });
                         </script>
@@ -228,6 +214,8 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                 };
             }
         });
+
+
     </script>
 
     <?php PWAHelper::addPWAScript(); ?>

@@ -55,19 +55,18 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
 </head>
 
 <body>
-    <!-- Enhanced Carousel Modal -->
-    <div id="carousel-modal" class="modal" role="dialog" aria-modal="true" style="display: none;">
+
+
+    <!-- Carousel Modal -->
+    <div id="carousel-modal" class="modal" style="display: none;">
         <div class="carousel-container">
-            <button id="carousel-close-btn" class="carousel-close-btn" aria-label="Close Carousel" title="Close (Esc)">✕</button>
-            <button id="carousel-prev-btn" class="carousel-nav-btn prev-btn" aria-label="Previous Image" title="Previous (←)">←</button>
+            <button id="carousel-close-btn" class="carousel-close-btn">✕</button>
+            <button id="carousel-prev-btn" class="carousel-nav-btn prev-btn">←</button>
             <div class="carousel-image-container">
                 <img id="carousel-image" class="carousel-image" src="" alt="Photo Preview">
+                <button id="carousel-retake-btn" class="carousel-retake-btn"><img src="/src/assets/retake.png" alt="retake icon"></button>
             </div>
-            <button id="carousel-next-btn" class="carousel-nav-btn next-btn" aria-label="Next Image" title="Next (→)">→</button>
-            <button id="carousel-retake-btn" class="carousel-retake-btn" aria-label="Retake Photo" title="Retake this photo">
-                <img src="/src/assets/retake.png" alt="Retake icon">
-                <span>Retake Photo</span>
-            </button>
+            <button id="carousel-next-btn" class="carousel-nav-btn next-btn">→</button>
             <div id="carousel-indicators" class="carousel-indicators"></div>
         </div>
     </div>
@@ -78,16 +77,51 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             <div class="main-content-card">
 
                 <!-- Direction Section -->
-                <!-- <div class="direction-section">
+                <div class="direction-section">
                     <div class="direction-arrows">↑ ↑ ↑</div>
                     <h1 class="direction-heading">LOOK OVER HERE</h1>
-                </div> -->
+                </div>
 
                 <!-- Main Horizontal Layout -->
                 <div class="horizontal-layout">
+                    <!-- Left Section: Photo Preview
+                    
+                    <div class="photo-preview-container">
+                        <h3 class="preview-title">Photo Preview</h3>
+                        <div class="photo-preview-grid" id="photoContainer">
+                            Slot photo akan di-generate oleh JS sesuai jumlah photo -->
+                      
+                    <!-- </div>
+                    <script>
+                        // Misal: window.photoCount sudah di-set di JS (canvasLayout1.js)
+                        document.addEventListener('DOMContentLoaded', function() {
+                            var photoCount = window.photoCount || 2; // fallback ke 2 jika tidak ada
+                            var container = document.getElementById('photoContainer');
+                            container.innerHTML = '';
+                            for (let i = 0; i < photoCount; i++) {
+                                var slot = document.createElement('div');
+                                slot.className = 'photo-preview-slot';
+                                slot.setAttribute('data-index', i);
+
+                                var placeholder = document.createElement('div');
+                                placeholder.className = 'photo-placeholder';
+                                placeholder.textContent = 'Photo ' + (i + 1);
+
+                                var btn = document.createElement('button');
+                                btn.className = 'retake-photo-btn';
+                                btn.innerHTML = '↻';
+                                btn.onclick = function() { retakeSinglePhoto(i); };
+
+                                slot.appendChild(placeholder);
+                                slot.appendChild(btn);
+                                container.appendChild(slot);
+                            }
+                        });
+                    </script> --> -->
+
                     <!-- Center Section: Camera Preview -->
                     <div class="camera-container">
-                        <!-- <h3 class="camera-title">Camera View</h3> -->
+                        <h3 class="camera-title">Camera View</h3>
                         <div id="videoContainer">
                             <video id="video" autoplay playsinline></video>
                             <canvas id="canvas" style="display: none;"></canvas>
@@ -100,59 +134,47 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                             <button id="fullscreenBtn" title="Toggle Fullscreen">
                                 <img src="/src/assets/fullScreen3.png" class="fullScreenSize" alt="fullscreen toggle">
                             </button>
-                            <button id="retakeAllBtn2" class="retake-all-btn" title="Retake All Photos">
-                                <img src="/src/assets/retake.png" alt="retake icon">
-                            </button>
                         </div>
-
-                        <?php
-
-                        ?>
-                        <div class="photo-preview-container">
-                            <div class="photo-preview-grid" id="photoContainer">
-                                <!-- Slot photo akan di-generate oleh JS sesuai jumlah photo -->
-                            </div>
+                                            <!-- Left Section: Photo Preview -->
+                    <?php
+                        // Ambil jumlah foto dari file JS (misal: expose ke window.photoCount)
+                        // Default 2 jika tidak ada JS variable
+                    ?>
+                    <div class="photo-preview-container">
+                        <h3 class="preview-title">Photo Preview</h3>
+                        <div class="photo-preview-grid" id="photoContainer">
+                            <!-- Slot photo akan di-generate oleh JS sesuai jumlah photo -->
                         </div>
-                        <script>
-                            // Enhanced photo container initialization with modal support
-                            document.addEventListener('DOMContentLoaded', function() {
-                                var photoCount = window.photoCount || 2; // fallback to 2 if not set
-                                var container = document.getElementById('photoContainer');
-                                
-                                if (container) {
-                                    container.innerHTML = '';
-                                    
-                                    for (let i = 0; i < photoCount; i++) {
-                                        var slot = document.createElement('div');
-                                        slot.className = 'photo-preview-slot';
-                                        slot.setAttribute('data-index', i);
-                                        slot.setAttribute('data-photo-slot', 'true');
+                    </div>
+                    <script>
+                        // Misal: window.photoCount sudah di-set di JS (canvasLayout1.js)
+                        document.addEventListener('DOMContentLoaded', function() {
+                            var photoCount = window.photoCount || 2; // fallback ke 2 jika tidak ada
+                            var container = document.getElementById('photoContainer');
+                            container.innerHTML = '';
+                            for (let i = 0; i < photoCount; i++) {
+                                var slot = document.createElement('div');
+                                slot.className = 'photo-preview-slot';
+                                slot.setAttribute('data-index', i);
 
-                                        var placeholder = document.createElement('div');
-                                        placeholder.className = 'photo-placeholder';
-                                        placeholder.textContent = 'Photo ' + (i + 1);
+                                var placeholder = document.createElement('div');
+                                placeholder.className = 'photo-placeholder';
+                                placeholder.textContent = 'Photo ' + (i + 1);
 
-                                        var btn = document.createElement('button');
-                                        btn.className = 'retake-photo-btn';
-                                        btn.innerHTML = '↻';
-                                        btn.title = 'Retake Photo ' + (i + 1);
-                                        btn.onclick = function(e) {
-                                            e.stopPropagation();
-                                            if (typeof retakeSinglePhoto === 'function') {
-                                                retakeSinglePhoto(i);
-                                            }
-                                        };
+                                var btn = document.createElement('button');
+                                btn.className = 'retake-photo-btn';
+                                btn.innerHTML = '↻';
+                                btn.onclick = function() { retakeSinglePhoto(i); };
 
-                                        slot.appendChild(placeholder);
-                                        slot.appendChild(btn);
-                                        container.appendChild(slot);
-                                    }
-                                    
-                                    console.log('Photo container initialized with', photoCount, 'slots');
-                                }
-                            });
-                        </script>
-
+                                slot.appendChild(placeholder);
+                                slot.appendChild(btn);
+                                container.appendChild(slot);
+                            }
+                        });
+                    </script>
+                        <div class="progress-display">
+                            <div id="progressCounter">0/2</div>
+                        </div>
                     </div>
 
                     <!-- Right Section: Controls (Filter, Settings, Buttons) -->
@@ -170,7 +192,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                                     </select>
                                 </div>
                             </div>
-
+        
                         </div>
 
                         <!-- Filter Section -->
@@ -194,9 +216,6 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                             <button id="startBtn">START CAPTURE</button>
                             <button id="retakeAllBtn" disabled>RETAKE ALL</button>
                             <button id="doneBtn" style="display: none;">COMPLETE SESSION</button>
-                        </div>
-                        <div class="progress-display">
-                            <div id="progressCounter">0/2</div>
                         </div>
 
                     </div>

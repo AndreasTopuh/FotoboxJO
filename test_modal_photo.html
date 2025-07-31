@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Modal Photo - FotoboxJO</title>
+    <link rel="stylesheet" href="src/pages/home-styles.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(90deg, #f598a8, #f6edb2);
+            min-height: 100vh;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .test-title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .test-photos {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-photo-slot {
+            width: 150px;
+            height: 150px;
+            border: 2px solid #e91e63;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .test-photo-slot:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
+        }
+        
+        .test-photo-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .test-controls {
+            text-align: center;
+        }
+        
+        .test-btn {
+            background: linear-gradient(135deg, #e91e63, #f48fb1);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(233, 30, 99, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Enhanced Carousel Modal -->
+    <div id="carousel-modal" class="modal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="carousel-container">
+            <button id="carousel-close-btn" class="carousel-close-btn" aria-label="Close Carousel" title="Close (Esc)">✕</button>
+            <button id="carousel-prev-btn" class="carousel-nav-btn prev-btn" aria-label="Previous Image" title="Previous (←)">←</button>
+            <div class="carousel-image-container">
+                <img id="carousel-image" class="carousel-image" src="" alt="Photo Preview">
+            </div>
+            <button id="carousel-next-btn" class="carousel-nav-btn next-btn" aria-label="Next Image" title="Next (→)">→</button>
+            <button id="carousel-retake-btn" class="carousel-retake-btn" aria-label="Retake Photo" title="Retake this photo">
+                <img src="/src/assets/retake.png" alt="Retake icon">
+                <span>Retake Photo</span>
+            </button>
+            <div id="carousel-indicators" class="carousel-indicators"></div>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h1 class="test-title">Test Modal Photo Gallery</h1>
+        
+        <div class="test-photos" id="photoContainer">
+            <div class="test-photo-slot photo-preview-slot" data-index="0">
+                <img src="https://picsum.photos/300/300?random=1" alt="Test Photo 1">
+            </div>
+            <div class="test-photo-slot photo-preview-slot" data-index="1">
+                <img src="https://picsum.photos/300/300?random=2" alt="Test Photo 2">
+            </div>
+        </div>
+        
+        <div class="test-controls">
+            <button class="test-btn" onclick="openTestModal(0)">Open Photo 1</button>
+            <button class="test-btn" onclick="openTestModal(1)">Open Photo 2</button>
+            <button class="test-btn" onclick="addTestPhoto()">Add Test Photo</button>
+        </div>
+    </div>
+
+    <script>
+        // Test images array
+        let images = [
+            'https://picsum.photos/600/400?random=1',
+            'https://picsum.photos/600/400?random=2'
+        ];
+        
+        let currentImageIndex = 0;
+
+        // Modal elements
+        const carouselModal = document.getElementById('carousel-modal');
+        const carouselImage = document.getElementById('carousel-image');
+        const carouselPrevBtn = document.getElementById('carousel-prev-btn');
+        const carouselNextBtn = document.getElementById('carousel-next-btn');
+        const carouselCloseBtn = document.getElementById('carousel-close-btn');
+        const carouselRetakeBtn = document.getElementById('carousel-retake-btn');
+        const carouselIndicators = document.getElementById('carousel-indicators');
+
+        function openTestModal(index) {
+            console.log('Opening test modal for index:', index);
+            openCarousel(index);
+        }
+
+        function openCarousel(index) {
+            console.log('Opening carousel at index:', index, 'Images available:', images.length);
+            
+            if (!carouselModal || !carouselImage || images.length === 0) {
+                console.log('Cannot open carousel - missing elements or no images');
+                return;
+            }
+
+            if (index < 0 || index >= images.length || !images[index]) {
+                console.log('Invalid index or no image at index:', index);
+                return;
+            }
+            
+            currentImageIndex = index;
+            updateCarousel();
+            carouselModal.style.display = 'flex';
+            carouselModal.classList.remove('fade-out');
+            carouselModal.classList.add('fade-in');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCarousel() {
+            if (!carouselModal) return;
+            
+            carouselModal.classList.remove('fade-in');
+            carouselModal.classList.add('fade-out');
+            document.body.style.overflow = 'auto';
+            
+            setTimeout(() => {
+                carouselModal.style.display = 'none';
+                carouselModal.classList.remove('fade-out');
+            }, 300);
+        }
+
+        function updateCarousel() {
+            if (!carouselImage || !carouselIndicators) return;
+            
+            // Update image with smooth transition
+            carouselImage.style.opacity = '0';
+            carouselImage.style.transform = 'scale(0.95)';
+            
+            setTimeout(() => {
+                if (images[currentImageIndex]) {
+                    carouselImage.src = images[currentImageIndex];
+                    carouselImage.alt = `Photo ${currentImageIndex + 1}`;
+                    
+                    carouselImage.onload = () => {
+                        carouselImage.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                        carouselImage.style.opacity = '1';
+                        carouselImage.style.transform = 'scale(1)';
+                    };
+                }
+            }, 200);
+
+            // Update indicators
+            carouselIndicators.innerHTML = '';
+            images.forEach((_, i) => {
+                const indicator = document.createElement('div');
+                indicator.classList.add('carousel-indicator');
+                if (i === currentImageIndex) indicator.classList.add('active');
+                
+                indicator.addEventListener('click', () => {
+                    if (i !== currentImageIndex) {
+                        currentImageIndex = i;
+                        updateCarousel();
+                    }
+                });
+                
+                carouselIndicators.appendChild(indicator);
+            });
+
+            // Update navigation buttons
+            if (carouselPrevBtn) carouselPrevBtn.disabled = currentImageIndex === 0;
+            if (carouselNextBtn) carouselNextBtn.disabled = currentImageIndex === images.length - 1;
+        }
+
+        function addTestPhoto() {
+            const randomId = Math.floor(Math.random() * 1000);
+            images.push(`https://picsum.photos/600/400?random=${randomId}`);
+            
+            // Add new photo slot
+            const container = document.getElementById('photoContainer');
+            const newSlot = document.createElement('div');
+            newSlot.className = 'test-photo-slot photo-preview-slot';
+            newSlot.dataset.index = images.length - 1;
+            
+            const img = document.createElement('img');
+            img.src = `https://picsum.photos/300/300?random=${randomId}`;
+            img.alt = `Test Photo ${images.length}`;
+            
+            newSlot.appendChild(img);
+            container.appendChild(newSlot);
+            
+            // Add event listener
+            newSlot.addEventListener('click', () => {
+                openCarousel(parseInt(newSlot.dataset.index));
+            });
+            
+            console.log('Added new test photo, total images:', images.length);
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Navigation buttons
+            if (carouselPrevBtn) {
+                carouselPrevBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (currentImageIndex > 0) {
+                        currentImageIndex--;
+                        updateCarousel();
+                    }
+                });
+            }
+
+            if (carouselNextBtn) {
+                carouselNextBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (currentImageIndex < images.length - 1) {
+                        currentImageIndex++;
+                        updateCarousel();
+                    }
+                });
+            }
+
+            // Close button
+            if (carouselCloseBtn) {
+                carouselCloseBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    closeCarousel();
+                });
+            }
+
+            // Retake button (test only)
+            if (carouselRetakeBtn) {
+                carouselRetakeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    alert(`Retake photo ${currentImageIndex + 1} - This is just a test!`);
+                    closeCarousel();
+                });
+            }
+
+            // Modal backdrop click
+            if (carouselModal) {
+                carouselModal.addEventListener('click', (e) => {
+                    if (e.target === carouselModal) {
+                        closeCarousel();
+                    }
+                });
+            }
+
+            // Photo slots click
+            const photoSlots = document.querySelectorAll('.photo-preview-slot');
+            photoSlots.forEach(slot => {
+                slot.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const index = parseInt(slot.dataset.index);
+                    console.log('Photo slot clicked, index:', index);
+                    openCarousel(index);
+                });
+            });
+
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (!carouselModal || carouselModal.style.display === 'none') return;
+                
+                e.preventDefault();
+                switch(e.key) {
+                    case 'Escape':
+                        closeCarousel();
+                        break;
+                    case 'ArrowLeft':
+                        if (currentImageIndex > 0) {
+                            currentImageIndex--;
+                            updateCarousel();
+                        }
+                        break;
+                    case 'ArrowRight':
+                        if (currentImageIndex < images.length - 1) {
+                            currentImageIndex++;
+                            updateCarousel();
+                        }
+                        break;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

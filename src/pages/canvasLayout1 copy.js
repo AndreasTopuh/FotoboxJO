@@ -105,425 +105,132 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Carousel Modal Functionality - Fixed and Enhanced
     const carouselModal = document.getElementById('carousel-modal');
-    const carouselImage = document.getElementById('carousel-image');
-    const carouselPrevBtn = document.getElementById('carousel-prev-btn');
-    const carouselNextBtn = document.getElementById('carousel-next-btn');
-    const carouselCloseBtn = document.getElementById('carousel-close-btn');
-    const carouselRetakeBtn = document.getElementById('carousel-retake-btn');
-    const carouselIndicators = document.getElementById('carousel-indicators');
-    let currentImageIndex = 0;
+const carouselImage = document.getElementById('carousel-image');
+const carouselPrevBtn = document.getElementById('carousel-prev-btn');
+const carouselNextBtn = document.getElementById('carousel-next-btn');
+const carouselCloseBtn = document.getElementById('carousel-close-btn');
+const carouselRetakeBtn = document.getElementById('carousel-retake-btn');
+const carouselIndicators = document.getElementById('carousel-indicators');
 
-    function openCarousel(index) {
-        console.log('Opening carousel at index:', index, 'Images available:', images.length);
-        
-        if (!carouselModal || !carouselImage || images.length === 0) {
-            console.log('Cannot open carousel - missing elements or no images');
-            return;
-        }
+let currentImageIndex = 0;
 
-        // Pastikan index valid
-        if (index < 0 || index >= images.length || !images[index]) {
-            console.log('Invalid index or no image at index:', index);
-            return;
-        }
-        
-        currentImageIndex = index;
-        updateCarousel();
-        carouselModal.style.display = 'flex';
+function openCarousel(index) {
+    if (!carouselModal || !carouselImage || images.length === 0) return;
+    
+    currentImageIndex = index;
+    updateCarousel();
+    carouselModal.style.display = 'flex';
+    carouselModal.classList.add('fade-in');
+    document.body.style.overflow = 'hidden'; // Prevent background scroll
+}
+
+function closeCarousel() {
+    carouselModal.classList.remove('fade-in');
+    carouselModal.classList.add('fade-out');
+    document.body.style.overflow = 'auto';
+    setTimeout(() => {
+        carouselModal.style.display = 'none';
         carouselModal.classList.remove('fade-out');
-        carouselModal.classList.add('fade-in');
-        document.body.style.overflow = 'hidden';
-    }
+    }, 300);
+}
 
-    function closeCarousel() {
-        if (!carouselModal) return;
-        
-        carouselModal.classList.remove('fade-in');
-        carouselModal.classList.add('fade-out');
-        document.body.style.overflow = 'auto';
-        
-        setTimeout(() => {
-            carouselModal.style.display = 'none';
-            carouselModal.classList.remove('fade-out');
-        }, 300);
-    }
+function updateCarousel() {
+    carouselImage.classList.remove('show');
+    carouselImage.style.opacity = '0';
 
-    function updateCarousel() {
-        if (!carouselImage || !carouselIndicators) return;
-        
-        // Update image with smooth transition
-        carouselImage.style.opacity = '0';
-        carouselImage.style.transform = 'scale(0.95)';
-        
-        setTimeout(() => {
-            if (images[currentImageIndex]) {
-                carouselImage.src = images[currentImageIndex];
-                carouselImage.alt = `Photo ${currentImageIndex + 1}`;
-                
-                carouselImage.onload = () => {
-                    carouselImage.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-                    carouselImage.style.opacity = '1';
-                    carouselImage.style.transform = 'scale(1)';
-                };
-            }
-        }, 200);
+    setTimeout(() => {
+        carouselImage.src = images[currentImageIndex] || '';
+        carouselImage.onload = () => {
+            carouselImage.style.transition = 'opacity 0.3s ease';
+            carouselImage.style.opacity = '1';
+            carouselImage.classList.add('show');
+        };
+    }, 100);
 
-        // Update indicators
-        carouselIndicators.innerHTML = '';
-        images.forEach((_, i) => {
-            const indicator = document.createElement('div');
-            indicator.classList.add('carousel-indicator');
-            if (i === currentImageIndex) indicator.classList.add('active');
-            
-            indicator.addEventListener('click', () => {
-                if (i !== currentImageIndex) {
-                    currentImageIndex = i;
-                    updateCarousel();
-                }
-            });
-            
-            carouselIndicators.appendChild(indicator);
+    // Update indicators
+    carouselIndicators.innerHTML = '';
+    images.forEach((_, i) => {
+        const indicator = document.createElement('span');
+        indicator.classList.add('carousel-indicator');
+        if (i === currentImageIndex) indicator.classList.add('active');
+        indicator.addEventListener('click', () => {
+            currentImageIndex = i;
+            updateCarousel();
         });
-
-        // Update navigation buttons
-        if (carouselPrevBtn) carouselPrevBtn.disabled = currentImageIndex === 0;
-        if (carouselNextBtn) carouselNextBtn.disabled = currentImageIndex === images.length - 1;
-        
-        // Update retake button
-        if (carouselRetakeBtn) {
-            carouselRetakeBtn.style.display = images[currentImageIndex] ? 'flex' : 'none';
-            carouselRetakeBtn.onclick = (e) => {
-                e.stopPropagation();
-                console.log('Retaking photo at index:', currentImageIndex);
-                closeCarousel();
-                setTimeout(() => retakeSinglePhoto(currentImageIndex), 300);
-            };
-        }
-    }
-
-    // Navigation event listeners
-    if (carouselPrevBtn) {
-        carouselPrevBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (currentImageIndex > 0) {
-                currentImageIndex--;
-                updateCarousel();
-            }
-        });
-    }
-
-    if (carouselNextBtn) {
-        carouselNextBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (currentImageIndex < images.length - 1) {
-                currentImageIndex++;
-                updateCarousel();
-            }
-        });
-    }
-
-    // Close button event listener
-    if (carouselCloseBtn) {
-        carouselCloseBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            closeCarousel();
-        });
-    }
-
-    // Modal backdrop click to close
-    if (carouselModal) {
-        carouselModal.addEventListener('click', (e) => {
-            if (e.target === carouselModal) {
-                closeCarousel();
-            }
-        });
-    }
-
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
-        if (!carouselModal || carouselModal.style.display === 'none') return;
-        
-        e.preventDefault();
-        switch(e.key) {
-            case 'Escape':
-                closeCarousel();
-                break;
-            case 'ArrowLeft':
-                if (currentImageIndex > 0) {
-                    currentImageIndex--;
-                    updateCarousel();
-                }
-                break;
-            case 'ArrowRight':
-                if (currentImageIndex < images.length - 1) {
-                    currentImageIndex++;
-                    updateCarousel();
-                }
-                break;
-        }
+        carouselIndicators.appendChild(indicator);
     });
 
-    // Global functions for modal
-    window.openCarousel = openCarousel;
-    window.closeCarousel = closeCarousel;
+    // Update navigation buttons
+    carouselPrevBtn.disabled = currentImageIndex === 0;
+    carouselNextBtn.disabled = currentImageIndex === images.length - 1;
 
-// Add enhanced CSS styles for modal and animations
+    // Update retake button
+    carouselRetakeBtn.style.display = images[currentImageIndex] ? 'block' : 'none';
+    carouselRetakeBtn.onclick = (e) => {
+        e.stopPropagation();
+        retakeSinglePhoto(currentImageIndex);
+        closeCarousel();
+    };
+}
+
+// Event listeners for carousel controls
+carouselPrevBtn.addEventListener('click', () => {
+    if (currentImageIndex > 0) {
+        currentImageIndex--;
+        updateCarousel();
+    }
+});
+
+carouselNextBtn.addEventListener('click', () => {
+    if (currentImageIndex < images.length - 1) {
+        currentImageIndex++;
+        updateCarousel();
+    }
+});
+
+carouselCloseBtn.addEventListener('click', closeCarousel);
+carouselModal.addEventListener('click', (e) => {
+    if (e.target === carouselModal) closeCarousel();
+});
+
+// Integrate with photo preview click
+photoContainer.addEventListener('click', (e) => {
+    const slot = e.target.closest('.photo-preview-slot');
+    if (slot && slot.dataset.index !== undefined) {
+        openCarousel(parseInt(slot.dataset.index));
+    }
+});
+
+// Add CSS styles for animations
 const style = document.createElement('style');
 style.textContent = `
-    /* Modal Animations */
     .modal.fade-in {
-        animation: modalFadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        animation: fadeIn 0.3s ease-in-out;
     }
     .modal.fade-out {
-        animation: modalFadeOut 0.3s cubic-bezier(0.55, 0.06, 0.68, 0.19);
+        animation: fadeOut 0.3s ease-in-out;
     }
-    
-    @keyframes modalFadeIn {
-        from { 
-            opacity: 0; 
-            transform: scale(0.9);
-            backdrop-filter: blur(0px);
-        }
-        to { 
-            opacity: 1; 
-            transform: scale(1);
-            backdrop-filter: blur(10px);
-        }
-    }
-    
-    @keyframes modalFadeOut {
-        from { 
-            opacity: 1; 
-            transform: scale(1);
-            backdrop-filter: blur(10px);
-        }
-        to { 
-            opacity: 0; 
-            transform: scale(0.9);
-            backdrop-filter: blur(0px);
-        }
-    }
-    
-    /* Enhanced Photo Preview Slots */
-    .photo-preview-slot {
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .photo-preview-slot:hover {
-        transform: translateY(-4px) scale(1.02);
-        box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
-    }
-    
-    .photo-preview-slot.filled:hover {
-        transform: translateY(-6px) scale(1.05);
-        box-shadow: 0 12px 35px rgba(233, 30, 99, 0.4);
-    }
-    
-    .photo-preview-slot::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-        opacity: 0;
+    .carousel-image {
+        max-width: 100%;
+        max-height: 70vh;
+        object-fit: contain;
         transition: opacity 0.3s ease;
-        z-index: 1;
-        pointer-events: none;
     }
-    
-    .photo-preview-slot:hover::before {
-        opacity: 1;
+    .photo-preview-slot .photo {
+        cursor: pointer;
+        transition: transform 0.2s ease;
     }
-    
-    .photo-preview-slot img {
-        transition: transform 0.3s ease;
-    }
-    
-    .photo-preview-slot:hover img {
+    .photo-preview-slot .photo:hover {
         transform: scale(1.05);
     }
-    
-    /* Enhanced Carousel Image */
-    .carousel-image {
-        max-width: 90%;
-        max-height: 75vh;
-        object-fit: contain;
-        transition: opacity 0.4s ease, transform 0.4s ease;
-        border-radius: 12px;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
-    
-    /* Enhanced Modal Styling */
-    .modal {
-        backdrop-filter: blur(10px);
-        background: rgba(0, 0, 0, 0.8);
-    }
-    
-    .carousel-container {
-        position: relative;
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 16px;
-        padding: 20px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    /* Enhanced Navigation Buttons */
-    .carousel-nav-btn {
-        background: rgba(233, 30, 99, 0.9);
-        border: none;
-        color: white;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        font-size: 18px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
-    }
-    
-    .carousel-nav-btn:hover:not(:disabled) {
-        background: rgba(233, 30, 99, 1);
-        transform: scale(1.1);
-        box-shadow: 0 6px 20px rgba(233, 30, 99, 0.4);
-    }
-    
-    .carousel-nav-btn:disabled {
-        background: rgba(150, 150, 150, 0.5);
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
-    }
-    
-    /* Enhanced Close Button */
-    .carousel-close-btn {
-        background: rgba(255, 59, 48, 0.9);
-        border: none;
-        color: white;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        font-size: 20px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        z-index: 10;
-        backdrop-filter: blur(10px);
-    }
-    
-    .carousel-close-btn:hover {
-        background: rgba(255, 59, 48, 1);
-        transform: scale(1.1);
-        box-shadow: 0 4px 15px rgba(255, 59, 48, 0.4);
-    }
-    
-    /* Enhanced Retake Button */
-    .carousel-retake-btn {
-        background: linear-gradient(135deg, #FF6B35, #FF8E53);
-        border: none;
-        color: white;
-        padding: 12px 20px;
-        border-radius: 25px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        font-size: 14px;
-        position: absolute;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-    }
-    
-    .carousel-retake-btn:hover {
-        transform: translateX(-50%) translateY(-2px) scale(1.05);
-        box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
-    }
-    
-    .carousel-retake-btn img {
-        width: 16px;
-        height: 16px;
-        filter: brightness(0) invert(1);
-    }
-    
-    /* Enhanced Indicators */
-    .carousel-indicators {
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-        margin-top: 20px;
-        position: absolute;
-        bottom: 70px;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-    
-    .carousel-indicator {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background: rgba(150, 150, 150, 0.5);
-        cursor: pointer;
-        transition: all 0.3s ease;
-        border: 2px solid transparent;
-    }
-    
-    .carousel-indicator:hover {
-        background: rgba(233, 30, 99, 0.7);
-        transform: scale(1.2);
-    }
-    
-    .carousel-indicator.active {
-        background: rgba(233, 30, 99, 1);
-        transform: scale(1.3);
-        border-color: rgba(255, 255, 255, 0.8);
-        box-shadow: 0 2px 8px rgba(233, 30, 99, 0.4);
-    }
-    
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .carousel-container {
-            margin: 10px;
-            padding: 15px;
-        }
-        
-        .carousel-image {
-            max-height: 60vh;
-        }
-        
-        .carousel-nav-btn {
-            width: 40px;
-            height: 40px;
-            font-size: 16px;
-        }
-        
-        .carousel-retake-btn {
-            padding: 10px 16px;
-            font-size: 13px;
-        }
+    @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
     }
 `;
 document.head.appendChild(style);
@@ -724,41 +431,17 @@ document.head.appendChild(style);
         const img = document.createElement('img');
         img.src = imageData;
         img.alt = `Photo ${index + 1}`;
-        img.style.cursor = 'pointer';
-        
-        // Add click event to open carousel modal
-        img.addEventListener('click', (e) => {
-            e.stopPropagation();
-            console.log('Image clicked, opening carousel for index:', index);
-            openCarousel(index);
-        });
-        
         photoSlot.appendChild(img);
         
         // Add retake button
         const retakeBtn = document.createElement('button');
         retakeBtn.className = 'retake-photo-btn';
         retakeBtn.innerHTML = '↻';
-        retakeBtn.title = `Retake Photo ${index + 1}`;
-        retakeBtn.onclick = (e) => {
-            e.stopPropagation();
-            retakeSinglePhoto(index);
-        };
+        retakeBtn.onclick = () => retakeSinglePhoto(index);
         photoSlot.appendChild(retakeBtn);
         
-        // Add filled class and make entire slot clickable
+        // Add filled class
         photoSlot.classList.add('filled');
-        photoSlot.style.cursor = 'pointer';
-        
-        // Add slot click event as backup
-        photoSlot.addEventListener('click', (e) => {
-            // Only trigger if clicking on the slot itself, not buttons
-            if (e.target === photoSlot || e.target === img) {
-                e.stopPropagation();
-                console.log('Photo slot clicked, opening carousel for index:', index);
-                openCarousel(index);
-            }
-        });
     }
 
     // Clear photo preview slot
@@ -1291,39 +974,6 @@ document.head.appendChild(style);
 
     // Initialize UI
     updateUI();
-    
-    // Add photo container event listener as fallback
-    document.addEventListener('DOMContentLoaded', () => {
-        const photoContainer = document.getElementById('photoContainer');
-        if (photoContainer) {
-            console.log('Adding fallback photo container event listener');
-            photoContainer.addEventListener('click', (e) => {
-                const slot = e.target.closest('.photo-preview-slot');
-                const img = e.target.closest('img');
-                
-                console.log('Photo container clicked:', {
-                    slot: slot,
-                    img: img,
-                    target: e.target,
-                    dataIndex: slot ? slot.dataset.index : 'none'
-                });
-                
-                if (slot && slot.dataset.index !== undefined && !e.target.classList.contains('retake-photo-btn')) {
-                    const index = parseInt(slot.dataset.index);
-                    console.log('Opening carousel for slot index:', index);
-                    
-                    if (images[index]) {
-                        e.stopPropagation();
-                        openCarousel(index);
-                    } else {
-                        console.log('No image available at index:', index);
-                    }
-                }
-            });
-        } else {
-            console.log('Photo container not found');
-        }
-    });
 
     if (uploadBtn) {
         uploadBtn.addEventListener('click', () => {

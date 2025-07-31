@@ -1,4 +1,6 @@
-/* Root Variables & Base Styling */
+/* ==================================================
+   Root Variables & Base Styling
+================================================== */
 :root {
   --text-dark: #333;
   --text-light: #666;
@@ -13,10 +15,6 @@
   --upload-orange-light: #FFB74D;
 }
 
-/* html,
-body {
-  overflow: hidden !important;
-} */
 * {
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
@@ -27,10 +25,13 @@ body {
   padding: 0;
   min-height: 100vh;
   position: relative;
+  overflow-x: hidden;
   background-color: #fff;
 }
 
-/* Background */
+/* ==================================================
+   Background
+================================================== */
 .gradientBgCanvas {
   position: fixed;
   top: 0;
@@ -41,7 +42,9 @@ body {
   z-index: -1;
 }
 
-/* Layout & Containers */
+/* ==================================================
+   Layout & Containers
+================================================== */
 .container {
   max-width: 800px;
   margin: 0 auto;
@@ -69,9 +72,7 @@ body {
   min-width: 92vw;
   max-width: 96vw;
   height: calc(100vh - 0.5rem);
-  background: rgba(255, 255, 255, 0.13);
-  backdrop-filter: blur(9px);
-  -webkit-backdrop-filter: blur(9px);
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   padding: 0.5rem;
@@ -92,7 +93,9 @@ body {
   z-index: 2;
 }
 
-/* Glassmorphism Card (for other pages) */
+/* ==================================================
+   Glassmorphism Card (for other pages)
+================================================== */
 .glass-card {
   width: 100%;
   max-width: 900px;
@@ -109,6 +112,7 @@ body {
     inset 0 -1px 0 rgba(255, 255, 255, 0.1),
     inset 0 0 4px 2px rgba(255, 255, 255, 0.2);
   position: relative;
+  overflow: hidden;
 }
 
 .glass-card::before {
@@ -131,7 +135,9 @@ body {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3));
 }
 
-/* Typography */
+/* ==================================================
+   Typography
+================================================== */
 .hero-title {
   font-size: 1rem;
   font-weight: 700;
@@ -209,16 +215,10 @@ body {
   color: var(--pink-primary);
   margin: 0;
 }
-                .action-buttons {
-                  display: flex;
-                  flex-direction: column;
-                  gap: 0.4rem;
-                }
 
-                        .upload-section {
-            margin-top: 1rem;
-        }
-/* Buttons */
+/* ==================================================
+   Buttons
+================================================== */
 .start-btn {
   font-size: 1.5rem;
   padding: 0.75rem 2rem;
@@ -237,28 +237,26 @@ body {
   box-shadow: 0 8px 20px var(--btn-hover);
 }
 
-                /* Back Button - Positioned Top Left */
 .back-button {
-                  position: absolute;
-                  top: 0.5rem;
-                  left: 0.5rem;
-                  display: inline-flex;
-                  align-items: center;
-                  gap: 4px;
-                  background: #E91E63;
-                  color: white;
-                  padding: 6px 12px;
-                  border-radius: 20px;
-                  text-decoration: none;
-                  font-weight: 600;
-                  font-size: 0.75rem;
-                  transition: all 0.3s ease;
-                  font-family: 'Poppins', sans-serif;
-                  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--text-dark);
+  padding: 8px 16px;
+  border-radius: 40px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  margin-bottom: 1.5rem;
+  z-index: 10;
 }
 
 .back-button:hover {
-  background: rgba(140, 7, 51, 0.3);
+  background: rgba(255, 255, 255, 0.3);
   transform: translateY(-1px);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
@@ -348,7 +346,7 @@ body {
 }
 
 .uploadBtnStyling {
-  background: linear-gradient(135deg, var(--upload-orange), var(--upload-orange-light));
+  background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
   color: white;
   border: none;
   padding: 10px 18px;
@@ -360,8 +358,9 @@ body {
   align-items: center;
   gap: 8px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(255, 152, 0, 0.25);
+  box-shadow: 0 4px 15px rgba(226, 133, 133, 0.25);
   position: relative;
+  overflow: hidden;
 }
 
 .uploadBtnStyling::before {
@@ -381,10 +380,12 @@ body {
 
 .uploadBtnStyling:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 152, 0, 0.3);
+  box-shadow: 0 6px 20px rgba(226, 133, 133, 0.3);
 }
 
-/* Camera and Photo Preview */
+/* ==================================================
+   Camera and Photo Preview
+================================================== */
 .horizontal-layout {
   display: flex;
   gap: 1rem;
@@ -393,52 +394,40 @@ body {
   height: calc(100vh - 5rem);
 }
 
-.photo-preview-container {
+.left-section {
   flex: 1;
   display: flex;
+  gap: 1rem;
+  height: 100%;
   justify-content: center;
-  max-width: 100%;
-  margin-bottom: 3rem;
-  padding: 1.5rem 0;
-  /* Tambahkan padding ekstra untuk tombol retake */
+  align-items: center;
+}
+
+.preview-container {
+  width: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  flex-shrink: 0;
+}
+
+.preview-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--pink-primary);
+  text-align: center;
+  margin-bottom: 0.3rem;
 }
 
 .photo-preview-grid {
   display: flex;
-  gap: 1.2rem;
-  padding: 1.5rem;
-  border-radius: 10px;
-  /* Membuat sudut lebih halus dengan padding ekstra untuk tombol retake */
+  flex-direction: column;
+  gap: 0.8rem;
 }
 
-.photo-preview-item {
-  width: 100px;
-  aspect-ratio: 1 / 1;
-  /* 👈 bikin pasti kotak */
-  border: 2px dashed #ff6699;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-  color: #ff6699;
-  border-radius: 8px;
-  background-color: #ffe6ec;
-  overflow: hidden;
-  position: relative;
-}
-
-.photo-preview-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
 .photo-preview-slot {
-  aspect-ratio: 4 / 3;
-  width: 100%;
-  max-width: 120px;
-  height: auto;
-  min-height: 0;
+  width: 150px;
+  height: 100px;
   border: 2px dashed var(--pink-primary);
   border-radius: 8px;
   display: flex;
@@ -447,14 +436,12 @@ body {
   background: rgba(233, 30, 99, 0.05);
   position: relative;
   transition: all 0.3s ease;
-  overflow: visible; /* Pastikan tombol retake terlihat */
 }
 
 .photo-preview-slot.filled {
   border: 2px solid var(--pink-primary);
   background: white;
   padding: 4px;
-  overflow: visible; /* Pastikan tombol retake terlihat */
 }
 
 .photo-preview-slot img {
@@ -462,7 +449,6 @@ body {
   height: 100%;
   object-fit: cover;
   border-radius: 6px;
-  aspect-ratio: 4 / 3;
 }
 
 .photo-placeholder {
@@ -474,23 +460,21 @@ body {
 
 .retake-photo-btn {
   position: absolute;
-  top: -10px;
-  right: -10px;
-  width: 28px;
-  height: 28px;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
   background: var(--pink-primary);
   color: white;
-  border: 2px solid white;
+  border: none;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: bold;
   display: none;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(233, 30, 99, 0.4);
-  z-index: 10;
 }
 
 .photo-preview-slot.filled .retake-photo-btn {
@@ -499,39 +483,17 @@ body {
 
 .retake-photo-btn:hover {
   background: var(--pink-hover);
-  transform: scale(1.15);
-  box-shadow: 0 6px 20px rgba(233, 30, 99, 0.5);
-}
-
-/* Pastikan tombol retake selalu terlihat dan tidak tertutup */
-.photo-preview-slot.filled {
-  border: 2px solid var(--pink-primary);
-  background: white;
-  padding: 4px;
-  overflow: visible; /* Pastikan tombol retake terlihat */
-}
-
-.photo-preview-slot.filled::before {
-  content: '';
-  position: absolute;
-  top: -15px;
-  right: -15px;
-  width: 35px;
-  height: 35px;
-  background: transparent;
-  pointer-events: none;
-  z-index: 5;
+  transform: scale(1.1);
 }
 
 .camera-container {
-  flex: 2;
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   height: 100%;
   gap: 25px;
-  margin-bottom: 1rem;
-  margin-top: 3rem;
+  margin-bottom: 1.5rem;
 }
 
 .camera-title {
@@ -543,8 +505,8 @@ body {
 }
 
 #videoContainer {
-  width: 100%;
-  height: 637px;
+  width: 640px;
+  height: 480px;
   background: rgba(0, 0, 0, 0.9);
   border-radius: 18px;
   border: 2px solid rgba(255, 255, 255, 0.2);
@@ -552,6 +514,7 @@ body {
   overflow: hidden;
   position: relative;
   flex-shrink: 0;
+  max-width: 600px;
 }
 
 #videoContainer::before {
@@ -600,14 +563,17 @@ video {
   border-radius: 1px;
 }
 
-/* Camera Controls */
-.controls-container {
-  flex: 1;
+/* ==================================================
+   Camera Controls
+================================================== */
+.right-section {
+  width: 280px;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  max-width: 25%;
-  margin-top: 3rem;
+  flex-shrink: 0;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .camera-settings {
@@ -712,7 +678,9 @@ video {
   filter: brightness(0) saturate(100%) invert(100%);
 }
 
-/* Filter Section */
+/* ==================================================
+   Filter Section
+================================================== */
 .filter-section {
   background: rgba(233, 30, 99, 0.05);
   padding: 1rem;
@@ -825,7 +793,9 @@ video {
   color: var(--pink-primary);
 }
 
-/* Overlays and Messages */
+/* ==================================================
+   Overlays and Messages
+================================================== */
 .grid-overlay {
   position: absolute;
   top: 0;
@@ -951,7 +921,9 @@ video {
   filter: brightness(0) saturate(100%) invert(100%);
 }
 
-/* Timer Box */
+/* ==================================================
+   Timer Box
+================================================== */
 .timer-box {
   position: fixed;
   top: 20px;
@@ -982,8 +954,10 @@ video {
   opacity: 0.9;
 }
 
-/* Carousel Modal */
-/* .modal {
+/* ==================================================
+   Carousel Modal
+================================================== */
+.modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -1134,412 +1108,11 @@ video {
 .carousel-indicator.active {
   background: var(--pink-primary);
   transform: scale(1.2);
-} */
-/* Modal fade-in/out */
-/* Modal Background */
-
-
-/* Carousel Container */
-/* Carousel Modal Styling */
-
-
-/* Variabel warna (jika belum didefinisikan di CSS lain, tambahkan di :root) */
-:root {
-  --pink-primary: #e91e63;
-  --pink-light: #f06292;
-  --pink-hover: #c2185b;
 }
 
-/* Enhanced Modal Styling */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.85);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  overflow-y: auto;
-  animation: modalBackdropFadeIn 0.3s ease;
-}
-
-.modal.fade-in {
-  animation: modalBackdropFadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.modal.fade-out {
-  animation: modalBackdropFadeOut 0.3s cubic-bezier(0.55, 0.06, 0.68, 0.19);
-}
-
-@keyframes modalBackdropFadeIn {
-  from { 
-    opacity: 0; 
-    backdrop-filter: blur(0px);
-  }
-  to { 
-    opacity: 1; 
-    backdrop-filter: blur(10px);
-  }
-}
-
-@keyframes modalBackdropFadeOut {
-  from { 
-    opacity: 1; 
-    backdrop-filter: blur(10px);
-  }
-  to { 
-    opacity: 0; 
-    backdrop-filter: blur(0px);
-  }
-}
-
-.carousel-container {
-  position: relative;
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding: 30px;
-  border-radius: 20px;
-  max-width: 90%;
-  max-height: 90vh;
-  box-shadow: 
-    0 25px 50px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transform: scale(0.95);
-  transition: transform 0.3s ease;
-}
-
-.modal.fade-in .carousel-container {
-  transform: scale(1);
-}
-
-.carousel-image {
-  display: block;
-  margin: 20px auto;
-  max-width: 100%;
-  max-height: 65vh;
-  object-fit: contain;
-  border-radius: 12px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-  transition: all 0.4s ease;
-}
-
-.carousel-nav-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
-  border: none;
-  color: white;
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  font-size: 20px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 20px rgba(233, 30, 99, 0.3);
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-.carousel-nav-btn:hover,
-.carousel-nav-btn:focus {
-  background: linear-gradient(135deg, var(--pink-hover), var(--pink-primary));
-  box-shadow: 0 8px 30px rgba(233, 30, 99, 0.4);
-  transform: translateY(-50%) scale(1.1);
-}
-
-.carousel-nav-btn:disabled {
-  background: rgba(150, 150, 150, 0.5);
-  cursor: not-allowed;
-  transform: translateY(-50%) scale(0.9);
-  box-shadow: none;
-}
-
-.carousel-nav-btn.prev-btn {
-  left: 20px;
-}
-
-.carousel-nav-btn.next-btn {
-  right: 20px;
-}
-
-.carousel-close-btn {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: rgba(255, 59, 48, 0.9);
-  border: none;
-  color: white;
-  font-size: 20px;
-  font-weight: bold;  
-  cursor: pointer;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(10px);
-  z-index: 15;
-  box-shadow: 0 4px 15px rgba(255, 59, 48, 0.3);
-}
-
-.carousel-close-btn:hover {
-  background: rgba(255, 59, 48, 1);
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(255, 59, 48, 0.4);
-}
-
-.carousel-retake-btn {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, #FF6B35, #FF8E53);
-  border: none;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 25px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3);
-  z-index: 10;
-}
-
-.carousel-retake-btn:hover {
-  background: linear-gradient(135deg, #FF8E53, #FF6B35);
-  transform: translateX(-50%) translateY(-2px) scale(1.05);
-  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
-}
-
-.carousel-retake-btn img {
-  width: 16px;
-  height: 16px;
-  filter: brightness(0) invert(1);
-}
-
-.carousel-indicators {
-  position: absolute;
-  bottom: 75px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  z-index: 10;
-}
-
-.carousel-indicator {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: rgba(150, 150, 150, 0.5);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
-}
-
-.carousel-indicator:hover {
-  background: rgba(233, 30, 99, 0.7);
-  transform: scale(1.2);
-}
-
-.carousel-indicator.active {
-  background: rgba(233, 30, 99, 1);
-  transform: scale(1.3);
-  border-color: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 2px 8px rgba(233, 30, 99, 0.4);
-}
-
-/* Responsive Modal Design */
-@media (max-width: 768px) {
-  .carousel-container {
-    max-width: 95%;
-    max-height: 95vh;
-    padding: 20px 15px;
-    margin: 10px;
-  }
-  
-  .carousel-image {
-    max-height: 55vh;
-    margin: 15px auto;
-  }
-  
-  .carousel-nav-btn {
-    width: 45px;
-    height: 45px;
-    font-size: 16px;
-  }
-  
-  .carousel-nav-btn.prev-btn {
-    left: 10px;
-  }
-  
-  .carousel-nav-btn.next-btn {
-    right: 10px;
-  }
-  
-  .carousel-close-btn {
-    width: 35px;
-    height: 35px;
-    font-size: 18px;
-    top: 10px;
-    right: 10px;
-  }
-  
-  .carousel-retake-btn {
-    padding: 10px 20px;
-    font-size: 13px;
-    bottom: 15px;
-  }
-  
-  .carousel-indicators {
-    bottom: 60px;
-    gap: 8px;
-  }
-  
-  .carousel-indicator {
-    width: 10px;
-    height: 10px;
-  }
-}
-
-@media (max-width: 480px) {
-  .carousel-container {
-    max-width: 98%;
-    padding: 15px 10px;
-  }
-  
-  .carousel-image {
-    max-height: 50vh;
-  }
-  
-  .carousel-nav-btn {
-    width: 40px;
-    height: 40px;
-    font-size: 14px;
-  }
-  
-  .carousel-retake-btn {
-    padding: 8px 16px;
-    font-size: 12px;
-  }
-}
-
-.modal.fade-in {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-.modal.fade-out {
-  animation: fadeOut 0.3s ease-in-out forwards;
-}
-
-
-
-/* Retake Button */
-.carousel-retake-btn {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  border-radius: 50%;
-  padding: 8px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.carousel-retake-btn:hover {
-  background: rgba(255, 255, 255, 0.4);
-}
-
-.carousel-retake-btn img {
-  width: 20px;
-  height: 20px;
-}
-
-/* Navigation Buttons */
-.carousel-nav-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  padding: 10px;
-  font-size: 20px;
-  cursor: pointer;
-  color: #fff;
-  border-radius: 50%;
-  transition: background 0.2s ease;
-}
-
-.carousel-nav-btn:hover {
-  background: rgba(255, 255, 255, 0.4);
-}
-
-.carousel-nav-btn.prev-btn {
-  left: 10px;
-}
-
-.carousel-nav-btn.next-btn {
-  right: 10px;
-}
-
-/* Close Button */
-.carousel-close-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  color: white;
-  font-size: 22px;
-  cursor: pointer;
-}
-
-/* Indicators */
-.carousel-indicators {
-  display: flex;
-  justify-content: center;
-  margin-top: 15px;
-  gap: 8px;
-}
-
-.carousel-indicator {
-  width: 10px;
-  height: 10px;
-  background: rgba(255, 255, 255, 0.4);
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.carousel-indicator.active {
-  background: #fff;
-}
-
-/* Fullscreen Mode */
+/* ==================================================
+   Fullscreen Mode
+================================================== */
 #videoContainer:fullscreen,
 #videoContainer:-webkit-full-screen,
 #videoContainer:-moz-full-screen {
@@ -1562,21 +1135,73 @@ video {
   border-radius: 0 !important;
 }
 
-/* Responsive Design */
-
-
-@media (max-width: 1024px) {
+/* ==================================================
+   Responsive Design
+================================================== */
+@media (max-width: 1200px) {
   .horizontal-layout {
-    gap: 0.6rem;
+    gap: 0.8rem;
   }
 
-  .photo-preview-container,
-  .controls-container {
-    max-width: 22%;
+  .right-section {
+    width: 200px;
   }
 
   #videoContainer {
-    height: 360px;
+    width: 580px;
+    height: 435px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .horizontal-layout {
+    flex-direction: column;
+    gap: 1rem;
+    height: auto;
+  }
+
+  .left-section {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .preview-container {
+    width: 180px;
+    flex-shrink: 0;
+  }
+
+  .photo-preview-grid {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .photo-preview-slot {
+    width: 160px;
+    height: 110px;
+  }
+
+  #videoContainer {
+    width: 560px;
+    height: 420px;
+  }
+
+  .right-section {
+    width: 100%;
+    max-width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .camera-settings,
+  .filter-section,
+  .action-buttons,
+  .upload-section {
+    flex: 1;
+    min-width: 280px;
   }
 }
 
@@ -1591,34 +1216,158 @@ video {
     height: calc(100vh - 0.6rem);
   }
 
-  .horizontal-layout {
-    flex-direction: column;
-    height: auto;
+  .hero-title {
+    font-size: 2rem;
   }
 
-  .photo-preview-container,
-  .camera-container,
-  .controls-container {
+  .hero-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .canvas-title {
+    font-size: 1.5rem;
+  }
+
+  .canvas-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .direction-heading {
+    font-size: 1rem;
+  }
+
+  .left-section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .preview-container {
+    width: 100%;
     max-width: 100%;
   }
 
+  .photo-preview-grid {
+    flex-direction: row;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .photo-preview-slot {
+    width: 140px;
+    height: 95px;
+  }
+
   #videoContainer {
-    height: 320px;
+    width: 480px;
+    height: 360px;
+  }
+
+  .right-section {
+    flex-direction: column;
+    max-width: 100%;
+  }
+
+  .camera-settings,
+  .filter-section,
+  .action-buttons,
+  .upload-section {
+    min-width: 100%;
+  }
+
+  .filter-buttons-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .filterBtn {
+    max-width: none;
+    height: 45px;
+  }
+
+  #progressCounter {
+    font-size: 1.8rem;
+  }
+
+  .start-btn {
+    font-size: 0.95rem;
+    padding: 0.65rem 1.6rem;
+  }
+
+  #startBtn,
+  #doneBtn {
+    width: 100%;
+    max-width: 200px;
+    padding: 10px 25px;
+    font-size: 1rem;
+  }
+
+  .timer-box {
+    top: 10px;
+    right: 10px;
+    padding: 10px 15px;
+  }
+
+  .timer-box #timer-display,
+  .timer-box #session-timer-display {
+    font-size: 1.2rem;
   }
 }
 
 @media (max-width: 480px) {
   .main-content-card {
-    padding: 1rem;
+    padding: 1.2rem;
     margin: 0.5rem;
   }
 
+  .canvas-title {
+    font-size: 1.3rem;
+  }
+
+  .canvas-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .direction-heading {
+    font-size: 0.9rem;
+  }
+
+  .photo-preview-grid {
+    gap: 0.8rem;
+  }
+
+  .photo-preview-slot {
+    width: 120px;
+    height: 80px;
+  }
+
   #videoContainer {
+    width: 320px;
     height: 240px;
+  }
+
+  .filter-buttons-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+
+  .filterBtn,
+  #invertBtn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .right-section {
+    gap: 0.8rem;
+  }
+
+  #progressCounter {
+    font-size: 1.6rem;
   }
 }
 
-/* Payment Section (from original home-styles.css) */
+/* ==================================================
+   Payment Section (from original home-styles.css)
+================================================== */
 .select-payment {
   display: flex;
   justify-content: space-between;

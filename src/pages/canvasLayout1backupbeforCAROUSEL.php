@@ -55,19 +55,18 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
 </head>
 
 <body>
-    <!-- Enhanced Carousel Modal -->
-    <div id="carousel-modal" class="modal" role="dialog" aria-modal="true" style="display: none;">
+
+
+    <!-- Carousel Modal -->
+    <div id="carousel-modal" class="modal" style="display: none;">
         <div class="carousel-container">
-            <button id="carousel-close-btn" class="carousel-close-btn" aria-label="Close Carousel" title="Close (Esc)">✕</button>
-            <button id="carousel-prev-btn" class="carousel-nav-btn prev-btn" aria-label="Previous Image" title="Previous (←)">←</button>
+            <button id="carousel-close-btn" class="carousel-close-btn">✕</button>
+            <button id="carousel-prev-btn" class="carousel-nav-btn prev-btn">←</button>
             <div class="carousel-image-container">
                 <img id="carousel-image" class="carousel-image" src="" alt="Photo Preview">
+                <button id="carousel-retake-btn" class="carousel-retake-btn"><img src="/src/assets/retake.png" alt="retake icon"></button>
             </div>
-            <button id="carousel-next-btn" class="carousel-nav-btn next-btn" aria-label="Next Image" title="Next (→)">→</button>
-            <button id="carousel-retake-btn" class="carousel-retake-btn" aria-label="Retake Photo" title="Retake this photo">
-                <img src="/src/assets/retake.png" alt="Retake icon">
-                <span>Retake Photo</span>
-            </button>
+            <button id="carousel-next-btn" class="carousel-nav-btn next-btn">→</button>
             <div id="carousel-indicators" class="carousel-indicators"></div>
         </div>
     </div>
@@ -114,41 +113,30 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                             </div>
                         </div>
                         <script>
-                            // Enhanced photo container initialization with modal support
+                            // Misal: window.photoCount sudah di-set di JS (canvasLayout1.js)
                             document.addEventListener('DOMContentLoaded', function() {
-                                var photoCount = window.photoCount || 2; // fallback to 2 if not set
+                                var photoCount = window.photoCount || 2; // fallback ke 2 jika tidak ada
                                 var container = document.getElementById('photoContainer');
-                                
-                                if (container) {
-                                    container.innerHTML = '';
-                                    
-                                    for (let i = 0; i < photoCount; i++) {
-                                        var slot = document.createElement('div');
-                                        slot.className = 'photo-preview-slot';
-                                        slot.setAttribute('data-index', i);
-                                        slot.setAttribute('data-photo-slot', 'true');
+                                container.innerHTML = '';
+                                for (let i = 0; i < photoCount; i++) {
+                                    var slot = document.createElement('div');
+                                    slot.className = 'photo-preview-slot';
+                                    slot.setAttribute('data-index', i);
 
-                                        var placeholder = document.createElement('div');
-                                        placeholder.className = 'photo-placeholder';
-                                        placeholder.textContent = 'Photo ' + (i + 1);
+                                    var placeholder = document.createElement('div');
+                                    placeholder.className = 'photo-placeholder';
+                                    placeholder.textContent = 'Photo ' + (i + 1);
 
-                                        var btn = document.createElement('button');
-                                        btn.className = 'retake-photo-btn';
-                                        btn.innerHTML = '↻';
-                                        btn.title = 'Retake Photo ' + (i + 1);
-                                        btn.onclick = function(e) {
-                                            e.stopPropagation();
-                                            if (typeof retakeSinglePhoto === 'function') {
-                                                retakeSinglePhoto(i);
-                                            }
-                                        };
+                                    var btn = document.createElement('button');
+                                    btn.className = 'retake-photo-btn';
+                                    btn.innerHTML = '↻';
+                                    btn.onclick = function() {
+                                        retakeSinglePhoto(i);
+                                    };
 
-                                        slot.appendChild(placeholder);
-                                        slot.appendChild(btn);
-                                        container.appendChild(slot);
-                                    }
-                                    
-                                    console.log('Photo container initialized with', photoCount, 'slots');
+                                    slot.appendChild(placeholder);
+                                    slot.appendChild(btn);
+                                    container.appendChild(slot);
                                 }
                             });
                         </script>
@@ -228,6 +216,118 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                 };
             }
         });
+
+        // carousel modal functionality
+        
+     
+            document.addEventListener('DOMContentLoaded', function() {
+                // ✅ 1. Ambil elemen carousel
+                window.carouselModal = document.getElementById('carousel-modal');
+                window.carouselImage = document.getElementById('carousel-image');
+                window.carouselPrevBtn = document.getElementById('carousel-prev-btn');
+                window.carouselNextBtn = document.getElementById('carousel-next-btn');
+                window.carouselCloseBtn = document.getElementById('carousel-close-btn');
+                window.carouselRetakeBtn = document.getElementById('carousel-retake-btn');
+                window.carouselIndicators = document.getElementById('carousel-indicators');
+
+                // ✅ 2. Array foto hasil capture
+                window.images = [];
+
+                // ✅ 3. Event klik slot preview untuk buka carousel
+                const photoContainer = document.getElementById('photoContainer');
+                photoContainer.addEventListener('click', function(e) {
+                    const slot = e.target.closest('.photo-preview-slot');
+                    if (slot && slot.dataset.index !== undefined) {
+                        openCarousel(parseInt(slot.dataset.index));
+                    }
+                });
+
+                // ✅ 4. Fungsi buka/tutup carousel
+                window.openCarousel = function(index) {
+                    if (!carouselModal || !carouselImage || images.length === 0) return;
+
+                    currentImageIndex = index;
+                    updateCarousel();
+                    carouselModal.style.display = 'flex';
+                    setTimeout(() => {
+                        carouselModal.classList.add('show');
+                    }, 10);
+                };
+
+                window.closeCarousel = function() {
+                    carouselModal.classList.remove('show');
+                    setTimeout(() => {
+                        carouselModal.style.display = 'none';
+                    }, 300);
+                };
+
+                // ✅ 5. Update isi carousel
+                window.updateCarousel = function() {
+                    carouselImage.classList.remove('show');
+
+                    setTimeout(() => {
+                        carouselImage.src = images[currentImageIndex];
+                        carouselImage.onload = () => {
+                            carouselImage.classList.add('show');
+                        };
+                    }, 100);
+
+                    // Indicators
+                    carouselIndicators.innerHTML = '';
+                    images.forEach((_, i) => {
+                        const indicator = document.createElement('span');
+                        indicator.classList.add('carousel-indicator');
+                        if (i === currentImageIndex) indicator.classList.add('active');
+                        indicator.addEventListener('click', () => {
+                            currentImageIndex = i;
+                            updateCarousel();
+                        });
+                        carouselIndicators.appendChild(indicator);
+                    });
+
+                    // Buttons
+                    carouselPrevBtn.disabled = currentImageIndex === 0;
+                    carouselNextBtn.disabled = currentImageIndex === images.length - 1;
+
+                    // Retake button
+                    carouselRetakeBtn.style.display = 'block';
+                    carouselRetakeBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        retakeSinglePhoto(currentImageIndex);
+                        closeCarousel();
+                    };
+                };
+
+                // ✅ 6. Navigasi tombol carousel
+                carouselPrevBtn.addEventListener('click', () => {
+                    if (currentImageIndex > 0) {
+                        currentImageIndex--;
+                        updateCarousel();
+                    }
+                });
+                carouselNextBtn.addEventListener('click', () => {
+                    if (currentImageIndex < images.length - 1) {
+                        currentImageIndex++;
+                        updateCarousel();
+                    }
+                });
+                carouselCloseBtn.addEventListener('click', closeCarousel);
+                carouselModal.addEventListener('click', (e) => {
+                    if (e.target === carouselModal) closeCarousel();
+                });
+
+                // ✅ 7. Integrasi capture foto (contoh fungsi setelah capture)
+                window.addCapturedPhoto = function(photoDataURL, index) {
+                    images[index] = photoDataURL; // simpan/update foto ke array
+                    const slot = document.querySelector(`.photo-preview-slot[data-index="${index}"]`);
+                    if (slot) {
+                        const placeholder = slot.querySelector('.photo-placeholder');
+                        placeholder.innerHTML = `<img src="${photoDataURL}" alt="Photo ${index+1}" />`;
+                    }
+                };
+            });
+
+
     </script>
 
     <?php PWAHelper::addPWAScript(); ?>

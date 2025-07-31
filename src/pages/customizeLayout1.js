@@ -616,10 +616,8 @@ document.addEventListener('DOMContentLoaded', function () {
             ctx.fillRect(0, 0, stackedCanvas.width, stackedCanvas.height);
             drawPhotos();
         } else if (backgroundImage) {
-            console.log('🎨 Loading background image:', backgroundImage);
             const bgImg = new Image();
             bgImg.onload = function () {
-                console.log('✅ Background image loaded successfully');
                 ctx.drawImage(bgImg, 0, 0, stackedCanvas.width, stackedCanvas.height);
                 drawPhotos();
 

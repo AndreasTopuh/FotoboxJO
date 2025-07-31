@@ -44,8 +44,9 @@ class SessionTimer {
         timerContainer.id = 'session-timer';
         timerContainer.style.cssText = `
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 24px;
+            left: 86%;
+            transform: translateX(-50%);
             background: linear-gradient(135deg, #FF6B6B, #E74C3C);
             color: white;
             padding: 10px 20px;

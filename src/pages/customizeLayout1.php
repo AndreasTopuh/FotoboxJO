@@ -20,6 +20,19 @@ require_once '../includes/pwa-helper.php';
     <link rel="stylesheet" href="home-styles.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Syne:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png" />
+    <link rel="stylesheet" href="home-styles.css?v=<?php echo time(); ?>" />
+    <!-- Cache Control -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
     <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png" />
     <style>
         /* Timer Box Styling */
@@ -37,17 +50,20 @@ require_once '../includes/pwa-helper.php';
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
         }
+
         .timer-box #timer-display {
             font-size: 1.5rem;
             font-weight: 700;
             display: block;
             margin-bottom: 5px;
         }
+
         .timer-box p {
             margin: 0;
             font-size: 0.9rem;
             opacity: 0.9;
         }
+
         .modal {
             position: fixed;
             top: 0;
@@ -61,7 +77,7 @@ require_once '../includes/pwa-helper.php';
             z-index: 2000;
             backdrop-filter: blur(5px);
         }
-        
+
         .modal-content {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(15px);
@@ -75,12 +91,12 @@ require_once '../includes/pwa-helper.php';
             max-height: 90vh;
             overflow-y: auto;
         }
-        
+
         .email-modal-content {
             max-width: 650px;
             padding: 2.5rem;
         }
-        
+
         .close-btn {
             position: absolute;
             top: 20px;
@@ -94,16 +110,16 @@ require_once '../includes/pwa-helper.php';
             transition: all 0.3s ease;
             z-index: 10;
         }
-        
+
         .close-btn:hover {
             color: #333;
             transform: scale(1.1);
         }
-        
+
         .modal-header {
             margin-bottom: 2rem;
         }
-        
+
         .modal-title {
             color: #333;
             font-size: 1.8rem;
@@ -112,18 +128,18 @@ require_once '../includes/pwa-helper.php';
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        
+
         .modal-subtitle {
             color: #666;
             font-size: 1rem;
             margin: 0;
             line-height: 1.5;
         }
-        
+
         .email-input-container {
             margin-bottom: 2rem;
         }
-        
+
         .email-input {
             width: 100%;
             padding: 1rem 1.5rem;
@@ -138,29 +154,29 @@ require_once '../includes/pwa-helper.php';
             caret-color: #007bff;
             text-align: left;
         }
-        
+
         .email-input:focus {
             outline: none;
             border-color: #007bff;
             background: rgba(255, 255, 255, 0.9);
             box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
         }
-        
+
         .input-validation {
             margin-top: 0.5rem;
             text-align: left;
         }
-        
+
         .input-validation span {
             color: #dc3545;
             font-size: 0.9rem;
             font-weight: 500;
         }
-        
+
         .input-validation span.success {
             color: #28a745;
         }
-        
+
         /* Virtual Keyboard Styles */
         .virtual-keyboard {
             background: rgba(248, 249, 250, 0.9);
@@ -174,18 +190,18 @@ require_once '../includes/pwa-helper.php';
             -moz-user-select: none;
             -ms-user-select: none;
         }
-        
+
         .keyboard-row {
             display: flex;
             justify-content: center;
             gap: 0.5rem;
             margin-bottom: 0.5rem;
         }
-        
+
         .keyboard-row:last-child {
             margin-bottom: 0;
         }
-        
+
         .key-btn {
             background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
             border: 2px solid rgba(222, 226, 230, 0.8);
@@ -205,43 +221,45 @@ require_once '../includes/pwa-helper.php';
             -ms-user-select: none;
             outline: none;
         }
-        
+
         .key-btn:hover {
             background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
             border-color: #007bff;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
         }
-        
+
         .key-btn:active {
             transform: translateY(0);
             box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
         }
-        
+
         .key-space {
             flex: 1;
             max-width: 200px;
         }
-        
-        .key-backspace, .key-caps {
+
+        .key-backspace,
+        .key-caps {
             min-width: 60px;
             font-size: 0.9rem;
         }
-        
+
         .key-caps.active {
             background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
             color: white;
             border-color: #0056b3;
         }
-        
+
         .modal-actions {
             display: flex;
             gap: 1rem;
             margin-top: 2rem;
             justify-content: center;
         }
-        
-        .btn-primary, .btn-secondary {
+
+        .btn-primary,
+        .btn-secondary {
             padding: 1rem 2.5rem;
             border: none;
             border-radius: 12px;
@@ -256,35 +274,36 @@ require_once '../includes/pwa-helper.php';
             align-items: center;
             gap: 0.5rem;
         }
-        
+
         .btn-primary {
             background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
             color: white;
             box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
         }
-        
+
         .btn-primary:hover {
             background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
         }
-        
+
         .btn-secondary {
             background: linear-gradient(135deg, #6c757d 0%, #545b62 100%);
             color: white;
             box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
         }
-        
+
         .btn-secondary:hover {
             background: linear-gradient(135deg, #545b62 0%, #495057 100%);
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
         }
-        
+
         .modal-content h2 {
             color: #ff4444;
             margin-bottom: 1rem;
         }
+
         .modal-btn {
             background: #ff4444;
             color: white;
@@ -297,9 +316,11 @@ require_once '../includes/pwa-helper.php';
             margin-top: 1rem;
             transition: background 0.3s ease;
         }
+
         .modal-btn:hover {
             background: #e03e3e;
         }
+
         .main-button {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border-radius: 12px;
@@ -314,24 +335,30 @@ require_once '../includes/pwa-helper.php';
             gap: 8px;
             min-height: 52px;
         }
+
         .main-button:hover {
             transform: translateY(-2px) scale(1.02);
             filter: brightness(1.1);
         }
+
         .main-button:active {
             transform: translateY(0) scale(0.98);
             transition: all 0.1s;
         }
+
         .email-button:hover {
             box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4) !important;
         }
+
         .continue-button:hover {
             box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4) !important;
         }
+
         .main-button.loading {
             pointer-events: none;
             opacity: 0.7;
         }
+
         .main-button.loading::after {
             content: '';
             position: absolute;
@@ -343,102 +370,114 @@ require_once '../includes/pwa-helper.php';
             animation: spin 1s linear infinite;
             margin-left: 8px;
         }
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
-       @media print {
-        body {
-            margin: 0 !important;
-            padding: 0 !important;
+
+        @media print {
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            img,
+            .print-img {
+                width: 100vw !important;
+                height: 100vh !important;
+                max-width: 100vw !important;
+                max-height: 100vh !important;
+                object-fit: contain !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                display: block;
+                margin: 0 auto !important;
+            }
+
+            @page {
+                size: 4in 6in;
+                margin: 0;
+            }
         }
-        img, .print-img {
-            width: 100vw !important;
-            height: 100vh !important;
-            max-width: 100vw !important;
-            max-height: 100vh !important;
-            object-fit: contain !important;
-            page-break-inside: avoid !important;
-            break-inside: avoid !important;
-            display: block;
-            margin: 0 auto !important;
+
+        /* Mobile Responsive untuk Virtual Keyboard */
+        @media (max-width: 768px) {
+            .email-modal-content {
+                max-width: 95%;
+                padding: 2rem;
+                max-height: 95vh;
+            }
+
+            .modal-title {
+                font-size: 1.5rem;
+            }
+
+            .modal-subtitle {
+                font-size: 0.9rem;
+            }
+
+            .virtual-keyboard {
+                padding: 1rem;
+                margin: 1.5rem 0;
+            }
+
+            .keyboard-row {
+                gap: 0.3rem;
+                margin-bottom: 0.3rem;
+            }
+
+            .key-btn {
+                min-width: 35px;
+                min-height: 35px;
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .key-backspace,
+            .key-caps {
+                min-width: 50px;
+                font-size: 0.8rem;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+                padding: 1rem;
+                font-size: 1rem;
+            }
         }
-        @page {
-            size: 4in 6in;
-            margin: 0;
+
+        @media (max-width: 480px) {
+            .email-modal-content {
+                padding: 1.5rem;
+            }
+
+            .key-btn {
+                min-width: 30px;
+                min-height: 30px;
+                padding: 0.4rem;
+                font-size: 0.8rem;
+            }
+
+            .keyboard-row {
+                gap: 0.2rem;
+            }
+
+            .virtual-keyboard {
+                padding: 0.75rem;
+            }
         }
-    }
-    
-    /* Mobile Responsive untuk Virtual Keyboard */
-    @media (max-width: 768px) {
-        .email-modal-content {
-            max-width: 95%;
-            padding: 2rem;
-            max-height: 95vh;
-        }
-        
-        .modal-title {
-            font-size: 1.5rem;
-        }
-        
-        .modal-subtitle {
-            font-size: 0.9rem;
-        }
-        
-        .virtual-keyboard {
-            padding: 1rem;
-            margin: 1.5rem 0;
-        }
-        
-        .keyboard-row {
-            gap: 0.3rem;
-            margin-bottom: 0.3rem;
-        }
-        
-        .key-btn {
-            min-width: 35px;
-            min-height: 35px;
-            padding: 0.5rem;
-            font-size: 0.9rem;
-        }
-        
-        .key-backspace, .key-caps {
-            min-width: 50px;
-            font-size: 0.8rem;
-        }
-        
-        .modal-actions {
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-        
-        .btn-primary, .btn-secondary {
-            width: 100%;
-            padding: 1rem;
-            font-size: 1rem;
-        }
-    }
-    
-    @media (max-width: 480px) {
-        .email-modal-content {
-            padding: 1.5rem;
-        }
-        
-        .key-btn {
-            min-width: 30px;
-            min-height: 30px;
-            padding: 0.4rem;
-            font-size: 0.8rem;
-        }
-        
-        .keyboard-row {
-            gap: 0.2rem;
-        }
-        
-        .virtual-keyboard {
-            padding: 0.75rem;
-        }
-    }
     </style>
 </head>
 
@@ -475,12 +514,12 @@ require_once '../includes/pwa-helper.php';
                             <h3 class="options-label">Photo Shape:</h3>
                             <div class="custom-buttons-container">
                                 <button id="noneFrameShape" class="buttonShapes"><img
-                                    src="assets/frame-shapes/noneShape.png" alt="None"
-                                    class="btnShapeSize"></button>
+                                        src="assets/frame-shapes/noneShape.png" alt="None"
+                                        class="btnShapeSize"></button>
                                 <button id="softFrameShape" class="buttonShapes"><img
-                                    src="assets/frame-shapes/squareShape.png" alt="Soft Edge Frame"
-                                    class="btnShapeSize"></button>
-                                 </div>
+                                        src="assets/frame-shapes/squareShape.png" alt="Soft Edge Frame"
+                                        class="btnShapeSize"></button>
+                            </div>
                         </div>
                         <h3 class="options-label">Stickers</h3>
                         <div class="custom-buttons-container stickers-container">
@@ -540,7 +579,7 @@ require_once '../includes/pwa-helper.php';
                     <span id="validation-message">Format email tidak valid</span>
                 </div>
             </div>
-            
+
             <!-- Virtual Keyboard -->
             <div id="virtualKeyboard" class="virtual-keyboard">
                 <div class="keyboard-row">
@@ -597,7 +636,7 @@ require_once '../includes/pwa-helper.php';
                     <button class="key-btn" data-key="_">_</button>
                 </div>
             </div>
-            
+
             <div class="modal-actions">
                 <button id="cancelEmailBtn" class="btn-secondary">Batal</button>
                 <button id="sendEmailBtn" class="btn-primary">
@@ -610,7 +649,7 @@ require_once '../includes/pwa-helper.php';
     <!-- EmailJS Scripts -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script type="text/javascript">
-        (function(){
+        (function() {
             emailjs.init({
                 publicKey: "9SDzOfKjxuULQ5ZW8",
             });
@@ -618,10 +657,10 @@ require_once '../includes/pwa-helper.php';
     </script>
 
     <script src="customizeLayout1.js"></script>
-    
+
     <!-- Session Timer Script -->
     <script src="../includes/session-timer.js"></script>
-    
+
     <script>
         // Custom timer expired handler for customize page
         document.addEventListener('DOMContentLoaded', function() {
@@ -633,7 +672,7 @@ require_once '../includes/pwa-helper.php';
             }
         });
     </script>
-    
+
     <?php PWAHelper::addPWAScript(); ?>
 </body>
 
