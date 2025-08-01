@@ -202,10 +202,28 @@
             color: white;
         }
 
-        .btn-outline {
+        .btn-outline-new {
             background: #fff;
-            border: 2px solid #ccc;
-            color: #666;
+            border: 2px solid var(--pink-secondary);
+            color: var(--pink-primary);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-outline-new:hover {
+            background: var(--pink-primary);
+            border: 2px solid #fff;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
         }
 
         @media (max-width: 768px) {
@@ -238,7 +256,7 @@
                 <div class="step-number">2</div>
                 <div class="step-text">
                     <h3>Lakukan Pembayaran</h3>
-                    <p>Timer 20 menit akan dimulai</p>
+                    <p>Akan memulaikan sesi foto selama 20 menit terhitung dari pembayaran</p>
                 </div>
             </div>
             <div class="step">
@@ -265,8 +283,8 @@
             <div class="step">
                 <div class="step-number">6</div>
                 <div class="step-text">
-                    <h3>Cetak, kirim email & Selesai </h3>
-                    <p>Ambil hasil cetakan</p>
+                    <h3>Kirim ke Email atau Cetak </h3>
+                    <p>Dapat mengirimkan foto tersebut ke email atau bisa langsung di print saja.</p>
                 </div>
             </div>
         </div>
@@ -309,8 +327,8 @@
     </div>
 
     <div class="footer-buttons" style="max-width: 1140px; margin: 1rem auto;">
-        <a href="/index.php" class="btn btn-outline">← Kembali</a>
-        <a href="selectpayment.php" class="btn btn-primary">Lanjutkan</a>
+        <a href="/" class="btn btn-outline-new">← Kembali</a>
+        <a href="selectpayment.php" class="btn btn-outline-new">Lanjutkan</a>
     </div>
 </body>
 

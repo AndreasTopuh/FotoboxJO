@@ -76,25 +76,33 @@
             line-height: 1.5;
         }
 
-        .start-btn {
-            background: #FFFFFF;
-            color: #333;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 1.1rem;
+        .start-btn-merged {
+            background: #fff;
+            border: 2px solid var(--pink-secondary);
+            color: var(--pink-primary);
+            padding: 12px 30px;
+            border-radius: 999px;
             cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
             transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            min-width: 430px;
             margin-top: 3rem;
             margin-bottom: 0.9rem;
-            min-width: 430px;
+            text-decoration: none;
         }
 
-        .start-btn:hover {
-            background: #e9e9e9e9;
-            transform: translateY(-2px);
+        .start-btn-merged:hover {
+            background: var(--pink-primary);
+            border: 2px solid #fff;
+            color: #fff;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(233, 30, 99, 0.3);
         }
 
         .instruction-text {
@@ -132,7 +140,7 @@
             </div>
             <p class="hero-subtitle">Capture the moment, style your photo, and print it instantly.</p>
             <a href="./src/pages/description.php">
-                <button class="start-btn">Mulai</button>
+                <button class="start-btn-merged">Mulai</button>
             </a>
             <p class="instruction-text">Tekan untuk memulai sesi foto</p>
         </div>

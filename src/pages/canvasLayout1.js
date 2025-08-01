@@ -268,10 +268,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Global functions for modal
     window.openCarousel = openCarousel;
     window.closeCarousel = closeCarousel;
-
-// Add enhanced CSS styles for modal and animations
-const style = document.createElement('style');
-style.textContent = `
+    
+    // Add enhanced CSS styles for modal and animations
+    const style = document.createElement('style');
+    style.textContent = `
     /* Modal Animations */
     .modal.fade-in {
         animation: modalFadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -525,88 +525,88 @@ style.textContent = `
             font-size: 13px;
         }
     }
-`;
-document.head.appendChild(style);
+    `;
+    document.head.appendChild(style);
 
+    // Update countdown text based on selected timer option
     function toggleFullscreen() {
-    const videoContainer = document.getElementById('videoContainer');
-    const fullscreenMessage = document.getElementById('fullscreenMessage');
-    const fullscreenImg = document.querySelector('#fullscreenBtn img');
-    let fullscreenBtnElement = document.getElementById('startBtnFullscreen');
+        const videoContainer = document.getElementById('videoContainer');
+        const fullscreenMessage = document.getElementById('fullscreenMessage');
+        const fullscreenImg = document.querySelector('#fullscreenBtn img');
+        let fullscreenBtnElement = document.getElementById('startBtnFullscreen');
 
-    if (
-        !document.fullscreenElement &&
-        !document.mozFullScreenElement &&
-        !document.webkitFullscreenElement &&
-        !document.msFullscreenElement
-    ) {
-        // === ENTER FULLSCREEN ===
-        if (videoContainer.requestFullscreen) {
-            videoContainer.requestFullscreen();
-        } else if (videoContainer.mozRequestFullScreen) {
-            videoContainer.mozRequestFullScreen();
-        } else if (videoContainer.webkitRequestFullscreen) {
-            videoContainer.webkitRequestFullscreen();
-        } else if (videoContainer.msRequestFullscreen) {
-            videoContainer.msRequestFullscreen();
-        }
+        if (
+            !document.fullscreenElement &&
+            !document.mozFullScreenElement &&
+            !document.webkitFullscreenElement &&
+            !document.msFullscreenElement
+        ) {
+            // === ENTER FULLSCREEN ===
+            if (videoContainer.requestFullscreen) {
+                videoContainer.requestFullscreen();
+            } else if (videoContainer.mozRequestFullScreen) {
+                videoContainer.mozRequestFullScreen();
+            } else if (videoContainer.webkitRequestFullscreen) {
+                videoContainer.webkitRequestFullscreen();
+            } else if (videoContainer.msRequestFullscreen) {
+                videoContainer.msRequestFullscreen();
+            }
 
-        if (fullscreenMessage) fullscreenMessage.style.opacity = "1";
-        if (fullscreenImg) fullscreenImg.src = "/src/assets/fullScreen2.png";
+            if (fullscreenMessage) fullscreenMessage.style.opacity = "1";
+            if (fullscreenImg) fullscreenImg.src = "/src/assets/fullScreen2.png";
 
-        setTimeout(() => {
+            setTimeout(() => {
+                if (fullscreenMessage) fullscreenMessage.style.opacity = "0";
+            }, 1000);
+
+            // === Tambahkan tombol START CAPTURE ===
+            if (!fullscreenBtnElement) {
+                fullscreenBtnElement = document.createElement('button');
+                fullscreenBtnElement.id = 'startBtnFullscreen';
+                fullscreenBtnElement.textContent = 'START CAPTURE';
+                fullscreenBtnElement.style.position = 'absolute';
+                fullscreenBtnElement.style.bottom = '20px';
+                fullscreenBtnElement.style.left = '50%';
+                fullscreenBtnElement.style.transform = 'translateX(-50%)';
+                fullscreenBtnElement.style.zIndex = '9999';
+                fullscreenBtnElement.style.padding = '12px 24px';
+                fullscreenBtnElement.style.backgroundColor = '#ff4081';
+                fullscreenBtnElement.style.color = 'white';
+                fullscreenBtnElement.style.border = 'none';
+                fullscreenBtnElement.style.borderRadius = '8px';
+                fullscreenBtnElement.style.fontSize = '16px';
+                fullscreenBtnElement.style.cursor = 'pointer';
+
+                // Klik tombol ini akan trigger tombol asli (startBtn)
+                fullscreenBtnElement.addEventListener('click', () => {
+                    document.getElementById('startBtn').click();
+                });
+
+                videoContainer.appendChild(fullscreenBtnElement);
+            }
+
+        } else {
+            // === EXIT FULLSCREEN ===
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+
             if (fullscreenMessage) fullscreenMessage.style.opacity = "0";
-        }, 1000);
+            if (fullscreenImg) fullscreenImg.src = "/src/assets/fullScreen3.png";
 
-        // === Tambahkan tombol START CAPTURE ===
-        if (!fullscreenBtnElement) {
-            fullscreenBtnElement = document.createElement('button');
-            fullscreenBtnElement.id = 'startBtnFullscreen';
-            fullscreenBtnElement.textContent = 'START CAPTURE';
-            fullscreenBtnElement.style.position = 'absolute';
-            fullscreenBtnElement.style.bottom = '20px';
-            fullscreenBtnElement.style.left = '50%';
-            fullscreenBtnElement.style.transform = 'translateX(-50%)';
-            fullscreenBtnElement.style.zIndex = '9999';
-            fullscreenBtnElement.style.padding = '12px 24px';
-            fullscreenBtnElement.style.backgroundColor = '#ff4081';
-            fullscreenBtnElement.style.color = 'white';
-            fullscreenBtnElement.style.border = 'none';
-            fullscreenBtnElement.style.borderRadius = '8px';
-            fullscreenBtnElement.style.fontSize = '16px';
-            fullscreenBtnElement.style.cursor = 'pointer';
-
-            // Klik tombol ini akan trigger tombol asli (startBtn)
-            fullscreenBtnElement.addEventListener('click', () => {
-                document.getElementById('startBtn').click();
-            });
-
-            videoContainer.appendChild(fullscreenBtnElement);
-        }
-
-    } else {
-        // === EXIT FULLSCREEN ===
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        }
-
-        if (fullscreenMessage) fullscreenMessage.style.opacity = "0";
-        if (fullscreenImg) fullscreenImg.src = "/src/assets/fullScreen3.png";
-
-        // Hapus tombol START CAPTURE ketika keluar fullscreen
-        if (fullscreenBtnElement) {
-            fullscreenBtnElement.remove();
+            // Hapus tombol START CAPTURE ketika keluar fullscreen
+            if (fullscreenBtnElement) {
+                fullscreenBtnElement.remove();
+            }
         }
     }
-    }
-
-    
+    // Add event listener to fullscreen button
     if (fullscreenBtn) {
         fullscreenBtn.addEventListener("click", toggleFullscreen);
     }
@@ -772,71 +772,71 @@ document.head.appendChild(style);
 
     // Single photo capture function
     async function capturePhoto() {
-    if (images.length >= expectedPhotos) {
-        return;
-    }
-    
-    const startBtn = document.getElementById('startBtn');
-    const uploadBtn = document.getElementById('uploadBtn');
-    
-    if (startBtn) {
-        startBtn.disabled = true;
-        startBtn.textContent = 'Capturing...';
-    }
-    if (uploadBtn) uploadBtn.disabled = true;
-    
-    try {
-        const timerOptions = document.getElementById("timerOptions");
-        const selectedValue = parseInt(timerOptions?.value) || 3;
-        
-        await showCountdown(selectedValue);
-        
-        if (flash) {
-            flash.style.opacity = 1;
-            setTimeout(() => flash.style.opacity = 0, 200);
+        if (images.length >= expectedPhotos) {
+            return;
         }
         
-        if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
-            throw new Error("Camera not ready. Please try again.");
-        }
+        const startBtn = document.getElementById('startBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
         
-        if (!canvas) {
-            throw new Error("Canvas element not found. Please refresh the page.");
-        }
-        
-        const ctx = canvas.getContext('2d');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        
-        ctx.filter = getComputedStyle(video).filter;
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
-        let imageData = canvas.toDataURL('image/png');
-        if (invertBtnState) {
-            imageData = await applyMirrorEffect(imageData);
-        }
-        
-        const compressedImage = await compressImage(imageData, 'session'); // Compress for preview
-        images.push(compressedImage);
-        
-        updatePhotoPreview(images.length - 1, compressedImage);
-        updateUI();
-        
-    } catch (error) {
-        console.error('Error capturing photo:', error);
-        alert(error.message || 'Error capturing photo. Please try again.');
-    } finally {
         if (startBtn) {
-            startBtn.disabled = false;
-            if (images.length < expectedPhotos) {
-                startBtn.textContent = `CAPTURE PHOTO ${images.length + 1}`;
-            }
+            startBtn.disabled = true;
+            startBtn.textContent = 'Capturing...';
         }
-        if (uploadBtn) uploadBtn.disabled = false;
+        if (uploadBtn) uploadBtn.disabled = true;
+        
+        try {
+            const timerOptions = document.getElementById("timerOptions");
+            const selectedValue = parseInt(timerOptions?.value) || 3;
+            
+            await showCountdown(selectedValue);
+            
+            if (flash) {
+                flash.style.opacity = 1;
+                setTimeout(() => flash.style.opacity = 0, 200);
+            }
+            
+            if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
+                throw new Error("Camera not ready. Please try again.");
+            }
+            
+            if (!canvas) {
+                throw new Error("Canvas element not found. Please refresh the page.");
+            }
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            ctx.filter = getComputedStyle(video).filter;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            let imageData = canvas.toDataURL('image/png');
+            if (invertBtnState) {
+                imageData = await applyMirrorEffect(imageData);
+            }
+            
+            const compressedImage = await compressImage(imageData, 'session'); // Compress for preview
+            images.push(compressedImage);
+            
+            updatePhotoPreview(images.length - 1, compressedImage);
+            updateUI();
+            
+        } catch (error) {
+            console.error('Error capturing photo:', error);
+            alert(error.message || 'Error capturing photo. Please try again.');
+        } finally {
+            if (startBtn) {
+                startBtn.disabled = false;
+                if (images.length < expectedPhotos) {
+                    startBtn.textContent = `CAPTURE PHOTO ${images.length + 1}`;
+                }
+            }
+            if (uploadBtn) uploadBtn.disabled = false;
+        }
     }
-}
 
-    // 🚀 CAPTURE ALL PHOTOS FUNCTION - Auto capture dengan interval
+    // 🚀 CAPTURE ALL PHOTOS FUNCTION - Auto capture dengan interval unutk layout 1
     async function captureAllPhotos() {
         if (images.length >= expectedPhotos) {
             return;
@@ -1056,33 +1056,33 @@ document.head.appendChild(style);
         }
     }
 
+   // 📹 CAMERA INITIALIZATION
     async function startCamera() {
-        stopCameraStream(); 
-    
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    width: { ideal: 1920 },
+                    height: { ideal: 1080 },
+                    facingMode: 'user'
+                }
+            });
+            
             if (video) {
                 video.srcObject = stream;
-        
-                // Ensure video is playing before hiding black screen
-                video.onloadedmetadata = () => {
-                    video.play();
-                    setTimeout(() => {
-                        if (blackScreen) {
-                            blackScreen.style.opacity = 0;
-                            setTimeout(() => blackScreen.style.display = 'none', 1000);
-                        }
-                        // Show grid overlay when camera starts
-                        if (gridOverlay) {
-                            gridOverlay.style.display = 'grid';
-                            if (gridToggleBtn) gridToggleBtn.textContent = 'Hide Grid';
-                        }
-                    }, 500);
-                };
+                video.addEventListener('loadedmetadata', () => {
+                    if (blackScreen) {
+                        blackScreen.style.opacity = '0';
+                        setTimeout(() => {
+                            if (blackScreen) blackScreen.style.display = 'none';
+                        }, 1000);
+                    }
+                });
             }
-        } catch (err) {
-            console.error("Camera Access Denied", err);
-            alert("Please enable camera permissions in your browser settings.");
+        } catch (error) {
+            console.error('Camera access error:', error);
+            if (blackScreen) {
+                blackScreen.textContent = 'Camera access denied. Please allow camera access and refresh the page.';
+            }
         }
     }
     
@@ -1151,76 +1151,78 @@ document.head.appendChild(style);
     function updateCountdown() {
         showCountdown();
     }
-
+    
 
     // Update Image Upload for Users to choose multiple images at once
     function handleImageUpload(event) {
-    const photoCount = 2; // Layout 1 has 2 photos
-    const files = Array.from(event.target.files);
+        const photoCount = 2; // Layout 1 has 2 photos
+        const files = Array.from(event.target.files);
 
-    if (files.length === 0) {
-        alert("Please upload a valid image file.");
-        return;
-    }
-
-    for (const file of files) {
-        if (!file.type.startsWith("image/")) continue;
-
-        if (images.length >= photoCount) {
-            const confirmReplace = confirm(`You already have ${photoCount} pictures. Uploading new images will replace all current pictures. Do you want to proceed?`);
-            if (!confirmReplace) {
-                event.target.value = "";
-                return;
-            }
-
-            images = [];
-            if (photoContainer) photoContainer.innerHTML = '';
-            if (progressCounter) progressCounter.textContent = `0/${photoCount}`;
-            if (startBtn) startBtn.innerHTML = 'Capturing...';
-            if (doneBtn) doneBtn.style.display = 'none';
+        if (files.length === 0) {
+            alert("Please upload a valid image file.");
+            return;
         }
 
-        if (startBtn) startBtn.innerHTML = 'Capturing...';
+        for (const file of files) {
+            if (!file.type.startsWith("image/")) continue;
 
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            const imageData = e.target.result;
-            const compressedImage = await compressImage(imageData, 'session'); // Compress for preview
+            if (images.length >= photoCount) {
+                const confirmReplace = confirm(`You already have ${photoCount} pictures. Uploading new images will replace all current pictures. Do you want to proceed?`);
+                if (!confirmReplace) {
+                    event.target.value = "";
+                    return;
+                }
 
-            images.push(compressedImage);
-
-            if (photoContainer) {
-                const container = document.createElement('div');
-                container.style.position = 'relative';
-                const imgElement = document.createElement('img');
-                imgElement.src = compressedImage;
-                imgElement.classList.add('photo');
-                imgElement.addEventListener('click', () => openCarousel(images.length - 1));
-                const retakeBtn = document.createElement('button');
-                retakeBtn.classList.add('retake-btn');
-                retakeBtn.innerHTML = `<img src="/src/assets/retake.png" alt="retake icon">`;
-                retakeBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    retakeSinglePhoto(images.length - 1);
-                });
-                container.appendChild(imgElement);
-                container.appendChild(retakeBtn);
-                photoContainer.appendChild(container);
+                images = [];
+                if (photoContainer) photoContainer.innerHTML = '';
+                if (progressCounter) progressCounter.textContent = `0/${photoCount}`;
+                if (startBtn) startBtn.innerHTML = 'Capturing...';
+                if (doneBtn) doneBtn.style.display = 'none';
             }
 
-            if (progressCounter) progressCounter.textContent = `${images.length}/${photoCount}`;
+            if (startBtn) startBtn.innerHTML = 'Capturing...';
 
-            if (images.length === photoCount) {
-                if (startBtn) startBtn.innerHTML = 'Retake All';
-                if (doneBtn) doneBtn.style.display = 'block';
-            }
-        };
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const imageData = e.target.result;
+                const compressedImage = await compressImage(imageData, 'session'); // Compress for preview
 
-        reader.readAsDataURL(file);
+                images.push(compressedImage);
+
+                if (photoContainer) {
+                    const container = document.createElement('div');
+                    container.style.position = 'relative';
+                    const imgElement = document.createElement('img');
+                    imgElement.src = compressedImage;
+                    imgElement.classList.add('photo');
+                    imgElement.addEventListener('click', () => openCarousel(images.length - 1));
+                    const retakeBtn = document.createElement('button');
+                    retakeBtn.classList.add('retake-btn');
+                    retakeBtn.innerHTML = `<img src="/src/assets/retake.png" alt="retake icon">`;
+                    retakeBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        retakeSinglePhoto(images.length - 1);
+                    });
+                    container.appendChild(imgElement);
+                    container.appendChild(retakeBtn);
+                    photoContainer.appendChild(container);
+                }
+
+                if (progressCounter) progressCounter.textContent = `${images.length}/${photoCount}`;
+
+                if (images.length === photoCount) {
+                    if (startBtn) startBtn.innerHTML = 'Retake All';
+                    if (doneBtn) doneBtn.style.display = 'block';
+                }
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        event.target.value = "";
+
     }
-
-    event.target.value = "";
-}
+    
     // 🚀 OPTIMIZED STORE IMAGE FUNCTION - 3x FASTER!
     async function storeImageArray() {
         const photoCount = 2; // Layout 1 has 2 photos

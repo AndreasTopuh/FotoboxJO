@@ -65,59 +65,40 @@ document.addEventListener('DOMContentLoaded', function () {
     const photoCustomPreview = document.getElementById('photoPreview');
     const customBack = document.getElementById('customBack');
 
-    // Load photos first with priority
+    // Inisialisasi aplikasi
     loadPhotosFirst()
         .then(() => {
-            console.log('✅ Photos loaded successfully');
-            // Initialize canvas immediately after photos load
             initializeCanvas();
-            // Load UI controls
             initializeControls();
-            // Load stickers in background (non-blocking)
-            console.log('📦 Loading stickers in background...');
             initializeStickerControls();
         })
         .catch(error => {
-            console.error('❌ Error loading photos:', error);
+            console.error('Error loading photos:', error);
             alert('Gagal memuat foto. Redirecting...');
             window.location.href = 'selectlayout.php';
         });
 
-    // Function to load photos with priority
+    // Memuat foto dari server
     function loadPhotosFirst() {
-        return new Promise((resolve, reject) => {
-            fetch('../api-fetch/get_photos.php')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success && data.photos) {
-                        storedImages = data.photos;
-                        imageArrayLength = storedImages.length;
-                        console.log(`Loaded ${imageArrayLength} images from server session:`, storedImages);
-                        resolve(storedImages);
-                    } else {
-                        throw new Error('No photos found in session');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching photos:', error);
-                    reject(error);
-                });
-        });
+        return fetch('../api-fetch/get_photos.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.photos) {
+                    storedImages = data.photos;
+                    imageArrayLength = storedImages.length;
+                    return storedImages;
+                }
+                throw new Error('No photos found in session');
+            });
     }
 
     // Initialize canvas immediately after photos load
     function initializeCanvas() {
         if (!storedImages || storedImages.length === 0) {
-            console.error('❌ No images available for canvas');
+            console.error('No images available for canvas');
             return;
         }
-
-        console.log('🎨 Initializing canvas with photos...');
-
-        // Create and render canvas immediately
         redrawCanvas();
-
-        console.log('✅ Canvas initialized and rendered');
     }
 
     // Initialize basic controls (non-sticker related)

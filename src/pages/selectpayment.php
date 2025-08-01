@@ -58,9 +58,9 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
     }
 
     .back-button {
-      background: rgba(226, 133, 133, 0.1);
-      color: #E28585;
-      border: 2px solid #E28585;
+      background: #fff;
+      color: var(--pink-primary);
+      border: 2px solid var(--pink-secondary);
       border-radius: 25px;
       padding: 10px 20px;
       font-weight: 600;
@@ -71,8 +71,9 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
     }
 
     .back-button:hover {
-      background: #E28585;
-      color: white;
+      background: var(--pink-primary);
+      color: #fff;
+      border: 2px solid #fff;
     }
 
     .payment-title {
@@ -99,8 +100,8 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
     }
 
     .payment-option {
-      background: rgba(226, 133, 133, 0.1);
-      border: 2px solid #E28585;
+      background: #fff;
+      border: 2px solid var(--pink-secondary);
       border-radius: 15px;
       padding: 1.5rem;
       width: 100%;
@@ -111,18 +112,17 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
       text-decoration: none;
       transition: all 0.3s ease;
       cursor: pointer;
+      color: var(--pink-primary);
+      font-weight: 600;
+      font-size: 1.1rem;
     }
 
     .payment-option:hover {
-      background: rgba(226, 133, 133, 0.2);
+      background: var(--pink-primary);
+      color: #fff;
+      border: 2px solid #fff;
+      box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(226, 133, 133, 0.3);
-    }
-
-    .payment-option span {
-      color: #333;
-      font-weight: 600;
-      font-size: 1.1rem;
     }
 
     .payment-option img {
@@ -312,13 +312,13 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
       <div class="payment-options">
         <!-- QRIS -->
         <a href="#" onclick="startPaymentSession('qris'); return false;" class="payment-option">
-          <span>QRIS</span>
+          QRIS
           <img src="../assets/qris.png" alt="QRIS Logo">
         </a>
 
         <!-- BCA -->
         <a href="#" onclick="startPaymentSession('bank'); return false;" class="payment-option">
-          <span>Virtual Bank (BCA)</span>
+          Virtual Bank (BCA)
           <img src="../assets/bca.png" alt="BCA Logo">
         </a>
       </div>

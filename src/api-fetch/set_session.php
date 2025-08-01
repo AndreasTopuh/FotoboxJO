@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'success' => true,
             'message' => 'Payment session started',
             'session_state' => SessionManager::getSessionState(),
-            'time_remaining' => SessionManager::getMainTimerRemaining(),
+            'time_remaining' => SessionManager::getMainTimerRemaining(), 
             'payment_method' => $paymentMethod,
             'session_start' => $_SESSION['main_timer_start']
         ]);

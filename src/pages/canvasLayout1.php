@@ -77,12 +77,6 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
         <div class="canvas-centered">
             <div class="main-content-card">
 
-                <!-- Direction Section -->
-                <!-- <div class="direction-section">
-                    <div class="direction-arrows">↑ ↑ ↑</div>
-                    <h1 class="direction-heading">LOOK OVER HERE</h1>
-                </div> -->
-
                 <!-- Main Horizontal Layout -->
                 <div class="horizontal-layout">
                     <!-- Center Section: Camera Preview -->
