@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 img.src = imageData;
             } catch (error) {
                 reject(error);
-            }
+            }   
         });
     }
 
@@ -1392,7 +1392,7 @@ document.head.appendChild(style);
 
     document.addEventListener('keydown', (event) => {
         if (event.code === "Space") {
-            event.preventDefault(); // Prevents scrolling when spacebar is pressed
+            event.preventDefault(); 
             capturePhoto();
         }
     });
