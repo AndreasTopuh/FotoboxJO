@@ -83,23 +83,49 @@ document.addEventListener('DOMContentLoaded', function () {
             window.location.href = 'selectlayout.php';
         });
 
-    // Function to load photos with priority
+    // Function to load photos with priority - MODIFIED for Layout 2
     function loadPhotosFirst() {
         return new Promise((resolve, reject) => {
+            console.log('🔄 Trying to load Layout 2 photos...');
+            
+            // FIRST: Try to read from sessionStorage (from canvasLayout2)
+            const sessionData = sessionStorage.getItem('canvasLayout2_images');
+            if (sessionData) {
+                try {
+                    const sessionImages = JSON.parse(sessionData);
+                    if (sessionImages && sessionImages.length > 0) {
+                        storedImages = sessionImages;
+                        imageArrayLength = storedImages.length;
+                        console.log(`✅ Loaded ${imageArrayLength} images from sessionStorage (Layout 2)`, storedImages);
+                        resolve(storedImages);
+                        return;
+                    }
+                } catch (error) {
+                    console.warn('⚠️ Error parsing sessionStorage data, trying API fallback...', error);
+                }
+            }
+            
+            // FALLBACK: If sessionStorage empty, try API (PHP session)
+            console.log('🔄 sessionStorage empty, trying API fallback...');
             fetch('../api-fetch/get_photos.php')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success && data.photos) {
                         storedImages = data.photos;
                         imageArrayLength = storedImages.length;
-                        console.log(`Loaded ${imageArrayLength} images from server session:`, storedImages);
+                        console.log(`✅ Loaded ${imageArrayLength} images from PHP session:`, storedImages);
                         resolve(storedImages);
                     } else {
-                        throw new Error('No photos found in session');
+                        throw new Error('No photos found in session or sessionStorage');
                     }
                 })
                 .catch(error => {
-                    console.error('Error fetching photos:', error);
+                    console.error('❌ Error fetching photos from both sessionStorage and API:', error);
+                    alert('No photos found. Please go back to canvas and take photos first.');
+                    // Redirect back to canvas
+                    setTimeout(() => {
+                        window.location.href = 'canvasLayout2.php';
+                    }, 2000);
                     reject(error);
                 });
         });

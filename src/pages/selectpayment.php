@@ -7,17 +7,17 @@ require_once '../includes/pwa-helper.php';
 $currentState = SessionManager::getSessionState();
 
 if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
-    // Already paid, redirect to layout
-    header('Location: selectlayout.php');
-    exit();
+  // Already paid, redirect to layout
+  header('Location: selectlayout.php');
+  exit();
 } elseif ($currentState === SessionManager::STATE_LAYOUT_SELECTED) {
-    // Layout already selected, let user access layout page
-    header('Location: selectlayout.php');
-    exit();
+  // Layout already selected, let user access layout page
+  header('Location: selectlayout.php');
+  exit();
 } elseif ($currentState === SessionManager::STATE_PHOTO_SESSION) {
-    // Already in photo session, redirect to layout
-    header('Location: selectlayout.php');
-    exit();
+  // Already in photo session, redirect to layout
+  header('Location: selectlayout.php');
+  exit();
 }
 
 // JANGAN start payment session di sini - akan dimulai saat user klik metode pembayaran
@@ -29,9 +29,9 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pilih Metode Pembayaran - GoBooth</title>
-  
+
   <?php PWAHelper::addPWAHeaders(); ?>
-  
+
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="home-styles.css" />
   <style>
@@ -303,11 +303,11 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
     <div class="payment-card">
       <!-- Back Button -->
       <a href="description.php" class="back-button">← Kembali</a>
-      
+
       <!-- Title and Description -->
       <h1 class="payment-title">Pilih Metode Pembayaran</h1>
       <p class="payment-subtitle">Gunakan salah satu metode berikut untuk menyelesaikan pembayaran.</p>
-      
+
       <!-- Payment Options -->
       <div class="payment-options">
         <!-- QRIS -->
@@ -327,58 +327,55 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
 
   <!-- Developer Access Button (tersembunyi) -->
   <button class="developer-access" onclick="showDeveloperModal()" title="Developer Access">
-    <div style="width: 100%; height: 100%; background: rgba(226, 133, 133, 0.3); border-radius: 50%;">MASUK</div>
+    <div style="width: 100%; height: 100%; background: rgba(128, 73, 73, 0.3); border-radius: 50%;"></div>
   </button>
 
   <!-- Developer Modal -->
   <div id="developerModal" class="modal-overlay">
     <div class="modal-content">
       <h3 class="modal-title">Developer Access</h3>
-      <input 
-        type="password" 
-        id="developerCode" 
-        class="modal-input" 
-        placeholder="Masukkan kode akses"
-        maxlength="5"
-        readonly
-      />
-      
       <!-- Virtual Keyboard -->
       <div class="virtual-keyboard">
-        <div class="keyboard-display" id="keyboardDisplay">_____</div>
-        
+        <input
+          type="password"
+          id="developerCode"
+          class="modal-input"
+          placeholder="Masukkan kode akses"
+          maxlength="5"
+          readonly />
+
         <div class="keyboard-row">
           <button class="keyboard-key" onclick="addDigit('1')">1</button>
           <button class="keyboard-key" onclick="addDigit('2')">2</button>
           <button class="keyboard-key" onclick="addDigit('3')">3</button>
         </div>
-        
+
         <div class="keyboard-row">
           <button class="keyboard-key" onclick="addDigit('4')">4</button>
           <button class="keyboard-key" onclick="addDigit('5')">5</button>
           <button class="keyboard-key" onclick="addDigit('6')">6</button>
         </div>
-        
+
         <div class="keyboard-row">
           <button class="keyboard-key" onclick="addDigit('7')">7</button>
           <button class="keyboard-key" onclick="addDigit('8')">8</button>
           <button class="keyboard-key" onclick="addDigit('9')">9</button>
         </div>
-        
+
         <div class="keyboard-row">
           <button class="keyboard-key wide" onclick="clearInput()">Clear</button>
           <button class="keyboard-key" onclick="addDigit('0')">0</button>
           <button class="keyboard-key wide" onclick="deleteDigit()">⌫</button>
         </div>
       </div>
-      
+
       <div class="modal-buttons">
         <button class="modal-btn modal-btn-secondary" onclick="closeDeveloperModal()">Batal</button>
         <button class="modal-btn modal-btn-primary" onclick="verifyDeveloperCode()">Masuk</button>
       </div>
     </div>
   </div>
-  
+
   <script>
     async function startPaymentSession(method) {
       try {
@@ -395,7 +392,7 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
         });
 
         const result = await response.json();
-        
+
         if (result.success) {
           // Timer 20 menit sudah dimulai di server, redirect ke halaman pembayaran
           if (method === 'qris') {
@@ -454,12 +451,12 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
 
     async function verifyDeveloperCode() {
       const code = document.getElementById('developerCode').value;
-      
+
       if (code.length < 5) {
         alert('Silakan masukkan 5 digit kode akses!');
         return;
       }
-      
+
       if (code === '54321') {
         try {
           // Start developer session dengan timer 20 menit tapi skip payment
@@ -474,7 +471,7 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
           });
 
           const result = await response.json();
-          
+
           if (result.success) {
             // Langsung redirect ke select layout
             window.location.href = 'selectlayout.php';
@@ -521,7 +518,7 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
       });
     });
   </script>
-  
+
   <?php PWAHelper::addPWAScript(); ?>
 </body>
 

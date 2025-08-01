@@ -1,86 +1,71 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 🚀 COMPRESSION CONFIGURATION - 3-Level Quality System
+    // 🚀 COMPRESSION CONFIGURATION - 3-Level Quality System for Layout 6 (4 Photos)
     const COMPRESSION_CONFIG = {
-        session: { quality: 0.8, maxWidth: 800 },     // Fast session save
-        download: { quality: 0.95, maxWidth: 1200 },  // High quality download
-        print: { quality: 1.0, maxWidth: 2400 }       // Full quality print
+        // Untuk session storage (temporary) - FAST SAVE
+        SESSION_QUALITY: 0.5,        // 50% untuk performa cepat
+        SESSION_MAX_WIDTH: 1200,     // Resize untuk storage
+        SESSION_MAX_HEIGHT: 800,
+        
+        // Untuk download/print (high quality) - BEST QUALITY  
+        DOWNLOAD_QUALITY: 0.95,      // 95% - hampir lossless
+        DOWNLOAD_MAX_WIDTH: 2400,    // Full resolution
+        DOWNLOAD_MAX_HEIGHT: 1600,
+        
+        // Untuk preview thumbnail - FAST PREVIEW
+        THUMB_QUALITY: 0.6,          // 60% - kecil untuk preview
+        THUMB_MAX_WIDTH: 300,
+        THUMB_MAX_HEIGHT: 200
     };
 
-    // 🔥 FAST COMPRESSION FUNCTION
-    function compressImage(base64Data, type = 'session') {
-        return new Promise((resolve) => {
-            const config = COMPRESSION_CONFIG[type];
-            const img = new Image();
-            
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                
-                // Calculate new dimensions
-                const ratio = Math.min(config.maxWidth / img.width, config.maxWidth / img.height);
-                canvas.width = img.width * (ratio > 1 ? 1 : ratio);
-                canvas.height = img.height * (ratio > 1 ? 1 : ratio);
-                
-                // Draw and compress
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                const compressed = canvas.toDataURL('image/jpeg', config.quality);
-                
-                resolve(compressed);
-            };
-            
-            img.src = base64Data;
+    // 🚀 FAST COMPRESSION FUNCTION
+    function compressImage(imageData, mode = 'session') {
+        return new Promise((resolve, reject) => {
+            try {
+                const img = new Image();
+                img.onload = function() {
+                    let maxWidth, maxHeight, quality;
+                    if (mode === 'session') {
+                        maxWidth = COMPRESSION_CONFIG.SESSION_MAX_WIDTH;
+                        maxHeight = COMPRESSION_CONFIG.SESSION_MAX_HEIGHT;
+                        quality = COMPRESSION_CONFIG.SESSION_QUALITY;
+                    } else if (mode === 'download') {
+                        maxWidth = COMPRESSION_CONFIG.DOWNLOAD_MAX_WIDTH;
+                        maxHeight = COMPRESSION_CONFIG.DOWNLOAD_MAX_HEIGHT;
+                        quality = COMPRESSION_CONFIG.DOWNLOAD_QUALITY;
+                    } else {
+                        maxWidth = COMPRESSION_CONFIG.THUMB_MAX_WIDTH;
+                        maxHeight = COMPRESSION_CONFIG.THUMB_MAX_HEIGHT;
+                        quality = COMPRESSION_CONFIG.THUMB_QUALITY;
+                    }
+                    let width = img.width;
+                    let height = img.height;
+                    // Resize logic
+                    if (width > maxWidth) {
+                        height = Math.round(height * (maxWidth / width));
+                        width = maxWidth;
+                    }
+                    if (height > maxHeight) {
+                        width = Math.round(width * (maxHeight / height));
+                        height = maxHeight;
+                    }
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    // Output JPEG untuk kompresi lebih kecil
+                    resolve(canvas.toDataURL('image/jpeg', quality));
+                };
+                img.onerror = () => reject(new Error('Failed to compress image'));
+                img.src = imageData;
+            } catch (error) {
+                reject(error);
+            }
         });
     }
-
-    // Timer functionality
-    const timerDisplay = document.getElementById('timer-display');
-    const timeoutModal = document.getElementById('timeout-modal');
-    const timeoutOkBtn = document.getElementById('timeout-ok-btn');
-    
-    let timeLeft = 7 * 60; // 7 minutes in seconds
-    let timerInterval;
-
-    function updateTimer() {
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        
-        if (timerDisplay) {
-            timerDisplay.textContent = display;
-        }
-        
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            showTimeoutModal();
-        }
-        
-        timeLeft--;
-    }
-
-    function showTimeoutModal() {
-        if (timeoutModal) {
-            timeoutModal.style.display = 'flex';
-        }
-    }
-
-    function hideTimeoutModal() {
-        if (timeoutModal) {
-            timeoutModal.style.display = 'none';
-        }
-    }
-
-    if (timeoutOkBtn) {
-        timeoutOkBtn.addEventListener('click', () => {
-            hideTimeoutModal();
-            window.location.href = 'customizeLayout6.php';
-        });
-    }
-
-    // Start the timer
-    timerInterval = setInterval(updateTimer, 1000);
-    updateTimer(); // Initial call to set display
 
     const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
     const blackScreen = document.getElementById('blackScreen');
     const countdownText = document.getElementById('countdownText');
     const progressCounter = document.getElementById('progressCounter');
@@ -89,6 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const doneBtn = document.getElementById('doneBtn');
     const flash = document.getElementById('flash');
     const photoContainer = document.getElementById('photoContainer');
+    const gridOverlay = document.getElementById('gridOverlay');
+    const gridToggleBtn = document.getElementById('gridToggleBtn');
 
     const bnwFilter = document.getElementById('bnwFilterId');
     const sepiaFilter = document.getElementById('sepiaFilterId');
@@ -111,58 +98,57 @@ document.addEventListener('DOMContentLoaded', () => {
         timerOptions.addEventListener("change", updateCountdown);
     }
 
+    // 🎯 LAYOUT 2 CONFIGURATION - 4 PHOTOS
+    const expectedPhotos = 4; // Layout 6 memiliki 4 foto
+    let images = [];
+    let invertBtnState = false;
+    let currentImageIndex = 0;
+
     window.addEventListener("beforeunload", () => {
         let stream = document.querySelector("video")?.srcObject;
         if (stream) {
-          stream.getTracks().forEach((track) => track.stop());
+            stream.getTracks().forEach((track) => track.stop());
         }
     });
 
+    // 🎮 FULLSCREEN FUNCTIONALITY
     function toggleFullscreen() {
         if (!document.fullscreenElement && 
             !document.mozFullScreenElement && 
             !document.webkitFullscreenElement && 
             !document.msFullscreenElement) {
             
-            // Enter fullscreen
             if (videoContainer.requestFullscreen) {
                 videoContainer.requestFullscreen();
-            } else if (videoContainer.mozRequestFullScreen) { // Firefox
+            } else if (videoContainer.mozRequestFullScreen) {
                 videoContainer.mozRequestFullScreen();
-            } else if (videoContainer.webkitRequestFullscreen) { // Chrome, Safari, and Opera
+            } else if (videoContainer.webkitRequestFullscreen) {
                 videoContainer.webkitRequestFullscreen();
-            } else if (videoContainer.msRequestFullscreen) { // IE/Edge
+            } else if (videoContainer.msRequestFullscreen) {
                 videoContainer.msRequestFullscreen();
             }
-            
+
+            if (fullscreenImg) {
+                fullscreenImg.src = "/src/assets/minimize3.png";
+            }
             if (fullscreenMessage) {
                 fullscreenMessage.style.opacity = "1";
+                setTimeout(() => {
+                    if (fullscreenMessage) fullscreenMessage.style.opacity = "0";
+                }, 2000);
             }
-            if (fullscreenImg) {
-                fullscreenImg.src = "/src/assets/fullScreen2.png";
-            }
-            
-            setTimeout(() => {
-                if (fullscreenMessage) {
-                    fullscreenMessage.style.opacity = "0"; // Fade out
-                }
-            }, 1000);
-
+        
         } else {
-            // Exit fullscreen
             if (document.exitFullscreen) {
                 document.exitFullscreen();
-            } else if (document.mozCancelFullScreen) { // Firefox
+            } else if (document.mozCancelFullScreen) {
                 document.mozCancelFullScreen();
-            } else if (document.webkitExitFullscreen) { // Chrome, Safari, and Opera
+            } else if (document.webkitExitFullscreen) {
                 document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) { // IE/Edge
+            } else if (document.msExitFullscreen) {
                 document.msExitFullscreen();
             }
-            
-            if (fullscreenMessage) {
-                fullscreenMessage.style.opacity = "0";
-            }
+
             if (fullscreenImg) {
                 fullscreenImg.src = "/src/assets/fullScreen3.png";
             }
@@ -173,462 +159,571 @@ document.addEventListener('DOMContentLoaded', () => {
         fullscreenBtn.addEventListener("click", toggleFullscreen);
     }
 
+    // 🎨 FILTER FUNCTIONALITY
     if(bnwFilter) {
         bnwFilter.addEventListener('click', () => {
-            applyFilter("grayscale");
-            filterText("BNW")
+            applyFilter('bnw');
+            filterText('Black & White Filter Applied');
         });
     }
 
     if(sepiaFilter) {
         sepiaFilter.addEventListener('click', () => {
-            applyFilter("sepia");
-            filterText("cyber")
+            applyFilter('sepia');
+            filterText('Sepia Filter Applied');
         });
     }
 
     if(smoothFilter) {
         smoothFilter.addEventListener('click', () => {
-            applyFilter("smooth");
-            filterText("smooth")
+            applyFilter('smooth');
+            filterText('Smooth Filter Applied');
         });
     }
 
     if(grayFilter) {
         grayFilter.addEventListener('click', () => {
-            applyFilter("gray");
-            filterText("grayscale")
+            applyFilter('gray');
+            filterText('Gray Filter Applied');
         });
     }
 
     if(vintageFilter) {
         vintageFilter.addEventListener('click', () => {
-            applyFilter("vintage");
-            filterText("vintage")
+            applyFilter('vintage');
+            filterText('Vintage Filter Applied');
         });
     }
 
     if(normalFilter) {
         normalFilter.addEventListener('click', () => {
-            applyFilter("none");
-            filterText("none")
+            applyFilter('none');
+            filterText('Normal Filter Applied');
         });
     }
 
     function applyFilter(filterClass) {
         if (!video) return;
         
-        // Remove existing filters
-        video.classList.remove("sepia", "grayscale","smooth","gray","vintage");
-
+        // Remove all existing filters
+        video.classList.remove("sepia", "grayscale", "smooth", "gray", "vintage", "bnw");
+        
         // Apply new filter if not 'none'
         if (filterClass !== "none") {
             video.classList.add(filterClass);
         }
+
+        // Update active filter button
+        document.querySelectorAll('.filterBtn').forEach(btn => btn.classList.remove('active'));
+        if (filterClass !== 'none') {
+            const activeBtn = document.getElementById(filterClass + 'FilterId') || 
+                             document.getElementById(filterClass.replace('bnw', 'bnw') + 'FilterId');
+            if (activeBtn) activeBtn.classList.add('active');
+        } else {
+            const normalBtn = document.getElementById('normalFilterId');
+            if (normalBtn) normalBtn.classList.add('active');
+        }
     }
 
     function filterText(chosenFilter) {
-        if (!filterMessage) return;
-        
-        filterMessage.style.opacity = "1";
-        filterMessage.innerHTML = chosenFilter;
-            
-        setTimeout(() => {
-            filterMessage.style.opacity = "0"; // Fade out
-        }, 1000);
+        if (filterMessage) {
+            filterMessage.textContent = chosenFilter;
+            filterMessage.style.opacity = "1";
+            setTimeout(() => {
+                if (filterMessage) filterMessage.style.opacity = "0";
+            }, 3000);
+        }
     }
 
-    const canvas = document.createElement('canvas');
-    let images = [];
-    let invertBtnState = false;
-
+    // 🪞 INVERT/MIRROR FUNCTIONALITY
     if(invertBtn) {
-        invertBtn.addEventListener('click', () => {
-            invertBtnState =!invertBtnState;
-            cameraInvertSwitch()
-            filterText("invert")
-        });
+        invertBtn.addEventListener('click', cameraInvertSwitch);
     }
 
     function cameraInvertSwitch() {
-        if (invertBtnState == true) {
-            if (photoContainer) photoContainer.style.transform = 'scaleX(-1)'
-            if (video) video.style.transform = 'scaleX(-1)'
+        invertBtnState = !invertBtnState;
+        if (video) {
+            video.style.transform = invertBtnState ? 'scaleX(-1)' : 'scaleX(1)';
         }
-        else {
-            if (photoContainer) photoContainer.style.transform = 'scaleX(1)'
-            if (video) video.style.transform = 'scaleX(1)'
+        
+        if (invertBtn) {
+            invertBtn.classList.toggle('active', invertBtnState);
         }
     }
 
+    // 📹 CAMERA INITIALIZATION
     async function startCamera() {
-        stopCameraStream(); 
-    
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    width: { ideal: 1920 },
+                    height: { ideal: 1080 },
+                    facingMode: 'user'
+                }
+            });
+            
             if (video) {
                 video.srcObject = stream;
-        
-                // Ensure video is playing before hiding black screen
-                video.onloadedmetadata = () => {
-                    video.play();
-                    setTimeout(() => {
-                        if (blackScreen) {
-                            blackScreen.style.opacity = 0;
-                            setTimeout(() => blackScreen.style.display = 'none', 1000);
-                        }
-                    }, 500);
-                };
+                video.addEventListener('loadedmetadata', () => {
+                    if (blackScreen) {
+                        blackScreen.style.opacity = '0';
+                        setTimeout(() => {
+                            if (blackScreen) blackScreen.style.display = 'none';
+                        }, 1000);
+                    }
+                });
             }
-        } catch (err) {
-            console.error("Camera Access Denied", err);
-            alert("Please enable camera permissions in your browser settings.");
+        } catch (error) {
+            console.error('Camera access error:', error);
+            if (blackScreen) {
+                blackScreen.textContent = 'Camera access denied. Please allow camera access and refresh the page.';
+            }
         }
     }
     
     function stopCameraStream() {
         if (video && video.srcObject) {
-            video.srcObject.getTracks().forEach(track => track.stop());
+            const stream = video.srcObject;
+            const tracks = stream.getTracks();
+            tracks.forEach(track => track.stop());
             video.srcObject = null;
         }
     }
     
     // Start camera if on canvasLayout6.php
-    if (window.location.pathname.endsWith("canvasLayout6.php") || window.location.pathname === "canvasLayout6.php") {
+    if (window.location.pathname.includes("canvasLayout6.php")) {
         startCamera();
     }
 
-    async function startPhotobooth() {
-        const photoCount = 4; // Layout 6 has 2 photos
-        
-        if (images.length > 0) {
-            const confirmReset = confirm("You already have pictures. Do you want to retake them?");
-            if (!confirmReset) return;
-    
-            images = [];
-            if (photoContainer) photoContainer.innerHTML = '';
-            if (progressCounter) progressCounter.textContent = `0/${photoCount}`;
-            if (doneBtn) doneBtn.style.display = 'none';
-        }
-    
-        // Disable buttons to prevent multiple actions
-        if (startBtn) {
-            startBtn.disabled = true;
-            startBtn.innerHTML = 'Capturing...';
-        }
-        if (uploadBtn) uploadBtn.disabled = true;
-        if (progressCounter) progressCounter.textContent = `0/${photoCount}`;
-    
-        // Get the selected timer value
-        const timerOptions = document.getElementById("timerOptions");
-        const selectedValue = parseInt(timerOptions?.value) || 3; // Default to 3 if no value is selected
-    
-        for (let i = 0; i < photoCount; i++) {
-            // Countdown using selected timer
-            await showCountdown(selectedValue);
-    
-            // Flash Effect
-            if (flash) {
-                flash.style.opacity = 1;
-                setTimeout(() => flash.style.opacity = 0, 200);
+    // 🎯 GRID OVERLAY TOGGLE
+    if (gridToggleBtn) {
+        gridToggleBtn.addEventListener('click', () => {
+            if (gridOverlay) {
+                const isVisible = gridOverlay.style.display === 'grid';
+                gridOverlay.style.display = isVisible ? 'none' : 'grid';
+                gridToggleBtn.textContent = isVisible ? 'Show Grid' : 'Hide Grid';
+                gridToggleBtn.classList.toggle('active', !isVisible);
             }
-    
-            // Ensure video dimensions are loaded before capturing
-            if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
-                console.error("Video not ready yet.");
-                alert("Camera not ready. Please try again.");
+        });
+    }
+
+    // 📸 PHOTO CAPTURE FUNCTIONALITY
+    async function startPhotobooth() {
+        if (!video) return;
+        
+        try {
+            const selectedValue = parseInt(timerOptions?.value || '3');
+            await showCountdown(selectedValue);
+            
+            // Create canvas from video
+            if (!canvas) {
+                console.error('Canvas element not found');
                 return;
             }
-    
-            // Capture Image with Filter Applied
-            const ctx = canvas.getContext('2d');
+
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-    
-            // Apply current video filter to the canvas
-            ctx.filter = getComputedStyle(video).filter;
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
-            // Slight delay for iOS fix
-            await new Promise(res => setTimeout(res, 100)); 
-    
+            const ctx = canvas.getContext('2d');
+            
+            // Apply mirror effect if enabled
+            if (invertBtnState) {
+                ctx.scale(-1, 1);
+                ctx.translate(-canvas.width, 0);
+            }
+            
+            ctx.drawImage(video, 0, 0);
+            
+            // Flash effect
+            if (flash) {
+                flash.style.opacity = '1';
+                setTimeout(() => {
+                    if (flash) flash.style.opacity = '0';
+                }, 200);
+            }
+            
             const imageData = canvas.toDataURL('image/png');
-            console.log("Captured Image: ", imageData);
-            images.push(imageData);
-    
-            // Display captured image in preview
-            if (photoContainer) {
-                const imgElement = document.createElement('img');
-                imgElement.src = imageData;
-                imgElement.classList.add('photo');
-                photoContainer.appendChild(imgElement);
-            }
-    
-            if (progressCounter) progressCounter.textContent = `${i + 1}/${photoCount}`;
-    
-            // Wait before next capture if not the last one
-            if (i < photoCount - 1) await new Promise(res => setTimeout(res, 500)); 
-        }
-    
-        // Reset buttons
-        if (images.length === photoCount) {
-            if (startBtn) {
-                startBtn.disabled = false;
-                startBtn.innerHTML = 'Retake';
-            }
-            if (uploadBtn) uploadBtn.disabled = false;
-            if (doneBtn) doneBtn.style.display = 'block';
+            
+            // Compress and store
+            const compressedImage = await compressImage(imageData, 'session');
+            images.push(compressedImage);
+            
+            // Store original for download
+            const originalKey = `canvasLayout6_original_${images.length - 1}`;
+            const downloadImage = await compressImage(imageData, 'download');
+            localStorage.setItem(originalKey, downloadImage);
+            
+            updatePhotoPreview(images.length - 1, compressedImage);
+            updateUI();
+            
+        } catch (error) {
+            console.error('Error capturing photo:', error);
+            alert(error.message || 'Error capturing photo. Please try again.');
         }
     }
 
+    // ⏱️ COUNTDOWN FUNCTIONALITY
     async function showCountdown(selectedValue) {
         if (!countdownText) return;
         
-        countdownText.style.display = "flex";
+        countdownText.style.display = 'block';
+        
         for (let countdown = selectedValue; countdown > 0; countdown--) {
             countdownText.textContent = countdown;
             countdownText.classList.remove("bounce");
-            void countdownText.offsetWidth; // Trigger reflow for animation
+            void countdownText.offsetWidth; // Force reflow
             countdownText.classList.add("bounce");
-            await new Promise(res => setTimeout(res, 1000));
+            
+            await new Promise(resolve => setTimeout(resolve, 1000));
         }
-        countdownText.style.display = "none";
-    }
-    
-    // Automatically trigger the countdown when option changes
-    function updateCountdown() {
-        showCountdown();
-    }
-
-    // Update Image Upload for Users to choose multiple images at once
-    function handleImageUpload(event) {
-        const photoCount = 4; // Layout 6 has 2 photos
-        const files = Array.from(event.target.files); // Get all selected files
-
-        if (files.length === 0) {
-            alert("Please upload a valid image file.");
-            return;
-        }
-
-        for (const file of files) {
-            if (!file.type.startsWith("image/")) continue;
-
-            // Stop if we already have required number of images
-            if (images.length >= photoCount) {
-                const confirmReplace = confirm(`You already have ${photoCount} pictures. Uploading new images will replace all current pictures. Do you want to proceed?`);
-                if (!confirmReplace) {
-                    event.target.value = "";
-                    return;
-                }
-
-                // Reset everything
-                images = [];
-                if (photoContainer) photoContainer.innerHTML = '';
-                if (progressCounter) progressCounter.textContent = `0/${photoCount}`;
-                if (startBtn) startBtn.innerHTML = 'Capturing...';
-                if (doneBtn) doneBtn.style.display = 'none';
-            }
-
-            if (startBtn) startBtn.innerHTML = 'Capturing...';
-
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const imageData = e.target.result;
-
-                images.push(imageData);
-
-                if (photoContainer) {
-                    const imgElement = document.createElement('img');
-                    imgElement.src = imageData;
-                    imgElement.classList.add('photo');
-                    photoContainer.appendChild(imgElement);
-                }
-
-                if (progressCounter) progressCounter.textContent = `${images.length}/${photoCount}`;
-
-                if (images.length === photoCount) {
-                    if (startBtn) startBtn.innerHTML = 'Retake';
-                    if (doneBtn) doneBtn.style.display = 'block';
-                }
-            };
-
-            reader.readAsDataURL(file);
-        }
-
-        // Reset input so same files can be re-selected if needed
-        event.target.value = "";
-    }
-
-    // 🚀 OPTIMIZED STORE IMAGE FUNCTION - Layout 6 (4 PHOTOS)
-    async function storeImageArray() {
-        const photoCount = 4; // Layout 6 has 4 photos ✅
-        const doneBtn = document.getElementById('doneBtn');
-        const startTime = Date.now();
         
-        try {
-            console.log('⚡ Starting FAST photo compression for 4 photos...');
-            
-            if (doneBtn) {
-                doneBtn.textContent = 'Compressing...';
-                doneBtn.disabled = true;
-            }
-            
-            const sessionPhotos = [];  // For session (80% quality)
-            const originalPhotos = []; // Backup original (100% quality)
-            
-            // Process each image
-            for (let index = 0; index < images.length; index++) {
-                const imgData = images[index];
-                if (!imgData) continue;
-                
-                console.log(`📸 Processing image ${index + 1}/${photoCount}...`);
-                
-                // Update progress
-                if (doneBtn) {
-                    const progress = Math.round(((index + 1) / photoCount) * 50);
-                    doneBtn.textContent = `Compressing ${progress}%`;
-                }
-                
-                let processedImage = imgData;
-                
-                // Apply mirror if needed
-                if (typeof invertBtnState !== 'undefined' && invertBtnState) {
-                    processedImage = await applyMirrorEffect(imgData);
-                }
-                
-                // Compress for session (FAST SAVE)
-                const compressedImage = await compressImage(processedImage, 'session');
-                sessionPhotos[index] = compressedImage;
-                
-                // Keep original for download (HIGH QUALITY)
-                originalPhotos[index] = processedImage;
-                
-                console.log(`✅ Image ${index + 1} compressed: ${Math.round(compressedImage.length / 1024)}KB`);
-            }
-            
-            if (doneBtn) {
-                doneBtn.textContent = 'Saving to server...';
-            }
-            
-            console.log('💾 Saving 4 compressed photos to server session...');
-            
-            const response = await fetch('../api-fetch/save_photos.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ photos: sessionPhotos }),
-                signal: AbortSignal.timeout(15000)
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                console.log(`🎉 SUCCESS! 4 photos saved in ${Date.now() - startTime}ms`);
-                console.log(`📊 Compressed size: ${data.data_size || 'unknown'}`);
-                
-                // Save originals to localStorage for download
-                try {
-                    localStorage.setItem('fotobox_originals', JSON.stringify(originalPhotos));
-                    localStorage.setItem('fotobox_timestamp', Date.now().toString());
-                    console.log('💾 Original photos backed up for download');
-                } catch (e) {
-                    console.warn('⚠️ Could not backup originals:', e.message);
-                }
-                
-                // Create customize session
-                const sessionResponse = await fetch('../api-fetch/create_customize_session.php', {
-                    method: 'POST',
-                    signal: AbortSignal.timeout(5000)
-                });
-                
-                if (sessionResponse.ok) {
-                    const sessionData = await sessionResponse.json();
-                    if (sessionData.success) {
-                        console.log('✅ Customize session created');
-                        window.location.href = 'customizeLayout6.php';
-                        return;
-                    }
-                }
-                
-                // Fallback redirect
-                console.log('⚠️ Session creation failed, but proceeding...');
-                window.location.href = 'customizeLayout6.php';
-                
-            } else {
-                throw new Error(data.error || 'Failed to save photos');
-            }
-            
-        } catch (error) {
-            console.error('❌ Error in storeImageArray:', error);
-            
-            if (doneBtn) {
-                doneBtn.textContent = 'Done';
-                doneBtn.disabled = false;
-            }
-            
-            let errorMessage = 'Error saving photos: ';
-            if (error.name === 'TimeoutError') {
-                errorMessage += 'Request timeout. Please try again.';
-            } else if (error.message.includes('Failed to fetch')) {
-                errorMessage += 'Network error. Check your connection.';
-            } else {
-                errorMessage += error.message;
-            }
-            
-            alert(errorMessage);
-        }
+        countdownText.style.display = 'none';
     }
     
-    // 🪞 HELPER FUNCTION - Apply Mirror Effect
-    function applyMirrorEffect(imgData) {
-        return new Promise((resolve, reject) => {
-            const img = new Image();
-            img.onload = function() {
-                const tempCanvas = document.createElement('canvas');
-                const tempCtx = tempCanvas.getContext('2d');
-                
-                tempCanvas.width = img.width;
-                tempCanvas.height = img.height;
-                
-                tempCtx.translate(img.width, 0);
-                tempCtx.scale(-1, 1);
-                tempCtx.drawImage(img, 0, 0, img.width, img.height);
-                
-                resolve(tempCanvas.toDataURL('image/png'));
-            };
-            img.onerror = () => reject(new Error('Failed to apply mirror effect'));
-            img.src = imgData;
+    function updateCountdown() {
+        // Auto-trigger countdown preview when option changes
+        if (timerOptions) {
+            const selectedValue = parseInt(timerOptions.value);
+            console.log(`Timer set to ${selectedValue} seconds`);
+        }
+    }
+
+    // 📁 IMAGE UPLOAD FUNCTIONALITY
+    function handleImageUpload(event) {
+        const files = Array.from(event.target.files);
+        if (files.length === 0) return;
+
+        files.slice(0, expectedPhotos - images.length).forEach((file, index) => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    try {
+                        const compressedImage = await compressImage(e.target.result, 'session');
+                        images.push(compressedImage);
+                        
+                        // Store original for download
+                        const originalKey = `canvasLayout6_original_${images.length - 1}`;
+                        const downloadImage = await compressImage(e.target.result, 'download');
+                        localStorage.setItem(originalKey, downloadImage);
+                        
+                        updatePhotoPreview(images.length - 1, compressedImage);
+                        updateUI();
+                    } catch (error) {
+                        console.error('Error processing uploaded image:', error);
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
         });
     }
-    
-    if(startBtn) {
-        startBtn.addEventListener('click', () => startPhotobooth());
+
+    // 🖼️ PHOTO PREVIEW MANAGEMENT
+    function updatePhotoPreview(index, imageData) {
+        const photoSlot = document.querySelector(`.photo-preview-slot[data-index="${index}"]`);
+        if (!photoSlot) return;
+
+        // Remove placeholder
+        const placeholder = photoSlot.querySelector('.photo-placeholder');
+        if (placeholder) placeholder.remove();
+
+        // Add or update image
+        let img = photoSlot.querySelector('img');
+        if (!img) {
+            img = document.createElement('img');
+            img.addEventListener('click', () => openCarousel(index));
+            photoSlot.appendChild(img);
+        }
+        
+        img.src = imageData;
+        img.alt = `Photo ${index + 1}`;
+        
+        // Mark slot as filled
+        photoSlot.classList.add('filled');
+        
+        // Show retake button
+        const retakeBtn = photoSlot.querySelector('.retake-photo-btn');
+        if (retakeBtn) {
+            retakeBtn.style.display = 'flex';
+        }
     }
 
+    // 🔄 RETAKE FUNCTIONALITY
+    window.retakeSinglePhoto = function(index) {
+        if (index >= 0 && index < images.length) {
+            // Remove from arrays
+            images.splice(index, 1);
+            
+            // Remove from localStorage
+            const originalKey = `canvasLayout6_original_${index}`;
+            localStorage.removeItem(originalKey);
+            
+            // Update remaining keys
+            for (let i = index; i < expectedPhotos - 1; i++) {
+                const oldKey = `canvasLayout6_original_${i + 1}`;
+                const newKey = `canvasLayout6_original_${i}`;
+                const data = localStorage.getItem(oldKey);
+                if (data) {
+                    localStorage.setItem(newKey, data);
+                    localStorage.removeItem(oldKey);
+                }
+            }
+            
+            // Reset photo slots
+            const slots = document.querySelectorAll('.photo-preview-slot');
+            slots.forEach((slot, i) => {
+                const img = slot.querySelector('img');
+                const placeholder = slot.querySelector('.photo-placeholder');
+                const retakeBtn = slot.querySelector('.retake-photo-btn');
+                
+                if (i < images.length) {
+                    if (img) img.src = images[i];
+                    if (placeholder) placeholder.style.display = 'none';
+                    if (retakeBtn) retakeBtn.style.display = 'flex';
+                    slot.classList.add('filled');
+                } else {
+                    if (img) img.remove();
+                    if (placeholder) {
+                        placeholder.style.display = 'block';
+                        placeholder.textContent = `Photo ${i + 1}`;
+                    } else {
+                        const newPlaceholder = document.createElement('div');
+                        newPlaceholder.className = 'photo-placeholder';
+                        newPlaceholder.textContent = `Photo ${i + 1}`;
+                        slot.appendChild(newPlaceholder);
+                    }
+                    if (retakeBtn) retakeBtn.style.display = 'none';
+                    slot.classList.remove('filled');
+                }
+            });
+            
+            updateUI();
+            
+            // Close carousel if open
+            const carouselModal = document.getElementById('carousel-modal');
+            if (carouselModal && carouselModal.style.display !== 'none') {
+                closeCarousel();
+            }
+        }
+    };
+
+    // 🎠 CAROUSEL MODAL FUNCTIONALITY
+    const carouselModal = document.getElementById('carousel-modal');
+    const carouselImage = document.getElementById('carousel-image');
+    const carouselCloseBtn = document.getElementById('carousel-close-btn');
+    const carouselPrevBtn = document.getElementById('carousel-prev-btn');
+    const carouselNextBtn = document.getElementById('carousel-next-btn');
+    const carouselRetakeBtn = document.getElementById('carousel-retake-btn');
+
+    function openCarousel(index) {
+        if (!carouselModal || !carouselImage || images.length === 0) return;
+        
+        currentImageIndex = index;
+        updateCarousel();
+        carouselModal.style.display = 'flex';
+        carouselModal.classList.add('fade-in');
+        
+        // Update navigation buttons
+        updateCarouselNavigation();
+    }
+
+    function closeCarousel() {
+        if (!carouselModal) return;
+        
+        carouselModal.classList.remove('fade-in');
+        carouselModal.classList.add('fade-out');
+        
+        setTimeout(() => {
+            carouselModal.style.display = 'none';
+            carouselModal.classList.remove('fade-out');
+        }, 300);
+    }
+
+    function updateCarousel() {
+        if (!carouselImage || images.length === 0) return;
+        
+        carouselImage.src = images[currentImageIndex];
+        carouselImage.alt = `Photo ${currentImageIndex + 1}`;
+        updateCarouselNavigation();
+    }
+
+    function updateCarouselNavigation() {
+        if (carouselPrevBtn) {
+            carouselPrevBtn.disabled = currentImageIndex === 0;
+        }
+        if (carouselNextBtn) {
+            carouselNextBtn.disabled = currentImageIndex === images.length - 1;
+        }
+    }
+
+    // Carousel event listeners
+    if (carouselCloseBtn) {
+        carouselCloseBtn.addEventListener('click', closeCarousel);
+    }
+
+    if (carouselPrevBtn) {
+        carouselPrevBtn.addEventListener('click', () => {
+            if (currentImageIndex > 0) {
+                currentImageIndex--;
+                updateCarousel();
+            }
+        });
+    }
+
+    if (carouselNextBtn) {
+        carouselNextBtn.addEventListener('click', () => {
+            if (currentImageIndex < images.length - 1) {
+                currentImageIndex++;
+                updateCarousel();
+            }
+        });
+    }
+
+    if (carouselRetakeBtn) {
+        carouselRetakeBtn.addEventListener('click', () => {
+            window.retakeSinglePhoto(currentImageIndex);
+        });
+    }
+
+    // Close carousel with Escape key
     document.addEventListener('keydown', (event) => {
-        if (event.code === "Space") {
-            event.preventDefault(); // Prevents scrolling when spacebar is pressed
-            startPhotobooth();
+        if (event.key === 'Escape' && carouselModal && carouselModal.style.display !== 'none') {
+            closeCarousel();
+        }
+        if (event.code === 'Space') {
+            event.preventDefault();
+            if (startBtn && !startBtn.disabled) {
+                startPhotobooth();
+            }
         }
     });
 
+    // Close carousel when clicking outside
+    if (carouselModal) {
+        carouselModal.addEventListener('click', (event) => {
+            if (event.target === carouselModal) {
+                closeCarousel();
+            }
+        });
+    }
+
+    // 🔄 UI UPDATE FUNCTIONALITY
+    function updateUI() {
+        if (progressCounter) {
+            progressCounter.textContent = `${images.length}/${expectedPhotos}`;
+        }
+        
+        // Enable/disable buttons based on photo count
+        if (images.length === expectedPhotos) {
+            if (startBtn) startBtn.style.display = 'none';
+            if (doneBtn) doneBtn.style.display = 'block';
+        } else {
+            if (startBtn) startBtn.style.display = 'block';
+            if (doneBtn) doneBtn.style.display = 'none';
+        }
+        
+        // Enable retake all if has photos
+        const retakeAllBtn = document.getElementById('retakeAllBtn');
+        if (retakeAllBtn) {
+            retakeAllBtn.disabled = images.length === 0;
+        }
+    }
+
+    // 🚀 SAVE FUNCTIONALITY - Store to sessionStorage for Layout 6
+    async function storeImageArray() {
+        if (images.length !== expectedPhotos) {
+            alert(`Please capture all ${expectedPhotos} photos before proceeding.`);
+            return;
+        }
+
+        try {
+            // Store session images (compressed)
+            sessionStorage.setItem('canvasLayout6_images', JSON.stringify(images));
+            
+            // Also ensure original images are in localStorage for download
+            for (let i = 0; i < images.length; i++) {
+                const originalKey = `canvasLayout6_original_${i}`;
+                if (!localStorage.getItem(originalKey)) {
+                    // If original not stored, use session quality as fallback
+                    localStorage.setItem(originalKey, images[i]);
+                }
+            }
+            
+            console.log(`✅ Layout 6: Stored ${images.length} photos successfully`);
+            
+            // Stop camera
+            stopCameraStream();
+            
+            // Redirect to customize page
+            window.location.href = 'customizeLayout2.php';
+            
+        } catch (error) {
+            console.error('Error storing images:', error);
+            alert('Error saving photos. Please try again.');
+        }
+    }
+
+    // 🎯 EVENT LISTENERS
+    if(startBtn) {
+        startBtn.addEventListener('click', startPhotobooth);
+    }
+
     if (doneBtn) {
-        doneBtn.addEventListener('click', () => storeImageArray());
+        doneBtn.addEventListener('click', storeImageArray);
     }
 
     if (uploadBtn) {
-        uploadBtn.addEventListener('click', () => {
-            alert("Note: Please make sure your total photo size does not exceed 15MB.\nLarge images may cause saving issues.");
-            if (uploadInput) uploadInput.click();
-        });
+        uploadBtn.addEventListener('click', () => uploadInput?.click());
     }
     
     if(uploadInput) {
         uploadInput.addEventListener('change', handleImageUpload);
     }
+
+    // Retake all functionality
+    const retakeAllBtn = document.getElementById('retakeAllBtn');
+    if (retakeAllBtn) {
+        retakeAllBtn.addEventListener('click', () => {
+            if (confirm(`Are you sure you want to retake all ${expectedPhotos} photos?`)) {
+                // Clear all images
+                images = [];
+                
+                // Clear localStorage
+                for (let i = 0; i < expectedPhotos; i++) {
+                    localStorage.removeItem(`canvasLayout6_original_${i}`);
+                }
+                
+                // Reset all photo slots
+                const slots = document.querySelectorAll('.photo-preview-slot');
+                slots.forEach((slot, index) => {
+                    const img = slot.querySelector('img');
+                    if (img) img.remove();
+                    
+                    const retakeBtn = slot.querySelector('.retake-photo-btn');
+                    if (retakeBtn) retakeBtn.style.display = 'none';
+                    
+                    slot.classList.remove('filled');
+                    
+                    // Add back placeholder
+                    if (!slot.querySelector('.photo-placeholder')) {
+                        const placeholder = document.createElement('div');
+                        placeholder.className = 'photo-placeholder';
+                        placeholder.textContent = `Photo ${index + 1}`;
+                        slot.appendChild(placeholder);
+                    }
+                });
+                
+                updateUI();
+                closeCarousel();
+            }
+        });
+    }
+
+    // Initial UI update
+    updateUI();
+    
+    // Initialize normal filter as active
+    if (normalFilter) {
+        normalFilter.classList.add('active');
+    }
+
+    console.log(`🎯 Layout 6 (${expectedPhotos} photos) initialized successfully!`);
 });

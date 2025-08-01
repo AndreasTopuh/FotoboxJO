@@ -773,7 +773,6 @@ document.head.appendChild(style);
     // Single photo capture function
     async function capturePhoto() {
     if (images.length >= expectedPhotos) {
-        alert('All photos have been captured!');
         return;
     }
     
@@ -837,6 +836,113 @@ document.head.appendChild(style);
     }
 }
 
+    // 🚀 CAPTURE ALL PHOTOS FUNCTION - Auto capture dengan interval
+    async function captureAllPhotos() {
+        if (images.length >= expectedPhotos) {
+            return;
+        }
+
+        try {
+            // Disable buttons during capture all process
+            const captureAllBtn = document.getElementById('captureAllBtn');
+            const startBtn = document.getElementById('startBtn');
+            const retakeAllBtn = document.getElementById('retakeAllBtn');
+            const uploadBtn = document.getElementById('uploadBtn');
+            
+            if (captureAllBtn) {
+                captureAllBtn.disabled = true;
+                captureAllBtn.textContent = 'CAPTURING...';
+            }
+            if (startBtn) startBtn.disabled = true;
+            if (retakeAllBtn) retakeAllBtn.disabled = true;
+            if (uploadBtn) uploadBtn.disabled = true;
+
+            const remainingPhotos = expectedPhotos - images.length;
+            const timerOptions = document.getElementById("timerOptions");
+            const selectedValue = parseInt(timerOptions?.value) || 3;
+            
+            for (let i = 0; i < remainingPhotos; i++) {
+                // Show which photo we're taking
+                if (progressCounter) {
+                    progressCounter.textContent = `Taking Photo ${images.length + 1}/${expectedPhotos}`;
+                    progressCounter.style.fontSize = '18px';
+                    progressCounter.style.color = '#ff4081';
+                }
+
+                // Countdown for each photo
+                await showCountdown(selectedValue);
+                
+                // Flash effect
+                if (flash) {
+                    flash.style.opacity = 1;
+                    setTimeout(() => flash.style.opacity = 0, 200);
+                }
+                
+                // Ensure video dimensions are loaded
+                if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
+                    throw new Error("Camera not ready. Please try again.");
+                }
+                
+                if (!canvas) {
+                    throw new Error("Canvas element not found. Please refresh the page.");
+                }
+                
+                const ctx = canvas.getContext('2d');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                
+                ctx.filter = getComputedStyle(video).filter;
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                let imageData = canvas.toDataURL('image/png');
+                if (invertBtnState) {
+                    imageData = await applyMirrorEffect(imageData);
+                }
+                
+                const compressedImage = await compressImage(imageData, 'session');
+                images.push(compressedImage);
+                
+                updatePhotoPreview(images.length - 1, compressedImage);
+                updateUI();
+                
+                console.log(`Auto Photo ${images.length}/${expectedPhotos} captured successfully`);
+                
+                // Wait 2 seconds before next photo (except for last photo)
+                if (i < remainingPhotos - 1) {
+                    if (progressCounter) {
+                        progressCounter.textContent = `Next photo in 2 seconds...`;
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                }
+            }
+            
+            // Reset progress counter style
+            if (progressCounter) {
+                progressCounter.style.fontSize = '';
+                progressCounter.style.color = '';
+            }
+            
+            
+        } catch (error) {
+            console.error('Error in capture all:', error);
+            alert(error.message || 'Failed to capture all photos. Please try again.');
+        } finally {
+            // Re-enable buttons
+            const captureAllBtn = document.getElementById('captureAllBtn');
+            const startBtn = document.getElementById('startBtn');
+            const retakeAllBtn = document.getElementById('retakeAllBtn');
+            const uploadBtn = document.getElementById('uploadBtn');
+            
+            if (captureAllBtn) {
+                captureAllBtn.disabled = false;
+                captureAllBtn.textContent = 'CAPTURE ALL';
+            }
+            if (startBtn) startBtn.disabled = false;
+            if (retakeAllBtn) retakeAllBtn.disabled = false;
+            if (uploadBtn) uploadBtn.disabled = false;
+        }
+    }
+
     // Retake single photo function
     async function retakeSinglePhoto(index) {
         if (index < 0 || index >= images.length) return;
@@ -896,7 +1002,7 @@ document.head.appendChild(style);
             // Update photo preview
             updatePhotoPreview(index, imageData);
             
-            // Update UI
+            // Update UI2
             updateUI();
             
         } catch (error) {
@@ -1270,6 +1376,12 @@ document.head.appendChild(style);
     // Event Listeners
     if(startBtn) {
         startBtn.addEventListener('click', () => capturePhoto());
+    }
+
+    // Add capture all button listener
+    const captureAllBtn = document.getElementById('captureAllBtn');
+    if (captureAllBtn) {
+        captureAllBtn.addEventListener('click', () => captureAllPhotos());
     }
 
     // Add retake all button listener

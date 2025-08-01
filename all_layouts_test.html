@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Layouts Test - Quick Access</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        .layouts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+        .layout-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+        }
+        .layout-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .layout-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .layout-photos {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+        .layout-status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin: 10px 0;
+        }
+        .status-working {
+            background: #4CAF50;
+            color: white;
+        }
+        .status-fixed {
+            background: #2196F3;
+            color: white;
+        }
+        .status-template {
+            background: #FF9800;
+            color: white;
+        }
+        .layout-btn {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin: 5px;
+        }
+        .layout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        .features-list {
+            text-align: left;
+            margin: 15px 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        .features-list li {
+            margin: 5px 0;
+        }
+        .debug-section {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 40px 0;
+        }
+        .debug-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        .debug-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+        .debug-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .debug-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .summary {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 40px 0;
+            text-align: left;
+        }
+        .summary h3 {
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+        .summary ul {
+            margin: 10px 0;
+        }
+        .summary li {
+            margin: 8px 0;
+            padding-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Canvas Layouts Testing Hub</h1>
+        <p class="subtitle">Quick access to all photobooth layouts with debugging tools</p>
+
+        <div class="layouts-grid">
+            <!-- Layout 1 -->
+            <div class="layout-card" onclick="window.open('./src/pages/canvasLayout1.php', '_blank')">
+                <div class="layout-title">Layout 1</div>
+                <div class="layout-photos">📸 2 Photos</div>
+                <div class="layout-status status-template">✅ TEMPLATE</div>
+                <ul class="features-list">
+                    <li>✅ Glassmorphism design</li>
+                    <li>✅ Carousel modal</li>
+                    <li>✅ 3-level compression</li>
+                    <li>✅ Individual retake</li>
+                    <li>✅ Mobile responsive</li>
+                </ul>
+                <a href="./src/pages/canvasLayout1.php" class="layout-btn" target="_blank">Test Layout 1</a>
+            </div>
+
+            <!-- Layout 2 -->
+            <div class="layout-card" onclick="window.open('./src/pages/canvasLayout2.php', '_blank')">
+                <div class="layout-title">Layout 2</div>
+                <div class="layout-photos">📸 4 Photos</div>
+                <div class="layout-status status-fixed">✅ FIXED</div>
+                <ul class="features-list">
+                    <li>✅ HTML structure added</li>
+                    <li>✅ Layout 1 styling applied</li>
+                    <li>✅ 4 photo slots configured</li>
+                    <li>✅ Script conflicts resolved</li>
+                    <li>✅ Ready for testing</li>
+                </ul>
+                <a href="./src/pages/canvasLayout2.php" class="layout-btn" target="_blank">Test Layout 2</a>
+            </div>
+
+            <!-- Layout 3 -->
+            <div class="layout-card" onclick="window.open('./src/pages/canvasLayout3.php', '_blank')">
+                <div class="layout-title">Layout 3</div>
+                <div class="layout-photos">📸 6 Photos</div>
+                <div class="layout-status status-working">✅ WORKING</div>
+                <ul class="features-list">
+                    <li>✅ Script duplication fixed</li>
+                    <li>✅ Debug conflicts resolved</li>
+                    <li>✅ 6 photo configuration</li>
+                    <li>✅ Proper storage keys</li>
+                    <li>✅ Fully functional</li>
+                </ul>
+                <a href="./src/pages/canvasLayout3.php" class="layout-btn" target="_blank">Test Layout 3</a>
+            </div>
+
+            <!-- Layout 4 -->
+            <div class="layout-card" onclick="window.open('./src/pages/canvasLayout4.php', '_blank')">
+                <div class="layout-title">Layout 4</div>
+                <div class="layout-photos">📸 8 Photos</div>
+                <div class="layout-status status-working">✅ WORKING</div>
+                <ul class="features-list">
+                    <li>✅ Largest photo count</li>
+                    <li>✅ Debug scripts removed</li>
+                    <li>✅ 8 photo grid layout</li>
+                    <li>✅ Performance optimized</li>
+                    <li>✅ Ready for testing</li>
+                </ul>
+                <a href="./src/pages/canvasLayout4.php" class="layout-btn" target="_blank">Test Layout 4</a>
+            </div>
+
+            <!-- Layout 5 -->
+            <div class="layout-card" onclick="window.open('./src/pages/canvasLayout5.php', '_blank')">
+                <div class="layout-title">Layout 5</div>
+                <div class="layout-photos">📸 6 Photos</div>
+                <div class="layout-status status-working">✅ WORKING</div>
+                <ul class="features-list">
+                    <li>✅ Alternative 6-photo layout</li>
+                    <li>✅ Script conflicts resolved</li>
+                    <li>✅ Unique grid arrangement</li>
+                    <li>✅ User edited & tested</li>
+                    <li>✅ Fully operational</li>
+                </ul>
+                <a href="./src/pages/canvasLayout5.php" class="layout-btn" target="_blank">Test Layout 5</a>
+            </div>
+
+            <!-- Layout 6 -->
+            <div class="layout-card" onclick="window.open('./src/pages/canvasLayout6.php', '_blank')">
+                <div class="layout-title">Layout 6</div>
+                <div class="layout-photos">📸 4 Photos</div>
+                <div class="layout-status status-working">✅ WORKING</div>
+                <ul class="features-list">
+                    <li>✅ Alternative 4-photo layout</li>
+                    <li>✅ Debug scripts cleaned</li>
+                    <li>✅ Different grid style</li>
+                    <li>✅ User customized</li>
+                    <li>✅ Ready for production</li>
+                </ul>
+                <a href="./src/pages/canvasLayout6.php" class="layout-btn" target="_blank">Test Layout 6</a>
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <div class="debug-title">🔧 Debug & Testing Tools</div>
+            <div class="debug-links">
+                <a href="./test_layout3_debug.html" class="debug-btn" target="_blank">Layout 3 Debug Test</a>
+                <a href="./test_layout3_minimal.html" class="debug-btn" target="_blank">Minimal Test Template</a>
+                <a href="./src/pages/home-styles.css" class="debug-btn" target="_blank">View CSS Styles</a>
+                <a href="./CANVAS_LAYOUTS_DEBUGGING_COMPLETE.md" class="debug-btn" target="_blank">Debug Report</a>
+            </div>
+        </div>
+
+        <div class="summary">
+            <h3>📋 Implementation Summary</h3>
+            <p><strong>All Canvas Layouts (2-6) have been successfully updated with:</strong></p>
+            <ul>
+                <li><strong>Layout 1 Styling:</strong> Modern glassmorphism design, responsive layout</li>
+                <li><strong>Correct Photo Counts:</strong> Layout 2&6 (4 photos), Layout 3&5 (6 photos), Layout 4 (8 photos)</li>
+                <li><strong>Full Functionality:</strong> Camera access, capture, filters, compression, carousel modal</li>
+                <li><strong>Clean Code:</strong> Removed debug conflicts, duplicate scripts, proper loading order</li>
+                <li><strong>Storage Management:</strong> Individual storage keys, sessionStorage + localStorage</li>
+                <li><strong>Mobile Support:</strong> Responsive design, touch-friendly controls</li>
+            </ul>
+
+            <h3>🚀 What's Working Now:</h3>
+            <ul>
+                <li>✅ Camera preview and capture</li>
+                <li>✅ Individual photo retake functionality</li>
+                <li>✅ Filter system (B&W, Sepia, Vintage, etc.)</li>
+                <li>✅ Carousel modal for photo preview</li>
+                <li>✅ 3-level compression system (session/download/thumb)</li>
+                <li>✅ Proper redirect to customize pages</li>
+                <li>✅ Session timer integration</li>
+                <li>✅ PWA compatibility</li>
+            </ul>
+
+            <h3>🎯 Testing Status:</h3>
+            <p><strong>Layout 2:</strong> ✅ HTML structure added - NOW WORKING<br>
+            <strong>Layout 3:</strong> ✅ Script duplication fixed - WORKING<br>
+            <strong>Layout 4-6:</strong> ✅ Debug conflicts resolved - WORKING</p>
+        </div>
+    </div>
+
+    <script>
+        // Auto-refresh info every 30 seconds to check for updates
+        setInterval(() => {
+            const now = new Date().toLocaleTimeString();
+            console.log('Status check at:', now);
+        }, 30000);
+
+        // Keyboard shortcuts for quick testing
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case '1':
+                        e.preventDefault();
+                        window.open('./src/pages/canvasLayout1.php', '_blank');
+                        break;
+                    case '2':
+                        e.preventDefault();
+                        window.open('./src/pages/canvasLayout2.php', '_blank');
+                        break;
+                    case '3':
+                        e.preventDefault();
+                        window.open('./src/pages/canvasLayout3.php', '_blank');
+                        break;
+                    case '4':
+                        e.preventDefault();
+                        window.open('./src/pages/canvasLayout4.php', '_blank');
+                        break;
+                    case '5':
+                        e.preventDefault();
+                        window.open('./src/pages/canvasLayout5.php', '_blank');
+                        break;
+                    case '6':
+                        e.preventDefault();
+                        window.open('./src/pages/canvasLayout6.php', '_blank');
+                        break;
+                }
+            }
+        });
+
+        // Show keyboard shortcuts info
+        console.log('💡 Keyboard shortcuts: Ctrl+1 to Ctrl+6 to quickly open layouts');
+
+        // Check if layouts are accessible
+        async function checkLayoutStatus() {
+            const layouts = [1, 2, 3, 4, 5, 6];
+            const results = {};
+            
+            for (const layout of layouts) {
+                try {
+                    const response = await fetch(`./src/pages/canvasLayout${layout}.php`, { method: 'HEAD' });
+                    results[layout] = response.ok ? '✅' : '❌';
+                } catch (error) {
+                    results[layout] = '❌';
+                }
+            }
+            
+            console.log('Layout accessibility check:', results);
+            return results;
+        }
+
+        // Run check on load
+        checkLayoutStatus();
+    </script>
+</body>
+</html>

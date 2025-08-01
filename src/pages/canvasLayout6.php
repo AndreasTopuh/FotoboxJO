@@ -56,9 +56,44 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     <link href="https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png" />
-    <style>
-        /* Timer Box Styling */
-        .timer-box {
+
+</head>
+
+<body>
+    <!-- Enhanced Carousel Modal -->
+    <div id="carousel-modal" class="modal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="carousel-container">
+            <button id="carousel-close-btn" class="carousel-close-btn" aria-label="Close Carousel" title="Close (Esc)">✕</button>
+            <button id="carousel-prev-btn" class="carousel-nav-btn prev-btn" aria-label="Previous Image" title="Previous (←)">←</button>
+            <div class="carousel-image-container">
+                <img id="carousel-image" class="carousel-image" src="" alt="Photo Preview">
+            </div>
+            <button id="carousel-next-btn" class="carousel-nav-btn next-btn" aria-label="Next Image" title="Next (→)">→</button>
+            <button id="carousel-retake-btn" class="carousel-retake-btn" aria-label="Retake Photo" title="Retake this photo">
+                <img src="/src/assets/retake.png" alt="Retake icon">
+                <span>Retake Photo</span>
+            </button>
+        </div>
+    </div>
+
+    <main id="main-section">
+        <div class="gradientBgCanvas"></div>
+        <div class="canvas-centered">
+        </div>
+    </main>
+
+    <script src="canvasLayout6.js"></script>
+
+    <!-- Session Timer Script -->
+    <script src="../includes/session-timer.js"></script>
+
+    <script>
+        // Custom timer expired handler for canvas page
+        document.addEventListener('DOMContentLoaded', function() {
+        });
+    </script>
+
+
             position: fixed;
             top: 20px;
             right: 20px;
@@ -505,7 +540,6 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     </div>
 
     <script src="canvasLayout6.js"></script>
-    <script src="debug-camera.js"></script>
     
     <!-- Session Timer Script -->
     <script src="../includes/session-timer.js"></script>

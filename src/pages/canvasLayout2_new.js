@@ -113,17 +113,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 🎮 FULLSCREEN FUNCTIONALITY
     function toggleFullscreen() {
-        const videoContainer = document.getElementById('videoContainer');
-        const fullscreenMessage = document.getElementById('fullscreenMessage');
-        const fullscreenImg = document.querySelector('#fullscreenBtn img');
-        let fullscreenBtnElement = document.getElementById('startBtnFullscreen');
-
         if (!document.fullscreenElement && 
             !document.mozFullScreenElement && 
             !document.webkitFullscreenElement && 
             !document.msFullscreenElement) {
             
-            // === ENTER FULLSCREEN ===
             if (videoContainer.requestFullscreen) {
                 videoContainer.requestFullscreen();
             } else if (videoContainer.mozRequestFullScreen) {
@@ -134,67 +128,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 videoContainer.msRequestFullscreen();
             }
 
-            // Change icon to minimize
             if (fullscreenImg) {
-                fullscreenImg.src = "/src/assets/fullScreen2.png";
+                fullscreenImg.src = "/src/assets/minimize3.png";
             }
-            
-            // Show message briefly
             if (fullscreenMessage) {
                 fullscreenMessage.style.opacity = "1";
                 setTimeout(() => {
                     if (fullscreenMessage) fullscreenMessage.style.opacity = "0";
-                }, 3000);
-            }
-            
-            // === ADD START CAPTURE BUTTON IN FULLSCREEN ===
-            if (!fullscreenBtnElement) {
-                fullscreenBtnElement = document.createElement('button');
-                fullscreenBtnElement.id = 'startBtnFullscreen';
-                fullscreenBtnElement.textContent = 'START CAPTURE';
-                fullscreenBtnElement.style.position = 'absolute';
-                fullscreenBtnElement.style.bottom = '20px';
-                fullscreenBtnElement.style.left = '50%';
-                fullscreenBtnElement.style.transform = 'translateX(-50%)';
-                fullscreenBtnElement.style.zIndex = '9999';
-                fullscreenBtnElement.style.padding = '12px 24px';
-                fullscreenBtnElement.style.backgroundColor = '#ff4081';
-                fullscreenBtnElement.style.color = 'white';
-                fullscreenBtnElement.style.border = 'none';
-                fullscreenBtnElement.style.borderRadius = '8px';
-                fullscreenBtnElement.style.fontSize = '16px';
-                fullscreenBtnElement.style.fontWeight = '600';
-                fullscreenBtnElement.style.cursor = 'pointer';
-                fullscreenBtnElement.style.fontFamily = 'Poppins, sans-serif';
-                fullscreenBtnElement.style.boxShadow = '0 4px 15px rgba(255, 64, 129, 0.4)';
-                fullscreenBtnElement.style.transition = 'all 0.3s ease';
-                
-                // Add hover effect
-                fullscreenBtnElement.addEventListener('mouseenter', () => {
-                    fullscreenBtnElement.style.backgroundColor = '#e91e63';
-                    fullscreenBtnElement.style.transform = 'translateX(-50%) translateY(-2px)';
-                    fullscreenBtnElement.style.boxShadow = '0 6px 20px rgba(255, 64, 129, 0.6)';
-                });
-                
-                fullscreenBtnElement.addEventListener('mouseleave', () => {
-                    fullscreenBtnElement.style.backgroundColor = '#ff4081';
-                    fullscreenBtnElement.style.transform = 'translateX(-50%) translateY(0)';
-                    fullscreenBtnElement.style.boxShadow = '0 4px 15px rgba(255, 64, 129, 0.4)';
-                });
-                
-                // Connect to original start button functionality
-                fullscreenBtnElement.addEventListener('click', () => {
-                    const originalStartBtn = document.getElementById('startBtn');
-                    if (originalStartBtn) {
-                        originalStartBtn.click();
-                    }
-                });
-                
-                videoContainer.appendChild(fullscreenBtnElement);
+                }, 2000);
             }
         
         } else {
-            // === EXIT FULLSCREEN ===
             if (document.exitFullscreen) {
                 document.exitFullscreen();
             } else if (document.mozCancelFullScreen) {
@@ -205,19 +149,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.msExitFullscreen();
             }
 
-            // Hide message
-            if (fullscreenMessage) {
-                fullscreenMessage.style.opacity = "0";
-            }
-            
-            // Change icon back to fullscreen
             if (fullscreenImg) {
                 fullscreenImg.src = "/src/assets/fullScreen3.png";
-            }
-            
-            // Remove START CAPTURE button
-            if (fullscreenBtnElement) {
-                fullscreenBtnElement.remove();
             }
         }
     }
@@ -428,119 +361,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 🚀 CAPTURE ALL PHOTOS FUNCTION - Auto capture dengan interval untuk Layout 2
-    async function captureAllPhotos() {
-        if (images.length >= expectedPhotos) {
-            return;
-        }
-
-        try {
-            // Disable buttons during capture all process
-            const captureAllBtn = document.getElementById('captureAllBtn');
-            const startBtn = document.getElementById('startBtn');
-            const retakeAllBtn = document.getElementById('retakeAllBtn');
-            const uploadBtn = document.getElementById('uploadBtn');
-            
-            if (captureAllBtn) {
-                captureAllBtn.disabled = true;
-                captureAllBtn.textContent = 'CAPTURING...';
-            }
-            if (startBtn) startBtn.disabled = true;
-            if (retakeAllBtn) retakeAllBtn.disabled = true;
-            if (uploadBtn) uploadBtn.disabled = true;
-
-            const remainingPhotos = expectedPhotos - images.length;
-            const selectedValue = parseInt(timerOptions?.value || '3');
-            
-            for (let i = 0; i < remainingPhotos; i++) {
-                // Show which photo we're taking
-                if (progressCounter) {
-                    progressCounter.textContent = `Taking Photo ${images.length + 1}/${expectedPhotos}`;
-                    progressCounter.style.fontSize = '18px';
-                    progressCounter.style.color = '#ff4081';
-                }
-
-                // Countdown for each photo
-                await showCountdown(selectedValue);
-                
-                // Create canvas from video
-                if (!canvas) {
-                    console.error('Canvas element not found');
-                    throw new Error('Canvas element not found');
-                }
-
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                const ctx = canvas.getContext('2d');
-                
-                // Apply mirror effect if enabled
-                if (invertBtnState) {
-                    ctx.scale(-1, 1);
-                    ctx.translate(-canvas.width, 0);
-                }
-                
-                ctx.drawImage(video, 0, 0);
-                
-                // Flash effect
-                if (flash) {
-                    flash.style.opacity = '1';
-                    setTimeout(() => {
-                        if (flash) flash.style.opacity = '0';
-                    }, 200);
-                }
-                
-                const imageData = canvas.toDataURL('image/png');
-                
-                // Compress and store
-                const compressedImage = await compressImage(imageData, 'session');
-                images.push(compressedImage);
-                
-                // Store original for download
-                const originalKey = `canvasLayout2_original_${images.length - 1}`;
-                const downloadImage = await compressImage(imageData, 'download');
-                localStorage.setItem(originalKey, downloadImage);
-                
-                updatePhotoPreview(images.length - 1, compressedImage);
-                updateUI();
-                
-                console.log(`Auto Photo ${images.length}/${expectedPhotos} captured successfully`);
-                
-                // Wait 2 seconds before next photo (except for last photo)
-                if (i < remainingPhotos - 1) {
-                    if (progressCounter) {
-                        progressCounter.textContent = `Next photo in 2 seconds...`;
-                    }
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                }
-            }
-            
-            // Reset progress counter style
-            if (progressCounter) {
-                progressCounter.style.fontSize = '';
-                progressCounter.style.color = '';
-            }
-            
-            
-        } catch (error) {
-            console.error('Error in capture all:', error);
-            alert(error.message || 'Failed to capture all photos. Please try again.');
-        } finally {
-            // Re-enable buttons
-            const captureAllBtn = document.getElementById('captureAllBtn');
-            const startBtn = document.getElementById('startBtn');
-            const retakeAllBtn = document.getElementById('retakeAllBtn');
-            const uploadBtn = document.getElementById('uploadBtn');
-            
-            if (captureAllBtn) {
-                captureAllBtn.disabled = false;
-                captureAllBtn.textContent = 'CAPTURE ALL';
-            }
-            if (startBtn) startBtn.disabled = false;
-            if (retakeAllBtn) retakeAllBtn.disabled = false;
-            if (uploadBtn) uploadBtn.disabled = false;
-        }
-    }
-
     // ⏱️ COUNTDOWN FUNCTIONALITY
     async function showCountdown(selectedValue) {
         if (!countdownText) return;
@@ -694,25 +514,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const carouselRetakeBtn = document.getElementById('carousel-retake-btn');
 
     function openCarousel(index) {
-        console.log('Opening carousel at index:', index, 'Images available:', images.length);
-        
-        if (!carouselModal || !carouselImage || images.length === 0) {
-            console.log('Cannot open carousel - missing elements or no images');
-            return;
-        }
-
-        // Pastikan index valid
-        if (index < 0 || index >= images.length || !images[index]) {
-            console.log('Invalid index or no image at index:', index);
-            return;
-        }
+        if (!carouselModal || !carouselImage || images.length === 0) return;
         
         currentImageIndex = index;
         updateCarousel();
         carouselModal.style.display = 'flex';
-        carouselModal.classList.remove('fade-out');
         carouselModal.classList.add('fade-in');
-        document.body.style.overflow = 'hidden';
+        
+        // Update navigation buttons
+        updateCarouselNavigation();
     }
 
     function closeCarousel() {
@@ -720,7 +530,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         carouselModal.classList.remove('fade-in');
         carouselModal.classList.add('fade-out');
-        document.body.style.overflow = 'auto';
         
         setTimeout(() => {
             carouselModal.style.display = 'none';
@@ -729,69 +538,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateCarousel() {
-        if (!carouselImage) return;
+        if (!carouselImage || images.length === 0) return;
         
-        // Get carousel indicators container
-        const carouselIndicators = document.getElementById('carousel-indicators');
-        
-        // Update image with smooth transition
-        carouselImage.style.opacity = '0';
-        carouselImage.style.transform = 'scale(0.95)';
-        
-        setTimeout(() => {
-            if (images[currentImageIndex]) {
-                carouselImage.src = images[currentImageIndex];
-                carouselImage.alt = `Photo ${currentImageIndex + 1}`;
-                
-                carouselImage.onload = () => {
-                    carouselImage.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-                    carouselImage.style.opacity = '1';
-                    carouselImage.style.transform = 'scale(1)';
-                };
-            }
-        }, 200);
+        carouselImage.src = images[currentImageIndex];
+        carouselImage.alt = `Photo ${currentImageIndex + 1}`;
+        updateCarouselNavigation();
+    }
 
-        // Update indicators
-        if (carouselIndicators) {
-            carouselIndicators.innerHTML = '';
-            images.forEach((_, i) => {
-                const indicator = document.createElement('div');
-                indicator.classList.add('carousel-indicator');
-                if (i === currentImageIndex) indicator.classList.add('active');
-                
-                indicator.addEventListener('click', () => {
-                    if (i !== currentImageIndex) {
-                        currentImageIndex = i;
-                        updateCarousel();
-                    }
-                });
-                
-                carouselIndicators.appendChild(indicator);
-            });
+    function updateCarouselNavigation() {
+        if (carouselPrevBtn) {
+            carouselPrevBtn.disabled = currentImageIndex === 0;
         }
-
-        // Update navigation buttons
-        if (carouselPrevBtn) carouselPrevBtn.disabled = currentImageIndex === 0;
-        if (carouselNextBtn) carouselNextBtn.disabled = currentImageIndex === images.length - 1;
-        
-        // Update retake button
-        if (carouselRetakeBtn) {
-            carouselRetakeBtn.style.display = images[currentImageIndex] ? 'flex' : 'none';
-            carouselRetakeBtn.onclick = (e) => {
-                e.stopPropagation();
-                console.log('Retaking photo at index:', currentImageIndex);
-                closeCarousel();
-                if (typeof window.retakeSinglePhoto === 'function') {
-                    window.retakeSinglePhoto(currentImageIndex);
-                }
-            };
+        if (carouselNextBtn) {
+            carouselNextBtn.disabled = currentImageIndex === images.length - 1;
         }
     }
 
-    // Navigation event listeners
+    // Carousel event listeners
+    if (carouselCloseBtn) {
+        carouselCloseBtn.addEventListener('click', closeCarousel);
+    }
+
     if (carouselPrevBtn) {
-        carouselPrevBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
+        carouselPrevBtn.addEventListener('click', () => {
             if (currentImageIndex > 0) {
                 currentImageIndex--;
                 updateCarousel();
@@ -800,8 +569,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (carouselNextBtn) {
-        carouselNextBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
+        carouselNextBtn.addEventListener('click', () => {
             if (currentImageIndex < images.length - 1) {
                 currentImageIndex++;
                 updateCarousel();
@@ -809,306 +577,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Close button event listener
-    if (carouselCloseBtn) {
-        carouselCloseBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
+    if (carouselRetakeBtn) {
+        carouselRetakeBtn.addEventListener('click', () => {
+            window.retakeSinglePhoto(currentImageIndex);
+        });
+    }
+
+    // Close carousel with Escape key
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && carouselModal && carouselModal.style.display !== 'none') {
             closeCarousel();
-        });
-    }
-
-    // Modal backdrop click to close
-    if (carouselModal) {
-        carouselModal.addEventListener('click', (e) => {
-            if (e.target === carouselModal) {
-                closeCarousel();
-            }
-        });
-    }
-
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
-        if (carouselModal && carouselModal.style.display !== 'none') {
-            if (e.key === 'Escape') {
-                closeCarousel();
-            } else if (e.key === 'ArrowLeft' && currentImageIndex > 0) {
-                currentImageIndex--;
-                updateCarousel();
-            } else if (e.key === 'ArrowRight' && currentImageIndex < images.length - 1) {
-                currentImageIndex++;
-                updateCarousel();
-            }
         }
-        if (e.code === 'Space') {
-            e.preventDefault();
+        if (event.code === 'Space') {
+            event.preventDefault();
             if (startBtn && !startBtn.disabled) {
                 startPhotobooth();
             }
         }
     });
 
-    // Global functions for modal
-    window.openCarousel = openCarousel;
-    window.closeCarousel = closeCarousel;
-
-// Add enhanced CSS styles for modal and animations (same as Layout 1)
-const style = document.createElement('style');
-style.textContent = `
-    /* Modal Animations */
-    .modal.fade-in {
-        animation: modalFadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    // Close carousel when clicking outside
+    if (carouselModal) {
+        carouselModal.addEventListener('click', (event) => {
+            if (event.target === carouselModal) {
+                closeCarousel();
+            }
+        });
     }
-    .modal.fade-out {
-        animation: modalFadeOut 0.3s cubic-bezier(0.55, 0.06, 0.68, 0.19);
-    }
-    
-    @keyframes modalFadeIn {
-        from { 
-            opacity: 0; 
-            transform: scale(0.9);
-            backdrop-filter: blur(0px);
-        }
-        to { 
-            opacity: 1; 
-            transform: scale(1);
-            backdrop-filter: blur(10px);
-        }
-    }
-    
-    @keyframes modalFadeOut {
-        from { 
-            opacity: 1; 
-            transform: scale(1);
-            backdrop-filter: blur(10px);
-        }
-        to { 
-            opacity: 0; 
-            transform: scale(0.9);
-            backdrop-filter: blur(0px);
-        }
-    }
-    
-    /* Enhanced Photo Preview Slots */
-    .photo-preview-slot {
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .photo-preview-slot:hover {
-        transform: translateY(-4px) scale(1.02);
-        box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
-    }
-    
-    .photo-preview-slot.filled:hover {
-        transform: translateY(-6px) scale(1.05);
-        box-shadow: 0 12px 35px rgba(233, 30, 99, 0.4);
-    }
-    
-    .photo-preview-slot::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        z-index: 1;
-        pointer-events: none;
-    }
-    
-    .photo-preview-slot:hover::before {
-        opacity: 1;
-    }
-    
-    .photo-preview-slot img {
-        transition: transform 0.3s ease;
-    }
-    
-    .photo-preview-slot:hover img {
-        transform: scale(1.05);
-    }
-    
-    /* Enhanced Carousel Image */
-    .carousel-image {
-        max-width: 90%;
-        max-height: 75vh;
-        object-fit: contain;
-        transition: opacity 0.4s ease, transform 0.4s ease;
-        border-radius: 12px;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-    }
-    
-    /* Enhanced Modal Styling */
-    .modal {
-        backdrop-filter: blur(10px);
-        background: rgba(0, 0, 0, 0.8);
-    }
-    
-    .carousel-container {
-        position: relative;
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 16px;
-        padding: 20px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    /* Enhanced Navigation Buttons */
-    .carousel-nav-btn {
-        background: rgba(233, 30, 99, 0.9);
-        border: none;
-        color: white;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        font-size: 18px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
-    }
-    
-    .carousel-nav-btn:hover:not(:disabled) {
-        background: rgba(233, 30, 99, 1);
-        transform: scale(1.1);
-        box-shadow: 0 6px 20px rgba(233, 30, 99, 0.4);
-    }
-    
-    .carousel-nav-btn:disabled {
-        background: rgba(150, 150, 150, 0.5);
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
-    }
-    
-    /* Enhanced Close Button */
-    .carousel-close-btn {
-        background: rgba(255, 59, 48, 0.9);
-        border: none;
-        color: white;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        font-size: 20px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        z-index: 10;
-        backdrop-filter: blur(10px);
-    }
-    
-    .carousel-close-btn:hover {
-        background: rgba(255, 59, 48, 1);
-        transform: scale(1.1);
-        box-shadow: 0 4px 15px rgba(255, 59, 48, 0.4);
-    }
-    
-    /* Enhanced Retake Button */
-    .carousel-retake-btn {
-        background: linear-gradient(135deg, #FF6B35, #FF8E53);
-        border: none;
-        color: white;
-        padding: 12px 20px;
-        border-radius: 25px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        font-size: 14px;
-        position: absolute;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-    }
-    
-    .carousel-retake-btn:hover {
-        transform: translateX(-50%) translateY(-2px) scale(1.05);
-        box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
-    }
-    
-    .carousel-retake-btn img {
-        width: 16px;
-        height: 16px;
-        filter: brightness(0) invert(1);
-    }
-    
-    /* Enhanced Indicators */
-    .carousel-indicators {
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-        margin-top: 20px;
-        position: absolute;
-        bottom: 70px;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-    
-    .carousel-indicator {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background: rgba(150, 150, 150, 0.5);
-        cursor: pointer;
-        transition: all 0.3s ease;
-        border: 2px solid transparent;
-    }
-    
-    .carousel-indicator:hover {
-        background: rgba(233, 30, 99, 0.7);
-        transform: scale(1.2);
-    }
-    
-    .carousel-indicator.active {
-        background: rgba(233, 30, 99, 1);
-        transform: scale(1.3);
-        border-color: rgba(255, 255, 255, 0.8);
-        box-shadow: 0 2px 8px rgba(233, 30, 99, 0.4);
-    }
-    
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .carousel-container {
-            margin: 10px;
-            padding: 15px;
-        }
-        
-        .carousel-image {
-            max-height: 60vh;
-        }
-        
-        .carousel-nav-btn {
-            width: 40px;
-            height: 40px;
-            font-size: 16px;
-        }
-        
-        .carousel-retake-btn {
-            padding: 10px 16px;
-            font-size: 13px;
-        }
-    }
-`;
-document.head.appendChild(style);
 
     // 🔄 UI UPDATE FUNCTIONALITY
     function updateUI() {
@@ -1171,12 +666,6 @@ document.head.appendChild(style);
         startBtn.addEventListener('click', startPhotobooth);
     }
 
-    // Add capture all button listener
-    const captureAllBtn = document.getElementById('captureAllBtn');
-    if (captureAllBtn) {
-        captureAllBtn.addEventListener('click', () => captureAllPhotos());
-    }
-
     if (doneBtn) {
         doneBtn.addEventListener('click', storeImageArray);
     }
@@ -1235,23 +724,6 @@ document.head.appendChild(style);
     if (normalFilter) {
         normalFilter.classList.add('active');
     }
-
-    // Add photo container event listener as fallback (same as Layout 1)
-    document.addEventListener('DOMContentLoaded', () => {
-        const photoContainer = document.getElementById('photoContainer');
-        if (photoContainer) {
-            photoContainer.addEventListener('click', (event) => {
-                const photoSlot = event.target.closest('.photo-preview-slot');
-                if (photoSlot && photoSlot.classList.contains('filled')) {
-                    const index = parseInt(photoSlot.getAttribute('data-index'));
-                    if (!isNaN(index) && index >= 0 && index < images.length) {
-                        console.log('Opening carousel from container click, index:', index);
-                        openCarousel(index);
-                    }
-                }
-            });
-        }
-    });
 
     console.log(`🎯 Layout 2 (${expectedPhotos} photos) initialized successfully!`);
 });

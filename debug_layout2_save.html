@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layout 2 Save & Redirect Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .problem-section {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .problem-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #721c24;
+            margin-bottom: 15px;
+        }
+        .solution-section {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .solution-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #155724;
+            margin-bottom: 15px;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn.success {
+            background: #28a745;
+        }
+        .btn.danger {
+            background: #dc3545;
+        }
+        .flow-diagram {
+            background: #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .flow-step {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin: 5px;
+            font-size: 0.9rem;
+        }
+        .flow-arrow {
+            font-size: 1.5rem;
+            color: #007bff;
+            margin: 0 10px;
+        }
+        .test-result {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚨 Layout 2 Save & Redirect Problem Detected</h1>
+
+        <div class="problem-section">
+            <div class="problem-title">❌ MASALAH UTAMA</div>
+            <p><strong>Canvas dan Customize menggunakan storage yang berbeda!</strong></p>
+            <ul>
+                <li><strong>Canvas Layout 2:</strong> Menyimpan foto ke <code>sessionStorage</code> (JavaScript)</li>
+                <li><strong>Customize Layout 2:</strong> Membaca foto dari <code>$_SESSION</code> (PHP)</li>
+                <li><strong>Akibat:</strong> Foto tidak bisa dibaca di halaman customize</li>
+            </ul>
+        </div>
+
+        <div class="flow-diagram">
+            <h3>🔄 Current Broken Flow</h3>
+            <div class="flow-step">Canvas: Capture Photos</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">Save to sessionStorage</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">Redirect to Customize</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">❌ Read from PHP Session (EMPTY!)</div>
+        </div>
+
+        <div class="solution-section">
+            <div class="solution-title">✅ SOLUSI: Bridge sessionStorage ke PHP Session</div>
+            <p>Kita perlu menambahkan step untuk mengirim data dari JavaScript ke PHP sebelum redirect.</p>
+            
+            <h4>Option 1: Kirim via POST sebelum redirect</h4>
+            <div class="code-block">
+// Di canvasLayout2.js, sebelum redirect:
+async function storeImageArray() {
+    if (images.length !== expectedPhotos) {
+        alert(`Please capture all ${expectedPhotos} photos before proceeding.`);
+        return;
+    }
+
+    try {
+        // 1. Save to sessionStorage (tetap)
+        sessionStorage.setItem('canvasLayout2_images', JSON.stringify(images));
+        
+        // 2. TAMBAHAN: Kirim ke PHP session via API
+        const response = await fetch('../api-fetch/save_session_photos.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                photos: images,
+                layout: 'layout2'
+            })
+        });
+        
+        if (response.ok) {
+            console.log('✅ Photos saved to PHP session');
+            window.location.href = 'customizeLayout2.php';
+        } else {
+            throw new Error('Failed to save to PHP session');
+        }
+        
+    } catch (error) {
+        console.error('Error storing images:', error);
+        alert('Error saving photos. Please try again.');
+    }
+}</div>
+
+            <h4>Option 2: Customize baca dari sessionStorage</h4>
+            <div class="code-block">
+// Di customizeLayout2.js, ganti API call:
+function loadPhotosFirst() {
+    return new Promise((resolve, reject) => {
+        // Coba baca dari sessionStorage dulu
+        const sessionData = sessionStorage.getItem('canvasLayout2_images');
+        if (sessionData) {
+            try {
+                storedImages = JSON.parse(sessionData);
+                imageArrayLength = storedImages.length;
+                console.log(`✅ Loaded ${imageArrayLength} photos from sessionStorage`);
+                resolve();
+                return;
+            } catch (error) {
+                console.warn('Error parsing sessionStorage, trying API...');
+            }
+        }
+        
+        // Fallback ke API jika sessionStorage kosong
+        fetch('../api-fetch/get_photos.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.photos) {
+                    storedImages = data.photos;
+                    imageArrayLength = storedImages.length;
+                    resolve();
+                } else {
+                    throw new Error('No photos found');
+                }
+            })
+            .catch(error => {
+                reject(error);
+            });
+    });
+}</div>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 Test Current Behavior</h3>
+            <button class="btn" onclick="testCurrentFlow()">Test Current Save Flow</button>
+            <button class="btn success" onclick="simulatePhotos()">Simulate 4 Photos</button>
+            <button class="btn" onclick="checkCustomizeAPI()">Check Customize API</button>
+            <div id="testResults" class="test-result"></div>
+        </div>
+
+        <div class="solution-section">
+            <div class="solution-title">🔧 Quick Fix Implementation</div>
+            <p>Pilih solusi yang ingin diterapkan:</p>
+            <button class="btn success" onclick="implementOption1()">Implement Option 1 (Bridge API)</button>
+            <button class="btn success" onclick="implementOption2()">Implement Option 2 (sessionStorage Read)</button>
+            <div id="implementResults" class="test-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔗 Quick Access</h3>
+            <button class="btn" onclick="openCanvas()">Test Canvas Layout 2</button>
+            <button class="btn" onclick="openCustomize()">Test Customize Layout 2</button>
+            <button class="btn danger" onclick="clearData()">Clear All Data</button>
+        </div>
+    </div>
+
+    <script>
+        function testCurrentFlow() {
+            const results = document.getElementById('testResults');
+            results.innerHTML = 'Testing current save flow...\n\n';
+            
+            // Check sessionStorage
+            const sessionData = sessionStorage.getItem('canvasLayout2_images');
+            if (sessionData) {
+                const images = JSON.parse(sessionData);
+                results.innerHTML += `✅ sessionStorage: Found ${images.length} images\n`;
+            } else {
+                results.innerHTML += `❌ sessionStorage: No canvasLayout2_images found\n`;
+            }
+            
+            // Check if customize can read it
+            fetch('./src/api-fetch/get_photos.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        results.innerHTML += `✅ PHP Session: Found ${data.count} photos\n`;
+                    } else {
+                        results.innerHTML += `❌ PHP Session: ${data.error}\n`;
+                    }
+                    results.innerHTML += `\n🚨 PROBLEM: sessionStorage and PHP session are different!\n`;
+                })
+                .catch(error => {
+                    results.innerHTML += `❌ API Error: ${error.message}\n`;
+                });
+        }
+
+        function simulatePhotos() {
+            const mockImages = [];
+            for (let i = 1; i <= 4; i++) {
+                mockImages.push(`data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/mockimage${i}`);
+            }
+            
+            sessionStorage.setItem('canvasLayout2_images', JSON.stringify(mockImages));
+            alert('✅ Simulated 4 photos saved to sessionStorage');
+        }
+
+        function checkCustomizeAPI() {
+            const results = document.getElementById('testResults');
+            results.innerHTML = 'Checking customize API...\n\n';
+            
+            fetch('./src/api-fetch/get_photos.php')
+                .then(response => response.json())
+                .then(data => {
+                    results.innerHTML += `API Response:\n${JSON.stringify(data, null, 2)}`;
+                })
+                .catch(error => {
+                    results.innerHTML += `❌ API Error: ${error.message}`;
+                });
+        }
+
+        function implementOption1() {
+            const results = document.getElementById('implementResults');
+            results.innerHTML = `🔧 Option 1 would require:
+1. Create save_session_photos.php API
+2. Modify canvasLayout2.js storeImageArray() function
+3. Add POST request before redirect
+
+This needs code modifications to implement.`;
+        }
+
+        function implementOption2() {
+            const results = document.getElementById('implementResults');
+            results.innerHTML = `🔧 Option 2 would require:
+1. Modify customizeLayout2.js loadPhotosFirst() function
+2. Try sessionStorage first, fallback to API
+3. Simpler implementation, no new PHP file needed
+
+This is the recommended approach.`;
+        }
+
+        function openCanvas() {
+            window.open('./src/pages/canvasLayout2.php', '_blank');
+        }
+
+        function openCustomize() {
+            window.open('./src/pages/customizeLayout2.php', '_blank');
+        }
+
+        function clearData() {
+            sessionStorage.clear();
+            localStorage.clear();
+            alert('🗑️ All data cleared');
+        }
+
+        // Auto-run test on load
+        window.addEventListener('load', () => {
+            setTimeout(testCurrentFlow, 1000);
+        });
+    </script>
+</body>
+</html>

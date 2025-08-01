@@ -192,6 +192,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                         <!-- Action Buttons -->
                         <div class="action-buttons">
                             <button id="startBtn">START CAPTURE</button>
+                            <button id="captureAllBtn">CAPTURE ALL</button>
                             <button id="retakeAllBtn" disabled>RETAKE ALL</button>
                             <button id="doneBtn" style="display: none;">COMPLETE SESSION</button>
                         </div>
