@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', function () {
     let finalCanvas = null;
     let selectedSticker = null;
     let selectedShape = 'default';
-    let selectedLogo = null;
     let backgroundType = 'color';
     let backgroundColor = '#FFFFFF';
     let backgroundImage = null;
@@ -85,9 +84,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // Action buttons
         initializeActionButtons();
 
-        // Logo controls
-        initializeLogoControls();
-
         // Email modal
         initializeEmailModal();
 
@@ -100,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log('🎭 Initializing sticker controls...');
 
             const stickerButtons = [
-                'noneSticker', 'bintang1'
+                'noneSticker', 'bunnySticker'
             ];
 
             stickerButtons.forEach(buttonId => {
@@ -130,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
             { id: 'pinkBtnFrame', color: '#FFB6C1' },
             { id: 'blueBtnFrame', color: '#87CEEB' },
             { id: 'yellowBtnFrame', color: '#FFFFE0' },
-            { id: 'matchaBtnFrame', color: '#9ACD32' },
+            { id: 'matchaBtnFrame', color: '#90EE90' },
             { id: 'purpleBtnFrame', color: '#DDA0DD' },
             { id: 'brownBtnFrame', color: '#D2691E' },
             { id: 'redBtnFrame', color: '#FFB6C1' },
@@ -150,19 +146,17 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Background pattern buttons - sesuai Layout 1
+        // Background pattern buttons
         const patternButtons = [
-            { id: 'matcha', src: '/src/assets/frame-backgrounds/matcha.jpg' },
-            { id: 'blackStar', src: '/src/assets/frame-backgrounds/blackStar.jpg' },
-            { id: 'blueStripe', src: '/src/assets/frame-backgrounds/blueStripe.jpg' }
+            'pinkGlitter', 'pinkPlaid', 'bluePlaid'
         ];
 
-        patternButtons.forEach(({ id, src }) => {
-            const button = document.getElementById(id);
+        patternButtons.forEach(buttonId => {
+            const button = document.getElementById(buttonId);
             if (button) {
                 button.addEventListener('click', () => {
                     backgroundType = 'image';
-                    backgroundImage = src;
+                    backgroundImage = `/src/assets/frame-backgrounds/${buttonId}.png`;
                     backgroundColor = '#FFFFFF';
                     redrawCanvas();
                 });
@@ -170,11 +164,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Shape controls - sesuai Layout 1 (hanya 2 pilihan)
+    // Shape controls
     function initializeShapeControls() {
         const shapeButtons = [
             { id: 'noneFrameShape', shape: 'default' },
-            { id: 'softFrameShape', shape: 'soft' }
+            { id: 'softFrameShape', shape: 'soft' },
+            { id: 'circleFrameShape', shape: 'circle' },
+            { id: 'heartFrameShape', shape: 'heart' }
         ];
 
         shapeButtons.forEach(({ id, shape }) => {
@@ -188,25 +184,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Logo controls - sesuai Layout 1 (hanya 2 pilihan)
-    function initializeLogoControls() {
-        const logoButtons = [
-            { id: 'nonLogo', logo: null },
-            { id: 'engLogo', logo: 'eng' }
-        ];
-
-        logoButtons.forEach(({ id, logo }) => {
-            const button = document.getElementById(id);
-            if (button) {
-                button.addEventListener('click', () => {
-                    selectedLogo = logo;
-                    redrawCanvas();
-                });
-            }
-        });
-    }
-
-    // Action buttons - mengikuti Layout 1
+    // Action buttons
     function initializeActionButtons() {
         const emailBtn = document.getElementById('emailBtn');
         const printBtn = document.getElementById('printBtn');
@@ -223,10 +201,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (printBtn) {
-            printBtn.addEventListener('click', async () => {
+            printBtn.addEventListener('click', () => {
                 if (finalCanvas) {
-                    await saveFinalPhoto();
-                    showSimplePrintPopup(finalCanvas.toDataURL('image/png'));
+                    window.location.href = 'payment.php';
                 } else {
                     alert('Please wait for the photo to finish processing.');
                 }
@@ -234,128 +211,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (continueBtn) {
-            continueBtn.addEventListener('click', async () => {
+            continueBtn.addEventListener('click', () => {
                 if (finalCanvas) {
-                    await saveFinalPhoto();
                     window.location.href = 'payment.php';
                 } else {
                     alert('Please wait for the photo to finish processing.');
                 }
             });
         }
-    }
-
-    // Save final photo function - mengikuti Layout 1
-    async function saveFinalPhoto() {
-        if (!finalCanvas) {
-            console.error('❌ No canvas to save');
-            return false;
-        }
-
-        try {
-            console.log('💾 Saving final photo...');
-            
-            const blob = await new Promise(resolve => finalCanvas.toBlob(resolve, 'image/png'));
-            const base64data = await new Promise(resolve => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.readAsDataURL(blob);
-            });
-
-            const response = await fetch('../api-fetch/save_final_photo_v2.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify({ image: base64data })
-            });
-
-            const text = await response.text();
-            if (text.trim().startsWith('<') || text.includes('<br />') || text.includes('<b>')) {
-                throw new Error('Server returned HTML error page');
-            }
-
-            const data = JSON.parse(text);
-            if (!data.success) {
-                throw new Error(data.message || 'Server error');
-            }
-
-            console.log('✅ Final photo saved successfully:', data.url);
-            return true;
-        } catch (error) {
-            console.error('❌ Error saving final photo:', error);
-            alert('Gagal menyimpan foto. Silakan coba lagi.');
-            return false;
-        }
-    }
-
-    // Print popup function - mengikuti Layout 1
-    function showSimplePrintPopup(imageDataUrl) {
-        const existingPopup = document.getElementById('simplePrintPopup');
-        if (existingPopup) existingPopup.remove();
-
-        const popup = document.createElement('div');
-        popup.id = 'simplePrintPopup';
-        Object.assign(popup.style, {
-            position: 'fixed',
-            top: '0',
-            left: '0',
-            width: '100%',
-            height: '100%',
-            background: 'rgba(0,0,0,0.7)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: '9999'
-        });
-
-        const content = document.createElement('div');
-        Object.assign(content.style, {
-            background: '#fff',
-            padding: '20px',
-            borderRadius: '10px',
-            textAlign: 'center',
-            maxWidth: '500px',
-            width: '90%'
-        });
-
-        content.innerHTML = `
-            <h3>Print Preview</h3>
-            <img src="${imageDataUrl}" style="max-width: 100%; max-height: 400px; border: 1px solid #ddd; border-radius: 5px;">
-            <div style="margin-top: 20px;">
-                <button id="printNowBtn" style="background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin: 0 10px; cursor: pointer;">
-                    🖨️ Print Now
-                </button>
-                <button id="cancelPrintBtn" style="background: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin: 0 10px; cursor: pointer;">
-                    ❌ Cancel
-                </button>
-            </div>
-        `;
-
-        popup.appendChild(content);
-        document.body.appendChild(popup);
-
-        document.getElementById('printNowBtn').onclick = () => {
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <html>
-                    <head>
-                        <title>Print Photo</title>
-                        <style>
-                            @page { margin: 0; }
-                            body { margin: 0; padding: 0; }
-                            img { width: 100%; height: 100%; object-fit: contain; }
-                        </style>
-                    </head>
-                    <body>
-                        <img src="${imageDataUrl}" onload="window.print(); window.close();">
-                    </body>
-                </html>
-            `);
-            printWindow.document.close();
-            popup.remove();
-        };
-
-        document.getElementById('cancelPrintBtn').onclick = () => popup.remove();
-        popup.onclick = (e) => { if (e.target === popup) popup.remove(); };
     }
 
     // Email Modal Functions
@@ -538,8 +401,8 @@ document.addEventListener('DOMContentLoaded', function () {
         return emailRegex.test(email);
     }
 
-    // Send Email Function - mengikuti Layout 1
-    async function sendEmail() {
+    // Send Email Function
+    function sendEmail() {
         const emailInput = document.getElementById('emailInput');
         const email = emailInput.value.trim();
 
@@ -559,268 +422,139 @@ document.addEventListener('DOMContentLoaded', function () {
         sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
         sendBtn.disabled = true;
 
-        try {
-            // Save final photo first - mengikuti Layout 1
-            const blob = await new Promise(resolve => finalCanvas.toBlob(resolve, 'image/png'));
-            const base64data = await new Promise(resolve => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.readAsDataURL(blob);
-            });
+        // Convert canvas to base64
+        const imageData = finalCanvas.toDataURL('image/jpeg', 0.9);
 
-            const response = await fetch('../api-fetch/save_final_photo_v2.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify({ image: base64data })
-            });
-
-            const text = await response.text();
-            if (text.trim().startsWith('<') || text.includes('<br />') || text.includes('<b>')) {
-                throw new Error('Server returned HTML error page');
-            }
-
-            const data = JSON.parse(text);
-            if (!data.success) {
-                throw new Error(data.message || 'Server error');
-            }
-
-            // Send email with photo link - mengikuti Layout 1
-            const photoLink = window.location.origin + data.url;
-            const emailParams = {
-                email,
-                to_email: email,
-                recipient_email: email,
-                link: photoLink,
-                photo_link: photoLink,
-                url: photoLink,
-                name: 'Sobat',
-                user_name: 'Sobat',
-                to_name: 'Sobat',
-                from_name: 'GOFOTOBOX',
-                message: `Halo Sobat! Link foto Anda: ${photoLink}`
-            };
-
-            await emailjs.send('service_gtqjb2j', 'template_pp5i4hm', emailParams);
-            
-            console.log('✅ Email sent successfully');
+        // Send email using EmailJS
+        emailjs.send('service_3h5r3o4', 'template_8tc2r5h', {
+            to_email: email,
+            image: imageData,
+            subject: 'Foto Photobooth Anda'
+        }).then(function(response) {
+            console.log('Email sent successfully:', response);
             alert('Email berhasil dikirim!');
             hideEmailModal();
             emailInput.value = '';
-            
-        } catch (error) {
-            console.error('❌ Email send failed:', error);
+        }).catch(function(error) {
+            console.error('Email send failed:', error);
             alert('Gagal mengirim email. Silakan coba lagi.');
-        } finally {
+        }).finally(function() {
             // Reset button state
             sendBtn.innerHTML = originalText;
             sendBtn.disabled = false;
-        }
+        });
     }
 
-    // Canvas Drawing Function - mengikuti parameter Layout 1 tapi struktur Layout 6
+    // Canvas Drawing Function
     function redrawCanvas() {
         if (!storedImages || storedImages.length === 0) {
-            console.warn('⚠️ No images available for redraw');
+            console.error('No images to draw');
             return;
         }
 
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        
-        // Parameter canvas mengikuti Layout 1
-        const canvasWidth = 1200;
-        const canvasHeight = 1800;
-        const borderWidth = 62;
-        const marginTop = 120;
-        const spacing = 80;
-        
-        // Ukuran dan posisi untuk Layout 6 (2x3 grid)
-        const photoWidth = 480;
-        const photoHeight = 320; // Adjusted untuk 6 photos
-        const cols = 2;
-        const rows = 3;
-
-        canvas.width = canvasWidth;
-        canvas.height = canvasHeight;
+        canvas.width = 1080;
+        canvas.height = 1920;
 
         // Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Draw background mengikuti Layout 1
+        // Draw background
         if (backgroundType === 'color') {
             ctx.fillStyle = backgroundColor;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            drawPhotos();
         } else if (backgroundType === 'image' && backgroundImage) {
             const bgImg = new Image();
             bgImg.onload = function() {
                 ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
                 drawPhotos();
-                updateCanvasPreview(canvas);
-            };
-            bgImg.onerror = function() {
-                console.error('❌ Failed to load background image:', backgroundImage);
-                ctx.fillStyle = '#FFFFFF';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                drawPhotos();
-                updateCanvasPreview(canvas);
             };
             bgImg.src = backgroundImage;
             return; // Exit early, will continue in onload
-        } else {
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            drawPhotos();
         }
 
+        drawPhotos();
+
         function drawPhotos() {
-            // Calculate positions untuk Layout 6 grid
-            const totalWidth = (photoWidth * cols) + (spacing * (cols - 1));
-            const totalHeight = (photoHeight * rows) + (spacing * (rows - 1));
-            const startX = (canvasWidth - totalWidth) / 2;
-            const startY = marginTop;
+            const photoWidth = 480;
+            const photoHeight = 720;
+            const spacing = 60;
+            const startX = (canvas.width - (photoWidth * 2 + spacing)) / 2;
+            const startY = 300;
 
             let loadedCount = 0;
             const totalImages = Math.min(storedImages.length, 6);
 
             // Position mapping for Layout 6 (2x3 grid)
-            const positions = [];
-            for (let row = 0; row < rows; row++) {
-                for (let col = 0; col < cols; col++) {
-                    positions.push({
-                        x: startX + (col * (photoWidth + spacing)),
-                        y: startY + (row * (photoHeight + spacing))
-                    });
-                }
-            }
+            const positions = [
+                { x: startX, y: startY },
+                { x: startX + photoWidth + spacing, y: startY },
+                { x: startX, y: startY + photoHeight / 3 },
+                { x: startX + photoWidth + spacing, y: startY + photoHeight / 3 },
+                { x: startX, y: startY + (photoHeight * 2) / 3 },
+                { x: startX + photoWidth + spacing, y: startY + (photoHeight * 2) / 3 }
+            ];
 
             storedImages.slice(0, 6).forEach((imageSrc, index) => {
                 const img = new Image();
                 img.onload = function() {
                     const pos = positions[index];
-                    
-                    // Apply shape transformation sesuai Layout 1
-                    drawCroppedImage(ctx, img, pos.x, pos.y, photoWidth, photoHeight, selectedShape);
+                    const frameWidth = photoWidth;
+                    const frameHeight = photoHeight / 3;
+
+                    // Apply shape transformation
+                    if (selectedShape === 'circle') {
+                        const centerX = pos.x + frameWidth / 2;
+                        const centerY = pos.y + frameHeight / 2;
+                        const radius = Math.min(frameWidth, frameHeight) / 2;
+                        
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                        ctx.clip();
+                        ctx.drawImage(img, pos.x, pos.y, frameWidth, frameHeight);
+                        ctx.restore();
+                    } else if (selectedShape === 'soft') {
+                        const borderRadius = 20;
+                        
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.roundRect(pos.x, pos.y, frameWidth, frameHeight, borderRadius);
+                        ctx.clip();
+                        ctx.drawImage(img, pos.x, pos.y, frameWidth, frameHeight);
+                        ctx.restore();
+                    } else {
+                        // Default rectangle
+                        ctx.drawImage(img, pos.x, pos.y, frameWidth, frameHeight);
+                    }
 
                     loadedCount++;
                     if (loadedCount === totalImages) {
-                        drawStickersAndLogos(ctx, canvas);
-                    }
-                };
-                img.onerror = function() {
-                    console.error('❌ Failed to load image:', imageSrc);
-                    loadedCount++;
-                    if (loadedCount === totalImages) {
-                        drawStickersAndLogos(ctx, canvas);
+                        // Draw sticker if selected
+                        if (selectedSticker) {
+                            const stickerImg = new Image();
+                            stickerImg.onload = function() {
+                                const stickerSize = 150;
+                                const stickerX = canvas.width - stickerSize - 50;
+                                const stickerY = 50;
+                                ctx.drawImage(stickerImg, stickerX, stickerY, stickerSize, stickerSize);
+                                finishCanvas();
+                            };
+                            stickerImg.src = selectedSticker;
+                        } else {
+                            finishCanvas();
+                        }
                     }
                 };
                 img.src = imageSrc;
             });
         }
 
-        // Function drawCroppedImage mengikuti Layout 1
-        function drawCroppedImage(ctx, img, x, y, targetWidth, targetHeight, shape) {
-            ctx.save();
-
-            if (shape === 'soft') {
-                const borderRadius = 20;
-                ctx.beginPath();
-                ctx.roundRect(x, y, targetWidth, targetHeight, borderRadius);
-                ctx.clip();
-            }
-
-            // Calculate crop dimensions to maintain aspect ratio
-            const imgAspectRatio = img.width / img.height;
-            const targetAspectRatio = targetWidth / targetHeight;
-
-            let sourceX = 0, sourceY = 0, sourceWidth = img.width, sourceHeight = img.height;
-
-            if (imgAspectRatio > targetAspectRatio) {
-                // Image is wider than target - crop horizontally
-                sourceWidth = img.height * targetAspectRatio;
-                sourceX = (img.width - sourceWidth) / 2;
-            } else {
-                // Image is taller than target - crop vertically
-                sourceHeight = img.width / targetAspectRatio;
-                sourceY = (img.height - sourceHeight) / 2;
-            }
-
-            ctx.drawImage(
-                img,
-                sourceX, sourceY, sourceWidth, sourceHeight,
-                x, y, targetWidth, targetHeight
-            );
-
-            ctx.restore();
-        }
-
-        // Function drawStickersAndLogos mengikuti Layout 1
-        function drawStickersAndLogos(ctx, canvas) {
-            let pendingOperations = 0;
-
-            // Draw sticker if selected
-            if (selectedSticker) {
-                pendingOperations++;
-                const stickerImg = new Image();
-                stickerImg.onload = function() {
-                    // Position sticker mengikuti Layout 1
-                    const stickerSize = 150;
-                    const stickerX = canvas.width - stickerSize - 50;
-                    const stickerY = 50;
-                    ctx.drawImage(stickerImg, stickerX, stickerY, stickerSize, stickerSize);
-                    
-                    pendingOperations--;
-                    if (pendingOperations === 0) {
-                        updateCanvasPreview(canvas);
-                    }
-                };
-                stickerImg.onerror = function() {
-                    console.error('❌ Failed to load sticker:', selectedSticker);
-                    pendingOperations--;
-                    if (pendingOperations === 0) {
-                        updateCanvasPreview(canvas);
-                    }
-                };
-                stickerImg.src = selectedSticker;
-            }
-
-            // Draw logo if selected
-            if (selectedLogo) {
-                pendingOperations++;
-                const logoImg = new Image();
-                logoImg.onload = function() {
-                    // Position logo mengikuti Layout 1
-                    const logoWidth = 100;
-                    const logoHeight = 40;
-                    const logoX = 20;
-                    const logoY = canvas.height - logoHeight - 20;
-                    ctx.drawImage(logoImg, logoX, logoY, logoWidth, logoHeight);
-                    
-                    pendingOperations--;
-                    if (pendingOperations === 0) {
-                        updateCanvasPreview(canvas);
-                    }
-                };
-                logoImg.onerror = function() {
-                    console.error('❌ Failed to load logo:', selectedLogo);
-                    pendingOperations--;
-                    if (pendingOperations === 0) {
-                        updateCanvasPreview(canvas);
-                    }
-                };
-                logoImg.src = `/src/assets/icons/logo-${selectedLogo}.png`;
-            }
-
-            // If no stickers or logos, update preview immediately
-            if (pendingOperations === 0) {
-                updateCanvasPreview(canvas);
-            }
-        }
-
-        // Function updateCanvasPreview mengikuti Layout 1
-        function updateCanvasPreview(canvas) {
+        function finishCanvas() {
             finalCanvas = canvas;
             
+            // Update preview
             if (photoCustomPreview) {
                 photoCustomPreview.innerHTML = '';
                 const canvasClone = canvas.cloneNode(true);
@@ -828,12 +562,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 canvasClone.style.height = 'auto';
                 canvasClone.style.maxHeight = '600px';
                 canvasClone.style.objectFit = 'contain';
-                canvasClone.style.border = '2px solid #ddd';
-                canvasClone.style.borderRadius = '10px';
                 photoCustomPreview.appendChild(canvasClone);
             }
 
-            console.log('✅ Canvas redrawn successfully');
+            console.log('Canvas redrawn successfully');
         }
     }
 

@@ -1,216 +1,193 @@
 <?php
 session_start();
-
-// Include PWA helper
-require_once '../includes/pwa-helper.php';
-
-// Auto create customize session jika belum ada atau expired (PWA-friendly)
-if (!isset($_SESSION["customize_expired_time"]) || time() > $_SESSION["customize_expired_time"]) {
-    // Create new customize session
-    $_SESSION["customize_start_time"] = time();
-    $_SESSION["customize_expired_time"] = time() + (15 * 60); // 15 menit untuk PWA
-    $_SESSION["session_type"] = "customize";
+// Initialize session if not set or expired
+if (!isset($_SESSION['customize_expired_time']) || time() > $_SESSION['customize_expired_time']) {
+    $_SESSION['customize_start_time'] = time();
+    $_SESSION['customize_expired_time'] = time() + (15 * 60);
+    $_SESSION['session_type'] = 'customize';
 }
-
-// Hitung waktu tersisa
-$timeLeft = $_SESSION['customize_expired_time'] - time();
+require_once '../includes/pwa-helper.php';
 ?>
-
 <!DOCTYPE html>
 <html>
-
 <head>
-    <?php PWAHelper::addPWAHeaders(); ?>
     <meta charset="UTF-8" />
+    <?php PWAHelper::addPWAHeaders(); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description"
-        content="Customize your Layout 2 photobooth photos. Add frames, stickers, and text to your 4-photo strip.">
-    <meta name="keywords"
-        content="photobooth customization, layout 2 editing, photo frames, photo stickers, photo strip editing">
-    <title>Photobooth | Customize Layout 2</title>
-    <link rel="canonical" href="https://www.gofotobox.online">
-    <meta property="og:title" content="Photobooth | Customize Layout 2">
-    <meta property="og:description"
-        content="Customize your Layout 2 photobooth photos. Add frames, stickers, and text to your 4-photo strip.">
-    <meta property="og:image" content="https://www.gofotobox.online/assets/home-mockup.png">
-    <meta property="og:url" content="https://www.gofotobox.online">
-    <meta property="og:type" content="website">
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Photobooth | Customize 4R Photo">
-    <meta name="twitter:description"
-        content="Customize your 4R photobooth photos. Add frames, stickers, and text.">
-    <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png">
+    <meta name="description" content="Customize your Layout 1 photobooth photos with frames, stickers, and text.">
+    <title>Photobooth | Customize Layout 1</title>
     <link rel="stylesheet" href="home-styles.css" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&display=swap"
-        rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Syne:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png" />
+    <!-- Cache Control -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png" />
-
 </head>
-
 <body>
-    <!-- Timer Box -->
-    <div id="timer-box" class="timer-box">
-        <span id="timer-display">03:00</span>
-        <p>Sisa waktu untuk customize</p>
-    </div>
+    <div class="gradientBgCanvas"></div>
+    <div class="customize-content-wrapper">
+        <div class="customize-left-section">
+            <h1 class="customize-title">Customize Your Photo</h1>    
+            <div class="customize-options-group">
+                <h3 class="customize-options-label">Frame Color</h3>
+                <div class="customize-buttons-grid">
+                    <button id="pinkBtnFrame" class="buttonFrames frame-color-pink"></button>
+                    <button id="blueBtnFrame" class="buttonFrames frame-color-blue"></button>
+                    <button id="yellowBtnFrame" class="buttonFrames frame-color-yellow"></button>
+                    <button id="matchaBtnFrame" class="buttonFrames frame-color-matcha"></button>
+                    <button id="purpleBtnFrame" class="buttonFrames frame-color-purple"></button>
+                    <button id="brownBtnFrame" class="buttonFrames frame-color-brown"></button>
+                    <button id="redBtnFrame" class="buttonFrames frame-color-red"></button>
+                    <button id="whiteBtnFrame" class="buttonFrames frame-color-white"></button>
+                    <button id="blackBtnFrame" class="buttonFrames frame-color-black"></button>
+                    <button id="matcha" class="buttonBgFrames frame-bg-matcha"></button>
+                    <button id="blackStar" class="buttonBgFrames frame-bg-blackstar"></button>
+                    <button id="blueStripe" class="buttonBgFrames frame-bg-bluestripe"></button>
+                </div>
+            </div>
 
-    <!-- Timeout Modal -->
-    <div id="timeout-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h2>Waktu Habis!</h2>
-            <p>Sesi customize Anda telah berakhir. Anda akan diarahkan ke halaman utama.</p>
-            <button id="timeout-ok-btn" class="modal-btn">OK</button>
+            <div class="customize-options-group">
+                <h3 class="customize-options-label">Photo Shape</h3>
+                <div class="customize-buttons-grid shape-buttons">
+                    <button id="noneFrameShape" class="buttonShapes">
+                        <img src="../assets/block (1).png" alt="None" class="shape-icon">
+                    </button>
+                    <button id="softFrameShape" class="buttonShapes">
+                        <img src="../assets/corners.png" alt="Soft Edge Frame" class="shape-icon">
+                    </button>
+                </div>
+            </div>
+
+            <div class="customize-options-group">
+                <h3 class="customize-options-label">Stickers</h3>
+                <div class="customize-buttons-grid stickers-grid">
+                    <button id="noneSticker" class="buttonStickers sticker-none">
+                        <img src="../assets/block (1).png" alt="None" class="shape-icon">
+                    </button>
+                    <button id="bintang1" class="buttonStickers">
+                        <img src="/src/assets/stickers/bintang1.png" alt="bintang1" class="sticker-icon" />
+                    </button>
+                </div>
+            </div>
+
+            <div class="customize-options-group">
+                <h3 class="customize-options-label">Logo</h3>
+                <div class="customize-logo-buttons">
+                    <button id="nonLogo" class="logoCustomBtn">None</button>
+                    <button id="engLogo" class="logoCustomBtn">Use</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Section: Canvas Preview -->
+        <div class="customize-right-section">
+            <div id="photoPreview" class="customize-photo-preview"></div>
         </div>
     </div>
 
-    <main id="main-section">
-                <div class="gradientBgCanvas"></div>
-                <section class="custom-main">
-
-                        <div id="photoPreview"></div>
-
-                        <div class="customization-container">
-                                <h1 class="custom-heading">customize your photo</h1>
-
-                                <div>
-                                        <div class="custom-options-container">
-                                                <h3 class="options-label">Frame Color</h3>
-                                                <div class="custom-buttons-container">
-                                                        <div id="colorPickerBtn" class="buttonFrames"></div>
-                                                        <button id="pinkBtnFrame" class="buttonFrames"></button>
-                                                        <button id="blueBtnFrame" class="buttonFrames"></button>
-                                                        <button id="yellowBtnFrame" class="buttonFrames"></button>
-                                                        <button id="matchaBtnFrame" class="buttonFrames"></button>
-                                                        <button id="purpleBtnFrame" class="buttonFrames"></button>
-                                                        <button id="brownBtnFrame" class="buttonFrames"></button>
-                                                        <button id="redBtnFrame" class="buttonFrames"></button>
-                                                        <!-- <button id="ribbonBtnFrame" class="buttonFrames"></button> -->
-                                                        <button id="whiteBtnFrame" class="buttonFrames"></button>
-                                                        <button id="blackBtnFrame" class="buttonFrames"></button>
-                                                        <!-- FRAMES -->
-                                                        <button id="pinkGlitter" class="buttonBgFrames"></button>
-                                                        <button id="pinkPlaid" class="buttonBgFrames"></button>
-                                                        <button id="bluePlaid" class="buttonBgFrames"></button>
-                                                        <button id="black-cq" class="buttonBgFrames"></button>
-                                                        <button id="white-cq" class="buttonBgFrames"></button>
-                                                        <button id="pinkLeather" class="buttonBgFrames"></button>
-                                                        <button id="brownKnittedFrame" class="buttonBgFrames"></button>
-                                                        <button id="hotPinkKnittedFrame" class="buttonBgFrames"></button>
-                                                        <button id="redKnittedFrame" class="buttonBgFrames"></button>
-                                                        <button id="pinkKnittedFrame" class="buttonBgFrames"></button>
-                                                        <button id="redStripesFrame" class="buttonBgFrames"></button>
-                                                        <button id="greenStripesFrame" class="buttonBgFrames"></button>
-                                                        <button id="blueStripesFrame" class="buttonBgFrames"></button>
-                                                        <button id="vsPinkFrame" class="buttonBgFrames"></button>
-                                                        <button id="vsYellowFrame" class="buttonBgFrames"></button>
-                                                        <button id="blueYellowSquares" class="buttonBgFrames"></button>
-                                                        <button id="blueWhiteSquares" class="buttonBgFrames"></button>
-                                                        <button id="brownLeopard" class="buttonBgFrames"></button>
-                                                        <button id="cowPrint" class="buttonBgFrames"></button>
-                                                        <button id="redLeather" class="buttonBgFrames"></button>
-                                                        <button id="pinkGumamela" class="buttonBgFrames"></button>
-                                                        <button id="pinkLiliesFrame" class="buttonBgFrames"></button>
-                                                        <button id="whiteKnitted" class="buttonBgFrames"></button>
-                                                        <button id="ribbonSweaterFrame" class="buttonBgFrames"></button>
-                                                        <button id="ribbonDenim" class="buttonBgFrames"></button>
-                                                        <button id="blackPinkRibbon" class="buttonBgFrames"></button>
-                                                        <button id="fourLockers" class="buttonBgFrames"></button>
-                                                        <button id="gridPaperFrame" class="buttonBgFrames"></button>
-                                                        <button id="crumpledPaper" class="buttonBgFrames"></button>
-                                                        <button id="roughTextureFrame" class="buttonBgFrames"></button>
-                                                        <button id="blueBackdrop" class="buttonBgFrames"></button>
-                                                        <button id="greenHills" class="buttonBgFrames"></button>
-                                                        <button id="sandShells" class="buttonBgFrames"></button>
-                                                        <button id="waterBeach" class="buttonBgFrames"></button>
-                                                        <button id="cocoTrees" class="buttonBgFrames"></button>
-                                                        <button id="stardustFrame" class="buttonBgFrames"></button>
-                                                        <button id="roseCardFrame" class="buttonBgFrames"></button>
-                                                        <button id="princessVintageFrame" class="buttonBgFrames"></button>
-                                                        <button id="redRosesPaintFrame" class="buttonBgFrames"></button>
-                                                        <button id="grayTrashFrame" class="buttonBgFrames"></button>
-                                                        <button id="blackTrashFrame" class="buttonBgFrames"></button>
-                                                        <button id="whiteTrashFrame" class="buttonBgFrames"></button>
-                                                        <button id="partyDrapeFrame" class="buttonBgFrames"></button>
-                                                        <button id="partyDotsFrame" class="buttonBgFrames"></button>
-                                                        <button id="blingDenimFrame" class="buttonBgFrames"></button>
-                                                </div>
-
-
-                                                <div class="">
-                                                        <h3 class="options-label">Photo Shape:</h3>
-                                                        <div class="custom-buttons-container">
-                                                                <button id="noneFrameShape" class="buttonShapes"><img
-                                                                                src="assets/frame-shapes/noneShape.png" alt="None"
-                                                                                class="btnShapeSize"></button>
-                                                                <button id="softFrameShape" class="buttonShapes"><img
-                                                                                src="assets/frame-shapes/squareShape.png" alt="Soft Edge Frame"
-                                                                                class="btnShapeSize"></button>
-                                                                <button id="circleFrameShape" class="buttonShapes"><img
-                                                                                src="assets/frame-shapes/circleShape.png" alt="Circle Frame"
-                                                                                class="btnShapeSize"></button>
-                                                                <button id="heartFrameShape" class="buttonShapes"><img
-                                                                                src="assets/frame-shapes/heartShape.png" alt="Heart Frame"
-                                                                                class="btnShapeSize"></button>
-
-                                                        </div>
-                                                </div>
-                                                <h3 class="options-label">Stickers</h3>
-                                                    <div class="custom-buttons-container stickers-container">
-                                    
-                                                            <button id="bunnySticker" class="buttonStickers">
-                                                                    <img src="/src/assets/stickers/bunny1.png" alt="bunny" class="stickerIconSize" />
-                                                            </button>
-                                                            <!-- Add more stickers here as needed, using the correct path -->
-                                                    </div>
-                                                <div class="custom-logo-holder">
-                                                        <h3 class="options-label">Logo:</h3>
-                                                        <div class="logo-container">
-                                                                <button id="engLogo" class="logoCustomBtn">ENG</button>
-                                                                <button id="korLogo" class="logoCustomBtn">KOR</button>
-                                                                <button id="cnLogo" class="logoCustomBtn">CN</button>
-                                                        </div>
-                                                </div>
-                                                <div class="date-overlay">
-                                                        <input type="checkbox" id="dateCheckbox">
-                                                        <label for="dateCheckbox" id="addDateLabel">Add Date</label>
-                                                        <input type="checkbox" id="dateTimeCheckbox">
-                                                        <label for="dateTimeCheckbox" id="addDateTimeLabel">Add Time</label>
-                                                </div>
-                                                <div class="custom-buttons-holder">
-                                                        <button class="main-button email-button" id="emailBtn" style="background: #28a745;">📧 Kirim ke Email</button>
-                                                        <button class="main-button print-button" id="printBtn" style="background: #ffc107; color: #000;">🖨️ Print</button>
-                                                        <button class="main-button continue-button" id="continueBtn" style="background: #007bff;">➡️ Lanjutkan</button>
-                                                </div>
-
-                                        </div>
-                                </div>
-                        </div>
-
-                </section>
-
-    </main>
+    <!-- Bottom Section: Action Buttons -->
+    <div class="customize-action-buttons">
+        <button class="customize-action-btn email-btn" id="emailBtn">
+            <i class="fas fa-envelope"></i>
+            <span>Kirim ke Email</span>
+        </button>
+        <button class="customize-action-btn print-btn" id="printBtn">
+            <i class="fas fa-print"></i>
+            <span>Print</span>
+        </button>
+        <button class="customize-action-btn continue-btn" id="continueBtn">
+            <i class="fas fa-arrow-right"></i>
+            <span>Lanjutkan</span>
+        </button>
+    </div>
 
     <!-- Email Modal -->
-    <div id="emailModal" class="modal-overlay" style="display: none;">
-        <div class="modal-content">
+    <div id="emailModal" class="modal">
+        <div class="modal-content email-modal-content">
             <button id="closeEmailModal" class="close-btn">&times;</button>
-            <h3>Masukan Email Anda</h3>
-            <input type="email" id="emailInput" placeholder="contoh@email.com" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 5px; margin: 1rem 0;">
-            <div class="modal-buttons">
-                <button id="sendEmailBtn" class="btn-primary">Kirim</button>
+            <div class="modal-header">
+                <h3 class="modal-title">Masukan Email Anda</h3>
+                <p class="modal-subtitle">Foto akan dikirim ke alamat email yang Anda masukkan</p>
+            </div>
+            <div class="email-input-container">
+                <input type="email" id="emailInput" placeholder="contoh@email.com" class="email-input">
+                <div class="input-validation">
+                    <span id="validation-message">Format email tidak valid</span>
+                </div>
+            </div>
+            <div id="virtualKeyboard" class="virtual-keyboard">
+                <div class="keyboard-row">
+                    <button class="key-btn" data-key="1">1</button>
+                    <button class="key-btn" data-key="2">2</button>
+                    <button class="key-btn" data-key="3">3</button>
+                    <button class="key-btn" data-key="4">4</button>
+                    <button class="key-btn" data-key="5">5</button>
+                    <button class="key-btn" data-key="6">6</button>
+                    <button class="key-btn" data-key="7">7</button>
+                    <button class="key-btn" data-key="8">8</button>
+                    <button class="key-btn" data-key="9">9</button>
+                    <button class="key-btn" data-key="0">0</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key-btn" data-key="q">Q</button>
+                    <button class="key-btn" data-key="w">W</button>
+                    <button class="key-btn" data-key="e">E</button>
+                    <button class="key-btn" data-key="r">R</button>
+                    <button class="key-btn" data-key="t">T</button>
+                    <button class="key-btn" data-key="y">Y</button>
+                    <button class="key-btn" data-key="u">U</button>
+                    <button class="key-btn" data-key="i">I</button>
+                    <button class="key-btn" data-key="o">O</button>
+                    <button class="key-btn" data-key="p">P</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key-btn" data-key="a">A</button>
+                    <button class="key-btn" data-key="s">S</button>
+                    <button class="key-btn" data-key="d">D</button>
+                    <button class="key-btn" data-key="f">F</button>
+                    <button class="key-btn" data-key="g">G</button>
+                    <button class="key-btn" data-key="h">H</button>
+                    <button class="key-btn" data-key="j">J</button>
+                    <button class="key-btn" data-key="k">K</button>
+                    <button class="key-btn" data-key="l">L</button>
+                    <button class="key-btn" data-key="@">@</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key-btn key-caps" data-key="caps">CAPS</button>
+                    <button class="key-btn" data-key="z">Z</button>
+                    <button class="key-btn" data-key="x">X</button>
+                    <button class="key-btn" data-key="c">C</button>
+                    <button class="key-btn" data-key="v">V</button>
+                    <button class="key-btn" data-key="b">B</button>
+                    <button class="key-btn" data-key="n">N</button>
+                    <button class="key-btn" data-key="m">M</button>
+                    <button class="key-btn key-backspace" data-key="backspace">⌫</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key-btn" data-key=".">.</button>
+                    <button class="key-btn" data-key="-">-</button>
+                    <button class="key-btn" data-key="_">_</button>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="cancelEmailBtn" class="btn-secondary">Batal</button>
+                <button id="sendEmailBtn" class="btn-primary">
+                    <i class="fas fa-paper-plane"></i> Kirim
+                </button>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/vanilla-picker@2.12.1/dist/vanilla-picker.min.js"></script>
     <!-- EmailJS Scripts -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script type="text/javascript">
-        (function(){
+        (function() {
             emailjs.init({
                 publicKey: "9SDzOfKjxuULQ5ZW8",
             });
@@ -218,7 +195,22 @@ $timeLeft = $_SESSION['customize_expired_time'] - time();
     </script>
 
     <script src="customizeLayout2.js"></script>
+
+    <!-- Session Timer Script -->
+    <script src="../includes/session-timer.js"></script>
+
+    <script>
+        // Custom timer expired handler for customize page
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.sessionTimer) {
+                window.sessionTimer.onExpired = function(page) {
+                    // From customize page, go directly to thank you
+                    window.location.href = 'thankyou.php';
+                };
+            }
+        });
+    </script>
+
     <?php PWAHelper::addPWAScript(); ?>
 </body>
-
 </html>

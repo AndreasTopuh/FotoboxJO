@@ -14,6 +14,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="home-styles.css">
     <style>
+        * {
+            overflow: hidden;
+        }
         body {
             margin: 0;
             font-family: 'Poppins', sans-serif;
@@ -22,40 +25,40 @@
 
         .main-wrapper {
             max-width: 1140px;
-            margin: auto;
-            /* padding: 1.5rem; */
+            margin: 0 auto;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2rem;
+            gap: 1rem;
+            padding: 0 1rem;
         }
 
         .header {
             text-align: center;
-            /* margin-bottom: 2rem; */
-            margin-top: 1.5rem;
+            margin: 1rem 0 0.5rem;
         }
 
         .header img {
-            width: 70px;
-            border-radius: 14px;
-            margin-bottom: 1rem;
+            width: 50px;
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
         }
 
         .header h1 {
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             margin: 0;
         }
 
         .header p {
             color: #666;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
+            margin: 0.2rem 0;
         }
 
         .card {
             background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-radius: 15px;
+            padding: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
@@ -63,91 +66,91 @@
         .step {
             display: flex;
             align-items: flex-start;
-            margin-bottom: 1.2rem;
-            padding: 1rem;
+            margin-bottom: 0.8rem;
+            padding: 0.6rem;
             background: linear-gradient(135deg, rgba(226, 133, 133, 0.08), rgba(255, 255, 255, 0.1));
-            border-radius: 12px;
-            border-left: 4px solid #E28585;
+            border-radius: 8px;
+            border-left: 3px solid #E28585;
             transition: all 0.3s ease;
         }
 
         .step:hover {
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(226, 133, 133, 0.2);
+            transform: translateX(3px);
+            box-shadow: 0 3px 10px rgba(226, 133, 133, 0.2);
         }
 
         .step-number {
             background: linear-gradient(135deg, #E28585, #FF6B9D);
             color: #fff;
-            width: 35px;
-            height: 35px;
+            width: 25px;
+            height: 25px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.9rem;
+            font-size: 0.7rem;
             font-weight: bold;
-            margin-right: 1.2rem;
-            box-shadow: 0 3px 10px rgba(226, 133, 133, 0.3);
+            margin-right: 0.8rem;
+            box-shadow: 0 2px 5px rgba(226, 133, 133, 0.3);
             flex-shrink: 0;
         }
 
         .step-text h3 {
-            margin: 0 0 0.3rem 0;
-            font-size: 1.1rem;
+            margin: 0 0 0.2rem 0;
+            font-size: 0.9rem;
             font-weight: 600;
             color: #333;
         }
 
         .step-text p {
             margin: 0;
-            font-size: 0.9rem;
+            font-size: 0.7rem;
             color: #666;
-            line-height: 1.4;
+            line-height: 1.3;
         }
 
         .layout-preview-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1.2rem;
-            margin-bottom: 1.5rem;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
         }
 
         .layout-box {
             background: linear-gradient(135deg, rgba(226, 133, 133, 0.08), rgba(255, 255, 255, 0.1));
-            border-radius: 12px;
+            border-radius: 8px;
             text-align: center;
-            padding: 1rem;
+            padding: 0.6rem;
             transition: all 0.3s ease;
-            border: 2px solid transparent;
+            border: 1px solid transparent;
         }
 
         .layout-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(226, 133, 133, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(226, 133, 133, 0.2);
             border-color: rgba(226, 133, 133, 0.3);
         }
 
         .layout-box img {
             width: 100%;
-            max-width: 70px;
-            margin-bottom: 0.8rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            max-width: 50px;
+            margin-bottom: 0.4rem;
+            border-radius: 6px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
         }
 
         .layout-box h4 {
             margin: 0;
-            font-size: 0.85rem;
+            font-size: 0.7rem;
             color: #333;
             font-weight: 600;
         }
 
         .layout-section-title {
             text-align: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.8rem;
             color: #333;
-            font-size: 1.3rem;
+            font-size: 1rem;
             font-weight: 700;
             position: relative;
         }
@@ -155,45 +158,47 @@
         .layout-section-title::after {
             content: '';
             position: absolute;
-            bottom: -8px;
+            bottom: -5px;
             left: 50%;
             transform: translateX(-50%);
-            width: 50px;
-            height: 3px;
+            width: 40px;
+            height: 2px;
             background: linear-gradient(135deg, #E28585, #FF6B9D);
-            border-radius: 2px;
+            border-radius: 1px;
         }
 
         .timer-info {
             background: linear-gradient(135deg, rgba(226, 133, 133, 0.1), rgba(255, 255, 255, 0.1));
-            padding: 1rem;
-            border-radius: 12px;
-            border-left: 4px solid #E28585;
-            margin-top: 1rem;
+            padding: 0.6rem;
+            border-radius: 8px;
+            border-left: 3px solid #E28585;
+            margin-top: 0.6rem;
         }
 
         .timer-info p {
             margin: 0;
-            font-size: 0.85rem;
+            font-size: 0.7rem;
             text-align: center;
             color: #666;
-            line-height: 1.5;
+            line-height: 1.3;
         }
 
         .footer-buttons {
             display: flex;
-            gap: 1rem;
+            gap: 0.8rem;
             justify-content: space-between;
-            margin-top: 2rem;
+            margin: 0.8rem auto;
+            max-width: 1140px;
+            padding: 0 1rem;
         }
 
         .btn {
-            padding: 10px 20px;
-            border-radius: 30px;
+            padding: 8px 16px;
+            border-radius: 20px;
             font-weight: 600;
             text-decoration: none;
             text-align: center;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             flex: 1;
         }
 
@@ -204,14 +209,14 @@
 
         .btn-outline-new {
             background: #fff;
-            border: 2px solid var(--pink-secondary);
-            color: var(--pink-primary);
-            padding: 10px 20px;
-            border-radius: 8px;
+            border: 1px solid var(--pink-secondary, #E28585);
+            color: var(--pink-primary, #E28585);
+            padding: 8px 16px;
+            border-radius: 6px;
             cursor: pointer;
             font-family: 'Poppins', sans-serif;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.8rem;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
@@ -219,17 +224,34 @@
         }
 
         .btn-outline-new:hover {
-            background: var(--pink-primary);
-            border: 2px solid #fff;
+            background: var(--pink-primary, #E28585);
+            border: 1px solid #fff;
             color: #fff;
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
+            box-shadow: 0 3px 10px rgba(233, 30, 99, 0.3);
         }
 
         @media (max-width: 768px) {
             .main-wrapper {
                 grid-template-columns: 1fr;
-                padding: 1rem;
+                padding: 0.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .header p {
+                font-size: 0.7rem;
+            }
+
+            .card {
+                padding: 0.8rem;
+            }
+
+            .footer-buttons {
+                flex-direction: column;
+                gap: 0.5rem;
             }
         }
     </style>
@@ -283,7 +305,7 @@
             <div class="step">
                 <div class="step-number">6</div>
                 <div class="step-text">
-                    <h3>Kirim ke Email atau Cetak </h3>
+                    <h3>Kirim ke Email atau Cetak</h3>
                     <p>Dapat mengirimkan foto tersebut ke email atau bisa langsung di print saja.</p>
                 </div>
             </div>
@@ -326,7 +348,7 @@
         </div>
     </div>
 
-    <div class="footer-buttons" style="max-width: 1140px; margin: 1rem auto;">
+    <div class="footer-buttons">
         <a href="/" class="btn btn-outline-new">← Kembali</a>
         <a href="selectpayment.php" class="btn btn-outline-new">Lanjutkan</a>
     </div>

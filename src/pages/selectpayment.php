@@ -164,16 +164,7 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
     }
 
     .modal-content {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      padding: 2rem;
-      border-radius: 15px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
       max-width: 400px;
-      width: 90%;
     }
 
     .modal-title {

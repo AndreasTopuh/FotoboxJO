@@ -47,6 +47,11 @@ SessionManager::requirePayment();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png" />
+    <style>
+        * {
+            overflow: hidden;
+        }
+    </style>
 </head>
 
 <body>
@@ -58,7 +63,7 @@ SessionManager::requirePayment();
                     <div style="position: fixed; top: 10px; right: 10px; background: var(--pink-primary); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; z-index: 1000;">
                     </div>
                 <?php endif; ?>
-                <h1 class="custom-heading layout-heading">Choose Your Layout</h1>
+                <h1 class="custom-heading layout-heading">Silahkan pilih layout</h1>
                 <div class="carousel-containesr">
                     <div class="card-carousel" id="layout-carousel">
                         <button class="layout-card" id="layout1Btn" data-layout="layout1">
@@ -144,12 +149,12 @@ SessionManager::requirePayment();
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
-            let currentIndex = 0;
+            let currentIndex = 1;
             const $cards = $('.layout-card');
             const totalCards = $cards.length;
 
             function initCarousel() {
-                currentIndex = 0;
+                currentIndex = 1;
                 updateCarousel();
                 updateNavButtons();
             }
@@ -401,58 +406,52 @@ SessionManager::requirePayment();
     </script>
     <style>
         .content-container {
-            max-width: 1400px;
+            max-width: 1200px; /* Reduced from 1400px */
             margin: 0 auto;
             position: relative;
             z-index: 1;
-            height: 100vh;
+            height: calc(100vh - 100px); /* Constrain height */
             display: flex;
             flex-direction: column;
             justify-content: center;
+            overflow-y: auto; /* Handle potential overflow */
         }
 
         #choose-layout {
-            min-height: 100vh;
+            min-height: calc(100vh - 100px); /* Reduced to fit */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             position: relative;
         }
-
-        /* .carousel-container {
-            width: 100%;
-            max-width: 1400px;
-            margin: 0 auto;
-            position: relative;
-        } */
 
         .card-carousel {
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            height: 520px;
+            height: 460px; /* Reduced from 520px */
             overflow: hidden;
-            padding: 0 4rem;
-            gap: 15px;
+            padding: 0 2rem; /* Reduced from 4rem */
+            gap: 10px; /* Reduced from 15px */
         }
 
         .layout-card {
-            height: 400px;
-            width: 320px;
+            height: 360px; /* Reduced from 400px */
+            width: 280px; /* Reduced from 320px */
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(15px);
             border-radius: 20px;
-            padding: 2rem;
+            padding: 1.5rem; /* Reduced from 2rem */
             text-align: center;
             transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             border: 2px solid var(--pink-secondary);
             display: none;
             flex-direction: column;
             align-items: center;
-            gap: 1.5rem;
-            margin: 0 10px;
+            gap: 1rem; /* Reduced from 1.5rem */
+            margin: 0 8px; /* Reduced from 10px */
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
@@ -464,14 +463,14 @@ SessionManager::requirePayment();
         }
 
         .layout-card.active {
-            height: 440px;
-            width: 360px;
+            height: 400px; /* Reduced from 440px */
+            width: 320px; /* Reduced from 360px */
             transform: scale(1);
             opacity: 1;
             background: rgba(255, 255, 255, 0.98);
             border: 2px solid var(--pink-primary);
             border-radius: 25px;
-            padding: 2.5rem;
+            padding: 2rem; /* Reduced from 2.5rem */
             box-shadow: 0 8px 20px rgba(233, 30, 99, 0.2);
         }
 
@@ -489,17 +488,17 @@ SessionManager::requirePayment();
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 4rem;
-            margin-top: 3rem;
+            gap: 3rem; /* Reduced from 4rem */
+            margin-top: 2rem; /* Reduced from 3rem */
         }
 
         .nav-btn {
             background: rgba(255, 255, 255, 0.9);
             border: none;
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 1.8rem;
+            width: 50px; /* Reduced from 60px */
+            height: 50px; /* Reduced from 60px */
+            font-size: 1.5rem; /* Reduced from 1.8rem */
             color: var(--pink-primary);
             cursor: pointer;
             transition: all 0.3s ease;
@@ -520,12 +519,12 @@ SessionManager::requirePayment();
 
         .carousel-dots {
             display: flex;
-            gap: 1rem;
+            gap: 0.8rem; /* Reduced from 1rem */
         }
 
         .dot {
-            width: 15px;
-            height: 15px;
+            width: 12px; /* Reduced from 15px */
+            height: 12px; /* Reduced from 15px */
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.5);
             cursor: pointer;
@@ -539,57 +538,79 @@ SessionManager::requirePayment();
 
         .custom-heading {
             color: white;
-            font-size: 3.5rem;
+            font-size: 3rem; /* Reduced from 3.5rem */
             font-weight: 700;
             text-align: center;
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem; /* Reduced from 1rem */
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 2px; /* Reduced from 3px */
         }
 
         .layout-img {
-            width: 160px;
-            height: 180px;
+            width: 200px; /* Reduced from 240px */
+            height: 150px; /* Reduced from 180px */
             object-fit: contain;
             border-radius: 15px;
             background: white;
-            padding: 0.8rem;
+            padding: 0.6rem; /* Reduced from 0.8rem */
             border: 1px solid var(--pink-secondary);
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .layout-card.active .layout-img {
-            width: 200px;
-            height: 180px;
+            width: 240px; /* Reduced from 280px */
+            height: 240px; /* Reduced from 280px */
+            object-fit: contain;
+            border-radius: 18px;
+            background: white;
+            padding: 0.8rem; /* Reduced from 1.2rem */
             border: 2px solid var(--pink-primary);
+            box-shadow: 0 8px 24px rgba(233, 30, 99, 0.15);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .layout-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.15rem; /* Reduced from 0.2rem */
+            margin-top: 0.4rem; /* Reduced from 0.5rem */
+            padding: 0.4rem 0.6rem; /* Reduced from 0.5rem 0.8rem */
+            background: transparent;
+            border-radius: 12px;
+            border: none;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .layout-label {
-            font-size: 1.3rem;
+            font-size: 0.9rem; /* Reduced from 1rem */
             font-weight: 700;
             color: #333;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.1rem;
             opacity: 0.8;
+            margin: 0;
         }
 
         .layout-card.active .layout-label {
-            font-size: 1.8rem;
+            font-size: 1.1rem; /* Reduced from 1.2rem */
             color: var(--pink-primary);
             opacity: 1;
         }
 
         .layout-description {
             color: #666;
-            font-size: 1rem;
-            margin: 0.2rem 0;
+            font-size: 0.75rem; /* Reduced from 0.8rem */
+            margin: 0;
             font-weight: 500;
             opacity: 0.7;
-            line-height: 1.4;
+            line-height: 1.1;
+            text-align: center;
         }
 
         .layout-card.active .layout-description {
-            font-size: 1.2rem;
+            font-size: 0.85rem; /* Reduced from 0.9rem */
             color: #333;
             opacity: 1;
         }
@@ -611,36 +632,36 @@ SessionManager::requirePayment();
         .popup-content {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(15px);
-            padding: 3rem;
+            padding: 2rem; /* Reduced from 3rem */
             border-radius: 25px;
             text-align: center;
-            max-width: 600px;
+            max-width: 500px; /* Reduced from 600px */
             margin: 0 1rem;
             border: 2px solid var(--pink-secondary);
         }
 
         .popup-content h3 {
             color: var(--pink-primary);
-            font-size: 2rem;
+            font-size: 1.8rem; /* Reduced from 2rem */
             font-weight: 600;
-            margin-bottom: 1.2rem;
+            margin-bottom: 1rem; /* Reduced from 1.2rem */
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 1.2px; /* Reduced from 1.5px */
         }
 
         .popup-content p {
             color: #666;
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
+            font-size: 1.1rem; /* Reduced from 1.2rem */
+            margin-bottom: 1.5rem; /* Reduced from 2rem */
         }
 
         .close-btn {
             position: absolute;
-            top: 25px;
-            right: 30px;
+            top: 20px; /* Reduced from 25px */
+            right: 25px; /* Reduced from 30px */
             background: none;
             border: none;
-            font-size: 35px;
+            font-size: 30px; /* Reduced from 35px */
             cursor: pointer;
             color: #999;
             font-weight: bold;
@@ -654,17 +675,17 @@ SessionManager::requirePayment();
         .layout-preview-container {
             display: flex;
             align-items: center;
-            gap: 2rem;
-            margin: 2rem 0;
-            padding: 2rem;
+            gap: 1.5rem; /* Reduced from 2rem */
+            margin: 1.5rem 0; /* Reduced from 2rem */
+            padding: 1.5rem; /* Reduced from 2rem */
             background: rgba(248, 249, 250, 0.8);
             border-radius: 20px;
             border: 2px solid var(--pink-secondary);
         }
 
         .preview-layout-img {
-            width: 150px;
-            height: 200px;
+            width: 120px; /* Reduced from 150px */
+            height: 160px; /* Reduced from 200px */
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
@@ -674,50 +695,49 @@ SessionManager::requirePayment();
 
         .layout-info {
             flex: 1;
-            /* text-align: left; */
         }
 
         .layout-info h2 {
-            margin: 0 0 0.8rem 0;
+            margin: 0 0 0.6rem 0; /* Reduced from 0.8rem */
             color: var(--pink-primary);
-            font-size: 1.6rem;
+            font-size: 1.4rem; /* Reduced from 1.6rem */
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 1.2px; /* Reduced from 1.5px */
         }
 
         .layout-info p {
-            margin: 0 0 1.2rem 0;
+            margin: 0 0 1rem 0; /* Reduced from 1.2rem */
             color: #6c757d;
-            font-size: 1.2rem;
+            font-size: 1.1rem; /* Reduced from 1.2rem */
         }
 
         .layout-specs span {
             background: var(--pink-secondary);
             color: var(--pink-primary);
-            padding: 0.6rem 1.5rem;
+            padding: 0.5rem 1.2rem; /* Reduced from 0.6rem 1.5rem */
             border-radius: 25px;
-            font-size: 1.1rem;
+            font-size: 1rem; /* Reduced from 1.1rem */
             font-weight: 600;
         }
 
         .popup-buttons {
             display: flex;
-            gap: 1.5rem;
-            margin-top: 2.5rem;
+            gap: 1.2rem; /* Reduced from 1.5rem */
+            margin-top: 2rem; /* Reduced from 2.5rem */
             justify-content: center;
         }
 
         .btn-primary {
-            padding: 1.2rem 3rem;
+            padding: 1rem 2.5rem; /* Reduced from 1.2rem 3rem */
             border: none;
             border-radius: 15px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 1.2rem;
+            font-size: 1.1rem; /* Reduced from 1.2rem */
             transition: all 0.3s ease;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 1.2px; /* Reduced from 1.5px */
             background: var(--pink-primary);
             color: white;
         }
@@ -729,15 +749,15 @@ SessionManager::requirePayment();
         }
 
         .btn-secondary {
-            padding: 1.2rem 3rem;
+            padding: 1rem 2.5rem; /* Reduced from 1.2rem 3rem */
             border: 2px solid var(--pink-secondary);
             border-radius: 15px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 1.2rem;
+            font-size: 1.1rem; /* Reduced from 1.2rem */
             transition: all 0.3s ease;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 1.2px; /* Reduced from 1.5px */
             background: white;
             color: var(--pink-primary);
         }
@@ -748,6 +768,231 @@ SessionManager::requirePayment();
             color: white;
             transform: translateY(-3px);
             box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
+        }
+
+        .session-expired-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            backdrop-filter: blur(5px);
+        }
+
+        .session-expired-content {
+            background: #4a4a4a;
+            color: white;
+            padding: 1.5rem 2rem; /* Reduced from 2rem 2.5rem */
+            border-radius: 15px;
+            text-align: left;
+            max-width: 350px; /* Reduced from 400px */
+            margin: 0 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .session-expired-content h3 {
+            font-size: 1rem; /* Reduced from 1.1rem */
+            font-weight: 600;
+            margin-bottom: 1rem; /* Reduced from 1.2rem */
+            color: #e0e0e0;
+        }
+
+        .session-expired-content p {
+            font-size: 0.9rem; /* Reduced from 1rem */
+            margin-bottom: 1.5rem; /* Reduced from 2rem */
+            line-height: 1.3; /* Reduced from 1.4 */
+            color: #d0d0d0;
+        }
+
+        .session-expired-btn {
+            background: #5a9fd4;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.2rem; /* Reduced from 0.6rem 1.5rem */
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem; /* Reduced from 0.9rem */
+            font-weight: 500;
+            float: right;
+            transition: background 0.3s ease;
+        }
+
+        .session-expired-btn:hover {
+            background: #4a8bc2;
+        }
+
+        @media (max-width: 1280px) and (max-height: 1024px) {
+            .content-container {
+                max-width: 1150px; /* Further reduced */
+                height: calc(100vh - 80px); /* Tighter constraint */
+                padding: 0 0.5rem;
+            }
+
+            #choose-layout {
+                min-height: calc(100vh - 80px);
+            }
+
+            .custom-heading {
+                font-size: 2.5rem; /* Further reduced */
+                margin-bottom: 0.6rem;
+                letter-spacing: 1.5px;
+            }
+
+            .card-carousel {
+                height: 400px; /* Further reduced */
+                padding: 0 1.5rem;
+                gap: 8px;
+            }
+
+            .layout-card {
+                height: 320px;
+                width: 260px;
+                padding: 1.2rem;
+                margin: 0 6px;
+            }
+
+            .layout-card.active {
+                height: 360px;
+                width: 300px;
+                padding: 1.5rem;
+            }
+
+            .layout-img {
+                width: 180px;
+                height: 130px;
+                padding: 0.5rem;
+            }
+
+            .layout-card.active .layout-img {
+                width: 220px;
+                height: 220px;
+                padding: 0.6rem;
+            }
+
+            .layout-info {
+                gap: 0.1rem;
+                margin-top: 0.3rem;
+                padding: 0.3rem 0.5rem;
+            }
+
+            .layout-label {
+                font-size: 0.85rem;
+            }
+
+            .layout-card.active .layout-label {
+                font-size: 1rem;
+            }
+
+            .layout-description {
+                font-size: 0.7rem;
+            }
+
+            .layout-card.active .layout-description {
+                font-size: 0.8rem;
+            }
+
+            .carousel-nav {
+                gap: 2.5rem;
+                margin-top: 1.5rem;
+            }
+
+            .nav-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+            }
+
+            .dot {
+                width: 10px;
+                height: 10px;
+            }
+
+            .popup-content {
+                max-width: 450px;
+                padding: 1.5rem;
+            }
+
+            .popup-content h3 {
+                font-size: 1.6rem;
+                margin-bottom: 0.8rem;
+                letter-spacing: 1px;
+            }
+
+            .popup-content p {
+                font-size: 1rem;
+                margin-bottom: 1.2rem;
+            }
+
+            .close-btn {
+                top: 15px;
+                right: 20px;
+                font-size: 25px;
+            }
+
+            .layout-preview-container {
+                gap: 1.2rem;
+                margin: 1.2rem 0;
+                padding: 1.2rem;
+            }
+
+            .preview-layout-img {
+                width: 100px;
+                height: 140px;
+            }
+
+            .layout-info h2 {
+                font-size: 1.3rem;
+                margin-bottom: 0.5rem;
+                letter-spacing: 1px;
+            }
+
+            .layout-info p {
+                font-size: 1rem;
+                margin-bottom: 0.8rem;
+            }
+
+            .layout-specs span {
+                padding: 0.4rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .popup-buttons {
+                gap: 1rem;
+                margin-top: 1.5rem;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                padding: 0.8rem 2rem;
+                font-size: 1rem;
+                letter-spacing: 1px;
+            }
+
+            .session-expired-content {
+                max-width: 320px;
+                padding: 1.2rem 1.5rem;
+            }
+
+            .session-expired-content h3 {
+                font-size: 0.9rem;
+                margin-bottom: 0.8rem;
+            }
+
+            .session-expired-content p {
+                font-size: 0.85rem;
+                margin-bottom: 1.2rem;
+                line-height: 1.2;
+            }
+
+            .session-expired-btn {
+                padding: 0.4rem 1rem;
+                font-size: 0.8rem;
+            }
         }
 
         @media (max-width: 768px) {
@@ -763,11 +1008,6 @@ SessionManager::requirePayment();
                 margin-bottom: 0.5rem;
                 letter-spacing: 2px;
             }
-
-            /* .carousel-container {
-                max-width: 100%;
-                padding: 2rem 0;
-            } */
 
             .card-carousel {
                 height: 350px;
@@ -917,11 +1157,31 @@ SessionManager::requirePayment();
                         button.style.pointerEvents = 'none';
                         button.style.opacity = '0.5';
                     });
-                    alert('Sesi Anda telah berakhir. Silakan mulai ulang dari pembayaran.');
-                    window.location.href = '/';
+
+                    // Gunakan custom popup seperti di canvas
+                    showSessionExpiredModal();
                 };
             }
         });
+
+        // Tambahkan function untuk custom modal
+        function showSessionExpiredModal() {
+            // Buat modal dengan styling yang sama seperti di canvas
+            const modal = document.createElement('div');
+            modal.className = 'session-expired-modal';
+            modal.innerHTML = `
+                <div class="session-expired-content">
+                    <h3>gofotobox.online says</h3>
+                    <p>Sesi Anda telah berakhir. Silakan mulai ulang dari pembayaran.</p>
+                    <button onclick="redirectToHome()" class="session-expired-btn">OK</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function redirectToHome() {
+            window.location.href = '/';
+        }
     </script>
     <?php PWAHelper::addPWAScript(); ?>
 </body>

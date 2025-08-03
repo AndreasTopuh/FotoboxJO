@@ -71,7 +71,7 @@
         }
 
         .hero-subtitle {
-            color: #666;
+            color: #333;
             font-size: 0.9rem;
             line-height: 1.5;
         }
@@ -92,7 +92,7 @@
             justify-content: center;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             min-width: 430px;
-            margin-top: 3rem;
+            margin-top: 0.8rem;
             margin-bottom: 0.9rem;
             text-decoration: none;
         }
@@ -106,9 +106,9 @@
         }
 
         .instruction-text {
-            color: #666;
+            color: #333;
+            margin: 2rem 2rem auto;
             font-size: 0.7rem;
-            margin: 0;
         }
 
         @media (max-width: 768px) {
@@ -139,10 +139,10 @@
                 <h1 class="hero-title">GoFotobox</h1>
             </div>
             <p class="hero-subtitle">Capture the moment, style your photo, and print it instantly.</p>
+            <p class="instruction-text">Tekan untuk memulai sesi foto</p>
             <a href="./src/pages/description.php">
                 <button class="start-btn-merged">Mulai</button>
             </a>
-            <p class="instruction-text">Tekan untuk memulai sesi foto</p>
         </div>
     </div>
     <!-- PWA Installation Script -->
