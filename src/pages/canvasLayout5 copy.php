@@ -23,21 +23,21 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description"
-        content="Take instant photobooth-style photos online with Layout 6 (4 photos). Perfect for photo grids and printing." />
+        content="Take instant photobooth-style photos online with Layout 5 (6 photos). Perfect for photo grids and printing." />
     <meta name="keywords"
-        content="photobooth, photo layout, photo grid, online photobooth, layout 6, 4 photos" />
-    <title>Photobooth | Layout 6 - 4 Photos</title>
+        content="photobooth, photo layout, photo grid, online photobooth, layout 5, 6 photos" />
+    <title>Photobooth | Layout 5 - 6 Photos</title>
     <link rel="canonical" href="https://www.gofotobox.online" />
-    <meta property="og:title" content="Photobooth | Layout 6 - 4 Photos" />
+    <meta property="og:title" content="Photobooth | Layout 5 - 6 Photos" />
     <meta property="og:description"
-        content="Take instant photobooth-style photos online with Layout 6. Perfect for 4-photo grids." />
+        content="Take instant photobooth-style photos online with Layout 5. Perfect for 6-photo grids." />
     <meta property="og:image" content="https://www.gofotobox.online/assets/home-mockup.png" />
     <meta property="og:url" content="https://www.gofotobox.online" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Photobooth | Layout 6 - 4 Photos" />
+    <meta name="twitter:title" content="Photobooth | Layout 5 - 6 Photos" />
     <meta name="twitter:description"
-        content="Take instant photobooth-style photos online with Layout 6. Perfect for 4-photo grids." />
+        content="Take instant photobooth-style photos online with Layout 5. Perfect for 6-photo grids." />
     <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png" />
     <link rel="stylesheet" href="home-styles.css?v=<?php echo time(); ?>" />
     <!-- Cache Control -->
@@ -52,20 +52,253 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
         rel="stylesheet" />
     <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png" />
     <style>
-        * {
-            overflow: hidden;
+        /* Adjustments to fit content within 1280x1024 viewport */
+        .canvas-centered {
+            padding: 0.2rem;
+            min-height: auto;
+            height: 100vh;
         }
 
-        /* Adjustments to fit content within 1280x1024 viewport */
+        .main-content-card {
+            height: calc(100vh - 0.4rem);
+            padding: 0.3rem;
+            min-width: 90vw;
+            max-width: 95vw;
+        }
+
+        .horizontal-layout {
+            gap: 0.5rem;
+            height: calc(100vh - 1rem);
+            flex-direction: row;
+        }
+
         #videoContainer {
+            height: 450px;
+            /* Standardized camera height for all layouts */
+            width: 100%;
+            border-radius: 12px;
+            max-height: 60vh;
+            /* Responsive fallback */
+        }
 
-            height: 500px;
-
+        .camera-container {
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            gap: 10px;
+            flex: 3;
+            /* Give more space to camera */
+            display: flex;
+            flex-direction: column;
         }
 
         .photo-preview-container {
-
             padding: 0.5rem 0;
+            margin-bottom: 0.5rem;
+            min-height: 260px;
+            max-height: 300px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .photo-preview-grid {
+            gap: 0.6rem;
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: row;
+            /* Layout 5: 6 photos - horizontal row layout */
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .photo-preview-slot {
+            width: 80px;
+            height: 80px;
+            flex: none;
+            aspect-ratio: 1 / 1;
+            /* Square shape */
+            flex: 0 0 calc(33.333% - 0.7rem);
+            /* Fixed flex basis for 3x2 layout */
+            min-height: 80px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .photo-placeholder {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8rem;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .photo-preview-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .retake-photo-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255, 82, 82, 0.9);
+            color: white;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .photo-preview-slot:hover .retake-photo-btn {
+            display: flex;
+        }
+
+        .controls-container {
+            margin-top: 0.5rem;
+            max-width: 20%;
+            gap: 0.5rem;
+        }
+
+        .camera-settings,
+        .filter-section {
+            padding: 0.6rem;
+        }
+
+        .settings-title,
+        .filter-title {
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .setting-group {
+            margin-bottom: 0.6rem;
+        }
+
+        .setting-label {
+            font-size: 0.75rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .custom-select {
+            padding: 8px 12px;
+            font-size: 0.75rem;
+        }
+
+        .timer-selector::before {
+            font-size: 0.8rem;
+            left: 8px;
+        }
+
+        .filter-buttons-grid {
+            gap: 6px;
+            margin-bottom: 0.6rem;
+        }
+
+        .filterBtn {
+            height: 40px;
+        }
+
+        #gridToggleBtn {
+            padding: 6px 12px;
+            font-size: 0.7rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        #startBtn,
+        #captureAllBtn,
+        #doneBtn {
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            border-radius: 15px;
+        }
+
+        #retakeAllBtn {
+            padding: 4px 12px;
+            font-size: 0.7rem;
+            border-radius: 5px;
+        }
+
+        #progressCounter {
+            font-size: 1.8rem;
+            margin: 0.8rem 0;
+        }
+
+        #progressCounter::after {
+            width: 30px;
+            height: 1.5px;
+            bottom: -6px;
+        }
+
+        .timer-box {
+            top: 10px;
+            right: 10px;
+            padding: 10px 15px;
+            font-size: 0.8rem;
+        }
+
+        .timer-box #timer-display,
+        .timer-box #session-timer-display {
+            font-size: 1.2rem;
+            margin-bottom: 3px;
+        }
+
+        .timer-box p {
+            font-size: 0.7rem;
+        }
+
+        @media (max-width: 1024px) {
+            .horizontal-layout {
+                gap: 0.4rem;
+            }
+
+            .photo-preview-container,
+            .controls-container {
+                max-width: 25%;
+            }
+
+            #videoContainer {
+                height: 350px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .horizontal-layout {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .photo-preview-container,
+            .camera-container,
+            .controls-container {
+                max-width: 100%;
+            }
+
+            #videoContainer {
+                height: 300px;
+            }
+
+            .controls-container {
+                max-width: 100%;
+            }
         }
     </style>
 </head>
@@ -126,7 +359,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                         <script>
                             // Enhanced photo container initialization with modal support
                             document.addEventListener('DOMContentLoaded', function() {
-                                var photoCount = window.photoCount || 4; // Layout 6 has 4 photos
+                                var photoCount = window.photoCount || 6; // Layout 5 has 6 photos
                                 var container = document.getElementById('photoContainer');
 
                                 if (container) {
@@ -207,7 +440,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                             <button id="doneBtn" style="display: none;">COMPLETE SESSION</button>
                         </div>
                         <div class="progress-display">
-                            <div id="progressCounter">0/4</div>
+                            <div id="progressCounter">0/6</div>
                         </div>
 
                     </div>
@@ -216,7 +449,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
         </div>
     </main>
 
-    <script src="canvasLayout6.js"></script>
+    <script src="canvasLayout5.js"></script>
     <script src="debug-camera.js"></script>
 
 
@@ -232,7 +465,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                     const photoElements = document.querySelectorAll('#photoPreview img, #photoPreview canvas, .photo');
                     if (photoElements.length > 0) {
                         // Has photos, go to customize
-                        window.location.href = 'customizeLayout6.php';
+                        window.location.href = 'customizeLayout5.php';
                     } else {
                         // No photos, reset and go to index
                         window.location.href = '/';

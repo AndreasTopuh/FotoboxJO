@@ -52,187 +52,20 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
         rel="stylesheet" />
     <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png" />
     <style>
+        * {
+            overflow: hidden;
+        }
+
         /* Adjustments to fit content within 1280x1024 viewport */
-        .canvas-centered {
-            padding: 0.2rem;
-            min-height: auto;
-            height: 100vh;
-        }
-
-        .main-content-card {
-            height: calc(100vh - 0.4rem);
-            padding: 0.3rem;
-            min-width: 90vw;
-            max-width: 95vw;
-        }
-
-        .horizontal-layout {
-            gap: 0.5rem;
-            height: calc(100vh - 1rem);
-            flex-direction: row;
-        }
-
         #videoContainer {
-            height: 400px;
-            /* Reduced from 637px to fit within viewport */
-            width: 100%;
-            border-radius: 12px;
-        }
 
-        .camera-container {
-            margin-top: 0.5rem;
-            margin-bottom: 0.5rem;
-            gap: 10px;
+            height: 500px;
+
         }
 
         .photo-preview-container {
+
             padding: 0.5rem 0;
-            margin-bottom: 0.5rem;
-        }
-
-        .photo-preview-grid {
-            gap: 0.8rem;
-            padding: 0.5rem;
-        }
-
-        .photo-preview-slot {
-            max-width: 100px;
-            width: 100%;
-            aspect-ratio: 4 / 3;
-        }
-
-        .controls-container {
-            margin-top: 0.5rem;
-            max-width: 20%;
-            gap: 0.5rem;
-        }
-
-        .camera-settings,
-        .filter-section {
-            padding: 0.6rem;
-        }
-
-        .settings-title,
-        .filter-title {
-            font-size: 0.8rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .setting-group {
-            margin-bottom: 0.6rem;
-        }
-
-        .setting-label {
-            font-size: 0.75rem;
-            margin-bottom: 0.3rem;
-        }
-
-        .custom-select {
-            padding: 8px 12px;
-            font-size: 0.75rem;
-        }
-
-        .timer-selector::before {
-            font-size: 0.8rem;
-            left: 8px;
-        }
-
-        .filter-buttons-grid {
-            gap: 6px;
-            margin-bottom: 0.6rem;
-        }
-
-        .filterBtn {
-            height: 40px;
-        }
-
-        #gridToggleBtn {
-            padding: 6px 12px;
-            font-size: 0.7rem;
-        }
-
-        .action-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        #startBtn,
-        #captureAllBtn,
-        #doneBtn {
-            padding: 8px 20px;
-            font-size: 0.9rem;
-            border-radius: 15px;
-        }
-
-        #retakeAllBtn {
-            padding: 4px 12px;
-            font-size: 0.7rem;
-            border-radius: 5px;
-        }
-
-        #progressCounter {
-            font-size: 1.8rem;
-            margin: 0.8rem 0;
-        }
-
-        #progressCounter::after {
-            width: 30px;
-            height: 1.5px;
-            bottom: -6px;
-        }
-
-        .timer-box {
-            top: 10px;
-            right: 10px;
-            padding: 10px 15px;
-            font-size: 0.8rem;
-        }
-
-        .timer-box #timer-display,
-        .timer-box #session-timer-display {
-            font-size: 1.2rem;
-            margin-bottom: 3px;
-        }
-
-        .timer-box p {
-            font-size: 0.7rem;
-        }
-
-        @media (max-width: 1024px) {
-            .horizontal-layout {
-                gap: 0.4rem;
-            }
-
-            .photo-preview-container,
-            .controls-container {
-                max-width: 25%;
-            }
-
-            #videoContainer {
-                height: 350px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .horizontal-layout {
-                flex-direction: column;
-                height: auto;
-            }
-
-            .photo-preview-container,
-            .camera-container,
-            .controls-container {
-                max-width: 100%;
-            }
-
-            #videoContainer {
-                height: 300px;
-            }
-
-            .controls-container {
-                max-width: 100%;
-            }
         }
     </style>
 </head>
@@ -281,10 +114,6 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                                 <img src="/src/assets/retake.png" alt="retake icon">
                             </button>
                         </div>
-
-                        <?php
-
-                        ?>
                         <div class="photo-preview-container">
                             <div class="photo-preview-grid" id="photoContainer">
                                 <!-- Slot photo akan di-generate oleh JS sesuai jumlah photo -->

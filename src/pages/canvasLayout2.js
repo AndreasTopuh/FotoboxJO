@@ -1392,12 +1392,7 @@ document.addEventListener('DOMContentLoaded', () => {
         retakeAllBtn.addEventListener('click', () => retakeAllPhotos());
     }
 
-    document.addEventListener('keydown', (event) => {
-        if (event.code === "Space") {
-            event.preventDefault(); 
-            capturePhoto();
-        }
-    });
+
 
     if (doneBtn) {
         doneBtn.addEventListener('click', () => storeImageArray());

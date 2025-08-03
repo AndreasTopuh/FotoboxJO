@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test 1280x1024 Styling</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .layout-link {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .layout-link:hover {
+            background: #0056b3;
+        }
+
+        .resolution-info {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .changes-list {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .changes-list h4 {
+            color: #155724;
+            margin-top: 0;
+        }
+
+        .changes-list ul {
+            margin-bottom: 0;
+        }
+
+        .changes-list li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="test-container">
+        <h1>Test Styling untuk Resolusi 1280x1024</h1>
+
+        <div class="resolution-info">
+            <h3>Target Resolusi:</h3>
+            <p><strong>Monitor:</strong> 1280x1024</p>
+            <p><strong>Scale:</strong> 100%</p>
+            <p><strong>Orientation:</strong> Horizontal</p>
+        </div>
+
+        <div class="changes-list">
+            <h4>Perubahan Styling yang Diterapkan:</h4>
+            <ul>
+                <li><strong>videoContainer height:</strong> 637px → 480px (optimized untuk 1280x1024)</li>
+                <li><strong>camera-container:</strong> Ditambahkan flex: 3 dan display: flex</li>
+                <li><strong>controls-container:</strong> Fixed width 320px untuk konsistensi</li>
+                <li><strong>horizontal-layout:</strong> Ditambahkan align-items: stretch</li>
+                <li><strong>Media Query:</strong> Khusus untuk 1280x1024 dengan max-height: 60vh</li>
+                <li><strong>Responsive fallback:</strong> max-height: 70vh untuk fleksibilitas</li>
+            </ul>
+        </div>
+
+        <h3>Test Layout Pages:</h3>
+        <a href="src/pages/canvasLayout1.php" class="layout-link" target="_blank">Layout 1 (2 Photos)</a>
+        <a href="src/pages/canvasLayout2.php" class="layout-link" target="_blank">Layout 2 (4 Photos)</a>
+        <a href="src/pages/canvasLayout3.php" class="layout-link" target="_blank">Layout 3 (6 Photos)</a>
+        <a href="src/pages/canvasLayout4.php" class="layout-link" target="_blank">Layout 4 (8 Photos)</a>
+        <a href="src/pages/canvasLayout5.php" class="layout-link" target="_blank">Layout 5 (6 Photos Mixed)</a>
+        <a href="src/pages/canvasLayout6.php" class="layout-link" target="_blank">Layout 6 (4 Photos Grid)</a>
+
+        <div
+            style="margin-top: 30px; padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px;">
+            <h4 style="color: #856404; margin-top: 0;">Instruksi Testing:</h4>
+            <ol>
+                <li>Buka browser dalam mode fullscreen pada monitor 1280x1024</li>
+                <li>Klik salah satu layout di atas</li>
+                <li>Periksa apakah area kamera terlihat proporsional</li>
+                <li>Pastikan tidak ada scroll vertical yang tidak perlu</li>
+                <li>Verifikasi bahwa controls panel tetap terlihat dengan baik</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Display current screen resolution
+        document.addEventListener('DOMContentLoaded', function () {
+            const resolutionInfo = document.querySelector('.resolution-info');
+            const currentRes = document.createElement('p');
+            currentRes.innerHTML = `<strong>Current Resolution:</strong> ${screen.width}x${screen.height}`;
+            currentRes.style.color = screen.width === 1280 && screen.height === 1024 ? 'green' : 'orange';
+            resolutionInfo.appendChild(currentRes);
+
+            if (screen.width !== 1280 || screen.height !== 1024) {
+                const warning = document.createElement('div');
+                warning.style.background = '#f8d7da';
+                warning.style.border = '1px solid #f5c6cb';
+                warning.style.color = '#721c24';
+                warning.style.padding = '10px';
+                warning.style.borderRadius = '5px';
+                warning.style.marginTop = '10px';
+                warning.innerHTML = '<strong>Peringatan:</strong> Resolusi saat ini berbeda dari target 1280x1024. Hasil testing mungkin tidak akurat.';
+                resolutionInfo.appendChild(warning);
+            }
+        });
+    </script>
+</body>
+
+</html>

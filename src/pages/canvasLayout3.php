@@ -51,7 +51,56 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     <link href="https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap"
         rel="stylesheet" />
     <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png" />
+    <?php PWAHelper::addPWAHeaders(); ?>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description"
+        content="Take instant photobooth-style photos online with Layout 2 (4 photos). Perfect for photo grids and printing." />
+    <meta name="keywords"
+        content="photobooth, photo layout, photo grid, online photobooth, layout 2, 4 photos" />
+    <title>Photobooth | Layout 2 - 4 Photos</title>
+    <link rel="canonical" href="https://www.gofotobox.online" />
+    <meta property="og:title" content="Photobooth | Layout 2 - 4 Photos" />
+    <meta property="og:description"
+        content="Take instant photobooth-style photos online with Layout 2. Perfect for 4-photo grids." />
+    <meta property="og:image" content="https://www.gofotobox.online/assets/home-mockup.png" />
+    <meta property="og:url" content="https://www.gofotobox.online" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Photobooth | Layout 2 - 4 Photos" />
+    <meta name="twitter:description"
+        content="Take instant photobooth-style photos online with Layout 2. Perfect for 4-photo grids." />
+    <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png" />
+    <link rel="stylesheet" href="home-styles.css?v=<?php echo time(); ?>" />
+    <!-- Cache Control -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png" />
     <style>
+        * {
+            overflow: hidden;
+        }
+
+        /* Adjustments to fit content within 1280x1024 viewport */
+        #videoContainer {
+
+            height: 490px;
+
+        }
+
+        .photo-preview-container {
+
+            padding: 0.5rem 0;
+        }
+    </style>
+    <!-- <style>
         /* Adjustments to fit content within 1280x1024 viewport */
         .canvas-centered {
             padding: 0.2rem;
@@ -234,7 +283,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                 max-width: 100%;
             }
         }
-    </style>
+    </style> -->
 </head>
 
 <body>

@@ -469,7 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (logoBtn && logoBtn.classList.contains('active')) {
             const logoImg = new Image();
             logoImg.onload = () => ctx.drawImage(logoImg, 20, canvas.height - 60, 100, 40);
-            logoImg.src = '/src/assets/logo.png';
+            logoImg.src = '../assets/logoFrame/blackLogo.jpg';
         }
     }
 
