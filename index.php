@@ -33,6 +33,7 @@
     <meta name="keywords" content="photobooth, photo, print, instant, camera">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="./src/pages/home-styles.css">
     <style>
         :root {
@@ -263,6 +264,35 @@
             font-size: 0.7rem;
         }
 
+        /* Exit Button Styles */
+        .exit-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .exit-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.1);
+            backdrop-filter: blur(15px);
+        }
+
         @media (max-width: 768px) {
             .title-section {
                 flex-direction: column;
@@ -282,6 +312,14 @@
                 min-width: 300px;
                 font-size: 1.3rem;
             }
+
+            .exit-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+                top: 15px;
+                right: 15px;
+            }
         }
     </style>
 </head>
@@ -289,8 +327,10 @@
 <body>
     <div class="gradientBgCanvas blob"></div>
 
-
-
+    <!-- Exit Button -->
+    <button class="exit-btn" onclick="exitPWA()" title="Keluar dari Aplikasi">
+        <i class="fas fa-times"></i>
+    </button>
 
     <div class="container">
         <div class="main-content">
@@ -369,6 +409,30 @@
         updateOnlineStatus();
         if (window.matchMedia('(display-mode: standalone)').matches) {
             console.log('App running in standalone mode');
+        }
+
+        // Exit PWA function
+        function exitPWA() {
+            if (confirm('Apakah Anda yakin ingin keluar dari aplikasi?')) {
+                if (window.matchMedia('(display-mode: standalone)').matches ||
+                    window.navigator.standalone === true) {
+                    // Running as PWA - try to close
+                    try {
+                        window.close();
+                    } catch (e) {
+                        // If close fails, show message
+                        alert('Untuk keluar dari aplikasi, gunakan tombol home atau task manager perangkat Anda.');
+                    }
+                } else {
+                    // Running in browser - close tab
+                    try {
+                        window.close();
+                    } catch (e) {
+                        // If close fails, go to blank page
+                        window.location.href = 'about:blank';
+                    }
+                }
+            }
         }
     </script>
 </body>

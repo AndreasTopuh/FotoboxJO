@@ -376,9 +376,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Canvas drawing functions
-    function redrawCanvas() {
-        if (!storedImages.length) {
+        function redrawCanvas() {
+            if (!storedImages.length) {
             console.warn('⚠️ No images available for redraw');
             return;
         }
@@ -387,11 +386,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
         const canvasWidth = 1200;
         const canvasHeight = 1800;
-        const borderWidth = 62;
-        const marginTop = 120;
-        const spacing = 80;
-        const photoWidth = 1076;
-        const photoHeight = 639;
+        // const borderWidth = 62;
+        const marginTop = 142;
+        const spacing = 72;
+        const photoWidth = 967.5; // 80% dari 1075
+        const photoHeight = 574.2; // 80% dari 638
         const expectedPhotos = 2;
 
         canvas.width = canvasWidth;
@@ -435,9 +434,10 @@ document.addEventListener('DOMContentLoaded', () => {
             storedImages.slice(0, imagesToProcess).forEach((imageData, index) => {
                 const img = new Image();
                 img.onload = () => {
+                    const xPosition = (canvasWidth - photoWidth) / 2; // Pemusatan horizontal
                     const positions = [
-                        { x: borderWidth, y: marginTop, width: photoWidth, height: photoHeight },
-                        { x: borderWidth, y: marginTop + photoHeight + spacing, width: photoWidth, height: photoHeight }
+                        { x: xPosition, y: marginTop, width: photoWidth, height: photoHeight },
+                        { x: xPosition, y: marginTop + photoHeight + spacing, width: photoWidth, height: photoHeight }
                     ];
                     drawCroppedImage(ctx, img, positions[index], selectedShape);
                     loadedCount++;
