@@ -5,9 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
         SESSION_QUALITY: 0.5,        // 80% - bagus untuk preview
         SESSION_MAX_WIDTH: 1200,     // Resize untuk storage
         SESSION_MAX_HEIGHT: 800,
-        
-        // Untuk download/print (high quality) - BEST QUALITY  
-        DOWNLOAD_QUALITY: 0.95,      // 95% - hampir lossless
+
+        // Untuk download/print (high quality) - BEST QUALITY
+        DOWNLOAD_QUALITY: 1.0,      // 100% - hampir lossless
         DOWNLOAD_MAX_WIDTH: 2400,    // Full resolution
         DOWNLOAD_MAX_HEIGHT: 1600,
         

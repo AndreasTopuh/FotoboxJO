@@ -110,7 +110,7 @@ SessionManager::requirePayment();
                         </button>
                     </div>
                     <div class="carousel-nav">
-                        <button class="nav-btn prev-btn" id="prevBtn">‹</button>
+                        <button class="nav-btn prev-btn" id="prevBtn" style="padding: 0.7rem;">‹</button>
                         <div class="carousel-dots">
                             <span class="dot active" data-index="0"></span>
                             <span class="dot" data-index="1"></span>
@@ -119,7 +119,7 @@ SessionManager::requirePayment();
                             <span class="dot" data-index="4"></span>
                             <span class="dot" data-index="5"></span>
                         </div>
-                        <button class="nav-btn next-btn" id="nextBtn">›</button>
+                        <button class="nav-btn next-btn" id="nextBtn" style="padding: 0.7rem;">›</button>
                     </div>
                 </div>
             </div>
@@ -127,7 +127,7 @@ SessionManager::requirePayment();
     </main>
     <div id="layoutPopup" class="popup-overlay" style="display: none;">
         <div class="popup-content">
-            <button id="closeBtn" class="close-btn">&times;</button>
+            <button id="closeBtn" class="close-btn" style="padding: 0rem;">&times;</button>
             <h3>Konfirmasi Layout</h3>
             <p>Apakah Anda yakin memilih layout ini?</p>
             <div class="layout-preview-container">
@@ -141,8 +141,8 @@ SessionManager::requirePayment();
                 </div>
             </div>
             <div class="popup-buttons">
-                <button id="cancelBtn" class="btn-secondary">Batal</button>
-                <button id="confirmBtn" class="btn-primary">Lanjutkan</button>
+                <button id="cancelBtn" class="btn-secondary" style="padding: 0.7rem;">Batal</button>
+                <button id="confirmBtn" class="btn-primary" style="padding: 0.7rem;">Lanjutkan</button>
             </div>
         </div>
     </div>
@@ -405,12 +405,11 @@ SessionManager::requirePayment();
         });
     </script>
     <style>
-        button-modal:not(.buttonFrames):not(.buttonBgFrames) {
+        button:not(.buttonFrames):not(.buttonBgFrames) {
             border: none;
             padding: 2rem;
             border-radius: var(--radius-md);
             cursor: pointer;
-            transition: 0.3s;
         }
         .content-container {
             max-width: 1200px; /* Reduced from 1400px */
@@ -504,7 +503,6 @@ SessionManager::requirePayment();
             border: none;
             border-radius: 50%;
             width: 50px; /* Reduced from 60px */
-            height: 50px; /* Reduced from 60px */
             font-size: 1.5rem; /* Reduced from 1.8rem */
             color: var(--pink-primary);
             cursor: pointer;

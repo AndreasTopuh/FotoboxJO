@@ -10,6 +10,7 @@ require_once '../includes/pwa-helper.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,22 +21,22 @@ require_once '../includes/pwa-helper.php';
     <meta http-equiv="Expires" content="0">
     <title>Photobooth | Customize Layout 1</title>
     <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png">
-    
+
     <!-- Stylesheets -->
     <link rel="stylesheet" href="home-styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Syne:wght@400;700&family=Poppins:wght@400;600;700&family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap">
-    
+
     <?php PWAHelper::addPWAHeaders(); ?>
-    
+
     <style>
         /* Print styles for 4R paper */
         @page {
             size: 4in 6in;
             margin: 0;
         }
-        
+
         @media print {
             * {
                 -webkit-print-color-adjust: exact;
@@ -45,8 +46,9 @@ require_once '../includes/pwa-helper.php';
                 border: none;
                 box-sizing: border-box;
             }
-            
-            html, body {
+
+            html,
+            body {
                 width: 4in;
                 height: 6in;
                 margin: 0;
@@ -54,7 +56,7 @@ require_once '../includes/pwa-helper.php';
                 overflow: hidden;
                 background: none;
             }
-            
+
             .print-container {
                 width: 4in;
                 height: 6in;
@@ -62,7 +64,7 @@ require_once '../includes/pwa-helper.php';
                 top: 0;
                 left: 0;
             }
-            
+
             .print-image {
                 width: 4in;
                 height: 6in;
@@ -73,27 +75,117 @@ require_once '../includes/pwa-helper.php';
                 left: 0;
                 display: block;
             }
+
             .print-container .modal-content {
                 position: fixed !important;
-                top: 100px   !important;
+                top: 100px !important;
                 left: 50% !important;
                 transform: translate(-50%, -50%) !important;
                 margin: 0 !important;
                 box-shadow: none !important;
             }
-            
+
+        }
+
+        /* Video Button Styles */
+        .video-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52) !important;
+            border: none !important;
+            color: white !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .video-btn:hover {
+            background: linear-gradient(45deg, #ee5a52, #dc4545) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(238, 90, 82, 0.3);
+        }
+
+        .video-btn:disabled {
+            background: #cccccc !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Video Progress Modal */
+        .video-progress {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            z-index: 9999;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .video-progress .progress-bar {
+            width: 250px;
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 15px auto;
+            position: relative;
+        }
+
+        .video-progress .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #ee5a52);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .video-progress-icon {
+            font-size: 3rem;
+            color: #ff6b6b;
+            margin-bottom: 15px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .video-progress-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .video-progress-subtext {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 10px;
         }
     </style>
 </head>
 
 <body>
     <div class="gradientBgCanvas"></div>
-    
+
     <main class="customize-content-wrapper">
         <!-- Customization Options -->
         <section class="customize-left-section">
             <h1 class="customize-title">Customize Your Photo</h1>
-            
+
             <!-- Frame Color -->
             <div class="customize-options-group">
                 <h3 class="customize-options-label">Frame Color</h3>
@@ -162,6 +254,9 @@ require_once '../includes/pwa-helper.php';
         </button>
         <button class="customize-action-btn print-btn" id="printBtn">
             <i class="fas fa-print"></i> Print
+        </button>
+        <button class="customize-action-btn video-btn" id="videoBtn">
+            <i class="fas fa-video"></i> Convert to Video
         </button>
         <button class="customize-action-btn continue-btn" id="continueBtn">
             <i class="fas fa-arrow-right"></i> Lanjutkan
@@ -245,11 +340,27 @@ require_once '../includes/pwa-helper.php';
         </div>
     </div>
 
+    <!-- Video Progress Modal -->
+    <div id="videoProgressModal" class="video-progress" style="display: none;">
+        <div class="video-progress-icon">
+            <i class="fas fa-video"></i>
+        </div>
+        <div class="video-progress-text">Converting to Video...</div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="videoProgressFill"></div>
+        </div>
+        <div class="video-progress-subtext">
+            Creating slideshow from your photos...
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script>
         (function() {
-            emailjs.init({ publicKey: "9SDzOfKjxuULQ5ZW8" });
+            emailjs.init({
+                publicKey: "9SDzOfKjxuULQ5ZW8"
+            });
         })();
     </script>
     <script src="customizeLayout1.js"></script>
@@ -265,4 +376,5 @@ require_once '../includes/pwa-helper.php';
     </script>
     <?php PWAHelper::addPWAScript(); ?>
 </body>
+
 </html>

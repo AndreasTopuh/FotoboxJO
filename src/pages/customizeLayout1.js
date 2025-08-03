@@ -162,6 +162,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert('Tidak ada gambar untuk di-print');
                 }
             },
+            videoBtn: () => {
+                console.log('🎬 Video button clicked, stored images:', storedImages.length);
+                if (storedImages.length >= 2) {
+                    createVideoFromPhotos();
+                } else {
+                    alert('Minimal 2 foto diperlukan untuk membuat video!');
+                }
+            },
             continueBtn: () => window.location.href = 'thankyou.php'
         };
 
@@ -636,4 +644,297 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // ==================== VIDEO CONVERSION FUNCTIONS ====================
+
+    // Main function to create video from photos
+    async function createVideoFromPhotos() {
+        try {
+            console.log('🎬 Starting video conversion...');
+            showVideoProgress();
+            
+            // Check if we have enough photos
+            if (storedImages.length < 2) {
+                throw new Error('Minimal 2 foto diperlukan untuk membuat video!');
+            }
+
+            updateVideoProgress(10);
+            
+            // Load and prepare images
+            const images = await loadImagesForVideo();
+            updateVideoProgress(30);
+            
+            // Create video
+            const videoBlob = await generateSlideShowVideo(images);
+            updateVideoProgress(90);
+            
+            // Download video
+            downloadVideo(videoBlob);
+            updateVideoProgress(100);
+            
+            setTimeout(() => {
+                hideVideoProgress();
+                alert('Video berhasil dibuat dan didownload! 🎉');
+            }, 500);
+            
+        } catch (error) {
+            console.error('❌ Error creating video:', error);
+            hideVideoProgress();
+            alert('Gagal membuat video: ' + error.message);
+        }
+    }
+
+    // Load images for video conversion
+    async function loadImagesForVideo() {
+        console.log('📸 Loading images for video...');
+        const images = [];
+        
+        for (const imageSrc of storedImages.slice(0, 2)) { // Take first 2 images
+            try {
+                const img = await loadImage(imageSrc);
+                images.push(img);
+                console.log('✅ Loaded image:', imageSrc);
+            } catch (error) {
+                console.error('❌ Failed to load image:', imageSrc, error);
+                throw new Error('Gagal memuat foto untuk video');
+            }
+        }
+        
+        return images;
+    }
+
+    // Load single image
+    function loadImage(src) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => resolve(img);
+            img.onerror = () => reject(new Error('Gagal memuat gambar: ' + src));
+            img.src = src;
+        });
+    }
+
+    // Generate slideshow video
+    async function generateSlideShowVideo(images) {
+        return new Promise((resolve, reject) => {
+            try {
+                console.log('🎬 Creating video canvas...');
+                
+                // Create canvas for video
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 800;
+                canvas.height = 600;
+                
+                // Setup MediaRecorder
+                const stream = canvas.captureStream(30); // 30 FPS
+                const mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: 'video/webm;codecs=vp9'
+                });
+                
+                const chunks = [];
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        chunks.push(event.data);
+                    }
+                };
+                
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(chunks, { type: 'video/webm' });
+                    console.log('✅ Video created, size:', blob.size, 'bytes');
+                    resolve(blob);
+                };
+                
+                mediaRecorder.onerror = (error) => {
+                    console.error('❌ MediaRecorder error:', error);
+                    reject(new Error('Gagal merekam video'));
+                };
+                
+                // Start recording
+                mediaRecorder.start();
+                console.log('🔴 Recording started...');
+                
+                // Animation parameters - 2 complete iterations in 10 seconds
+                let currentIndex = 0;
+                let frameCount = 0;
+                const photoDuration = 75; // 2.5 seconds at 30fps (2.5 * 30 = 75 frames)
+                const totalFrames = 300; // 10 seconds at 30fps (10 * 30 = 300 frames)
+                // This gives us: Photo1(75) -> Photo2(75) -> Photo1(75) -> Photo2(75) = 300 frames total
+                
+                function animate() {
+                    // Clear canvas with black background
+                    ctx.fillStyle = '#000000';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Draw current image
+                    const img = images[currentIndex];
+                    if (img) {
+                        // Calculate scaling to fit canvas while maintaining aspect ratio
+                        const scale = Math.min(
+                            canvas.width / img.width,
+                            canvas.height / img.height
+                        );
+                        const width = img.width * scale;
+                        const height = img.height * scale;
+                        const x = (canvas.width - width) / 2;
+                        const y = (canvas.height - height) / 2;
+                        
+                        // Apply current frame/sticker/background effects
+                        applyCanvasEffectsToVideo(ctx, canvas, img, x, y, width, height);
+                    }
+                    
+                    frameCount++;
+                    
+                    // Calculate current iteration and photo within iteration
+                    const currentIteration = Math.floor(frameCount / (photoDuration * 2)) + 1;
+                    const photoInIteration = Math.floor((frameCount % (photoDuration * 2)) / photoDuration) + 1;
+                    
+                    // Update progress
+                    const progress = 30 + ((frameCount / totalFrames) * 60); // 30% to 90%
+                    updateVideoProgress(Math.floor(progress));
+                    
+                    // Switch to next photo every photoDuration frames
+                    if (frameCount % photoDuration === 0) {
+                        currentIndex = (currentIndex + 1) % images.length;
+                        console.log(`🔄 Iteration ${currentIteration}, switching to photo ${currentIndex + 1}`);
+                    }
+                    
+                    // Continue animation or stop
+                    if (frameCount < totalFrames) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        console.log('🏁 Animation finished, stopping recording...');
+                        mediaRecorder.stop();
+                    }
+                }
+                
+                // Start animation
+                animate();
+                
+            } catch (error) {
+                console.error('❌ Error in generateSlideShowVideo:', error);
+                reject(error);
+            }
+        });
+    }
+
+    // Apply canvas effects to video frame
+    function applyCanvasEffectsToVideo(ctx, canvas, img, x, y, width, height) {
+        // Save current context
+        ctx.save();
+        
+        // Draw background
+        if (backgroundType === 'image' && backgroundImage) {
+            ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+        } else if (backgroundType === 'color') {
+            ctx.fillStyle = backgroundColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        // Apply shape if selected
+        if (selectedShape === 'soft') {
+            // Create rounded rectangle path (fallback for older browsers)
+            const radius = 20;
+            ctx.beginPath();
+            if (ctx.roundRect) {
+                ctx.roundRect(x, y, width, height, radius);
+            } else {
+                // Fallback for browsers without roundRect support
+                ctx.moveTo(x + radius, y);
+                ctx.lineTo(x + width - radius, y);
+                ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+                ctx.lineTo(x + width, y + height - radius);
+                ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+                ctx.lineTo(x + radius, y + height);
+                ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+                ctx.lineTo(x, y + radius);
+                ctx.quadraticCurveTo(x, y, x + radius, y);
+                ctx.closePath();
+            }
+            ctx.clip();
+        }
+        
+        // Draw the main image
+        ctx.drawImage(img, x, y, width, height);
+        
+        // Apply frame border
+        if (backgroundColor !== '#FFFFFF') {
+            ctx.strokeStyle = backgroundColor;
+            ctx.lineWidth = 10;
+            ctx.strokeRect(x - 5, y - 5, width + 10, height + 10);
+        }
+        
+        // Restore context
+        ctx.restore();
+        
+        // Draw sticker if selected
+        if (selectedSticker && selectedSticker.image) {
+            const stickerSize = Math.min(width, height) * 0.2;
+            const stickerX = x + width - stickerSize - 20;
+            const stickerY = y + 20;
+            ctx.drawImage(selectedSticker.image, stickerX, stickerY, stickerSize, stickerSize);
+        }
+    }
+
+    // Download video file
+    function downloadVideo(videoBlob) {
+        console.log('💾 Downloading video...');
+        const url = URL.createObjectURL(videoBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `fotobox_slideshow_${Date.now()}.webm`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        console.log('✅ Video download started');
+    }
+
+    // Show video progress modal
+    function showVideoProgress() {
+        const progressModal = document.getElementById('videoProgressModal');
+        if (progressModal) {
+            progressModal.style.display = 'block';
+            updateVideoProgress(0);
+        }
+    }
+
+    // Update video progress
+    function updateVideoProgress(percent) {
+        const progressFill = document.getElementById('videoProgressFill');
+        if (progressFill) {
+            progressFill.style.width = percent + '%';
+        }
+        
+        // Update text based on progress
+        const progressText = document.querySelector('.video-progress-text');
+        const progressSubtext = document.querySelector('.video-progress-subtext');
+        
+        if (progressText && progressSubtext) {
+            if (percent < 20) {
+                progressText.textContent = 'Preparing photos...';
+                progressSubtext.textContent = 'Loading images for video conversion';
+            } else if (percent < 40) {
+                progressText.textContent = 'Creating video canvas...';
+                progressSubtext.textContent = 'Setting up video recording';
+            } else if (percent < 90) {
+                progressText.textContent = 'Recording slideshow...';
+                progressSubtext.textContent = 'Creating 10-second video with 2 complete iterations';
+            } else {
+                progressText.textContent = 'Finalizing video...';
+                progressSubtext.textContent = 'Almost done! Preparing download';
+            }
+        }
+    }
+
+    // Hide video progress modal
+    function hideVideoProgress() {
+        const progressModal = document.getElementById('videoProgressModal');
+        if (progressModal) {
+            progressModal.style.display = 'none';
+        }
+    }
+
+    // ==================== END VIDEO FUNCTIONS ====================
+
 });

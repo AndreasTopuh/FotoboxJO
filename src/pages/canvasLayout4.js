@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         SESSION_MAX_HEIGHT: 800,
         
         // Untuk download/print (high quality) - BEST QUALITY  
-        DOWNLOAD_QUALITY: 0.95,      // 95% - hampir lossless
+DOWNLOAD_QUALITY: 1.05,      // 95% - hampir lossless
         DOWNLOAD_MAX_WIDTH: 2400,    // Full resolution
         DOWNLOAD_MAX_HEIGHT: 1600,
         
