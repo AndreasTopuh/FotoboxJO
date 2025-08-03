@@ -3,7 +3,7 @@
   "short_name": "GoFotobox",
   "description": "Capture the moment, style your photo, and print it instantly",
   "start_url": "https://gofotobox.online/",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#FFE4EA",
   "theme_color": "#E28585",
   "orientation": "portrait",

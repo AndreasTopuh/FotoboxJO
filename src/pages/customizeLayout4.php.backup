@@ -73,15 +73,6 @@ require_once '../includes/pwa-helper.php';
                 left: 0;
                 display: block;
             }
-            .print-container .modal-content {
-                position: fixed !important;
-                top: 100px   !important;
-                left: 50% !important;
-                transform: translate(-50%, -50%) !important;
-                margin: 0 !important;
-                box-shadow: none !important;
-            }
-            
         }
     </style>
 </head>
@@ -252,7 +243,7 @@ require_once '../includes/pwa-helper.php';
             emailjs.init({ publicKey: "9SDzOfKjxuULQ5ZW8" });
         })();
     </script>
-    <script src="customizeLayout1.js"></script>
+    <script src="customizeLayout4.js"></script>
     <script src="../includes/session-timer.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -264,5 +255,7 @@ require_once '../includes/pwa-helper.php';
         });
     </script>
     <?php PWAHelper::addPWAScript(); ?>
+    <!-- Global Fullscreen Handler -->
+    <script src="/src/includes/fullscreen-handler.js"></script>
 </body>
 </html>

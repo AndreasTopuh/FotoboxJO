@@ -7,6 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let backgroundType = 'color';
     let backgroundColor = '#FFFFFF';
     let backgroundImage = null;
+    
+    // Track usage - limit button usage
+    let emailSent = false;
+    let printUsed = false;
 
     // DOM Elements
     const photoCustomPreview = document.getElementById('photoPreview');
@@ -136,8 +140,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize action buttons
     function initializeActionButtons() {
         const buttons = {
-            emailBtn: () => finalCanvas ? showEmailModal() : alert('Tidak ada gambar untuk dikirim ke email'),
-            printBtn: () => finalCanvas ? showSimplePrintPopup(finalCanvas.toDataURL('image/jpeg', 1.0)) : alert('Tidak ada gambar untuk di-print'),
+            emailBtn: () => {
+                if (emailSent) {
+                    alert('Email sudah pernah dikirim!');
+                    return;
+                }
+                if (finalCanvas) {
+                    showEmailModal();
+                } else {
+                    alert('Tidak ada gambar untuk dikirim ke email');
+                }
+            },
+            printBtn: () => {
+                if (printUsed) {
+                    alert('Print sudah pernah digunakan!');
+                    return;
+                }
+                if (finalCanvas) {
+                    showSimplePrintPopup(finalCanvas.toDataURL('image/jpeg', 1.0));
+                } else {
+                    alert('Tidak ada gambar untuk di-print');
+                }
+            },
             continueBtn: () => window.location.href = 'thankyou.php'
         };
 
@@ -318,6 +342,16 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             await emailjs.send('service_gtqjb2j', 'template_pp5i4hm', emailParams);
+            
+            // Mark email as sent and disable button
+            emailSent = true;
+            const emailBtn = document.getElementById('emailBtn');
+            if (emailBtn) {
+                emailBtn.disabled = true;
+                emailBtn.style.opacity = '0.5';
+                emailBtn.style.cursor = 'not-allowed';
+                emailBtn.innerHTML = '✅ Email Terkirim';
+            }
             showValidationError('Email berhasil dikirim! ✅ Cek inbox Anda.');
             document.querySelector('.input-validation span').style.color = '#28a745';
             setTimeout(() => {
@@ -606,7 +640,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 </html>
             `);
             printWindow.document.close();
-            printWindow.onload = () => setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
+            printWindow.onload = () => {
+                setTimeout(() => {
+                    printWindow.print();
+                    printWindow.close();
+                    
+                    // Mark print as used and disable button
+                    printUsed = true;
+                    const printBtn = document.getElementById('printBtn');
+                    if (printBtn) {
+                        printBtn.disabled = true;
+                        printBtn.style.opacity = '0.5';
+                        printBtn.style.cursor = 'not-allowed';
+                        printBtn.innerHTML = '✅ Sudah Print';
+                    }
+                }, 500);
+            };
             popup.remove();
         });
 

@@ -35,6 +35,158 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./src/pages/home-styles.css">
     <style>
+        :root {
+            --pink: #ff7daf;
+            /* Warna pink utama untuk gradien animasi */
+            --text-pink: #f2005b;
+            /* Warna pink sekunder untuk gradien animasi */
+            --lighterGray: #dcdcdd;
+            --background-pink: #ff6eb9ff;
+            /* Warna pink baru untuk latar belakang body */
+        }
+
+        body {
+            background-color: var(--background-pink);
+            /* Mengganti latar belakang body ke pink baru */
+            transition: background-color 0.9s ease-in-out;
+        }
+
+        .gradientBg {
+            height: 60%;
+            width: 60%;
+            background: radial-gradient(circle, #f2005b, #ff7daf);
+            border-radius: 45%;
+            filter: blur(100px);
+            animation: breathing 6s infinite ease-in-out;
+            position: absolute;
+            z-index: -1;
+            transition: background-color 0.8s ease;
+        }
+
+        .gradientBgCanvas {
+            height: 40%;
+            width: 40%;
+            background: radial-gradient(circle, #f2005b, #ff7daf);
+            border-radius: 45%;
+            filter: blur(100px);
+            animation: breathingCanvas 6s infinite ease-in-out;
+            position: absolute;
+            z-index: -1;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .gradientBgCanvasHero {
+            height: 100px;
+            width: 100px;
+            background: radial-gradient(circle, #f2005b, #ff7daf);
+            border-radius: 50%;
+            filter: blur(100px);
+            animation: breathingCanvasHero 6s infinite ease-in-out;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+
+        @keyframes breathing {
+            0% {
+                height: 60%;
+                width: 60%;
+                filter: blur(100px);
+            }
+
+            25% {
+                height: 50%;
+                width: 50%;
+                filter: blur(30px);
+            }
+
+            50% {
+                height: 40%;
+                width: 40%;
+                filter: blur(20px);
+            }
+
+            75% {
+                height: 50%;
+                width: 50%;
+                filter: blur(30px);
+            }
+
+            100% {
+                height: 60%;
+                width: 60%;
+                filter: blur(100px);
+            }
+        }
+
+        @keyframes breathingCanvas {
+            0% {
+                height: 80%;
+                width: 80%;
+                filter: blur(100px);
+            }
+
+            25% {
+                height: 60%;
+                width: 60%;
+                filter: blur(60px);
+            }
+
+            50% {
+                height: 40%;
+                width: 40%;
+                filter: blur(50px);
+            }
+
+            75% {
+                height: 60%;
+                width: 60%;
+                filter: blur(60px);
+            }
+
+            100% {
+                height: 80%;
+                width: 80%;
+                filter: blur(100px);
+            }
+        }
+
+        @keyframes breathingCanvasHero {
+            0% {
+                height: 50%;
+                width: 50%;
+                filter: blur(100px);
+            }
+
+            25% {
+                height: 50%;
+                width: 40%;
+                filter: blur(60px);
+            }
+
+            50% {
+                height: 30%;
+                width: 30%;
+                filter: blur(50px);
+            }
+
+            75% {
+                height: 50%;
+                width: 40%;
+                filter: blur(60px);
+            }
+
+            100% {
+                height: 50%;
+                width: 50%;
+                filter: blur(100px);
+            }
+        }
+
         .container {
             display: flex;
             align-items: center;
@@ -64,14 +216,14 @@
         }
 
         .hero-title {
-            color: #333;
+            color: white;
             margin: 0;
             font-weight: 700;
             font-size: 3.5rem;
         }
 
         .hero-subtitle {
-            color: #333;
+            color: white;
             font-size: 0.9rem;
             line-height: 1.5;
         }
@@ -106,7 +258,7 @@
         }
 
         .instruction-text {
-            color: #333;
+            color: white;
             margin: 2rem 2rem auto;
             font-size: 0.7rem;
         }
@@ -116,21 +268,29 @@
                 flex-direction: column;
                 gap: 10px;
             }
-            
+
             .hero-title {
                 font-size: 2.5rem;
             }
-            
+
             .logo {
                 width: 50px;
                 height: 50px;
+            }
+
+            .start-btn-merged {
+                min-width: 300px;
+                font-size: 1.3rem;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="gradientBgCanvas"></div>
+    <div class="gradientBgCanvas blob"></div>
+
+
+
 
     <div class="container">
         <div class="main-content">

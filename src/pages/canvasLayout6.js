@@ -708,7 +708,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Update start button text
         if (startBtn && images.length < expectedPhotos) {
-            startBtn.textContent = `CAPTURE PHOTO ${images.length + 1}`;
+            startBtn.textContent = `AMBIL FOTO ${images.length + 1}`;
         }
     }
 
@@ -829,14 +829,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (startBtn) {
                 startBtn.disabled = false;
                 if (images.length < expectedPhotos) {
-                    startBtn.textContent = `CAPTURE PHOTO ${images.length + 1}`;
+                    startBtn.textContent = `AMBIL FOTO ${images.length + 1}`;
                 }
             }
             if (uploadBtn) uploadBtn.disabled = false;
         }
     }
 
-    // 🚀 CAPTURE ALL PHOTOS FUNCTION - Auto capture dengan interval untuk Layout 2
+    // 🚀 AMBIL BERSAMAAN PHOTOS FUNCTION - Auto capture dengan interval untuk Layout 2
     async function captureAllPhotos() {
         if (images.length >= expectedPhotos) {
             return;
@@ -864,7 +864,7 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let i = 0; i < remainingPhotos; i++) {
                 // Show which photo we're taking
                 if (progressCounter) {
-                    progressCounter.textContent = `Taking Photo ${images.length + 1}/${expectedPhotos}`;
+                    progressCounter.textContent = `Sedang Mengambil Foto ${images.length + 1}/${expectedPhotos}`;
                     progressCounter.style.fontSize = '18px';
                     progressCounter.style.color = '#ff4081';
                 }
@@ -910,7 +910,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Wait 2 seconds before next photo (except for last photo)
                 if (i < remainingPhotos - 1) {
                     if (progressCounter) {
-                        progressCounter.textContent = `Next photo in 2 seconds...`;
+                        progressCounter.textContent = `Foto berikutnya dalam 2 detik...`;
                     }
                     await new Promise(resolve => setTimeout(resolve, 2000));
                 }
@@ -925,7 +925,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
         } catch (error) {
             console.error('Error in capture all:', error);
-            alert(error.message || 'Failed to capture all photos. Please try again.');
+            alert(error.message || 'Gagal mengambil semua foto. Silakan coba lagi.');
         } finally {
             // Re-enable buttons
             const captureAllBtn = document.getElementById('captureAllBtn');
@@ -935,7 +935,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (captureAllBtn) {
                 captureAllBtn.disabled = false;
-                captureAllBtn.textContent = 'CAPTURE ALL';
+                captureAllBtn.textContent = 'AMBIL BERSAMAAN';
             }
             if (startBtn) startBtn.disabled = false;
             if (retakeAllBtn) retakeAllBtn.disabled = false;
@@ -1007,7 +1007,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
         } catch (error) {
             console.error('Error retaking photo:', error);
-            alert(error.message || 'Error retaking photo. Please try again.');
+            alert(error.message || 'Gagal mengambil ulang foto. Silakan coba lagi.');
         } finally {
             // Re-enable buttons
             if (startBtn) startBtn.disabled = false;
@@ -1094,7 +1094,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Hide grid when camera stops
         if (gridOverlay) {
             gridOverlay.style.display = 'none';
-            if (gridToggleBtn) gridToggleBtn.textContent = 'Show Grid';
+            if (gridToggleBtn) gridToggleBtn.textContent = 'Tampilkan Grid';
         }
     }
 
@@ -1108,7 +1108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gridToggleBtn.addEventListener('click', () => {
             if (gridOverlay) {
                 gridOverlay.style.display = gridOverlay.style.display === 'grid' ? 'none' : 'grid';
-                gridToggleBtn.textContent = gridOverlay.style.display === 'grid' ? 'Hide Grid' : 'Show Grid';
+                gridToggleBtn.textContent = gridOverlay.style.display === 'grid' ? 'Sembunyikan Grid' : 'Tampilkan Grid';
             }
         });
     }
@@ -1143,7 +1143,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show grid again after countdown
         if (gridOverlay) {
             gridOverlay.style.display = 'grid';
-            if (gridToggleBtn) gridToggleBtn.textContent = 'Hide Grid';
+            if (gridToggleBtn) gridToggleBtn.textContent = 'Sembunyikan Grid';
         }
     }
     
@@ -1273,7 +1273,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Update progress
             if (doneBtn) {
-                doneBtn.textContent = 'Saving to server...';
+                doneBtn.textContent = 'Menyimpan foto...';
             }
             
             console.log('💾 Saving compressed photos to server session...');

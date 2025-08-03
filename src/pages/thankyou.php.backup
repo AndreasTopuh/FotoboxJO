@@ -223,6 +223,8 @@ require_once '../includes/pwa-helper.php';
         document.getElementById('finishBtn').addEventListener('click', resetSessionAndRedirect);
     </script>
     <?php PWAHelper::addPWAScript(); ?>
+    <!-- Global Fullscreen Handler -->
+    <script src="/src/includes/fullscreen-handler.js"></script>
 </body>
 
 </html>

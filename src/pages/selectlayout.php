@@ -405,12 +405,19 @@ SessionManager::requirePayment();
         });
     </script>
     <style>
+        button-modal:not(.buttonFrames):not(.buttonBgFrames) {
+            border: none;
+            padding: 2rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: 0.3s;
+        }
         .content-container {
             max-width: 1200px; /* Reduced from 1400px */
             margin: 0 auto;
             position: relative;
             z-index: 1;
-            height: calc(100vh - 100px); /* Constrain height */
+            height: calc(100vh); /* Constrain height */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -443,7 +450,7 @@ SessionManager::requirePayment();
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(15px);
             border-radius: 20px;
-            padding: 1.5rem; /* Reduced from 2rem */
+            padding: 2rem; /* Reduced from 2rem */
             text-align: center;
             transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             border: 2px solid var(--pink-secondary);
@@ -541,7 +548,6 @@ SessionManager::requirePayment();
             font-size: 3rem; /* Reduced from 3.5rem */
             font-weight: 700;
             text-align: center;
-            margin-bottom: 0.8rem; /* Reduced from 1rem */
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             text-transform: uppercase;
             letter-spacing: 2px; /* Reduced from 3px */

@@ -30,11 +30,13 @@
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
             padding: 0 1rem;
+            min-height: calc(70vh - 100px);
         }
 
         .header {
+            color: white;
             text-align: center;
-            margin: 1rem 0 0.5rem;
+            margin: 4rem 0 4rem;
         }
 
         .header img {
@@ -49,7 +51,7 @@
         }
 
         .header p {
-            color: #666;
+            color: white;
             font-size: 0.8rem;
             margin: 0.2rem 0;
         }
@@ -61,12 +63,16 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.3);
+            min-height: 500px; /* Set a minimum height to fill more vertical space */
+            display: flex;
+            flex-direction: column;
+            justify-content: normal; /* Distribute content to use available space */
         }
 
         .step {
             display: flex;
             align-items: flex-start;
-            margin-bottom: 0.8rem;
+            margin-bottom: 2rem;
             padding: 0.6rem;
             background: linear-gradient(135deg, rgba(226, 133, 133, 0.08), rgba(255, 255, 255, 0.1));
             border-radius: 8px;
@@ -114,6 +120,7 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 0.8rem;
             margin-bottom: 1rem;
+            flex-grow: 1; /* Allow the grid to grow and fill space */
         }
 
         .layout-box {
@@ -133,8 +140,8 @@
 
         .layout-box img {
             width: 100%;
-            max-width: 50px;
-            margin-bottom: 0.4rem;
+            max-width: 100px;
+            margin: 30px 5px 30px;
             border-radius: 6px;
             box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
         }
@@ -235,6 +242,7 @@
             .main-wrapper {
                 grid-template-columns: 1fr;
                 padding: 0.5rem;
+                min-height: auto; /* Reset for mobile to avoid excessive height */
             }
 
             .header h1 {
@@ -247,6 +255,7 @@
 
             .card {
                 padding: 0.8rem;
+                min-height: auto; /* Allow cards to adjust naturally on mobile */
             }
 
             .footer-buttons {

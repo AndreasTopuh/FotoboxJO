@@ -103,6 +103,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                             <canvas id="canvas" style="display: none;"></canvas>
                             <div id="gridOverlay" class="grid-overlay" style="display: none;"></div>
                             <div id="flash"></div>
+                            <div id="fullscreenMessage" style="opacity: 0;">Press SPACE to Start</div>
                             <div id="filterMessage" style="opacity: 0;"></div>
                             <div id="blackScreen">Waiting for camera access...</div>
                             <div id="countdownText" style="display: none;">3</div>
@@ -238,6 +239,8 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     </script>
 
     <?php PWAHelper::addPWAScript(); ?>
+    <!-- Global Fullscreen Handler -->
+    <script src="/src/includes/fullscreen-handler.js"></script>
 </body>
 
 </html>

@@ -512,6 +512,8 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
   </script>
 
   <?php PWAHelper::addPWAScript(); ?>
+    <!-- Global Fullscreen Handler -->
+    <script src="/src/includes/fullscreen-handler.js"></script>
 </body>
 
 </html>

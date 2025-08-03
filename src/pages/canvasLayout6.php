@@ -59,7 +59,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
         /* Adjustments to fit content within 1280x1024 viewport */
         #videoContainer {
 
-            height: 500px;
+            height: 720px;
 
         }
 
@@ -167,9 +167,9 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
 
                     <!-- Right Section: Controls (Filter, Settings, Buttons) -->
                     <div class="controls-container">
-                        <!-- Camera Settings -->
+                        <!-- Pengaturan Timer -->
                         <div class="camera-settings">
-                            <h3 class="settings-title">Camera Settings</h3>
+                            <h3 class="settings-title">Pengaturan Timer</h3>
                             <div class="setting-group">
                                 <label class="setting-label">Timer</label>
                                 <div class="timer-selector">
@@ -185,7 +185,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
 
                         <!-- Filter Section -->
                         <div class="filter-section">
-                            <h3 class="filter-title">Photo Filters</h3>
+                            <h3 class="filter-title">Filter Foto</h3>
                             <div class="filter-buttons-grid">
                                 <button id="normalFilterId" class="filterBtn" title="Normal"></button>
                                 <button id="vintageFilterId" class="filterBtn" title="Vintage"></button>
@@ -195,16 +195,16 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                                 <button id="sepiaFilterId" class="filterBtn" title="Sepia"></button>
                             </div>
                             <div class="grid-toggle">
-                                <button id="gridToggleBtn">Show Grid</button>
+                                <button id="gridToggleBtn">Tampilkan Grid</button>
                             </div>
                         </div>
 
                         <!-- Action Buttons -->
                         <div class="action-buttons">
-                            <button id="startBtn">START CAPTURE</button>
-                            <button id="captureAllBtn">CAPTURE ALL</button>
-                            <button id="retakeAllBtn" disabled>RETAKE ALL</button>
-                            <button id="doneBtn" style="display: none;">COMPLETE SESSION</button>
+                            <button id="startBtn">MULAI AMBIL</button>
+                            <button id="captureAllBtn">AMBIL BERSAMAAN</button>
+                            <button id="retakeAllBtn" disabled>AMBIL ULANG SEMUA</button>
+                            <button id="doneBtn" style="display: none;">LANJUT EDIT</button>
                         </div>
                         <div class="progress-display">
                             <div id="progressCounter">0/4</div>

@@ -230,8 +230,8 @@ body {
 
 /* Buttons */
 button:not(.buttonFrames):not(.buttonBgFrames) {
-  border: none;
-  padding: 10px 20px;
+  /* border: none; */
+  padding: 10px 17px;
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: 0.3s;
@@ -1210,9 +1210,9 @@ video {
 
 /* Timer Box */
 .timer-box {
-  position: fixed;
-  top: 20px;
-  right: 20px;
+  /* position: fixed;
+    top: 15px !important;
+      right: 15px !important; */
   background: rgba(226, 133, 133, 0.9);
   color: white;
   padding: 15px 20px;
@@ -1227,16 +1227,29 @@ video {
 
 .timer-box #timer-display,
 .timer-box #session-timer-display {
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: 700;
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 2px;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.5px;
 }
 
 .timer-box p {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   opacity: 0.9;
+  font-weight: 500;
+}
+/* Timer Warning States */
+.timer-box.warning {
+  background: rgba(255, 152, 0, 0.9);
+  animation: timerPulse 1s infinite ease-in-out;
+}
+
+.timer-box.danger {
+  background: rgba(244, 67, 54, 0.9);
+  animation: timerUrgent 0.5s infinite ease-in-out;
 }
 
 /* Modal */
@@ -1512,8 +1525,8 @@ video {
 }
 
 .customize-photo-preview canvas {
-  max-width: 80%;
-  max-height: 80%;
+  max-width: 50%;
+  max-height: 50%;
   width: auto;
   height: auto;
   border-radius: 12px;
@@ -1788,12 +1801,14 @@ video {
   position: relative;
   margin: 50px auto;
   transform: translateY(0);
+  
 }
 
 .email-modal-content {
   text-align: center;
   display: flex;
   flex-direction: column;
+  margin: 240px auto;
 }
 
 .close-btn {
@@ -1861,7 +1876,6 @@ video {
 
 .virtual-keyboard {
   margin: 10px;
-  background: #f8f9fa;
   padding: 15px;
   border-radius: 10px;
 }
@@ -1869,18 +1883,18 @@ video {
 .keyboard-row {
   display: flex;
   justify-content: center;
-  gap: 5px;
+  /* gap: 5px; */
   margin-bottom: 8px;
 }
 
 .key-btn {
-  padding: 10px 12px;
+  padding: 10px 17px;
   border: 1px solid #ddd;
   background: white;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 500;
-  min-width: 35px;
+  min-width: 45px;
   transition: all 0.2s ease;
 }
 

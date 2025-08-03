@@ -23,21 +23,21 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description"
-        content="Take instant photobooth-style photos online with Layout 1 (2 photos). Perfect for photo strips and printing." />
+        content="Take instant photobooth-style photos online with Layout 6 (4 photos). Perfect for photo grids and printing." />
     <meta name="keywords"
-        content="photobooth, photo layout, photo strip, online photobooth, layout 1, 2 photos" />
-    <title>Photobooth | Layout 1 - 2 Photos</title>
+        content="photobooth, photo layout, photo grid, online photobooth, layout 6, 4 photos" />
+    <title>Photobooth | Layout 6 - 4 Photos</title>
     <link rel="canonical" href="https://www.gofotobox.online" />
-    <meta property="og:title" content="Photobooth | Layout 1 - 2 Photos" />
+    <meta property="og:title" content="Photobooth | Layout 6 - 4 Photos" />
     <meta property="og:description"
-        content="Take instant photobooth-style photos online with Layout 1. Perfect for 2-photo strips." />
+        content="Take instant photobooth-style photos online with Layout 6. Perfect for 4-photo grids." />
     <meta property="og:image" content="https://www.gofotobox.online/assets/home-mockup.png" />
     <meta property="og:url" content="https://www.gofotobox.online" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Photobooth | Layout 1 - 2 Photos" />
+    <meta name="twitter:title" content="Photobooth | Layout 6 - 4 Photos" />
     <meta name="twitter:description"
-        content="Take instant photobooth-style photos online with Layout 1. Perfect for 2-photo strips." />
+        content="Take instant photobooth-style photos online with Layout 6. Perfect for 4-photo grids." />
     <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png" />
     <link rel="stylesheet" href="home-styles.css?v=<?php echo time(); ?>" />
     <!-- Cache Control -->
@@ -59,7 +59,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
         /* Adjustments to fit content within 1280x1024 viewport */
         #videoContainer {
 
-            height: 750px;
+            height: 720px;
 
         }
 
@@ -103,6 +103,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                             <canvas id="canvas" style="display: none;"></canvas>
                             <div id="gridOverlay" class="grid-overlay" style="display: none;"></div>
                             <div id="flash"></div>
+                            <div id="fullscreenMessage" style="opacity: 0;">Press SPACE to Start</div>
                             <div id="filterMessage" style="opacity: 0;"></div>
                             <div id="blackScreen">Waiting for camera access...</div>
                             <div id="countdownText" style="display: none;">3</div>
@@ -114,6 +115,9 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                             </button>
                         </div>
 
+                        <?php
+
+                        ?>
                         <div class="photo-preview-container">
                             <div class="photo-preview-grid" id="photoContainer">
                                 <!-- Slot photo akan di-generate oleh JS sesuai jumlah photo -->
@@ -122,7 +126,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                         <script>
                             // Enhanced photo container initialization with modal support
                             document.addEventListener('DOMContentLoaded', function() {
-                                var photoCount = window.photoCount || 2; // fallback to 2 if not set
+                                var photoCount = window.photoCount || 4; // Layout 6 has 4 photos
                                 var container = document.getElementById('photoContainer');
 
                                 if (container) {
@@ -138,7 +142,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                                         placeholder.className = 'photo-placeholder';
                                         placeholder.textContent = 'Photo ' + (i + 1);
 
-                                        var btn = document.createElement('div');
+                                        var btn = document.createElement('button');
                                         btn.className = 'retake-photo-btn';
                                         btn.innerHTML = '↻';
                                         btn.title = 'Retake Photo ' + (i + 1);
@@ -163,7 +167,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
 
                     <!-- Right Section: Controls (Filter, Settings, Buttons) -->
                     <div class="controls-container">
-                        <!-- Camera Settings -->
+                        <!-- Pengaturan Timer -->
                         <div class="camera-settings">
                             <h3 class="settings-title">Pengaturan Timer</h3>
                             <div class="setting-group">
@@ -203,7 +207,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                             <button id="doneBtn" style="display: none;">LANJUT EDIT</button>
                         </div>
                         <div class="progress-display">
-                            <div id="progressCounter">0/2</div>
+                            <div id="progressCounter">0/4</div>
                         </div>
 
                     </div>
@@ -212,8 +216,9 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
         </div>
     </main>
 
-    <script src="canvasLayout1.js"></script>
+    <script src="canvasLayout6.js"></script>
     <script src="debug-camera.js"></script>
+
 
     <!-- Session Timer Script -->
     <script src="../includes/session-timer.js"></script>
@@ -227,7 +232,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                     const photoElements = document.querySelectorAll('#photoPreview img, #photoPreview canvas, .photo');
                     if (photoElements.length > 0) {
                         // Has photos, go to customize
-                        window.location.href = 'customizeLayout1.php';
+                        window.location.href = 'customizeLayout6.php';
                     } else {
                         // No photos, reset and go to index
                         window.location.href = '/';
@@ -238,6 +243,8 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     </script>
 
     <?php PWAHelper::addPWAScript(); ?>
+    <!-- Global Fullscreen Handler -->
+    <script src="/src/includes/fullscreen-handler.js"></script>
 </body>
 
 </html>
