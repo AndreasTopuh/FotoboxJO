@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gofotobox-v3.0.3';
+const CACHE_NAME = 'gofotobox-v3.0.6';
 const IS_DEVELOPMENT = self.location.hostname === 'localhost' || self.location.hostname.includes('dev');
 
 // Essential files that should be cached
@@ -21,7 +21,9 @@ const pagesToCache = [
   '/src/pages/selectlayout.php',
   '/src/pages/payment-bank.php',
   '/src/pages/payment-qris.php',
-  '/src/pages/thankyou.php'
+  '/src/pages/thankyou.php',
+  '/src/pages/admin.php',
+  '/src/pages/admin-login.php'
 ];
 
 // Install event - cache resources with better error handling

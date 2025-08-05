@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Path - Cash Payment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .test-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+        }
+
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            background: #0056b3;
+        }
+
+        .result {
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        input {
+            width: 100px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🔧 Test API Path untuk Cash Payment</h1>
+
+    <div class="test-card">
+        <h3>Test 1: Cek Path Relatif</h3>
+        <p>Testing path: <code>../api-fetch/verify_cash_code.php</code></p>
+        <button class="btn" onclick="testRelativePath()">Test Relative Path</button>
+        <div id="relativeResult"></div>
+    </div>
+
+    <div class="test-card">
+        <h3>Test 2: Cek Konektivitas API</h3>
+        <p>Testing path: <code>../api-fetch/test_api.php</code></p>
+        <button class="btn" onclick="testConnectivity()">Test Connectivity</button>
+        <div id="connectivityResult"></div>
+    </div>
+
+    <div class="test-card">
+        <h3>Test 3: Verifikasi Kode Cash</h3>
+        <input type="text" id="testCode" placeholder="99999" maxlength="5" value="99999">
+        <button class="btn" onclick="testCashVerification()">Verify Code</button>
+        <div id="verifyResult"></div>
+    </div>
+
+    <div class="test-card">
+        <h3>Test 4: Load Photos (seperti customizeLayout1.js)</h3>
+        <button class="btn" onclick="testLoadPhotos()">Test Load Photos</button>
+        <div id="photosResult"></div>
+    </div>
+
+    <script>
+        // Test relative path
+        async function testRelativePath() {
+            const resultDiv = document.getElementById('relativeResult');
+            resultDiv.innerHTML = '<div class="result">Testing relative path...</div>';
+
+            try {
+                const response = await fetch('../api-fetch/verify_cash_code.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        code: 'TEST'
+                    })
+                });
+
+                const text = await response.text();
+                resultDiv.innerHTML = `
+                    <div class="result success">
+                        <strong>✅ Path Accessible!</strong><br>
+                        Status: ${response.status}<br>
+                        Response: ${text.substring(0, 200)}${text.length > 200 ? '...' : ''}
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <strong>❌ Path Error!</strong><br>
+                        Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Test connectivity
+        async function testConnectivity() {
+            const resultDiv = document.getElementById('connectivityResult');
+            resultDiv.innerHTML = '<div class="result">Testing connectivity...</div>';
+
+            try {
+                const response = await fetch('../api-fetch/test_api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        test: 'connectivity'
+                    })
+                });
+
+                const data = await response.json();
+                resultDiv.innerHTML = `
+                    <div class="result success">
+                        <strong>✅ Connectivity OK!</strong><br>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <strong>❌ Connectivity Error!</strong><br>
+                        Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Test cash verification
+        async function testCashVerification() {
+            const code = document.getElementById('testCode').value;
+            const resultDiv = document.getElementById('verifyResult');
+
+            if (!code) {
+                resultDiv.innerHTML = '<div class="result error">❌ Masukkan kode!</div>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<div class="result">Verifying code...</div>';
+
+            try {
+                const response = await fetch('../api-fetch/verify_cash_code.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        code: code
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            <strong>✅ Verification Success!</strong><br>
+                            Message: ${data.message}<br>
+                            Code: ${data.code}<br>
+                            Used at: ${data.used_at}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            <strong>❌ Verification Failed!</strong><br>
+                            Message: ${data.message}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <strong>❌ Verification Error!</strong><br>
+                        Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Test load photos (like customizeLayout1.js)
+        async function testLoadPhotos() {
+            const resultDiv = document.getElementById('photosResult');
+            resultDiv.innerHTML = '<div class="result">Loading photos...</div>';
+
+            try {
+                const response = await fetch('../api-fetch/get_photos.php');
+                const data = await response.json();
+
+                if (data.success && data.photos) {
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            <strong>✅ Photos Loaded!</strong><br>
+                            Found: ${data.photos.length} photos<br>
+                            First photo: ${data.photos[0] ? data.photos[0].substring(0, 50) + '...' : 'None'}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            <strong>❌ No Photos Found!</strong><br>
+                            Message: ${data.message || 'No session photos'}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <strong>❌ Load Photos Error!</strong><br>
+                        Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Show current location info
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Current URL:', window.location.href);
+            console.log('Current Path:', window.location.pathname);
+            console.log('Base URL:', window.location.origin);
+        });
+    </script>
+</body>
+
+</html>

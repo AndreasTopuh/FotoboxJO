@@ -13,22 +13,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
-    
+
     // Handle start payment action
     if (isset($input['action']) && $input['action'] === 'start_payment') {
         $paymentMethod = $input['payment_method'] ?? 'unknown';
-        
+
         // Start the 20-minute session timer
         $session = SessionManager::startPaymentSession();
-        
+
         // Store payment method
         $_SESSION['selected_payment_method'] = $paymentMethod;
-        
+
         echo json_encode([
             'success' => true,
             'message' => 'Payment session started',
             'session_state' => SessionManager::getSessionState(),
-            'time_remaining' => SessionManager::getMainTimerRemaining(), 
+            'time_remaining' => SessionManager::getMainTimerRemaining(),
             'payment_method' => $paymentMethod,
             'session_start' => $_SESSION['main_timer_start']
         ]);
@@ -39,14 +39,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($input['action']) && $input['action'] === 'start_developer_session') {
         // Start the 20-minute session timer (same as payment)
         $session = SessionManager::startPaymentSession();
-        
+
         // Automatically complete payment for developer
         SessionManager::completePayment('DEV_ACCESS_' . time());
-        
+
         // Mark as developer session
         $_SESSION['is_developer_session'] = true;
         $_SESSION['selected_payment_method'] = 'developer';
-        
+
         echo json_encode([
             'success' => true,
             'message' => 'Developer session started',
@@ -58,11 +58,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
         exit();
     }
-    
+
+    // Handle cash session - same as developer but marked as cash
+    if (isset($input['action']) && $input['action'] === 'start_cash_session') {
+        // Start the 20-minute session timer (same as payment)
+        $session = SessionManager::startPaymentSession();
+
+        // Automatically complete payment for cash
+        SessionManager::completePayment('CASH_PAYMENT_' . time());
+
+        // Mark as cash session
+        $_SESSION['is_cash_session'] = true;
+        $_SESSION['selected_payment_method'] = 'cash';
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Cash session started',
+            'session_state' => SessionManager::getSessionState(),
+            'time_remaining' => SessionManager::getMainTimerRemaining(),
+            'payment_method' => 'cash',
+            'is_cash' => true,
+            'session_start' => $_SESSION['main_timer_start']
+        ]);
+        exit();
+    }
+
     // Handle payment completion
     if (isset($input['action']) && $input['action'] === 'complete_payment') {
         $orderId = $input['order_id'] ?? null;
-        
+
         if (SessionManager::completePayment($orderId)) {
             echo json_encode([
                 'success' => true,
@@ -78,11 +102,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         exit();
     }
-    
+
     // Handle layout selection
     if (isset($input['action']) && $input['action'] === 'select_layout') {
         $layoutId = $input['layout_id'] ?? null;
-        
+
         if ($layoutId && SessionManager::selectLayout($layoutId)) {
             echo json_encode([
                 'success' => true,
@@ -99,35 +123,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         exit();
     }
-    
+
     // Legacy support for backward compatibility
     $updated_fields = [];
-    
+
     // Handle order ID setting
     if (isset($input['order_id'])) {
         $_SESSION['current_order_id'] = $input['order_id'];
         $_SESSION['payment_completed'] = true;
         $updated_fields[] = 'order_id';
     }
-    
+
     // Handle payment completion
     if (isset($input['payment_completed'])) {
         $_SESSION['payment_completed'] = $input['payment_completed'];
         $updated_fields[] = 'payment_completed';
     }
-    
+
     // Handle session type
     if (isset($input['session_type'])) {
         $_SESSION['session_type'] = $input['session_type'];
         $updated_fields[] = 'session_type';
     }
-    
+
     // Handle manual session expires (for testing)
     if (isset($input['session_expires'])) {
         $_SESSION['session_expires'] = $input['session_expires'];
         $updated_fields[] = 'session_expires';
     }
-    
+
     // Set session type to layout selection if payment completed
     if (isset($input['payment_completed']) && $input['payment_completed'] === true) {
         $_SESSION['session_type'] = 'layout_selection';
@@ -135,9 +159,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $updated_fields[] = 'auto_session_type';
         }
     }
-    
+
     echo json_encode([
-        'success' => true, 
+        'success' => true,
         'session_updated' => true,
         'session_id' => session_id(),
         'updated_fields' => $updated_fields,
@@ -151,4 +175,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'allowed' => 'POST'
     ]);
 }
-?>

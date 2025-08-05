@@ -328,9 +328,9 @@
     <div class="gradientBgCanvas blob"></div>
 
     <!-- Exit Button -->
-    <button class="exit-btn" onclick="exitPWA()" title="Keluar dari Aplikasi">
+    <!-- <button class="exit-btn" onclick="exitPWA()" title="Keluar dari Aplikasi">
         <i class="fas fa-times"></i>
-    </button>
+    </button> -->
 
     <div class="container">
         <div class="main-content">

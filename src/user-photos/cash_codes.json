@@ -1,0 +1,57 @@
+{
+    "82195": {
+        "generated_at": "2025-08-04 00:45:00",
+        "used": true,
+        "used_at": "2025-08-04 00:58:42"
+    },
+    "67890": {
+        "generated_at": "2025-01-21 01:00:00",
+        "used": false,
+        "used_at": null
+    },
+    "12345": {
+        "generated_at": "2025-08-04 01:15:00",
+        "used": false,
+        "used_at": null
+    },
+    "99999": {
+        "generated_at": "2025-08-04 01:30:00",
+        "used": false,
+        "used_at": "2025-08-04 01:42:59"
+    },
+    "82755": {
+        "generated_at": "2025-08-04 01:50:28",
+        "used": true,
+        "used_at": "2025-08-04 01:50:40"
+    },
+    "31062": {
+        "generated_at": "2025-08-04 01:52:42",
+        "used": false,
+        "used_at": null
+    },
+    "82512": {
+        "generated_at": "2025-08-04 01:52:48",
+        "used": false,
+        "used_at": null
+    },
+    "25773": {
+        "generated_at": "2025-08-04 01:55:05",
+        "used": true,
+        "used_at": "2025-08-04 01:55:31"
+    },
+    "31036": {
+        "generated_at": "2025-08-04 01:55:41",
+        "used": false,
+        "used_at": null
+    },
+    "59865": {
+        "generated_at": "2025-08-04 05:05:15",
+        "used": true,
+        "used_at": "2025-08-04 05:05:23"
+    },
+    "74863": {
+        "generated_at": "2025-08-04 12:11:17",
+        "used": false,
+        "used_at": null
+    }
+}

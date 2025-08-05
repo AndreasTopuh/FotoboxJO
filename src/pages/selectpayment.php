@@ -11,7 +11,7 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
   header('Location: selectlayout.php');
   exit();
 } elseif ($currentState === SessionManager::STATE_LAYOUT_SELECTED) {
-  // Layout already selected, let user access layout page
+  // Layout already selected, redirect to layout page
   header('Location: selectlayout.php');
   exit();
 } elseif ($currentState === SessionManager::STATE_PHOTO_SESSION) {
@@ -313,6 +313,12 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
           Virtual Bank (BCA)
           <img src="../assets/bca.png" alt="BCA Logo">
         </a>
+
+        <!-- Cash Payment -->
+        <a href="#" onclick="showCashModal(); return false;" class="payment-option">
+          Cash Payment
+          <img src="../assets/icons/cash-icon.png" alt="Cash" style="width: 50px; height: 50px; background: #4CAF50; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">💰</img>
+        </a>
       </div>
     </div>
   </div>
@@ -321,6 +327,52 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
   <button class="developer-access" onclick="showDeveloperModal()" title="Developer Access">
     <div style="width: 100%; height: 100%; background: rgba(128, 73, 73, 0.3); border-radius: 50%;"></div>
   </button>
+
+  <!-- Cash Payment Modal -->
+  <div id="cashModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 class="modal-title">Cash Payment</h3>
+      <!-- Virtual Keyboard -->
+      <div class="virtual-keyboard">
+        <input
+          type="password"
+          id="cashCode"
+          class="modal-input"
+          placeholder="Masukkan kode cash dari admin"
+          maxlength="5"
+          readonly />
+
+        <div class="keyboard-row">
+          <button class="keyboard-key" onclick="addCashDigit('1')">1</button>
+          <button class="keyboard-key" onclick="addCashDigit('2')">2</button>
+          <button class="keyboard-key" onclick="addCashDigit('3')">3</button>
+        </div>
+
+        <div class="keyboard-row">
+          <button class="keyboard-key" onclick="addCashDigit('4')">4</button>
+          <button class="keyboard-key" onclick="addCashDigit('5')">5</button>
+          <button class="keyboard-key" onclick="addCashDigit('6')">6</button>
+        </div>
+
+        <div class="keyboard-row">
+          <button class="keyboard-key" onclick="addCashDigit('7')">7</button>
+          <button class="keyboard-key" onclick="addCashDigit('8')">8</button>
+          <button class="keyboard-key" onclick="addCashDigit('9')">9</button>
+        </div>
+
+        <div class="keyboard-row">
+          <button class="keyboard-key wide" onclick="clearCashInput()">Clear</button>
+          <button class="keyboard-key" onclick="addCashDigit('0')">0</button>
+          <button class="keyboard-key wide" onclick="deleteCashDigit()">⌫</button>
+        </div>
+      </div>
+
+      <div class="modal-buttons">
+        <button class="modal-btn modal-btn-secondary" onclick="closeCashModal()">Batal</button>
+        <button class="modal-btn modal-btn-primary" onclick="verifyCashCode()">Verifikasi</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Developer Modal -->
   <div id="developerModal" class="modal-overlay">
@@ -397,6 +449,85 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
         }
       } catch (error) {
         console.error('Error starting payment session:', error);
+        alert('Terjadi kesalahan. Silakan coba lagi.');
+      }
+    }
+
+    // Cash Modal Functions
+    function showCashModal() {
+      document.getElementById('cashModal').style.display = 'block';
+    }
+
+    function closeCashModal() {
+      document.getElementById('cashModal').style.display = 'none';
+      document.getElementById('cashCode').value = '';
+    }
+
+    // Cash Virtual Keyboard Functions
+    function addCashDigit(digit) {
+      const input = document.getElementById('cashCode');
+      if (input.value.length < 5) {
+        input.value += digit;
+      }
+    }
+
+    function deleteCashDigit() {
+      const input = document.getElementById('cashCode');
+      input.value = input.value.slice(0, -1);
+    }
+
+    function clearCashInput() {
+      document.getElementById('cashCode').value = '';
+    }
+
+    async function verifyCashCode() {
+      const code = document.getElementById('cashCode').value;
+
+      if (code.length < 5) {
+        alert('Silakan masukkan 5 digit kode cash!');
+        return;
+      }
+
+      try {
+        // Verify cash code with API
+        const response = await fetch('../api-fetch/verify_cash_code.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            code: code
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          // Start cash payment session
+          const sessionResponse = await fetch('../api-fetch/set_session.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              action: 'start_cash_session'
+            })
+          });
+
+          const sessionResult = await sessionResponse.json();
+
+          if (sessionResult.success) {
+            // Redirect to select layout
+            window.location.href = 'selectlayout.php';
+          } else {
+            alert('Gagal memulai sesi cash. Silakan coba lagi.');
+          }
+        } else {
+          alert(result.message || 'Kode cash tidak valid!');
+          clearCashInput();
+        }
+      } catch (error) {
+        console.error('Error verifying cash code:', error);
         alert('Terjadi kesalahan. Silakan coba lagi.');
       }
     }
@@ -482,6 +613,26 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
 
     // Event listener untuk Enter key di modal
     document.addEventListener('DOMContentLoaded', function() {
+      // Cash modal event listeners
+      document.getElementById('cashCode').addEventListener('input', function(e) {
+        // Hanya izinkan angka
+        e.target.value = e.target.value.replace(/[^0-9]/g, '');
+      });
+
+      document.getElementById('cashCode').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          verifyCashCode();
+        }
+      });
+
+      // Close cash modal ketika klik overlay
+      document.getElementById('cashModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeCashModal();
+        }
+      });
+
+      // Developer modal event listeners
       // Physical keyboard support (masih bisa digunakan jika ada)
       document.getElementById('developerCode').addEventListener('input', function(e) {
         // Hanya izinkan angka
@@ -495,7 +646,7 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
         }
       });
 
-      // Close modal ketika klik overlay
+      // Close developer modal ketika klik overlay
       document.getElementById('developerModal').addEventListener('click', function(e) {
         if (e.target === this) {
           closeDeveloperModal();
