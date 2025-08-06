@@ -1,173 +1,234 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Variables
-    let storedImages = [];
-    let finalCanvas = null;
-    let selectedSticker = null;
-    let selectedShape = 'default';
-    let backgroundType = 'color';
-    let backgroundColor = '#FFFFFF';
-    let backgroundImage = null;
-    let availableFrames = [];
-    let availableStickers = [];
-    
-    // Track usage - limit button usage
-    let emailSent = false;
-    let printUsed = false;
+  // Configuration constants
+  const CONFIG = {
+    CANVAS_WIDTH: 1200,
+    CANVAS_HEIGHT: 1800,
+    BORDER_WIDTH: 62,
+    MARGIN_TOP: 120,
+    SPACING: 37,
+    CENTER_SPACING: 124,
+    EXPECTED_PHOTOS: 6,
+    EMAILJS_SERVICE_ID: 'service_gtqjb2j',
+    EMAILJS_TEMPLATE_ID: 'template_pp5i4hm',
+    LOGO_SRC: '/src/assets/logo.png',
+  };
 
-    // DOM Elements
-    const photoCustomPreview = document.getElementById('photoPreview');
+  // State variables
+  let state = {
+    storedImages: [],
+    finalCanvas: null,
+    selectedSticker: null,
+    selectedShape: 'default',
+    backgroundType: 'color',
+    backgroundColor: '#FFFFFF',
+    backgroundImage: null,
+    availableFrames: [],
+    availableStickers: [],
+    emailSent: false,
+    printUsed: false,
+    imageCache: new Map(), // Cache untuk gambar
+  };
 
-    // Initialize application
-    initializeApp();
+  // DOM Elements
+  const DOM = {
+      photoCustomPreview: document.getElementById('photoPreview'),
+      framesContainer: document.getElementById('dynamicFramesContainer'),
+      stickersContainer: document.getElementById('dynamicStickersContainer'),
+      noneSticker: document.getElementById('noneSticker'),
+      emailModal: document.getElementById('emailModal'),
+      emailInput: document.getElementById('emailInput'),
+  };
 
-    // Main initialization function
-    async function initializeApp() {
-        console.log('🔄 Initializing photobooth customization...');
-        try {
-            // Load assets from database first
-            await loadAssetsFromDatabase();
-            // Create dynamic controls after assets loaded
-            await createDynamicControls();
-            await loadPhotos();
-            initializeCanvas();
-            initializeControls();
-            console.log('✅ App initialization complete');
-        } catch (error) {
-            console.error('❌ Error initializing app:', error);
-            alert('Gagal memuat foto. Redirecting...');
-            window.location.href = 'selectlayout.php';
-        }
+  // Utility Functions
+  /**
+   * Loads an image and caches it
+   * @param {string} src - Image source URL
+   * @returns {Promise<Image>} - Loaded image
+   */
+  async function loadImage(src) {
+    if (state.imageCache.has(src)) {
+      return state.imageCache.get(src);
+    }
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        state.imageCache.set(src, img);
+        resolve(img);
+      };
+      img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
+      img.src = src;
+    });
+  }
+
+  /**
+   * Sets active state for a button and removes active from others
+   * @param {string} selector - CSS selector for buttons
+   * @param {HTMLElement} selectedButton - Button to set as active
+   */
+  function setActiveButton(selector, selectedButton) {
+    document.querySelectorAll(selector).forEach((btn) => btn.classList.remove('active'));
+    selectedButton.classList.add('active');
+  }
+
+  /**
+   * Handles errors consistently
+   * @param {string} message - Error message
+   * @param {string} type - Error type ('alert' or 'validation')
+   */
+  function handleError(message, type = 'alert') {
+    console.error(`❌ ${message}`);
+    if (type === 'validation') {
+      showValidationError(message);
+    } else {
+      alert(message);
+    }
+  }
+
+  // Initialization
+  /**
+   * Initializes the photobooth application
+   */
+  async function initializeApp() {
+    console.log('🔄 Initializing photobooth customization...');
+    try {
+      await loadAssetsFromDatabase();
+      await createDynamicControls();
+      await loadPhotos();
+      initializeCanvas();
+      initializeControls();
+      console.log('✅ App initialization complete');
+    } catch (error) {
+      handleError('Gagal memuat foto. Redirecting...', 'alert');
+      window.location.href = 'selectlayout.php';
+    }
+  }
+
+  // Asset Loading
+  /**
+   * Loads frames and stickers from database
+   */
+  async function loadAssetsFromDatabase() {
+    console.log('🔄 Loading frames and stickers from database...');
+    try {
+      const [framesResponse, stickersResponse] = await Promise.all([
+        fetch('/src/api-fetch/get-frames.php'),
+        fetch('/src/api-fetch/get-stickers.php'),
+      ]);
+
+      const framesData = await framesResponse.json();
+      const stickersData = await stickersResponse.json();
+
+      state.availableFrames = framesData.success ? framesData.data : getFallbackFrames();
+      console.log(`✅ Loaded ${state.availableFrames.length} frames from database`);
+
+      state.availableStickers = stickersData.success ? stickersData.data : getFallbackStickers();
+      console.log(`✅ Loaded ${state.availableStickers.length} stickers from database`);
+    } catch (error) {
+      console.error('❌ Error loading assets from database:', error);
+      state.availableFrames = getFallbackFrames();
+      state.availableStickers = getFallbackStickers();
+    }
+  }
+
+  /**
+   * Returns fallback frames
+   * @returns {Array} - Array of fallback frame objects
+   */
+  function getFallbackFrames() {
+    return [
+      { id: 1, nama: 'Matcha Frame', file_path: '/src/assets/frame-backgrounds/matcha.jpg' },
+      { id: 2, nama: 'Black Star Frame', file_path: '/src/assets/frame-backgrounds/blackStar.jpg' },
+      { id: 3, nama: 'Blue Stripe Frame', file_path: '/src/assets/frame-backgrounds/blueStripe.jpg' },
+    ];
+  }
+
+  /**
+   * Returns fallback stickers
+   * @returns {Array} - Array of fallback sticker objects
+   */
+  function getFallbackStickers() {
+    return [{ id: 1, nama: 'Star Sticker', file_path: '/src/assets/stickers/bintang1.png' }];
+  }
+
+  // Dynamic Controls
+  /**
+   * Creates dynamic frame and sticker controls
+   */
+  async function createDynamicControls() {
+    console.log('🔄 Creating dynamic controls...');
+
+    // Create dynamic frames
+    if (DOM.framesContainer) {
+      DOM.framesContainer.innerHTML = '';
+      state.availableFrames.forEach((frame) => {
+        const frameBtn = document.createElement('button');
+        frameBtn.id = `frame_${frame.id}`;
+        frameBtn.className = 'dynamic-frame-btn buttonBgFrames';
+        frameBtn.style.backgroundImage = `url('${frame.file_path}')`;
+        frameBtn.style.backgroundSize = 'cover';
+        frameBtn.style.backgroundPosition = 'center';
+        frameBtn.title = frame.nama;
+        frameBtn.setAttribute('data-frame-id', frame.id);
+        frameBtn.setAttribute('data-frame-path', frame.file_path);
+
+        frameBtn.addEventListener('click', () => {
+          setActiveButton('.dynamic-frame-btn', frameBtn);
+          state.backgroundType = 'image';
+          state.backgroundImage = frame.file_path;
+          redrawCanvas();
+          console.log(`� Selected frame: ${frame.nama}`);
+        });
+
+        DOM.framesContainer.appendChild(frameBtn);
+      });
+      console.log(`✅ Created ${state.availableFrames.length} dynamic frame controls`);
     }
 
-    // Load assets from database
-    async function loadAssetsFromDatabase() {
-        try {
-            console.log('🔄 Loading frames and stickers from database...');
-            
-            const [framesResponse, stickersResponse] = await Promise.all([
-                fetch('/src/api-fetch/get-frames.php'),
-                fetch('/src/api-fetch/get-stickers.php')
-            ]);
+    // Create dynamic stickers
+    if (DOM.stickersContainer) {
+      const loadingPlaceholder = DOM.stickersContainer.querySelector('.loading-placeholder');
+      if (loadingPlaceholder) loadingPlaceholder.remove();
 
-            if (framesResponse.ok) {
-                const framesData = await framesResponse.json();
-                availableFrames = framesData.data || [];
-                console.log(`✅ Loaded ${availableFrames.length} frames from database`);
-            } else {
-                console.warn('⚠️ Failed to load frames from database, using fallback');
-                availableFrames = getFallbackFrames();
-            }
+      state.availableStickers.forEach((sticker) => {
+        const stickerBtn = document.createElement('button');
+        stickerBtn.id = `sticker_${sticker.id}`;
+        stickerBtn.className = 'dynamic-sticker-btn buttonStickers';
+        stickerBtn.setAttribute('data-sticker-id', sticker.id);
+        stickerBtn.setAttribute('data-sticker-path', sticker.file_path);
 
-            if (stickersResponse.ok) {
-                const stickersData = await stickersResponse.json();
-                availableStickers = stickersData.data || [];
-                console.log(`✅ Loaded ${availableStickers.length} stickers from database`);
-            } else {
-                console.warn('⚠️ Failed to load stickers from database, using fallback');
-                availableStickers = getFallbackStickers();
-            }
+        const img = document.createElement('img');
+        img.src = sticker.file_path;
+        img.alt = sticker.nama;
+        img.className = 'sticker-icon';
+        img.style.width = '40px';
+        img.style.height = '40px';
+        img.style.objectFit = 'contain';
 
-        } catch (error) {
-            console.error('❌ Error loading assets from database:', error);
-            console.log('🔄 Using fallback assets...');
-            availableFrames = getFallbackFrames();
-            availableStickers = getFallbackStickers();
-        }
+        stickerBtn.appendChild(img);
+
+        stickerBtn.addEventListener('click', () => {
+          setActiveButton('.buttonStickers', stickerBtn);
+          state.selectedSticker = sticker.file_path;
+          redrawCanvas();
+          console.log(`� Selected sticker: ${sticker.nama}`);
+        });
+
+        DOM.stickersContainer.appendChild(stickerBtn);
+      });
+      console.log(`✅ Created ${state.availableStickers.length} dynamic sticker controls`);
     }
 
-    // Create dynamic controls for frames and stickers
-    async function createDynamicControls() {
-        console.log('🔄 Creating dynamic asset controls...');
-        
-        // Create frame controls
-        const framesContainer = document.getElementById('frames-container');
-        if (framesContainer) {
-            framesContainer.innerHTML = ''; // Clear loading placeholder
-            
-            availableFrames.forEach((frame, index) => {
-                const button = document.createElement('button');
-                button.id = `frame_${frame.id}`;
-                button.className = 'buttonFrames frame-dynamic';
-                button.style.backgroundColor = frame.warna || '#ffffff';
-                button.setAttribute('data-frame-id', frame.id);
-                button.setAttribute('data-frame-color', frame.warna);
-                button.setAttribute('data-frame-name', frame.nama);
-                
-                button.addEventListener('click', () => {
-                    backgroundColor = frame.warna;
-                    redrawCanvas();
-                    console.log(`🎯 Selected frame: ${frame.nama} (${frame.warna})`);
-                });
-                
-                framesContainer.appendChild(button);
-            });
-            
-            console.log(`✅ Created ${availableFrames.length} frame controls`);
-        }
-        
-        // Create sticker controls
-        const stickersContainer = document.getElementById('stickers-container');
-        if (stickersContainer) {
-            stickersContainer.innerHTML = ''; // Clear loading placeholder
-            
-            // Add "none" sticker button first
-            const noneButton = document.createElement('button');
-            noneButton.id = 'noneSticker';
-            noneButton.className = 'buttonStickers sticker-none';
-            noneButton.innerHTML = '<img src="../assets/block (1).png" alt="None" class="shape-icon">';
-            noneButton.addEventListener('click', () => {
-                selectedSticker = null;
-                redrawCanvas();
-                console.log('🎯 No sticker selected');
-            });
-            stickersContainer.appendChild(noneButton);
-            
-            // Add database stickers
-            availableStickers.forEach((sticker, index) => {
-                const button = document.createElement('button');
-                button.id = `sticker_${sticker.id}`;
-                button.className = 'buttonStickers sticker-dynamic';
-                button.setAttribute('data-sticker-id', sticker.id);
-                button.setAttribute('data-sticker-name', sticker.nama);
-                
-                const img = document.createElement('img');
-                img.src = sticker.file_path;
-                img.alt = sticker.nama;
-                img.className = 'sticker-icon';
-                button.appendChild(img);
-                
-                // Create sticker object
-                const stickerObj = {
-                    image: new Image(),
-                    src: sticker.file_path,
-                    name: sticker.nama,
-                    id: sticker.id
-                };
-                
-                stickerObj.image.onload = () => {
-                    console.log(`✅ Sticker preloaded: ${sticker.nama}`);
-                };
-                
-                stickerObj.image.src = sticker.file_path;
-                
-                button.addEventListener('click', () => {
-                    selectedSticker = stickerObj;
-                    redrawCanvas();
-                    console.log(`🎯 Selected sticker: ${sticker.nama}`);
-                });
-                
-                stickersContainer.appendChild(button);
-            });
-            
-            console.log(`✅ Created ${availableStickers.length} sticker controls`);
-        }
-        
-        // Mark containers as loaded
-        if (framesContainer) framesContainer.classList.add('assets-loaded');
-        if (stickersContainer) stickersContainer.classList.add('assets-loaded');
-        
-        console.log('✅ Dynamic controls creation complete');
+    // Initialize "None" sticker button
+    if (DOM.noneSticker) {
+      DOM.noneSticker.addEventListener('click', () => {
+        setActiveButton('.buttonStickers', DOM.noneSticker);
+        state.selectedSticker = null;
+        redrawCanvas();
+        console.log('🚫 No sticker selected');
+      });
     }
+  }
 
     // Fallback frames if database fails
     function getFallbackFrames() {
@@ -186,213 +247,268 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
     }
 
-    // Load photos from server
-    async function loadPhotos() {
-        console.log('🔄 Loading photos...');
-        const response = await fetch('../api-fetch/get_photos.php');
-        const data = await response.json();
-        if (!data.success || !data.photos) {
-            throw new Error('No photos found in session');
+  // Photo Management
+  /**
+   * Loads photos from server
+   */
+  async function loadPhotos() {
+    try {
+      console.log('� Loading photos from server...');
+      const response = await fetch('../api-fetch/get_photos.php');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (!data.success || !data.photos || !Array.isArray(data.photos)) {
+        throw new Error(data.message || 'Invalid photos data received');
+      }
+
+      state.storedImages = data.photos;
+      console.log(`✅ Loaded ${state.storedImages.length} photos:`, state.storedImages);
+      
+      return state.storedImages;
+    } catch (error) {
+      console.error('❌ Failed to load photos:', error);
+      handleError('Failed to load photos: ' + error.message);
+      return [];
+    }
+  }
+
+  // Canvas Management
+  /**
+   * Initializes the canvas
+   */
+  function initializeCanvas() {
+    if (!state.storedImages || !state.storedImages.length) {
+      console.error('❌ No images available for canvas');
+      handleError('No images available for canvas');
+      return;
+    }
+    console.log('🎨 Initializing canvas...');
+    redrawCanvas();
+    console.log('✅ Canvas initialized');
+  }
+
+  // Control Initialization
+  /**
+   * Initializes all control buttons and event listeners
+   */
+  function initializeControls() {
+    console.log('🎛️ Initializing controls...');
+    initializeFrameControls();
+    initializeBackgroundFrameControls();
+    initializeShapeControls();
+    initializeActionButtons();
+    initializeEmailModal();
+    console.log('✅ Controls initialized');
+  }
+
+  /**
+   * Initializes frame color controls
+   */
+  function initializeFrameControls() {
+    const colorButtons = [
+      { id: 'pinkBtnFrame', color: '#FFB6C1' },
+      { id: 'blueBtnFrame', color: '#87CEEB' },
+      { id: 'yellowBtnFrame', color: '#FFFFE0' },
+      { id: 'brownBtnFrame', color: '#D2691E' },
+      { id: 'redBtnFrame', color: '#FF6347' },
+      { id: 'matchaBtnFrame', color: '#9ACD32' },
+      { id: 'purpleBtnFrame', color: '#DDA0DD' },
+      { id: 'whiteBtnFrame', color: '#FFFFFF' },
+      { id: 'blackBtnFrame', color: '#000000' }
+    ];
+
+    colorButtons.forEach(({ id, color }) => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.addEventListener('click', () => {
+          setActiveButton('.buttonFrames', element);
+          state.backgroundColor = color;
+          state.backgroundType = 'color';
+          state.backgroundImage = null;
+          redrawCanvas();
+          console.log(`🎨 Selected frame color: ${color}`);
+        });
+      }
+    });
+  }
+
+  /**
+   * Initializes background frame controls
+   */
+  function initializeBackgroundFrameControls() {
+    const backgroundFrameButtons = [
+      { id: 'matcha', src: '/src/assets/frame-backgrounds/matcha.jpg' },
+      { id: 'blackStar', src: '/src/assets/frame-backgrounds/blackStar.jpg' },
+      { id: 'blueStripe', src: '/src/assets/frame-backgrounds/blueStripe.jpg' }
+    ];
+
+    backgroundFrameButtons.forEach(({ id, src }) => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.addEventListener('click', () => {
+          setActiveButton('.buttonBgFrames', element);
+          console.log(`🎨 Setting background: ${id} (${src})`);
+          state.backgroundType = 'image';
+          state.backgroundImage = src;
+          redrawCanvas();
+        });
+      }
+    });
+  }
+
+  /**
+   * Initializes shape controls
+   */
+  function initializeShapeControls() {
+    const shapeButtons = [
+      { id: 'noneFrameShape', shape: 'default' },
+      { id: 'softFrameShape', shape: 'rounded' }
+    ];
+
+    shapeButtons.forEach(({ id, shape }) => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.addEventListener('click', () => {
+          setActiveButton('.buttonShapes', element);
+          state.selectedShape = shape;
+          redrawCanvas();
+          console.log(`🔸 Selected shape: ${shape}`);
+        });
+      }
+    });
+  }
+
+  /**
+   * Initializes action buttons
+   */
+  function initializeActionButtons() {
+    const buttons = {
+      emailBtn: () => {
+        if (state.emailSent) {
+          alert('Email sudah pernah dikirim!');
+          return;
         }
-        storedImages = data.photos;
-        console.log(`✅ Loaded ${storedImages.length} images:`, storedImages);
-    }
-
-    // Initialize canvas
-    function initializeCanvas() {
-        if (!storedImages.length) {
-            console.error('❌ No images available for canvas');
-            return;
-        }
-        console.log('🎨 Initializing canvas...');
-        redrawCanvas();
-        console.log('✅ Canvas initialized');
-    }
-
-    // Initialize all controls
-    function initializeControls() {
-        console.log('🎛️ Initializing controls...');
-        initializeFrameControls();
-        initializeBackgroundFrameControls();
-        initializeShapeControls();
-        initializeActionButtons();
-        initializeEmailModal();
-        console.log('✅ Controls initialized');
-    }
-
-    // Initialize frame color controls
-    function initializeFrameControls() {
-        const colorButtons = [
-            { id: 'pinkBtnFrame', color: '#FFB6C1' },
-            { id: 'blueBtnFrame', color: '#87CEEB' },
-            { id: 'yellowBtnFrame', color: '#FFFFE0' },
-            { id: 'brownBtnFrame', color: '#D2691E' },
-            { id: 'redBtnFrame', color: '#FF6347' },
-            { id: 'matchaBtnFrame', color: '#9ACD32' },
-            { id: 'purpleBtnFrame', color: '#DDA0DD' },
-            { id: 'whiteBtnFrame', color: '#FFFFFF' },
-            { id: 'blackBtnFrame', color: '#000000' }
-        ];
-
-        colorButtons.forEach(({ id, color }) => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.addEventListener('click', () => {
-                    backgroundColor = color;
-                    backgroundType = 'color';
-                    backgroundImage = null;
-                    redrawCanvas();
-                });
-            }
-        });
-    }
-
-    // Initialize background frame controls
-    function initializeBackgroundFrameControls() {
-        const backgroundFrameButtons = [
-            { id: 'matcha', src: '/src/assets/frame-backgrounds/matcha.jpg' },
-            { id: 'blackStar', src: '/src/assets/frame-backgrounds/blackStar.jpg' },
-            { id: 'blueStripe', src: '/src/assets/frame-backgrounds/blueStripe.jpg' }
-        ];
-
-        backgroundFrameButtons.forEach(({ id, src }) => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.addEventListener('click', () => {
-                    console.log(`🎨 Setting background: ${id} (${src})`);
-                    backgroundType = 'image';
-                    backgroundImage = src;
-                    backgroundColor = null;
-                    redrawCanvas();
-                });
-            } else {
-                console.warn(`⚠️ Background frame button not found: ${id}`);
-            }
-        });
-    }
-
-    // Initialize shape controls
-    function initializeShapeControls() {
-        const shapeButtons = [
-            { id: 'noneFrameShape', shape: 'default' },
-            { id: 'softFrameShape', shape: 'rounded' }
-        ];
-
-        shapeButtons.forEach(({ id, shape }) => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.addEventListener('click', () => {
-                    selectedShape = shape;
-                    redrawCanvas();
-                });
-            }
-        });
-    }
-
-    // Initialize action buttons
-    function initializeActionButtons() {
-        const buttons = {
-            emailBtn: () => {
-                if (emailSent) {
-                    alert('Email sudah pernah dikirim!');
-                    return;
-                }
-                if (finalCanvas) {
-                    showEmailModal();
-                } else {
-                    alert('Tidak ada gambar untuk dikirim ke email');
-                }
-            },
-            printBtn: () => {
-                if (printUsed) {
-                    alert('Print sudah pernah digunakan!');
-                    return;
-                }
-                if (finalCanvas) {
-                    showSimplePrintPopup(finalCanvas.toDataURL('image/jpeg', 1.0));
-                } else {
-                    alert('Tidak ada gambar untuk di-print');
-                }
-            },
-            continueBtn: () => window.location.href = 'thankyou.php'
-        };
-
-        Object.entries(buttons).forEach(([id, handler]) => {
-            const button = document.getElementById(id);
-            if (button) {
-                button.addEventListener('click', handler);  
-            }
-        });
-    }
-
-    // Show email modal
-    function showEmailModal() {
-        const emailModal = document.getElementById('emailModal');
-        if (emailModal) {
-            emailModal.style.display = 'block';
-            const emailInput = document.getElementById('emailInput');
-            if (emailInput) {
-                emailInput.focus();
-            }
+        if (state.finalCanvas) {
+          showEmailModal();
         } else {
-            console.error('❌ Email modal element not found');
+          alert('Tidak ada gambar untuk dikirim ke email');
         }
+      },
+      printBtn: () => {
+        if (state.printUsed) {
+          alert('Print sudah pernah digunakan!');
+          return;
+        }
+        if (state.finalCanvas) {
+          showSimplePrintPopup(state.finalCanvas.toDataURL('image/jpeg', 1.0));
+        } else {
+          alert('Tidak ada gambar untuk di-print');
+        }
+      },
+      continueBtn: () => window.location.href = 'thankyou.php'
+    };
+
+    Object.entries(buttons).forEach(([id, handler]) => {
+      const button = document.getElementById(id);
+      if (button) {
+        button.addEventListener('click', handler);
+        console.log(`✅ Button initialized: ${id}`);
+      }
+    });
+  }
+
+  /**
+   * Shows the email modal
+   */
+  function showEmailModal() {
+    const emailModal = document.getElementById('emailModal');
+    if (emailModal) {
+      emailModal.style.display = 'block';
+      const emailInput = document.getElementById('emailInput');
+      if (emailInput) {
+        emailInput.focus();
+      }
+    } else {
+      console.error('❌ Email modal element not found');
+      handleError('Email modal not found');
+    }
+  }
+
+  /**
+   * Initializes email modal functionality
+   */
+  function initializeEmailModal() {
+    const emailModal = document.getElementById('emailModal');
+    const closeEmailModal = document.getElementById('closeEmailModal');
+    const cancelEmailBtn = document.getElementById('cancelEmailBtn');
+    const sendEmailBtn = document.getElementById('sendEmailBtn');
+    const emailInput = document.getElementById('emailInput');
+
+    const closeModal = () => {
+      emailModal.style.display = 'none';
+      if (emailInput) emailInput.value = '';
+    };
+
+    if (closeEmailModal) closeEmailModal.addEventListener('click', closeModal);
+    if (cancelEmailBtn) cancelEmailBtn.addEventListener('click', closeModal);
+    if (emailModal) emailModal.addEventListener('click', e => e.target === emailModal && closeModal());
+
+    if (sendEmailBtn) {
+      sendEmailBtn.addEventListener('click', () => {
+        const email = emailInput.value.trim();
+        if (!email) return showValidationError('Mohon masukkan alamat email');
+        if (!validateEmail(email)) return showValidationError('Format email tidak valid');
+        hideValidationError();
+        sendPhotoEmail(email);
+      });
     }
 
-    // Initialize email modal
-    function initializeEmailModal() {
-        const emailModal = document.getElementById('emailModal');
-        const closeEmailModal = document.getElementById('closeEmailModal');
-        const cancelEmailBtn = document.getElementById('cancelEmailBtn');
-        const sendEmailBtn = document.getElementById('sendEmailBtn');
-        const emailInput = document.getElementById('emailInput');
+    initializeVirtualKeyboard();
+    console.log('✅ Email modal initialized');
+  }
 
-        const closeModal = () => emailModal.style.display = 'none';
+  /**
+   * Initializes virtual keyboard
+   */
+  function initializeVirtualKeyboard() {
+    const emailInput = document.getElementById('emailInput');
+    const keyboardKeys = document.querySelectorAll('.key-btn');
+    let capsLock = false;
 
-        if (closeEmailModal) closeEmailModal.addEventListener('click', closeModal);
-        if (cancelEmailBtn) cancelEmailBtn.addEventListener('click', closeModal);
-        if (emailModal) emailModal.addEventListener('click', e => e.target === emailModal && closeModal());
+    keyboardKeys.forEach(key => {
+      key.addEventListener('click', e => {
+        e.preventDefault();
+        handleKeyPress(key.getAttribute('data-key'), emailInput);
+      });
+    });
 
-        if (sendEmailBtn) {
-            sendEmailBtn.addEventListener('click', () => {
-                const email = emailInput.value.trim();
-                if (!email) return showValidationError('Mohon masukkan alamat email');
-                if (!validateEmail(email)) return showValidationError('Format email tidak valid');
-                hideValidationError();
-                sendPhotoEmail(email);
-            });
-        }
-
-        initializeVirtualKeyboard();
+    if (emailInput) {
+      emailInput.addEventListener('click', () => setTimeout(() => emailInput.focus(), 10));
+    }
+    
+    const virtualKeyboard = document.getElementById('virtualKeyboard');
+    if (virtualKeyboard) {
+      virtualKeyboard.addEventListener('mousedown', e => e.preventDefault());
     }
 
-    // Initialize virtual keyboard
-    function initializeVirtualKeyboard() {
-        const emailInput = document.getElementById('emailInput');
-        const keyboardKeys = document.querySelectorAll('.key-btn');
-        let capsLock = false;
+    function handleKeyPress(key, input) {
+      if (!input) return;
+      
+      const currentValue = input.value;
+      const cursorPos = input.selectionStart || currentValue.length;
 
-        keyboardKeys.forEach(key => {
-            key.addEventListener('click', e => {
-                e.preventDefault();
-                handleKeyPress(key.getAttribute('data-key'), emailInput);
-            });
-        });
-
-        emailInput.addEventListener('click', () => setTimeout(() => emailInput.focus(), 10));
-        document.getElementById('virtualKeyboard').addEventListener('mousedown', e => e.preventDefault());
-
-        function handleKeyPress(key, input) {
-            const currentValue = input.value;
-            const cursorPos = input.selectionStart || currentValue.length;
-
-            switch (key) {
-                case 'backspace':
-                    if (cursorPos > 0) {
-                        input.value = currentValue.slice(0, cursorPos - 1) + currentValue.slice(cursorPos);
-                        input.setSelectionRange(cursorPos - 1, cursorPos - 1);
-                    }
-                    break;
+      switch (key) {
+        case 'backspace':
+          if (cursorPos > 0) {
+            input.value = currentValue.slice(0, cursorPos - 1) + currentValue.slice(cursorPos);
+            input.setSelectionRange(cursorPos - 1, cursorPos - 1);
+          }
+          break;
                 case 'caps':
                     capsLock = !capsLock;
                     updateCapsLockState();
@@ -496,7 +612,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await emailjs.send('service_gtqjb2j', 'template_pp5i4hm', emailParams);
             
             // Mark email as sent and disable button
-            emailSent = true;
+            state.emailSent = true;
             const emailBtn = document.getElementById('emailBtn');
             if (emailBtn) {
                 emailBtn.disabled = true;
@@ -520,208 +636,249 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Canvas drawing functions
-    function redrawCanvas() {
-        if (!storedImages.length) {
-            console.warn('⚠️ No images available for redraw');
-            return;
-        }
-
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const canvasWidth = 1200;
-        const canvasHeight = 1800;
-        const borderWidth = 62;
-        const marginTop = 120;
-        const spacing = 37;
-        const centerSpacing = 124;
-        const expectedPhotos = 6;
-
-        // Area yang tersedia untuk foto (dikurangi border kiri-kanan dan margin atas)
-        const availableWidth = canvasWidth - (borderWidth * 2);
-        const availableHeight = canvasHeight - marginTop - borderWidth;
-
-        // Lebar setiap kolom (dikurangi spasi tengah, dibagi 2)
-        const columnWidth = (availableWidth - centerSpacing) / 2;
-
-        // Posisi x untuk kolom
-        const leftColumnX = borderWidth;
-        const rightColumnX = borderWidth + columnWidth + centerSpacing;
-
-        // Menghitung tinggi foto
-        const largePhotoHeight = (availableHeight - spacing * 2) / 2;
-        const smallPhotoHeight = (largePhotoHeight - spacing * 2) / 3;
-
-        canvas.width = canvasWidth;
-        canvas.height = canvasHeight;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        if (backgroundType === 'color') {
-            ctx.fillStyle = backgroundColor;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            drawPhotos();
-        } else if (backgroundImage) {
-            const bgImg = new Image();
-            bgImg.crossOrigin = 'anonymous';
-            bgImg.onload = () => {
-                ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
-                drawPhotos();
-                updateCanvasPreview(canvas);
-            };
-            bgImg.onerror = () => {
-                console.error('❌ Failed to load background image:', backgroundImage);
-                ctx.fillStyle = '#FFFFFF';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                drawPhotos();
-                updateCanvasPreview(canvas);
-            };
-            bgImg.src = backgroundImage;
-            return;
-        } else {
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            drawPhotos();
-        }
-
-        function drawPhotos() {
-            if (storedImages.length < expectedPhotos) {
-                console.warn(`⚠️ Layout requires ${expectedPhotos} photos, found: ${storedImages.length}`);
-            }
-
-            const imagesToProcess = Math.min(storedImages.length, expectedPhotos);
-            let loadedCount = 0;
-
-            storedImages.slice(0, imagesToProcess).forEach((imageData, index) => {
-                const img = new Image();
-                img.crossOrigin = 'anonymous';
-                img.onload = () => {
-                    const positions = [
-                        { x: leftColumnX, y: marginTop, width: columnWidth, height: largePhotoHeight },
-                        { x: leftColumnX, y: marginTop + largePhotoHeight + spacing, width: columnWidth, height: smallPhotoHeight },
-                        { x: leftColumnX, y: marginTop + largePhotoHeight + spacing + smallPhotoHeight + spacing, width: columnWidth, height: smallPhotoHeight },
-                        { x: rightColumnX, y: marginTop, width: columnWidth, height: smallPhotoHeight },
-                        { x: rightColumnX, y: marginTop + smallPhotoHeight + spacing, width: columnWidth, height: smallPhotoHeight },
-                        { x: rightColumnX, y: marginTop + smallPhotoHeight + spacing + smallPhotoHeight + spacing, width: columnWidth, height: largePhotoHeight }
-                    ];
-                    drawCroppedImage(ctx, img, positions[index], selectedShape);
-                    loadedCount++;
-                    if (loadedCount === imagesToProcess) {
-                        drawStickersAndLogos(ctx, canvas);
-                        updateCanvasPreview(canvas);
-                    }
-                };
-                img.onerror = () => {
-                    console.error(`❌ Failed to load image ${index}:`, imageData);
-                    loadedCount++;
-                    if (loadedCount === imagesToProcess) {
-                        drawStickersAndLogos(ctx, canvas);
-                        updateCanvasPreview(canvas);
-                    }
-                };
-                img.src = imageData;
-            });
-        }
+  // Canvas Rendering
+  /**
+   * Redraws the canvas with current settings
+   * Layout 5 specific calculations preserved
+   */
+  function redrawCanvas() {
+    if (!state.storedImages || !state.storedImages.length) {
+      console.warn('⚠️ No images available for redraw');
+      return;
     }
 
-    function drawCroppedImage(ctx, img, pos, shape) {
-        const { x, y, width, height } = pos;
-        const imgAspect = img.width / img.height;
-        const targetAspect = width / height;
-        let sx, sy, sWidth, sHeight;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Layout 5 specific dimensions - DO NOT CHANGE
+    const canvasWidth = 1200;
+    const canvasHeight = 1800;
+    const borderWidth = 62;
+    const marginTop = 120;
+    const spacing = 37;
+    const centerSpacing = 124;
+    const expectedPhotos = 6;
 
-        if (imgAspect > targetAspect) {
-            sHeight = img.height;
-            sWidth = sHeight * targetAspect;
-            sx = (img.width - sWidth) / 2;
-            sy = 0;
-        } else {
-            sWidth = img.width;
-            sHeight = sWidth / targetAspect;
-            sx = 0;
-            sy = (img.height - sHeight) / 2;
-        }
+    // Area yang tersedia untuk foto (dikurangi border kiri-kanan dan margin atas)
+    const availableWidth = canvasWidth - (borderWidth * 2);
+    const availableHeight = canvasHeight - marginTop - borderWidth;
 
-        drawPhotoWithShape(ctx, img, x, y, width, height, shape, sx, sy, sWidth, sHeight);
+    // Lebar setiap kolom (dikurangi spasi tengah, dibagi 2)
+    const columnWidth = (availableWidth - centerSpacing) / 2;
+
+    // Posisi x untuk kolom
+    const leftColumnX = borderWidth;
+    const rightColumnX = borderWidth + columnWidth + centerSpacing;
+
+    // Menghitung tinggi foto
+    const largePhotoHeight = (availableHeight - spacing * 2) / 2;
+    const smallPhotoHeight = (largePhotoHeight - spacing * 2) / 3;
+
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (state.backgroundType === 'color') {
+      ctx.fillStyle = state.backgroundColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      drawPhotos();
+    } else if (state.backgroundImage) {
+      const bgImg = new Image();
+      bgImg.crossOrigin = 'anonymous';
+      bgImg.onload = () => {
+        ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+        drawPhotos();
+        updateCanvasPreview(canvas);
+      };
+      bgImg.onerror = () => {
+        console.error('❌ Failed to load background image:', state.backgroundImage);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        drawPhotos();
+        updateCanvasPreview(canvas);
+      };
+      bgImg.src = state.backgroundImage;
+      return;
+    } else {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      drawPhotos();
     }
 
-    function drawPhotoWithShape(ctx, img, x, y, width, height, shape, sx, sy, sWidth, sHeight) {
-        ctx.save();
-        if (shape === 'rounded') {
-            roundedRect(ctx, x, y, width, height, 20);
-            ctx.clip();
-        } else {
-            ctx.beginPath();
-            ctx.rect(x, y, width, height);
-            ctx.clip();
-        }
-        ctx.drawImage(img, sx, sy, sWidth, sHeight, x, y, width, height);
-        ctx.restore();
+    function drawPhotos() {
+      if (state.storedImages.length < expectedPhotos) {
+        console.warn(`⚠️ Layout requires ${expectedPhotos} photos, found: ${state.storedImages.length}`);
+      }
+
+      const imagesToProcess = Math.min(state.storedImages.length, expectedPhotos);
+      let loadedCount = 0;
+
+      state.storedImages.slice(0, imagesToProcess).forEach((imageData, index) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          const positions = [
+            // Layout 5 specific positions - DO NOT CHANGE THESE CALCULATIONS
+            { x: leftColumnX, y: marginTop, width: columnWidth, height: largePhotoHeight },
+            { x: leftColumnX, y: marginTop + largePhotoHeight + spacing, width: columnWidth, height: smallPhotoHeight },
+            { x: leftColumnX, y: marginTop + largePhotoHeight + spacing + smallPhotoHeight + spacing, width: columnWidth, height: smallPhotoHeight },
+            { x: rightColumnX, y: marginTop, width: columnWidth, height: smallPhotoHeight },
+            { x: rightColumnX, y: marginTop + smallPhotoHeight + spacing, width: columnWidth, height: smallPhotoHeight },
+            { x: rightColumnX, y: marginTop + smallPhotoHeight + spacing + smallPhotoHeight + spacing, width: columnWidth, height: largePhotoHeight }
+          ];
+          
+          drawCroppedImage(ctx, img, positions[index], state.selectedShape);
+          loadedCount++;
+          
+          if (loadedCount === imagesToProcess) {
+            drawStickersAndLogos(ctx, canvas);
+            updateCanvasPreview(canvas);
+          }
+        };
+        
+        img.onerror = () => {
+          console.error(`❌ Failed to load image ${index}:`, imageData);
+          loadedCount++;
+          if (loadedCount === imagesToProcess) {
+            drawStickersAndLogos(ctx, canvas);
+            updateCanvasPreview(canvas);
+          }
+        };
+        
+        img.src = imageData;
+      });
+    }
+  }
+
+  /**
+   * Draws cropped image with Layout 5 specific calculations
+   */
+  function drawCroppedImage(ctx, img, pos, shape) {
+    const { x, y, width, height } = pos;
+    const imgAspect = img.width / img.height;
+    const targetAspect = width / height;
+    let sx, sy, sWidth, sHeight;
+
+    if (imgAspect > targetAspect) {
+      sHeight = img.height;
+      sWidth = sHeight * targetAspect;
+      sx = (img.width - sWidth) / 2;
+      sy = 0;
+    } else {
+      sWidth = img.width;
+      sHeight = sWidth / targetAspect;
+      sx = 0;
+      sy = (img.height - sHeight) / 2;
     }
 
-    function roundedRect(ctx, x, y, width, height, radius) {
-        ctx.beginPath();
-        ctx.moveTo(x + radius, y);
-        ctx.lineTo(x + width - radius, y);
-        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-        ctx.lineTo(x + width, y + height - radius);
-        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-        ctx.lineTo(x + radius, y + height);
-        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-        ctx.lineTo(x, y + radius);
-        ctx.quadraticCurveTo(x, y, x + radius, y);
-        ctx.closePath();
+    drawPhotoWithShape(ctx, img, x, y, width, height, shape, sx, sy, sWidth, sHeight);
+  }
+
+  /**
+   * Draws photo with specified shape
+   */
+  function drawPhotoWithShape(ctx, img, x, y, width, height, shape, sx, sy, sWidth, sHeight) {
+    ctx.save();
+    if (shape === 'rounded') {
+      roundedRect(ctx, x, y, width, height, 20);
+      ctx.clip();
+    } else {
+      ctx.beginPath();
+      ctx.rect(x, y, width, height);
+      ctx.clip();
+    }
+    ctx.drawImage(img, sx, sy, sWidth, sHeight, x, y, width, height);
+    ctx.restore();
+  }
+
+  /**
+   * Draws rounded rectangle path
+   */
+  function roundedRect(ctx, x, y, width, height, radius) {
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + width - radius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    ctx.lineTo(x + radius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+  }
+
+  /**
+   * Draws stickers and logos on canvas
+   */
+  function drawStickersAndLogos(ctx, canvas) {
+    if (state.selectedSticker) {
+      const stickerImg = new Image();
+      stickerImg.crossOrigin = 'anonymous';
+      stickerImg.onload = () => {
+        ctx.drawImage(stickerImg, 0, 0, canvas.width, canvas.height);
+        console.log('✅ Sticker applied');
+      };
+      stickerImg.onerror = () => {
+        console.error('❌ Failed to load sticker:', state.selectedSticker);
+        handleError('Failed to load sticker');
+      };
+      stickerImg.src = state.selectedSticker;
     }
 
-    function drawStickersAndLogos(ctx, canvas) {
-        if (selectedSticker) {
-            const stickerImg = new Image();
-            stickerImg.crossOrigin = 'anonymous';
-            stickerImg.onload = () => ctx.drawImage(stickerImg, 0, 0, canvas.width, canvas.height);
-            stickerImg.onerror = () => console.error('❌ Failed to load sticker:', selectedSticker);
-            stickerImg.src = selectedSticker;
-        }
-
-        const logoBtn = document.getElementById('engLogo');
-        if (logoBtn && logoBtn.classList.contains('active')) {
-            const logoImg = new Image();
-            logoImg.crossOrigin = 'anonymous';
-            logoImg.onload = () => ctx.drawImage(logoImg, 20, canvas.height - 60, 100, 40);
-            logoImg.onerror = () => console.error('❌ Failed to load logo:', '/src/assets/logo.png');
-            logoImg.src = '/src/assets/logo.png';
-        }
+    // Logo drawing
+    const logoBtn = document.getElementById('engLogo');
+    if (logoBtn && logoBtn.classList.contains('active')) {
+      const logoImg = new Image();
+      logoImg.crossOrigin = 'anonymous';
+      logoImg.onload = () => {
+        ctx.drawImage(logoImg, 20, canvas.height - 60, 100, 40);
+        console.log('✅ Logo applied');
+      };
+      logoImg.onerror = () => {
+        console.error('❌ Failed to load logo');
+        handleError('Failed to load logo');
+      };
+      logoImg.src = '/src/assets/logo.png';
     }
+  }
 
-    function updateCanvasPreview(canvas) {
-        if (photoCustomPreview) {
-            photoCustomPreview.innerHTML = '';
-            Object.assign(canvas.style, {
-                maxWidth: '300px',
-                maxHeight: '450px',
-                width: 'auto',
-                height: 'auto',
-                border: '2px solid #ddd',
-                borderRadius: '8px',
-                boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                display: 'block',
-                margin: '0 auto'
-            });
-            photoCustomPreview.appendChild(canvas);
-        }
-        finalCanvas = canvas;
+  /**
+   * Updates canvas preview in DOM
+   */
+  function updateCanvasPreview(canvas) {
+    if (DOM.photoCustomPreview) {
+      DOM.photoCustomPreview.innerHTML = '';
+      Object.assign(canvas.style, {
+        maxWidth: '300px',
+        maxHeight: '450px',
+        width: 'auto',
+        height: 'auto',
+        border: '2px solid #ddd',
+        borderRadius: '8px',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+        display: 'block',
+        margin: '0 auto'
+      });
+      DOM.photoCustomPreview.appendChild(canvas);
+      console.log('✅ Canvas preview updated');
     }
+    state.finalCanvas = canvas;
+  }
 
-    // Initialize sticker controls with database data
+  // Print Functions
+  /**
+   * Shows print popup with canvas image
+   */
+  function showSimplePrintPopup(imageDataUrl) {
+    const existingPopup = document.getElementById('simplePrintPopup');
+    if (existingPopup) existingPopup.remove();
 
-    // Print popup function
-    function showSimplePrintPopup(imageDataUrl) {
-        const existingPopup = document.getElementById('simplePrintPopup');
-        if (existingPopup) existingPopup.remove();
-
-        const popup = document.createElement('div');
-        popup.id = 'simplePrintPopup';
-        Object.assign(popup.style, {
-            position: 'fixed',
-            top: '0',
+    const popup = document.createElement('div');
+    popup.id = 'simplePrintPopup';
+    Object.assign(popup.style, {
+      position: 'fixed',
+      top: '0',
             left: '0',
             width: '100%',
             height: '100%',
@@ -783,7 +940,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     printWindow.close();
                     
                     // Mark print as used and disable button
-                    printUsed = true;
+                    state.printUsed = true;
                     const printBtn = document.getElementById('printBtn');
                     if (printBtn) {
                         printBtn.disabled = true;

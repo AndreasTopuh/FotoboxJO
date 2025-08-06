@@ -1,20 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
     // ⚡ COMPRESSION CONFIGURATION - 3-Level Quality System
     const COMPRESSION_CONFIG = {
-        // Untuk session storage (temporary) - FAST SAVE
-        SESSION_QUALITY: 0.5,        // 80% - bagus untuk preview
-        SESSION_MAX_WIDTH: 1200,     // Resize untuk storage
-        SESSION_MAX_HEIGHT: 800,
+        // Untuk session storage (temporary) - BALANCED QUALITY
+        SESSION_QUALITY: 0.85,       // 85% - bagus untuk customize & print
+        SESSION_MAX_WIDTH: 1600,     // Cukup untuk print 4R
+        SESSION_MAX_HEIGHT: 1200,
 
         // Untuk download/print (high quality) - BEST QUALITY
-        DOWNLOAD_QUALITY: 1.0,      // 100% - hampir lossless
+        DOWNLOAD_QUALITY: 0.95,      // 95% - hampir lossless
         DOWNLOAD_MAX_WIDTH: 2400,    // Full resolution
-        DOWNLOAD_MAX_HEIGHT: 1600,
+        DOWNLOAD_MAX_HEIGHT: 1800,
         
         // Untuk preview thumbnail - FAST PREVIEW
         THUMB_QUALITY: 0.6,          // 60% - kecil untuk preview
-        THUMB_MAX_WIDTH: 300,
-        THUMB_MAX_HEIGHT: 200
+        THUMB_MAX_WIDTH: 400,
+        THUMB_MAX_HEIGHT: 300
     };
 
     // 🚀 FAST COMPRESSION FUNCTION
@@ -818,6 +818,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 imageData = await applyMirrorEffect(imageData);
             }
             
+            // 💾 BACKUP ORIGINAL ke localStorage (untuk high quality di customize)
+            const originalImages = JSON.parse(localStorage.getItem('fotobox_originals') || '[]');
+            originalImages[images.length] = imageData; // Simpan original
+            try {
+                localStorage.setItem('fotobox_originals', JSON.stringify(originalImages));
+                localStorage.setItem('fotobox_timestamp', Date.now().toString());
+                console.log(`💾 Original photo ${images.length + 1} backed up to localStorage`);
+            } catch (e) {
+                console.warn('⚠️ Could not backup original to localStorage:', e.message);
+            }
+            
             const compressedImage = await compressImage(imageData, 'session'); // Compress for preview
             images.push(compressedImage);
             
@@ -1225,69 +1236,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
     
-    // 🚀 OPTIMIZED STORE IMAGE FUNCTION - 3x FASTER!
+    // 🚀 OPTIMIZED STORE IMAGE FUNCTION - HIGH QUALITY READY!
     async function storeImageArray() {
         const photoCount = 2; // Layout 1 has 2 photos
         const doneBtn = document.getElementById('doneBtn');
         const startTime = Date.now(); // Add timing
         
         try {
-            console.log('⚡ Starting FAST photo compression...');
+            console.log('⚡ Starting HIGH QUALITY photo processing...');
             
             // Show progress
             if (doneBtn) {
-                doneBtn.textContent = 'Compressing...';
+                doneBtn.textContent = 'Processing...';
                 doneBtn.disabled = true;
             }
             
-            const sessionPhotos = [];  // For session (80% quality - FAST)
-            const originalPhotos = []; // Backup original (100% quality - DOWNLOAD)
-            
-            // Process each image
-            for (let index = 0; index < images.length; index++) {
-                const imgData = images[index];
-                if (!imgData) continue;
-                
-                console.log(`📸 Processing image ${index + 1}/${photoCount}...`);
-                
-                // Update progress
-                if (doneBtn) {
-                    const progress = Math.round(((index + 1) / photoCount) * 50); // 50% for compression
-                    doneBtn.textContent = `Compressing ${progress}%`;
-                }
-                
-                let processedImage = imgData;
-                
-                // Apply mirror if needed
-                if (typeof invertBtnState !== 'undefined' && invertBtnState) {
-                    processedImage = await applyMirrorEffect(imgData);
-                }
-                
-                // Compress for session (FAST SAVE)
-                const compressedImage = await compressImage(processedImage, 'session');
-                sessionPhotos[index] = compressedImage;
-                
-                // Keep original for download (HIGH QUALITY)
-                originalPhotos[index] = processedImage;
-                
-                console.log(`✅ Image ${index + 1} compressed: ${Math.round(compressedImage.length / 1024)}KB`);
-            }
+            // Images are already compressed to session quality (85%)
+            // Originals are backed up in localStorage
+            const sessionPhotos = images; // Use processed images
             
             // Update progress
             if (doneBtn) {
-                doneBtn.textContent = 'Menyimpan foto...';
+                doneBtn.textContent = 'Saving photos...';
             }
             
-            console.log('💾 Saving compressed photos to server session...');
+            console.log('💾 Saving session photos to server...');
             
-            // Save compressed photos to session (SUPER FAST)
+            // Save session photos to server
             const response = await fetch('../api-fetch/save_photos.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ photos: sessionPhotos }),
-                signal: AbortSignal.timeout(15000) // Reduced to 15s because smaller size
+                body: JSON.stringify({ 
+                    photos: sessionPhotos,
+                    metadata: {
+                        quality: 'session_balanced',
+                        has_originals: true,
+                        compression_level: COMPRESSION_CONFIG.SESSION_QUALITY,
+                        timestamp: Date.now()
+                    }
+                }),
+                signal: AbortSignal.timeout(20000) // 20 second timeout
             });
             
             if (!response.ok) {
@@ -1298,15 +1288,10 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (data.success) {
                 console.log(`🎉 SUCCESS! Photos saved in ${Date.now() - startTime}ms`);
-                console.log(`📊 Compressed size: ${data.data_size || 'unknown'}`);
+                console.log(`📊 Session size: ${data.data_size || 'unknown'}`);
                 
-                // Save originals to localStorage for download
-                try {
-                    localStorage.setItem('fotobox_originals', JSON.stringify(originalPhotos));
-                    localStorage.setItem('fotobox_timestamp', Date.now().toString());
-                    console.log('💾 Original photos backed up for download');
-                } catch (e) {
-                    console.warn('⚠️ Could not backup originals:', e.message);
+                if (doneBtn) {
+                    doneBtn.textContent = 'Creating session...';
                 }
                 
                 // Create customize session
@@ -1318,7 +1303,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (sessionResponse.ok) {
                     const sessionData = await sessionResponse.json();
                     if (sessionData.success) {
-                        console.log('✅ Customize session created');
+                        console.log('✅ Customize session created - redirecting...');
                         window.location.href = 'customizeLayout1.php';
                         return;
                     }
@@ -1346,6 +1331,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 errorMessage += 'Request timeout. Please try again.';
             } else if (error.message.includes('Failed to fetch')) {
                 errorMessage += 'Network error. Check your connection.';
+            } else if (error.message.includes('413') || error.message.includes('Payload Too Large')) {
+                errorMessage += 'Photos too large. Try reducing quality.';
             } else {
                 errorMessage += error.message;
             }

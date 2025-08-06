@@ -1,4 +1,89 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // ⚡ COMPRESSION CONFIGURATION - 3-Level Quality System
+  const COMPRESSION_CONFIG = {
+    // Untuk session storage (temporary) - BALANCED QUALITY
+    SESSION_QUALITY: 0.85,       // 85% - bagus untuk customize & print
+    SESSION_MAX_WIDTH: 1600,     // Cukup untuk print 4R
+    SESSION_MAX_HEIGHT: 1200,
+
+    // Untuk download/print (high quality) - BEST QUALITY
+    DOWNLOAD_QUALITY: 0.95,      // 95% - hampir lossless
+    DOWNLOAD_MAX_WIDTH: 2400,    // Full resolution
+    DOWNLOAD_MAX_HEIGHT: 1800,
+    
+    // Untuk preview thumbnail - FAST PREVIEW
+    THUMB_QUALITY: 0.6,          // 60% - kecil untuk preview
+    THUMB_MAX_WIDTH: 400,
+    THUMB_MAX_HEIGHT: 300
+  };
+
+  // 🚀 FAST COMPRESSION FUNCTION
+  function compressImage(imageData, mode = 'session') {
+    return new Promise((resolve, reject) => {
+      try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        
+        img.onload = () => {
+          let { width, height, quality, maxWidth, maxHeight } = getCompressionSettings(mode);
+          
+          // Calculate new dimensions
+          const aspectRatio = img.width / img.height;
+          if (img.width > maxWidth || img.height > maxHeight) {
+            if (aspectRatio > 1) {
+              width = Math.min(maxWidth, img.width);
+              height = width / aspectRatio;
+            } else {
+              height = Math.min(maxHeight, img.height);
+              width = height * aspectRatio;
+            }
+          } else {
+            width = img.width;
+            height = img.height;
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          // Draw and compress
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedData = canvas.toDataURL('image/jpeg', quality);
+          resolve(compressedData);
+        };
+        
+        img.onerror = () => reject(new Error('Failed to load image for compression'));
+        img.src = imageData;
+        
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  function getCompressionSettings(mode) {
+    switch (mode) {
+      case 'download':
+        return {
+          quality: COMPRESSION_CONFIG.DOWNLOAD_QUALITY,
+          maxWidth: COMPRESSION_CONFIG.DOWNLOAD_MAX_WIDTH,
+          maxHeight: COMPRESSION_CONFIG.DOWNLOAD_MAX_HEIGHT
+        };
+      case 'thumb':
+        return {
+          quality: COMPRESSION_CONFIG.THUMB_QUALITY,
+          maxWidth: COMPRESSION_CONFIG.THUMB_MAX_WIDTH,
+          maxHeight: COMPRESSION_CONFIG.THUMB_MAX_HEIGHT
+        };
+      default: // session
+        return {
+          quality: COMPRESSION_CONFIG.SESSION_QUALITY,
+          maxWidth: COMPRESSION_CONFIG.SESSION_MAX_WIDTH,
+          maxHeight: COMPRESSION_CONFIG.SESSION_MAX_HEIGHT
+        };
+    }
+  }
+
   // Configuration constants
   const CONFIG = {
     CANVAS_WIDTH: 1200,
@@ -542,13 +627,23 @@ document.addEventListener('DOMContentLoaded', () => {
           handleError('Tidak ada gambar untuk dikirim ke email', 'alert');
         }
       },
-      printBtn: () => {
+      printBtn: async () => {
         if (state.printUsed) {
           handleError('Print sudah pernah digunakan!', 'alert');
           return;
         }
         if (state.finalCanvas) {
-          showSimplePrintPopup(state.finalCanvas.toDataURL('image/jpeg', 1.0));
+          // Generate high quality version for print preview
+          console.log('🖨️ Generating high quality for print...');
+          try {
+            const highQualityCanvas = await generateHighQualityCanvas();
+            const highQualityDataUrl = highQualityCanvas.toDataURL('image/jpeg', 0.95);
+            showSimplePrintPopup(highQualityDataUrl);
+          } catch (error) {
+            console.error('❌ Error generating high quality for print:', error);
+            // Fallback to normal quality
+            showSimplePrintPopup(state.finalCanvas.toDataURL('image/jpeg', 1.0));
+          }
         } else {
           handleError('Tidak ada gambar untuk di-print', 'alert');
         }
@@ -706,21 +801,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const sendBtn = document.getElementById('sendEmailBtn');
     const originalHtml = sendBtn.innerHTML;
-    sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan & Mengirim...';
+    sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating High Quality...';
     sendBtn.disabled = true;
 
     try {
-      const blob = await new Promise((resolve) => state.finalCanvas.toBlob(resolve, 'image/png'));
+      console.log('📧 Starting high quality email process...');
+      
+      // Generate high quality version
+      const highQualityCanvas = await generateHighQualityCanvas();
+      
+      sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing for Email...';
+      
+      const blob = await new Promise((resolve) => highQualityCanvas.toBlob(resolve, 'image/jpeg', 0.95));
       const base64data = await new Promise((resolve) => {
         const reader = new FileReader();
         reader.onloadend = () => resolve(reader.result);
         reader.readAsDataURL(blob);
       });
 
+      sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving High Quality Photo...';
+
       const response = await fetch('../api-fetch/save_final_photo_v2.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ image: base64data }),
+        body: JSON.stringify({ 
+          image: base64data,
+          quality: 'high',
+          source: 'customize_high_quality'
+        }),
       });
 
       const text = await response.text();
@@ -733,6 +841,8 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error(data.message || 'Server error');
       }
 
+      sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending Email...';
+
       const photoLink = window.location.origin + data.url;
       const emailParams = {
         email,
@@ -744,8 +854,9 @@ document.addEventListener('DOMContentLoaded', () => {
         name: 'Sobat',
         user_name: 'Sobat',
         to_name: 'Sobat',
-        from_name: 'GOFOTOBOX',
-        message: `Halo Sobat! Link foto Anda: ${photoLink}`,
+        from_name: 'GOFOTOBOX - HIGH QUALITY',
+        message: `Halo Sobat! Link foto berkualitas tinggi Anda: ${photoLink}`,
+        subject: 'Foto Berkualitas Tinggi dari GOFOTOBOX'
       };
 
       await emailjs.send(CONFIG.EMAILJS_SERVICE_ID, CONFIG.EMAILJS_TEMPLATE_ID, emailParams);
@@ -756,16 +867,22 @@ document.addEventListener('DOMContentLoaded', () => {
         emailBtn.disabled = true;
         emailBtn.style.opacity = '0.5';
         emailBtn.style.cursor = 'not-allowed';
-        emailBtn.innerHTML = '✅ Email Terkirim';
+        emailBtn.innerHTML = '✅ Email Terkirim (HQ)';
       }
-      showValidationError('Email berhasil dikirim! ✅ Cek inbox Anda.');
+      
+      showValidationError('Email berkualitas tinggi berhasil dikirim! ✅ Cek inbox Anda.');
       document.querySelector('.input-validation span').style.color = '#28a745';
+      
       setTimeout(() => {
         DOM.emailModal.style.display = 'none';
         DOM.emailInput.value = '';
         hideValidationError();
       }, 3000);
+      
+      console.log('✅ High quality email sent successfully');
+      
     } catch (error) {
+      console.error('❌ Email error:', error);
       handleError('Email error: ' + error.message, 'validation');
     } finally {
       sendBtn.innerHTML = originalHtml;
@@ -773,12 +890,143 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Print Functionality
+  /**
+   * Generates high quality version of the canvas for print/download
+   */
+  async function generateHighQualityCanvas() {
+    console.log('🎨 Generating high quality canvas for print...');
+    
+    if (!state.storedImages.length) {
+      console.warn('⚠️ No images available for high quality generation');
+      return state.finalCanvas;
+    }
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Use higher resolution for print
+    const printScale = 2; // 2x resolution for better print quality
+    canvas.width = CONFIG.CANVAS_WIDTH * printScale;
+    canvas.height = CONFIG.CANVAS_HEIGHT * printScale;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Scale context for high resolution
+    ctx.scale(printScale, printScale);
+
+    // Apply background
+    if (state.backgroundType === 'color') {
+      ctx.fillStyle = state.backgroundColor;
+      ctx.fillRect(0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
+      await drawHighQualityPhotos(ctx, canvas, printScale);
+    } else if (state.backgroundImage) {
+      try {
+        const bgImg = await loadImage(state.backgroundImage);
+        ctx.drawImage(bgImg, 0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
+        await drawHighQualityPhotos(ctx, canvas, printScale);
+      } catch (error) {
+        console.error('❌ Failed to load background image:', state.backgroundImage);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
+        await drawHighQualityPhotos(ctx, canvas, printScale);
+      }
+    } else {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
+      await drawHighQualityPhotos(ctx, canvas, printScale);
+    }
+    
+    console.log('✅ High quality canvas generated');
+    return canvas;
+  }
+
+  /**
+   * Draws photos on high quality canvas
+   */
+  async function drawHighQualityPhotos(ctx, canvas, printScale) {
+    if (state.storedImages.length < CONFIG.EXPECTED_PHOTOS) {
+      console.warn(`⚠️ Layout requires ${CONFIG.EXPECTED_PHOTOS} photos, found: ${state.storedImages.length}`);
+    }
+
+    const imagesToProcess = Math.min(state.storedImages.length, CONFIG.EXPECTED_PHOTOS);
+    let loadedCount = 0;
+
+    for (const [index, imageData] of state.storedImages.slice(0, imagesToProcess).entries()) {
+      try {
+        // Try to get original from localStorage first
+        let originalImageData = imageData;
+        const originalData = localStorage.getItem('fotobox_originals');
+        if (originalData) {
+          try {
+            const originals = JSON.parse(originalData);
+            if (originals[index]) {
+              console.log(`📁 Using original photo ${index + 1} from localStorage`);
+              originalImageData = originals[index];
+            }
+          } catch (e) {
+            console.warn('⚠️ Could not parse localStorage originals:', e);
+          }
+        }
+
+        // Compress to download quality if using session data
+        let processedImageData = originalImageData;
+        if (originalImageData === imageData) {
+          // If same as session data, enhance it
+          processedImageData = await compressImage(imageData, 'download');
+          console.log(`🚀 Enhanced session photo ${index + 1} to download quality`);
+        }
+
+        const img = await loadImage(processedImageData);
+        const xPosition = (CONFIG.CANVAS_WIDTH - CONFIG.PHOTO_WIDTH) / 2;
+        const positions = [
+          { x: xPosition, y: CONFIG.MARGIN_TOP, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },
+          {
+            x: xPosition,
+            y: CONFIG.MARGIN_TOP + CONFIG.PHOTO_HEIGHT + CONFIG.SPACING,
+            width: CONFIG.PHOTO_WIDTH,
+            height: CONFIG.PHOTO_HEIGHT,
+          },
+        ];
+        drawCroppedImage(ctx, img, positions[index], state.selectedShape);
+        loadedCount++;
+        
+        if (loadedCount === imagesToProcess) {
+          await drawHighQualityStickersAndLogos(ctx, canvas, printScale);
+        }
+      } catch (error) {
+        console.error(`❌ Failed to load high quality image ${index}:`, error);
+        handleError(`Failed to load image: ${imageData}`, 'console');
+      }
+    }
+  }
+
+  /**
+   * Draws stickers and logos on high quality canvas
+   */
+  async function drawHighQualityStickersAndLogos(ctx, canvas, printScale) {
+    if (state.selectedSticker) {
+      try {
+        const stickerImg = await loadImage(state.selectedSticker);
+        ctx.drawImage(stickerImg, 0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
+      } catch (error) {
+        console.error('❌ Failed to load sticker:', state.selectedSticker);
+      }
+    }
+
+    const logoBtn = document.getElementById('engLogo');
+    if (logoBtn && logoBtn.classList.contains('active')) {
+      try {
+        const logoImg = await loadImage(CONFIG.LOGO_SRC);
+        ctx.drawImage(logoImg, 20, CONFIG.CANVAS_HEIGHT - 60, 100, 40);
+      } catch (error) {
+        console.error('❌ Failed to load logo:', CONFIG.LOGO_SRC);
+      }
+    }
+  }
   /**
    * Shows print preview popup
    * @param {string} imageDataUrl - Image data URL
    */
-  function showSimplePrintPopup(imageDataUrl) {
+  async function showSimplePrintPopup(imageDataUrl) {
     const existingPopup = document.getElementById('simplePrintPopup');
     if (existingPopup) existingPopup.remove();
 
@@ -811,7 +1059,10 @@ document.addEventListener('DOMContentLoaded', () => {
       <h3 style="margin: 0 0 15px 0; color: #333;">Print Preview</h3>
       <img src="${imageDataUrl}" style="max-width: 350px; height: auto; border: 2px solid #ddd; border-radius: 5px; margin-bottom: 20px;" alt="Print Preview" />
       <div>
-        <button id="directPrintBtn" style="background: #28a745; color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-size: 16px; margin-right: 10px; font-weight: bold;">🖨️ Print</button>
+        <button id="directPrintBtn" style="background: #28a745; color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-size: 16px; margin-right: 10px; font-weight: bold;">
+          <i class="fas fa-spinner fa-spin" style="display: none; margin-right: 5px;"></i>
+          🖨️ Print High Quality
+        </button>
         <button id="closePopupBtn" style="background: #6c757d; color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;">✖️ Close</button>
       </div>
     `;
@@ -819,44 +1070,74 @@ document.addEventListener('DOMContentLoaded', () => {
     popup.appendChild(popupBox);
     document.body.appendChild(popup);
 
-    document.getElementById('directPrintBtn').addEventListener('click', () => {
-      const printWindow = window.open('', '_blank');
-      printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Print Photo</title>
-          <style>
-            @page { size: 4in 6in; margin: 0; }
-            * { margin: 0; padding: 0; border: none; box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            html, body { width: 4in; height: 6in; margin: 0; padding: 0; overflow: hidden; }
-            .print-container { width: 4in; height: 6in; position: absolute; top: 0; left: 0; }
-            .print-image { width: 4in; height: 6in; object-fit: cover; position: absolute; top: 0; left: 0; }
-          </style>
-        </head>
-        <body>
-          <div class="print-container">
-            <img src="${imageDataUrl}" class="print-image" alt="Print Photo" />
-          </div>
-        </body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.onload = () => {
-        setTimeout(() => {
-          printWindow.print();
-          printWindow.close();
-          state.printUsed = true;
-          const printBtn = document.getElementById('printBtn');
-          if (printBtn) {
-            printBtn.disabled = true;
-            printBtn.style.opacity = '0.5';
-            printBtn.style.cursor = 'not-allowed';
-            printBtn.innerHTML = '✅ Sudah Print';
-          }
-          popup.remove();
-        }, 500);
-      };
+    document.getElementById('directPrintBtn').addEventListener('click', async () => {
+      const printBtn = document.getElementById('directPrintBtn');
+      const spinner = printBtn.querySelector('.fa-spinner');
+      const originalText = printBtn.innerHTML;
+      
+      try {
+        // Show loading
+        printBtn.disabled = true;
+        printBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 5px;"></i> Generating High Quality...';
+        
+        console.log('🖨️ Starting high quality print process...');
+        
+        // Generate high quality version
+        const highQualityCanvas = await generateHighQualityCanvas();
+        const highQualityDataUrl = highQualityCanvas.toDataURL('image/jpeg', 0.95);
+        
+        printBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 5px;"></i> Opening Print Dialog...';
+        
+        // Print with high quality
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Print Photo - High Quality</title>
+            <style>
+              @page { size: 4in 6in; margin: 0; }
+              * { margin: 0; padding: 0; border: none; box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+              html, body { width: 4in; height: 6in; margin: 0; padding: 0; overflow: hidden; }
+              .print-container { width: 4in; height: 6in; position: absolute; top: 0; left: 0; }
+              .print-image { width: 4in; height: 6in; object-fit: cover; position: absolute; top: 0; left: 0; }
+            </style>
+          </head>
+          <body>
+            <div class="print-container">
+              <img src="${highQualityDataUrl}" class="print-image" alt="Print Photo - High Quality" />
+            </div>
+          </body>
+          </html>
+        `);
+        printWindow.document.close();
+        
+        printWindow.onload = () => {
+          setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+            
+            // Mark as used and update UI
+            state.printUsed = true;
+            const printBtn = document.getElementById('printBtn');
+            if (printBtn) {
+              printBtn.disabled = true;
+              printBtn.style.opacity = '0.5';
+              printBtn.style.cursor = 'not-allowed';
+              printBtn.innerHTML = '✅ Sudah Print (HQ)';
+            }
+            
+            popup.remove();
+            console.log('✅ High quality print completed');
+          }, 500);
+        };
+        
+      } catch (error) {
+        console.error('❌ Print error:', error);
+        alert('❌ Gagal print dengan kualitas tinggi. Coba lagi.');
+        printBtn.innerHTML = originalText;
+        printBtn.disabled = false;
+      }
     });
 
     document.getElementById('closePopupBtn').addEventListener('click', () => popup.remove());
