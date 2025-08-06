@@ -87,69 +87,6 @@ require_once '../includes/pwa-helper.php';
 
         }
 
-        /* Video Button Styles */
-        .video-btn {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a52) !important;
-            border: none !important;
-            color: white !important;
-            transition: all 0.3s ease !important;
-        }
-
-        .video-btn:hover {
-            background: linear-gradient(45deg, #ee5a52, #dc4545) !important;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(238, 90, 82, 0.3);
-        }
-
-        .video-btn:disabled {
-            background: #cccccc !important;
-            cursor: not-allowed !important;
-            transform: none !important;
-            box-shadow: none !important;
-        }
-
-        /* Video Progress Modal */
-        .video-progress {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            z-index: 9999;
-            text-align: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .video-progress .progress-bar {
-            width: 250px;
-            height: 6px;
-            background: #333;
-            border-radius: 3px;
-            overflow: hidden;
-            margin: 15px auto;
-            position: relative;
-        }
-
-        .video-progress .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #ff6b6b, #ee5a52);
-            width: 0%;
-            transition: width 0.3s ease;
-            border-radius: 3px;
-        }
-
-        .video-progress-icon {
-            font-size: 3rem;
-            color: #ff6b6b;
-            margin-bottom: 15px;
-            animation: pulse 2s infinite;
-        }
-
         @keyframes pulse {
             0% {
                 transform: scale(1);
@@ -162,18 +99,6 @@ require_once '../includes/pwa-helper.php';
             100% {
                 transform: scale(1);
             }
-        }
-
-        .video-progress-text {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .video-progress-subtext {
-            font-size: 0.9rem;
-            opacity: 0.8;
-            margin-top: 10px;
         }
 
         /* Loading placeholder styles */

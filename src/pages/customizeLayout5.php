@@ -10,6 +10,7 @@ require_once '../includes/pwa-helper.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,42 +19,24 @@ require_once '../includes/pwa-helper.php';
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Photobooth | Customize Layout 1</title>
+    <title>Photobooth | Customize Layout 5</title>
     <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png">
-    
+
     <!-- Stylesheets -->
     <link rel="stylesheet" href="home-styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Syne:wght@400;700&family=Poppins:wght@400;600;700&family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap">
 
-    <!-- Loading placeholder styles -->
-    <style>
-        .loading-placeholder {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #666;
-            font-style: italic;
-            padding: 20px;
-            min-height: 50px;
-        }
-        
-        /* Hide loading placeholder when assets loaded */
-        .assets-loaded .loading-placeholder {
-            display: none;
-        }
-    </style>
-    
     <?php PWAHelper::addPWAHeaders(); ?>
-    
+
     <style>
         /* Print styles for 4R paper */
         @page {
             size: 4in 6in;
             margin: 0;
         }
-        
+
         @media print {
             * {
                 -webkit-print-color-adjust: exact;
@@ -63,8 +46,9 @@ require_once '../includes/pwa-helper.php';
                 border: none;
                 box-sizing: border-box;
             }
-            
-            html, body {
+
+            html,
+            body {
                 width: 4in;
                 height: 6in;
                 margin: 0;
@@ -72,7 +56,7 @@ require_once '../includes/pwa-helper.php';
                 overflow: hidden;
                 background: none;
             }
-            
+
             .print-container {
                 width: 4in;
                 height: 6in;
@@ -80,7 +64,7 @@ require_once '../includes/pwa-helper.php';
                 top: 0;
                 left: 0;
             }
-            
+
             .print-image {
                 width: 4in;
                 height: 6in;
@@ -91,26 +75,125 @@ require_once '../includes/pwa-helper.php';
                 left: 0;
                 display: block;
             }
+
+            .print-container .modal-content {
+                position: fixed !important;
+                top: 100px !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+            }
+
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Loading placeholder styles */
+        .loading-placeholder {
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            animation: pulse-loading 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse-loading {
+
+            0%,
+            100% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Dynamic assets styling */
+        .dynamic-frame-btn,
+        .dynamic-sticker-btn {
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .dynamic-frame-btn:hover,
+        .dynamic-sticker-btn:hover {
+            border-color: #E28585;
+            transform: scale(1.05);
+        }
+
+        .dynamic-frame-btn.active,
+        .dynamic-sticker-btn.active {
+            border-color: #E28585;
+            background: rgba(226, 133, 133, 0.1);
+        }
+
+        .dynamic-frame-btn img,
+        .dynamic-sticker-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
     </style>
 </head>
 
 <body>
     <div class="gradientBgCanvas"></div>
-    
+
     <main class="customize-content-wrapper">
         <!-- Customization Options -->
         <section class="customize-left-section">
             <h1 class="customize-title">Customize Your Photo</h1>
-            
+
             <!-- Frame Color -->
             <div class="customize-options-group">
                 <h3 class="customize-options-label">Frame Color</h3>
-                <div class="customize-buttons-grid" id="frames-container">
-                    <!-- Dynamic frames will be loaded here -->
+                <div class="customize-buttons-grid">
+                    <button id="pinkBtnFrame" class="buttonFrames frame-color-pink"></button>
+                    <button id="blueBtnFrame" class="buttonFrames frame-color-blue"></button>
+                    <button id="yellowBtnFrame" class="buttonFrames frame-color-yellow"></button>
+                    <button id="matchaBtnFrame" class="buttonFrames frame-color-matcha"></button>
+                    <button id="purpleBtnFrame" class="buttonFrames frame-color-purple"></button>
+                    <button id="brownBtnFrame" class="buttonFrames frame-color-brown"></button>
+                    <button id="redBtnFrame" class="buttonFrames frame-color-red"></button>
+                    <button id="whiteBtnFrame" class="buttonFrames frame-color-white"></button>
+                    <button id="blackBtnFrame" class="buttonFrames frame-color-black"></button>
+                </div>
+            </div>
+
+            <!-- Background Frames (Dynamic from Database) -->
+            <div class="customize-options-group">
+                <h3 class="customize-options-label">Background Frames</h3>
+                <div id="dynamicFramesContainer" class="customize-buttons-grid">
                     <div class="loading-placeholder">Loading frames...</div>
-                    <!-- Dynamic frames will be loaded here -->
-                    <div class="loading-placeholder">Loading frames...</div>
+                </div>
+            </div>
+
+            <!-- Stickers (Dynamic from Database) -->
+            <div class="customize-options-group">
+                <h3 class="customize-options-label">Stickers</h3>
+                <div id="dynamicStickersContainer" class="customize-buttons-grid stickers-grid">
+                    <button id="noneSticker" class="buttonStickers sticker-none">
+                        <img src="../assets/block (1).png" alt="None" class="shape-icon">
+                    </button>
+                    <div class="loading-placeholder">Loading stickers...</div>
                 </div>
             </div>
 
@@ -124,15 +207,6 @@ require_once '../includes/pwa-helper.php';
                     <button id="softFrameShape" class="buttonShapes">
                         <img src="../assets/corners.png" alt="Soft Edge Frame" class="shape-icon">
                     </button>
-                </div>
-            </div>
-
-            <!-- Stickers -->
-            <div class="customize-options-group">
-                <h3 class="customize-options-label">Stickers</h3>
-                <div class="customize-buttons-grid stickers-grid" id="stickers-container">
-                    <!-- Dynamic stickers will be loaded here -->
-                    <div class="loading-placeholder">Loading stickers...</div>
                 </div>
             </div>
 
@@ -246,12 +320,13 @@ require_once '../includes/pwa-helper.php';
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script>
         (function() {
-            emailjs.init({ publicKey: "9SDzOfKjxuULQ5ZW8" });
+            emailjs.init({
+                publicKey: "9SDzOfKjxuULQ5ZW8"
+            });
         })();
     </script>
-    <script src="customizeLayout5.js"></script>
-    <!-- Assets Manager for dynamic loading -->
     <script src="../assets/js/assets-manager.js"></script>
+    <script src="customizeLayout5.js"></script>
     <script src="../includes/session-timer.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -264,4 +339,5 @@ require_once '../includes/pwa-helper.php';
     </script>
     <?php PWAHelper::addPWAScript(); ?>
 </body>
+
 </html>

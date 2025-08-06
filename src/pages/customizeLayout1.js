@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     CANVAS_HEIGHT: 1800,
     MARGIN_TOP: 142,
     SPACING: 72,
-    PHOTO_WIDTH: 967.5, // 80% dari 1075
-    PHOTO_HEIGHT: 574.2, // 80% dari 638
+    PHOTO_WIDTH: 967.5,
+    PHOTO_HEIGHT: 574.2,
     EXPECTED_PHOTOS: 2,
     EMAILJS_SERVICE_ID: 'service_gtqjb2j',
     EMAILJS_TEMPLATE_ID: 'template_pp5i4hm',
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
         state.imageCache.set(src, img);
         resolve(img);
       };
-      img.onerror = () => reject(new Error(`Gagal memuat gambar: ${src}`));
+      img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
       img.src = src;
     });
   }
