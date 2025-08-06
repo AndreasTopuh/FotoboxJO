@@ -1,0 +1,76 @@
+<?php
+class Database
+{
+    private static $connection = null;
+
+    private static $host = 'localhost';
+    private static $dbname = 'db_gofotobox';
+    private static $username = 'root';
+    private static $password = 'loron';
+
+    public static function connect()
+    {
+        if (self::$connection === null) {
+            try {
+                self::$connection = new PDO(
+                    "mysql:host=" . self::$host . ";dbname=" . self::$dbname . ";charset=utf8mb4",
+                    self::$username,
+                    self::$password,
+                    [
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                        PDO::ATTR_EMULATE_PREPARES => false
+                    ]
+                );
+            } catch (PDOException $e) {
+                error_log("Database connection failed: " . $e->getMessage());
+                throw new Exception("Database connection failed: " . $e->getMessage());
+            }
+        }
+        return self::$connection;
+    }
+
+    // Frame methods
+    public static function getAllFrames()
+    {
+        $db = self::connect();
+        $stmt = $db->query("SELECT * FROM table_frame WHERE is_active = 1 ORDER BY created_at DESC");
+        return $stmt->fetchAll();
+    }
+
+    public static function insertFrame($nama, $warna, $filename, $file_path, $file_size)
+    {
+        $db = self::connect();
+        $stmt = $db->prepare("INSERT INTO table_frame (nama, warna, filename, file_path, file_size) VALUES (?, ?, ?, ?, ?)");
+        return $stmt->execute([$nama, $warna, $filename, $file_path, $file_size]);
+    }
+
+    public static function deleteFrame($id)
+    {
+        $db = self::connect();
+        $stmt = $db->prepare("UPDATE table_frame SET is_active = 0 WHERE id = ?");
+        return $stmt->execute([$id]);
+    }
+
+    // Sticker methods
+    public static function getAllStickers()
+    {
+        $db = self::connect();
+        $stmt = $db->query("SELECT * FROM table_sticker WHERE is_active = 1 ORDER BY created_at DESC");
+        return $stmt->fetchAll();
+    }
+
+    public static function insertSticker($nama, $filename, $file_path, $file_size)
+    {
+        $db = self::connect();
+        $stmt = $db->prepare("INSERT INTO table_sticker (nama, filename, file_path, file_size) VALUES (?, ?, ?, ?)");
+        return $stmt->execute([$nama, $filename, $file_path, $file_size]);
+    }
+
+    public static function deleteSticker($id)
+    {
+        $db = self::connect();
+        $stmt = $db->prepare("UPDATE table_sticker SET is_active = 0 WHERE id = ?");
+        return $stmt->execute([$id]);
+    }
+}

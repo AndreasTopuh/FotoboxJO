@@ -10,6 +10,7 @@ require_once '../includes/pwa-helper.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,22 +21,40 @@ require_once '../includes/pwa-helper.php';
     <meta http-equiv="Expires" content="0">
     <title>Photobooth | Customize Layout 1</title>
     <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png">
-    
+
     <!-- Stylesheets -->
     <link rel="stylesheet" href="home-styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Syne:wght@400;700&family=Poppins:wght@400;600;700&family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap">
-    
+
+    <!-- Loading placeholder styles -->
+    <style>
+        .loading-placeholder {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #666;
+            font-style: italic;
+            padding: 20px;
+            min-height: 50px;
+        }
+
+        /* Hide loading placeholder when assets loaded */
+        .assets-loaded .loading-placeholder {
+            display: none;
+        }
+    </style>
+
     <?php PWAHelper::addPWAHeaders(); ?>
-    
+
     <style>
         /* Print styles for 4R paper */
         @page {
             size: 4in 6in;
             margin: 0;
         }
-        
+
         @media print {
             * {
                 -webkit-print-color-adjust: exact;
@@ -45,8 +64,9 @@ require_once '../includes/pwa-helper.php';
                 border: none;
                 box-sizing: border-box;
             }
-            
-            html, body {
+
+            html,
+            body {
                 width: 4in;
                 height: 6in;
                 margin: 0;
@@ -54,7 +74,7 @@ require_once '../includes/pwa-helper.php';
                 overflow: hidden;
                 background: none;
             }
-            
+
             .print-container {
                 width: 4in;
                 height: 6in;
@@ -62,7 +82,7 @@ require_once '../includes/pwa-helper.php';
                 top: 0;
                 left: 0;
             }
-            
+
             .print-image {
                 width: 4in;
                 height: 6in;
@@ -79,28 +99,18 @@ require_once '../includes/pwa-helper.php';
 
 <body>
     <div class="gradientBgCanvas"></div>
-    
+
     <main class="customize-content-wrapper">
         <!-- Customization Options -->
         <section class="customize-left-section">
             <h1 class="customize-title">Customize Your Photo</h1>
-            
+
             <!-- Frame Color -->
             <div class="customize-options-group">
                 <h3 class="customize-options-label">Frame Color</h3>
-                <div class="customize-buttons-grid">
-                    <button id="pinkBtnFrame" class="buttonFrames frame-color-pink"></button>
-                    <button id="blueBtnFrame" class="buttonFrames frame-color-blue"></button>
-                    <button id="yellowBtnFrame" class="buttonFrames frame-color-yellow"></button>
-                    <button id="matchaBtnFrame" class="buttonFrames frame-color-matcha"></button>
-                    <button id="purpleBtnFrame" class="buttonFrames frame-color-purple"></button>
-                    <button id="brownBtnFrame" class="buttonFrames frame-color-brown"></button>
-                    <button id="redBtnFrame" class="buttonFrames frame-color-red"></button>
-                    <button id="whiteBtnFrame" class="buttonFrames frame-color-white"></button>
-                    <button id="blackBtnFrame" class="buttonFrames frame-color-black"></button>
-                    <button id="matcha" class="buttonBgFrames frame-bg-matcha"></button>
-                    <button id="blackStar" class="buttonBgFrames frame-bg-blackstar"></button>
-                    <button id="blueStripe" class="buttonBgFrames frame-bg-bluestripe"></button>
+                <div class="customize-buttons-grid" id="frames-container">
+                    <!-- Dynamic frames will be loaded here -->
+                    <div class="loading-placeholder">Loading frames...</div>
                 </div>
             </div>
 
@@ -120,13 +130,9 @@ require_once '../includes/pwa-helper.php';
             <!-- Stickers -->
             <div class="customize-options-group">
                 <h3 class="customize-options-label">Stickers</h3>
-                <div class="customize-buttons-grid stickers-grid">
-                    <button id="noneSticker" class="buttonStickers sticker-none">
-                        <img src="../assets/block (1).png" alt="None" class="shape-icon">
-                    </button>
-                    <button id="bintang1" class="buttonStickers">
-                        <img src="/src/assets/stickers/bintang1.png" alt="bintang1" class="sticker-icon">
-                    </button>
+                <div class="customize-buttons-grid stickers-grid" id="stickers-container">
+                    <!-- Dynamic stickers will be loaded here -->
+                    <div class="loading-placeholder">Loading stickers...</div>
                 </div>
             </div>
 
@@ -240,10 +246,15 @@ require_once '../includes/pwa-helper.php';
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script>
         (function() {
-            emailjs.init({ publicKey: "9SDzOfKjxuULQ5ZW8" });
+            emailjs.init({
+                publicKey: "9SDzOfKjxuULQ5ZW8"
+            });
         })();
     </script>
     <script src="customizeLayout3.js"></script>
+
+    <!-- Assets Manager for dynamic loading -->
+    <script src="../assets/js/assets-manager.js"></script>
     <script src="../includes/session-timer.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -256,4 +267,5 @@ require_once '../includes/pwa-helper.php';
     </script>
     <?php PWAHelper::addPWAScript(); ?>
 </body>
+
 </html>

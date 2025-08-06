@@ -10,6 +10,7 @@ require_once '../includes/pwa-helper.php';
 ?>
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8" />
     <?php PWAHelper::addPWAHeaders(); ?>
@@ -28,27 +29,36 @@ require_once '../includes/pwa-helper.php';
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png" />
+
+    <!-- Loading placeholder styles -->
+    <style>
+        .loading-placeholder {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #666;
+            font-style: italic;
+            padding: 20px;
+            min-height: 50px;
+        }
+
+        /* Hide loading placeholder when assets loaded */
+        .assets-loaded .loading-placeholder {
+            display: none;
+        }
+    </style>
 </head>
+
 <body>
     <div class="gradientBgCanvas"></div>
     <div class="customize-content-wrapper">
         <div class="customize-left-section">
-            <h1 class="customize-title">Customize Your Photo</h1>    
+            <h1 class="customize-title">Customize Your Photo</h1>
             <div class="customize-options-group">
                 <h3 class="customize-options-label">Frame Color</h3>
-                <div class="customize-buttons-grid">
-                    <button id="pinkBtnFrame" class="buttonFrames frame-color-pink"></button>
-                    <button id="blueBtnFrame" class="buttonFrames frame-color-blue"></button>
-                    <button id="yellowBtnFrame" class="buttonFrames frame-color-yellow"></button>
-                    <button id="matchaBtnFrame" class="buttonFrames frame-color-matcha"></button>
-                    <button id="purpleBtnFrame" class="buttonFrames frame-color-purple"></button>
-                    <button id="brownBtnFrame" class="buttonFrames frame-color-brown"></button>
-                    <button id="redBtnFrame" class="buttonFrames frame-color-red"></button>
-                    <button id="whiteBtnFrame" class="buttonFrames frame-color-white"></button>
-                    <button id="blackBtnFrame" class="buttonFrames frame-color-black"></button>
-                    <button id="matcha" class="buttonBgFrames frame-bg-matcha"></button>
-                    <button id="blackStar" class="buttonBgFrames frame-bg-blackstar"></button>
-                    <button id="blueStripe" class="buttonBgFrames frame-bg-bluestripe"></button>
+                <div class="customize-buttons-grid" id="frames-container">
+                    <!-- Dynamic frames will be loaded here -->
+                    <div class="loading-placeholder">Loading frames...</div>
                 </div>
             </div>
 
@@ -66,13 +76,9 @@ require_once '../includes/pwa-helper.php';
 
             <div class="customize-options-group">
                 <h3 class="customize-options-label">Stickers</h3>
-                <div class="customize-buttons-grid stickers-grid">
-                    <button id="noneSticker" class="buttonStickers sticker-none">
-                        <img src="../assets/block (1).png" alt="None" class="shape-icon">
-                    </button>
-                    <button id="bintang1" class="buttonStickers">
-                        <img src="/src/assets/stickers/bintang1.png" alt="bintang1" class="sticker-icon" />
-                    </button>
+                <div class="customize-buttons-grid stickers-grid" id="stickers-container">
+                    <!-- Dynamic stickers will be loaded here -->
+                    <div class="loading-placeholder">Loading stickers...</div>
                 </div>
             </div>
 
@@ -196,6 +202,9 @@ require_once '../includes/pwa-helper.php';
 
     <script src="customizeLayout2.js"></script>
 
+    <!-- Assets Manager for dynamic loading -->
+    <script src="../assets/js/assets-manager.js"></script>
+
     <!-- Session Timer Script -->
     <script src="../includes/session-timer.js"></script>
 
@@ -213,4 +222,5 @@ require_once '../includes/pwa-helper.php';
 
     <?php PWAHelper::addPWAScript(); ?>
 </body>
+
 </html>

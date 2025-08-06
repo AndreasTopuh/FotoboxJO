@@ -10,10 +10,10 @@ if (!isset($_SESSION['admin_access']) || $_SESSION['admin_access'] !== true) {
 // Include PWA helper
 require_once '../includes/pwa-helper.php';
 
-// Data file path
-$dataFile = __DIR__ . '/../data/cash_codes.json';
+// Data file path - using user-photos directory for consistency
+$dataFile = __DIR__ . '/../user-photos/cash_codes.json';
 
-// Ensure data directory exists
+// Ensure user-photos directory exists
 $dataDir = dirname($dataFile);
 if (!is_dir($dataDir)) {
     mkdir($dataDir, 0755, true);
@@ -301,7 +301,7 @@ $codes = json_decode(file_get_contents($dataFile), true) ?: [];
 <body>
     <div class="gradientBgCanvas"></div>
 
-    <a href="admin-login.php?logout=1" class="logout-btn">Logout</a>
+    <a href="../../admin/admin-login.php?logout=1" class="logout-btn">Logout</a>
 
     <div class="container">
         <!-- Header -->

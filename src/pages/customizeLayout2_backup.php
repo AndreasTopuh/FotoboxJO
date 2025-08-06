@@ -9,24 +9,26 @@ if (!isset($_SESSION['customize_expired_time']) || time() > $_SESSION['customize
 require_once '../includes/pwa-helper.php';
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <?php PWAHelper::addPWAHeaders(); ?>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Customize your Layout 1 photobooth photos with frames, stickers, and text.">
-    <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>Photobooth | Customize Layout 1</title>
-    <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png">
+    <link rel="stylesheet" href="home-styles.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Syne:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png" />
+    <!-- Cache Control -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png" />
     
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="home-styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Syne:wght@400;700&family=Poppins:wght@400;600;700&family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap">
-
     <!-- Loading placeholder styles -->
     <style>
         .loading-placeholder {
@@ -44,77 +46,20 @@ require_once '../includes/pwa-helper.php';
             display: none;
         }
     </style>
-    
-    <?php PWAHelper::addPWAHeaders(); ?>
-    
-    <style>
-        /* Print styles for 4R paper */
-        @page {
-            size: 4in 6in;
-            margin: 0;
-        }
-        
-        @media print {
-            * {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-                margin: 0;
-                padding: 0;
-                border: none;
-                box-sizing: border-box;
-            }
-            
-            html, body {
-                width: 4in;
-                height: 6in;
-                margin: 0;
-                padding: 0;
-                overflow: hidden;
-                background: none;
-            }
-            
-            .print-container {
-                width: 4in;
-                height: 6in;
-                position: absolute;
-                top: 0;
-                left: 0;
-            }
-            
-            .print-image {
-                width: 4in;
-                height: 6in;
-                object-fit: cover;
-                object-position: center;
-                position: absolute;
-                top: 0;
-                left: 0;
-                display: block;
-            }
-        }
-    </style>
 </head>
-
 <body>
     <div class="gradientBgCanvas"></div>
-    
-    <main class="customize-content-wrapper">
-        <!-- Customization Options -->
-        <section class="customize-left-section">
-            <h1 class="customize-title">Customize Your Photo</h1>
-            
-            <!-- Frame Color -->
+    <div class="customize-content-wrapper">
+        <div class="customize-left-section">
+            <h1 class="customize-title">Customize Your Photo</h1>    
             <div class="customize-options-group">
                 <h3 class="customize-options-label">Frame Color</h3>
                 <div class="customize-buttons-grid" id="frames-container">
                     <!-- Dynamic frames will be loaded here -->
                     <div class="loading-placeholder">Loading frames...</div>
-                    <!-- Dynamic frames will be loaded here -->
-                    <div class="loading-placeholder">Loading frames...</div>
                 </div>
             </div>
 
-            <!-- Photo Shape -->
             <div class="customize-options-group">
                 <h3 class="customize-options-label">Photo Shape</h3>
                 <div class="customize-buttons-grid shape-buttons">
@@ -127,7 +72,6 @@ require_once '../includes/pwa-helper.php';
                 </div>
             </div>
 
-            <!-- Stickers -->
             <div class="customize-options-group">
                 <h3 class="customize-options-label">Stickers</h3>
                 <div class="customize-buttons-grid stickers-grid" id="stickers-container">
@@ -136,7 +80,6 @@ require_once '../includes/pwa-helper.php';
                 </div>
             </div>
 
-            <!-- Logo -->
             <div class="customize-options-group">
                 <h3 class="customize-options-label">Logo</h3>
                 <div class="customize-logo-buttons">
@@ -144,26 +87,29 @@ require_once '../includes/pwa-helper.php';
                     <button id="engLogo" class="logoCustomBtn">Use</button>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- Photo Preview -->
-        <section class="customize-right-section">
+        <!-- Right Section: Canvas Preview -->
+        <div class="customize-right-section">
             <div id="photoPreview" class="customize-photo-preview"></div>
-        </section>
-    </main>
+        </div>
+    </div>
 
-    <!-- Action Buttons -->
-    <footer class="customize-action-buttons">
+    <!-- Bottom Section: Action Buttons -->
+    <div class="customize-action-buttons">
         <button class="customize-action-btn email-btn" id="emailBtn">
-            <i class="fas fa-envelope"></i> Kirim ke Email
+            <i class="fas fa-envelope"></i>
+            <span>Kirim ke Email</span>
         </button>
         <button class="customize-action-btn print-btn" id="printBtn">
-            <i class="fas fa-print"></i> Print
+            <i class="fas fa-print"></i>
+            <span>Print</span>
         </button>
         <button class="customize-action-btn continue-btn" id="continueBtn">
-            <i class="fas fa-arrow-right"></i> Lanjutkan
+            <i class="fas fa-arrow-right"></i>
+            <span>Lanjutkan</span>
         </button>
-    </footer>
+    </div>
 
     <!-- Email Modal -->
     <div id="emailModal" class="modal">
@@ -242,26 +188,36 @@ require_once '../includes/pwa-helper.php';
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script>
+    <!-- EmailJS Scripts -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
         (function() {
-            emailjs.init({ publicKey: "9SDzOfKjxuULQ5ZW8" });
+            emailjs.init({
+                publicKey: "9SDzOfKjxuULQ5ZW8",
+            });
         })();
     </script>
-    <script src="customizeLayout6.js"></script>
+
+    <script src="customizeLayout2.js"></script>
+    
     <!-- Assets Manager for dynamic loading -->
     <script src="../assets/js/assets-manager.js"></script>
+
+    <!-- Session Timer Script -->
     <script src="../includes/session-timer.js"></script>
+
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        // Custom timer expired handler for customize page
+        document.addEventListener('DOMContentLoaded', function() {
             if (window.sessionTimer) {
-                window.sessionTimer.onExpired = () => {
+                window.sessionTimer.onExpired = function(page) {
+                    // From customize page, go directly to thank you
                     window.location.href = 'thankyou.php';
                 };
             }
         });
     </script>
+
     <?php PWAHelper::addPWAScript(); ?>
 </body>
 </html>

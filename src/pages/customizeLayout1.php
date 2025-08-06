@@ -175,6 +175,57 @@ require_once '../includes/pwa-helper.php';
             opacity: 0.8;
             margin-top: 10px;
         }
+
+        /* Loading placeholder styles */
+        .loading-placeholder {
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            animation: pulse-loading 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse-loading {
+
+            0%,
+            100% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Dynamic assets styling */
+        .dynamic-frame-btn,
+        .dynamic-sticker-btn {
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .dynamic-frame-btn:hover,
+        .dynamic-sticker-btn:hover {
+            border-color: #E28585;
+            transform: scale(1.05);
+        }
+
+        .dynamic-frame-btn.active,
+        .dynamic-sticker-btn.active {
+            border-color: #E28585;
+            background: rgba(226, 133, 133, 0.1);
+        }
+
+        .dynamic-frame-btn img,
+        .dynamic-sticker-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
     </style>
 </head>
 
@@ -199,9 +250,25 @@ require_once '../includes/pwa-helper.php';
                     <button id="redBtnFrame" class="buttonFrames frame-color-red"></button>
                     <button id="whiteBtnFrame" class="buttonFrames frame-color-white"></button>
                     <button id="blackBtnFrame" class="buttonFrames frame-color-black"></button>
-                    <button id="matcha" class="buttonBgFrames frame-bg-matcha"></button>
-                    <button id="blackStar" class="buttonBgFrames frame-bg-blackstar"></button>
-                    <button id="blueStripe" class="buttonBgFrames frame-bg-bluestripe"></button>
+                </div>
+            </div>
+
+            <!-- Background Frames (Dynamic from Database) -->
+            <div class="customize-options-group">
+                <h3 class="customize-options-label">Background Frames</h3>
+                <div id="dynamicFramesContainer" class="customize-buttons-grid">
+                    <div class="loading-placeholder">Loading frames...</div>
+                </div>
+            </div>
+
+            <!-- Stickers (Dynamic from Database) -->
+            <div class="customize-options-group">
+                <h3 class="customize-options-label">Stickers</h3>
+                <div id="dynamicStickersContainer" class="customize-buttons-grid stickers-grid">
+                    <button id="noneSticker" class="buttonStickers sticker-none">
+                        <img src="../assets/block (1).png" alt="None" class="shape-icon">
+                    </button>
+                    <div class="loading-placeholder">Loading stickers...</div>
                 </div>
             </div>
 
@@ -214,19 +281,6 @@ require_once '../includes/pwa-helper.php';
                     </button>
                     <button id="softFrameShape" class="buttonShapes">
                         <img src="../assets/corners.png" alt="Soft Edge Frame" class="shape-icon">
-                    </button>
-                </div>
-            </div>
-
-            <!-- Stickers -->
-            <div class="customize-options-group">
-                <h3 class="customize-options-label">Stickers</h3>
-                <div class="customize-buttons-grid stickers-grid">
-                    <button id="noneSticker" class="buttonStickers sticker-none">
-                        <img src="../assets/block (1).png" alt="None" class="shape-icon">
-                    </button>
-                    <button id="bintang1" class="buttonStickers">
-                        <img src="/src/assets/stickers/bintang1.png" alt="bintang1" class="sticker-icon">
                     </button>
                 </div>
             </div>
@@ -254,9 +308,6 @@ require_once '../includes/pwa-helper.php';
         </button>
         <button class="customize-action-btn print-btn" id="printBtn">
             <i class="fas fa-print"></i> Print
-        </button>
-        <button class="customize-action-btn video-btn" id="videoBtn">
-            <i class="fas fa-video"></i> Convert to Video
         </button>
         <button class="customize-action-btn continue-btn" id="continueBtn">
             <i class="fas fa-arrow-right"></i> Lanjutkan
@@ -340,20 +391,6 @@ require_once '../includes/pwa-helper.php';
         </div>
     </div>
 
-    <!-- Video Progress Modal -->
-    <div id="videoProgressModal" class="video-progress" style="display: none;">
-        <div class="video-progress-icon">
-            <i class="fas fa-video"></i>
-        </div>
-        <div class="video-progress-text">Converting to Video...</div>
-        <div class="progress-bar">
-            <div class="progress-fill" id="videoProgressFill"></div>
-        </div>
-        <div class="video-progress-subtext">
-            Creating slideshow from your photos...
-        </div>
-    </div>
-
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script>
@@ -363,6 +400,7 @@ require_once '../includes/pwa-helper.php';
             });
         })();
     </script>
+    <script src="../assets/js/assets-manager.js"></script>
     <script src="customizeLayout1.js"></script>
     <script src="../includes/session-timer.js"></script>
     <script>

@@ -29,7 +29,7 @@ if ($_POST['code'] ?? '' !== '') {
 }
 
 // Include PWA helper
-require_once '../includes/pwa-helper.php';
+require_once '../src/includes/pwa-helper.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -65,13 +65,14 @@ require_once '../includes/pwa-helper.php';
             background: #fff;
             height: 100%;
             overflow-x: hidden;
-            justify-content: center ;
+            justify-content: center;
         }
 
         body {
             overflow-y: auto;
         }
-        .container-login{
+
+        .container-login {
             display: flex;
             flex-direction: column;
             align-items: center;
