@@ -158,6 +158,7 @@ require_once '../includes/pwa-helper.php';
     <div class="gradientBgCanvas"></div>
 
     <main class="customize-content-wrapper">
+
         <!-- Customization Options -->
         <section class="customize-left-section">
             <h1 class="customize-title">Customize Your Photo</h1>

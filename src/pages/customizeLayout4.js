@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
   // Configuration constants
   const CONFIG = {
-    CANVAS_WIDTH: 1200,
-    CANVAS_HEIGHT: 1800,
+    CANVAS_WIDTH: 1224,
+    CANVAS_HEIGHT: 1836,
     BORDER_WIDTH: 62,
     MARGIN_TOP: 120,
     SPACING: 37,
     PHOTO_WIDTH: 477,
-    PHOTO_HEIGHT: 318,
+    PHOTO_HEIGHT: 300,
     EXPECTED_PHOTOS: 8,
     EMAILJS_SERVICE_ID: 'service_gtqjb2j',
     EMAILJS_TEMPLATE_ID: 'template_pp5i4hm',

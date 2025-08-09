@@ -1,20 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // ⚡ COMPRESSION CONFIGURATION - 3-Level Quality System
+    // 🚀 COMPRESSION CONFIGURATION - 3-Level Quality System for Layout 1 (2 Photos)
     const COMPRESSION_CONFIG = {
-        // Untuk session storage (temporary) - BALANCED QUALITY
-        SESSION_QUALITY: 0.85,       // 85% - bagus untuk customize & print
-        SESSION_MAX_WIDTH: 1600,     // Cukup untuk print 4R
-        SESSION_MAX_HEIGHT: 1200,
-
-        // Untuk download/print (high quality) - BEST QUALITY
+        // Untuk session storage (temporary) - FAST SAVE
+        SESSION_QUALITY: 0.5,        // 50% untuk performa cepat
+        SESSION_MAX_WIDTH: 1200,     // Resize untuk storage
+        SESSION_MAX_HEIGHT: 800,
+        
+        // Untuk download/print (high quality) - BEST QUALITY  
         DOWNLOAD_QUALITY: 0.95,      // 95% - hampir lossless
         DOWNLOAD_MAX_WIDTH: 2400,    // Full resolution
-        DOWNLOAD_MAX_HEIGHT: 1800,
+        DOWNLOAD_MAX_HEIGHT: 1600,
         
         // Untuk preview thumbnail - FAST PREVIEW
         THUMB_QUALITY: 0.6,          // 60% - kecil untuk preview
-        THUMB_MAX_WIDTH: 400,
-        THUMB_MAX_HEIGHT: 300
+        THUMB_MAX_WIDTH: 300,
+        THUMB_MAX_HEIGHT: 200
     };
 
     // 🚀 FAST COMPRESSION FUNCTION
@@ -104,6 +104,42 @@ document.addEventListener('DOMContentLoaded', () => {
           stream.getTracks().forEach((track) => track.stop());
         }
     });
+
+    // 🧹 CLEAN UP OLD STORED DATA ON PAGE LOAD - Prevent old photos from interfering
+    (() => {
+        try {
+            // Clear any old localStorage data that might interfere
+            const oldKeys = ['fotobox_originals', 'fotobox_timestamp', 'temp_photos', 'cached_images'];
+            oldKeys.forEach(key => {
+                if (localStorage.getItem(key)) {
+                    localStorage.removeItem(key);
+                    console.log(`🧹 Cleared old localStorage: ${key}`);
+                }
+            });
+            
+            // Clear any old sessionStorage
+            if (sessionStorage.getItem('photo_session')) {
+                sessionStorage.removeItem('photo_session');
+                console.log('🧹 Cleared old sessionStorage: photo_session');
+            }
+            
+            console.log('✅ Storage cleanup completed - fresh start guaranteed');
+            
+            // 🧹 ADDITIONAL CLEANUP - Clear any cached images/blobs
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => {
+                        if (name.includes('photo') || name.includes('image')) {
+                            caches.delete(name);
+                            console.log(`🧹 Cleared cache: ${name}`);
+                        }
+                    });
+                });
+            }
+        } catch (error) {
+            console.warn('⚠️ Storage cleanup failed:', error);
+        }
+    })();
 
     // Carousel Modal Functionality - Fixed and Enhanced
     const carouselModal = document.getElementById('carousel-modal');
@@ -683,6 +719,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const expectedPhotos = 2; // Layout 1 has 2 photos
     let invertBtnState = false;
 
+    // 🧹 ENSURE FRESH START - Clear any residual images
+    (() => {
+        images = []; // Force fresh empty array
+        currentPhotoIndex = 0;
+        console.log('🔄 Images array initialized fresh for new session');
+    })();
+
     // Update UI state
     function updateUI() {
         const progressCounter = document.getElementById('progressCounter');
@@ -816,17 +859,6 @@ document.addEventListener('DOMContentLoaded', () => {
             let imageData = canvas.toDataURL('image/png');
             if (invertBtnState) {
                 imageData = await applyMirrorEffect(imageData);
-            }
-            
-            // 💾 BACKUP ORIGINAL ke localStorage (untuk high quality di customize)
-            const originalImages = JSON.parse(localStorage.getItem('fotobox_originals') || '[]');
-            originalImages[images.length] = imageData; // Simpan original
-            try {
-                localStorage.setItem('fotobox_originals', JSON.stringify(originalImages));
-                localStorage.setItem('fotobox_timestamp', Date.now().toString());
-                console.log(`💾 Original photo ${images.length + 1} backed up to localStorage`);
-            } catch (e) {
-                console.warn('⚠️ Could not backup original to localStorage:', e.message);
             }
             
             const compressedImage = await compressImage(imageData, 'session'); // Compress for preview
@@ -1034,8 +1066,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const confirmReset = confirm("Are you sure you want to retake all photos?");
         if (!confirmReset) return;
         
-        // Clear all images
+        // 🧹 COMPREHENSIVE CLEANUP - Ensure completely fresh start
         images = [];
+        currentPhotoIndex = 0;
+        
+        // Clear localStorage backups
+        try {
+            localStorage.removeItem('fotobox_originals');
+            localStorage.removeItem('fotobox_timestamp');
+            console.log('🧹 Cleared localStorage backups');
+        } catch (e) {
+            console.warn('⚠️ Could not clear localStorage:', e);
+        }
         
         // Clear all photo previews
         for (let i = 0; i < expectedPhotos; i++) {
@@ -1045,7 +1087,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update UI
         updateUI();
         
-        console.log('All photos cleared for retake');
+        console.log('✅ All photos cleared for retake - completely fresh start');
     }
 
     // Global function for HTML onclick
@@ -1072,6 +1114,11 @@ document.addEventListener('DOMContentLoaded', () => {
    // 📹 CAMERA INITIALIZATION
     async function startCamera() {
         try {
+            // 🧹 ADDITIONAL CLEANUP - Ensure completely fresh start
+            images = [];
+            currentPhotoIndex = 0;
+            console.log('🔄 Camera starting with fresh photo array');
+            
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: {
                     width: { ideal: 1920 },
@@ -1236,48 +1283,69 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
     
-    // 🚀 OPTIMIZED STORE IMAGE FUNCTION - HIGH QUALITY READY!
+    // 🚀 OPTIMIZED STORE IMAGE FUNCTION - 3x FASTER!
     async function storeImageArray() {
         const photoCount = 2; // Layout 1 has 2 photos
         const doneBtn = document.getElementById('doneBtn');
         const startTime = Date.now(); // Add timing
         
         try {
-            console.log('⚡ Starting HIGH QUALITY photo processing...');
+            console.log('⚡ Starting FAST photo compression...');
             
             // Show progress
             if (doneBtn) {
-                doneBtn.textContent = 'Processing...';
+                doneBtn.textContent = 'Compressing...';
                 doneBtn.disabled = true;
             }
             
-            // Images are already compressed to session quality (85%)
-            // Originals are backed up in localStorage
-            const sessionPhotos = images; // Use processed images
+            const sessionPhotos = [];  // For session (80% quality - FAST)
+            const originalPhotos = []; // Backup original (100% quality - DOWNLOAD)
+            
+            // Process each image
+            for (let index = 0; index < images.length; index++) {
+                const imgData = images[index];
+                if (!imgData) continue;
+                
+                console.log(`📸 Processing image ${index + 1}/${photoCount}...`);
+                
+                // Update progress
+                if (doneBtn) {
+                    const progress = Math.round(((index + 1) / photoCount) * 50); // 50% for compression
+                    doneBtn.textContent = `Compressing ${progress}%`;
+                }
+                
+                let processedImage = imgData;
+                
+                // Apply mirror if needed
+                if (typeof invertBtnState !== 'undefined' && invertBtnState) {
+                    processedImage = await applyMirrorEffect(imgData);
+                }
+                
+                // Compress for session (FAST SAVE)
+                const compressedImage = await compressImage(processedImage, 'session');
+                sessionPhotos[index] = compressedImage;
+                
+                // Keep original for download (HIGH QUALITY)
+                originalPhotos[index] = processedImage;
+                
+                console.log(`✅ Image ${index + 1} compressed: ${Math.round(compressedImage.length / 1024)}KB`);
+            }
             
             // Update progress
             if (doneBtn) {
-                doneBtn.textContent = 'Saving photos...';
+                doneBtn.textContent = 'Menyimpan foto...';
             }
             
-            console.log('💾 Saving session photos to server...');
+            console.log('💾 Saving compressed photos to server session...');
             
-            // Save session photos to server
+            // Save compressed photos to session (SUPER FAST)
             const response = await fetch('../api-fetch/save_photos.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ 
-                    photos: sessionPhotos,
-                    metadata: {
-                        quality: 'session_balanced',
-                        has_originals: true,
-                        compression_level: COMPRESSION_CONFIG.SESSION_QUALITY,
-                        timestamp: Date.now()
-                    }
-                }),
-                signal: AbortSignal.timeout(20000) // 20 second timeout
+                body: JSON.stringify({ photos: sessionPhotos }),
+                signal: AbortSignal.timeout(15000) // Reduced to 15s because smaller size
             });
             
             if (!response.ok) {
@@ -1288,10 +1356,15 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (data.success) {
                 console.log(`🎉 SUCCESS! Photos saved in ${Date.now() - startTime}ms`);
-                console.log(`📊 Session size: ${data.data_size || 'unknown'}`);
+                console.log(`📊 Compressed size: ${data.data_size || 'unknown'}`);
                 
-                if (doneBtn) {
-                    doneBtn.textContent = 'Creating session...';
+                // Save originals to localStorage for download
+                try {
+                    localStorage.setItem('fotobox_originals', JSON.stringify(originalPhotos));
+                    localStorage.setItem('fotobox_timestamp', Date.now().toString());
+                    console.log('💾 Original photos backed up for download');
+                } catch (e) {
+                    console.warn('⚠️ Could not backup originals:', e.message);
                 }
                 
                 // Create customize session
@@ -1303,14 +1376,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (sessionResponse.ok) {
                     const sessionData = await sessionResponse.json();
                     if (sessionData.success) {
-                        console.log('✅ Customize session created - redirecting...');
+                        console.log('✅ Customize session created');
+                        
+                        // 🧹 FINAL CLEANUP - Clear session photos from memory before redirect
+                        try {
+                            // Clear the local images array (but keep originals in localStorage)
+                            images = [];
+                            currentPhotoIndex = 0;
+                            console.log('🧹 Session photos cleared from memory before redirect');
+                        } catch (e) {
+                            console.warn('⚠️ Final cleanup warning:', e);
+                        }
+                        
                         window.location.href = 'customizeLayout1.php';
                         return;
                     }
                 }
                 
-                // Fallback redirect even if session creation fails
+                // Fallback redirect even if session creation fails  
                 console.log('⚠️ Session creation failed, but proceeding...');
+                
+                // Clear memory even on fallback
+                images = [];
+                currentPhotoIndex = 0;
+                
                 window.location.href = 'customizeLayout1.php';
                 
             } else {
@@ -1331,8 +1420,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 errorMessage += 'Request timeout. Please try again.';
             } else if (error.message.includes('Failed to fetch')) {
                 errorMessage += 'Network error. Check your connection.';
-            } else if (error.message.includes('413') || error.message.includes('Payload Too Large')) {
-                errorMessage += 'Photos too large. Try reducing quality.';
             } else {
                 errorMessage += error.message;
             }

@@ -37,9 +37,15 @@ SessionManager::requireValidPaymentSession();
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pembayaran QRIS - GoBooth</title>
+  <title>Pembayaran Digital - GoBooth</title>
   
   <?php PWAHelper::addPWAHeaders(); ?>
+  
+  <!-- Midtrans Snap.js -->
+  <script type="text/javascript" 
+    src="https://app.midtrans.com/snap/snap.js" 
+    data-client-key="Mid-client-glZIkKBqFretZ-Td"></script>
+  
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="home-styles.css" />
   <style>
@@ -121,7 +127,7 @@ SessionManager::requireValidPaymentSession();
       margin-bottom: 0.5rem;
     }
 
-    .va-container, .qr-container {
+    .qr-container {
       background: rgba(226, 133, 133, 0.1);
       border: 2px solid #E28585;
       border-radius: 15px;
@@ -129,6 +135,53 @@ SessionManager::requireValidPaymentSession();
       text-align: center;
       width: 100%;
       max-width: 400px;
+    }
+
+    .customer-form {
+      background: rgba(226, 133, 133, 0.1);
+      border: 2px solid #E28585;
+      border-radius: 15px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #E28585;
+      border-radius: 8px;
+      font-size: 1rem;
+      color: #333;
+      background: rgba(255, 255, 255, 0.9);
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #d16969;
+      box-shadow: 0 0 0 3px rgba(226, 133, 133, 0.1);
+    }
+
+    .snap-container {
+      background: rgba(226, 133, 133, 0.1);
+      border: 2px solid #E28585;
+      border-radius: 15px;
+      padding: 1rem;
+      width: 100%;
+      max-width: 400px;
+      min-height: 400px;
     }
 
     .qr-container img {
@@ -140,12 +193,20 @@ SessionManager::requireValidPaymentSession();
       margin: 1rem 0;
     }
 
-    .status-container {
+    .expiry-info {
+      color: #333;
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+
+    .error-container {
       margin-top: 1rem;
       padding: 1rem;
-      background: rgba(226, 133, 133, 0.1);
+      background: rgba(220, 53, 69, 0.1);
       border-radius: 10px;
-      border-left: 4px solid #E28585;
+      border-left: 4px solid #dc3545;
+      color: #dc3545;
+      text-align: center;
     }
 
     .loading-container {
@@ -237,14 +298,14 @@ SessionManager::requireValidPaymentSession();
       <div class="payment-content">
         <!-- Kiri -->
         <div class="payment-left">
-          <h1 class="payment-title">Pembayaran QRIS</h1>
+          <h1 class="payment-title">Pembayaran QRIS GoPay</h1>
           <div class="payment-instructions">
             <p style="margin-bottom: 0.5rem;"><strong>Cara Pembayaran:</strong></p>
             <ol>
-              <li>Buka aplikasi e-wallet (GoPay, Dana, OVO, dll)</li>
+              <li>Buka aplikasi GoPay Anda</li>
               <li>Pilih fitur "Scan QR" atau "Bayar"</li>
-              <li>Arahkan kamera ke QR code di sebelah kanan</li>
-              <li>Konfirmasi pembayaran di aplikasi Anda</li>
+              <li>Scan QR code di sebelah kanan</li>
+              <li>Konfirmasi pembayaran (Rp 15.000) di aplikasi GoPay</li>
               <li>Tunggu konfirmasi pembayaran berhasil</li>
             </ol>
           </div>
@@ -264,7 +325,13 @@ SessionManager::requireValidPaymentSession();
           <!-- QR Container (Hidden saat loading) -->
           <div id="qr-container" class="qr-container" style="display: none;">
             <h4 style="margin: 0 0 1rem 0; color: #333;">Scan QR Code untuk Pembayaran:</h4>
-            <img id="qris-img" src="" alt="QRIS QR Code">
+            <img id="qris-img" src="" alt="QRIS GoPay QR Code">
+            <p id="expiry" class="expiry-info"></p>
+          </div>
+          
+          <!-- Error Container (Hidden saat loading) -->
+          <div id="error-container" class="error-container" style="display: none;">
+            <p id="error-message" style="margin: 0; font-weight: 600;"></p>
           </div>
           
           <!-- Status Container (Hidden saat loading) -->
@@ -278,143 +345,161 @@ SessionManager::requireValidPaymentSession();
     </div>
   </div>
 
-        <script>
-        let orderId = "";
-        let statusInterval;
+  <script>
+    let orderId = "";
+    let statusInterval;
 
-        // Function untuk reset session dan kembali ke home
-        function resetSessionAndGoHome() {
-            // Clear all intervals first
-            clearAllIntervals();
-            
-            // Reset session via API
-            fetch('../api-fetch/reset_session.php', {
+    // Function untuk reset session dan kembali ke home
+    function resetSessionAndGoHome() {
+      // Clear all intervals first
+      clearAllIntervals();
+      
+      // Reset session via API
+      fetch('../api-fetch/reset_session.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      .then(response => response.json())
+      .then(result => {
+        console.log('Session reset result:', result);
+        // Navigate to home regardless of reset result
+        window.location.href = '/index.php';
+      })
+      .catch(error => {
+        console.error('Error resetting session:', error);
+        // Navigate to home even if reset fails
+        window.location.href = '/index.php';
+      });
+    }
+
+    // Clear all intervals
+    function clearAllIntervals() {
+      if (statusInterval) clearInterval(statusInterval);
+    }
+
+    // Function untuk hide loading dan show QR
+    function showQRCode() {
+      // Hide loading
+      document.getElementById('loading-container').style.display = 'none';
+      
+      // Show QR dan status (timer dihandle oleh session-timer.js)
+      document.getElementById('qr-container').style.display = 'block';
+      document.getElementById('status-container').style.display = 'block';
+    }
+
+    // Function untuk show error
+    function showError(message) {
+      document.getElementById('loading-container').style.display = 'none';
+      document.getElementById('error-container').style.display = 'block';
+      document.getElementById('error-message').textContent = message;
+    }
+
+    // Fetch QR code dengan loading
+    fetch('../api-fetch/charge_qris.php')
+      .then(res => res.json())
+      .then(data => {
+        if (data.error || !data.qr_url || !data.order_id) {
+          console.error('Error response:', data);
+          if (data.status_code === '402') {
+            showError('Metode pembayaran GoPay QRIS belum diaktifkan (sedang dalam review). Silakan coba metode pembayaran lain atau hubungi support@gofotobox.online.');
+          } else {
+            showError(data.error || 'Invalid response from server. Silakan coba lagi nanti.');
+          }
+          return;
+        }
+        
+        orderId = data.order_id;
+
+        // Set session order_id via fetch
+        fetch('../api-fetch/set_session.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ order_id: orderId })
+        });
+
+        // Tampilkan QR code dan waktu kedaluwarsa
+        document.getElementById('qris-img').src = data.qr_url;
+        document.getElementById('expiry').textContent = 'Kedaluwarsa: ' + (data.expiry_time || 'Tidak tersedia');
+
+        // Simulasi loading delay (2 detik) untuk UX yang lebih baik
+        setTimeout(() => {
+          showQRCode();
+          pollStatus();
+        }, 2000);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showError('Terjadi kesalahan saat memuat QR code. Silakan coba lagi atau hubungi support@gofotobox.online.');
+      });
+
+    function pollStatus() {
+      statusInterval = setInterval(() => {
+        fetch(`../api-fetch/check_status.php?order_id=${orderId}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.error) {
+              console.error('Error checking status:', data.error);
+              return;
+            }
+            document.getElementById('status').innerText = "Status: " + data.transaction_status;
+            if (data.transaction_status === "settlement") {
+              clearAllIntervals();
+              
+              // Complete payment in session
+              fetch('../api-fetch/complete_payment.php', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ order_id: orderId })
+              })
+              .then(response => response.json())
+              .then(result => {
+                if (result.success) {
+                  document.getElementById('status').style.color = "#28a745";
+                  document.getElementById('next').style.display = "block";
+                } else {
+                  console.error('Failed to complete payment:', result);
                 }
-            })
-            .then(response => response.json())
-            .then(result => {
-                console.log('Session reset result:', result);
-                // Navigate to home regardless of reset result
-                window.location.href = '/index.php';
-            })
-            .catch(error => {
-                console.error('Error resetting session:', error);
-                // Navigate to home even if reset fails
-                window.location.href = '/index.php';
-            });
-        }
+              });
+            } else if (data.transaction_status === "expire" || data.transaction_status === "cancel") {
+              clearAllIntervals();
+              document.getElementById('status').style.color = "#dc3545";
+              document.getElementById('status').innerText = "Status: Transaksi " + data.transaction_status;
+              showError('Transaksi telah kedaluwarsa atau dibatalkan. Silakan mulai ulang.');
+            }
+          })
+          .catch(error => {
+            console.error('Error checking status:', error);
+          });
+      }, 3000);
+    }
 
-        // Clear all intervals
-        function clearAllIntervals() {
-            if (statusInterval) clearInterval(statusInterval);
-        }
+    // Function untuk proceed ke layout selection
+    function proceedToLayout() {
+      console.log('Payment completed, transitioning to layout selection');
+      
+      // Clear intervals before navigation
+      clearAllIntervals();
+      
+      // Navigate langsung karena payment sudah completed via complete_payment.php
+      window.location.href = './selectlayout.php';
+    }
 
-        // Function untuk hide loading dan show QR
-        function showQRCode() {
-            // Hide loading
-            document.getElementById('loading-container').style.display = 'none';
-            
-            // Show QR dan status (timer dihandle oleh session-timer.js)
-            document.getElementById('qr-container').style.display = 'block';
-            document.getElementById('status-container').style.display = 'block';
-        }
+    // Handle page unload
+    window.addEventListener('beforeunload', () => {
+      clearAllIntervals();
+    });
+  </script>
 
-        // Fetch QR code dengan loading
-        fetch('../api-fetch/charge_qris.php')
-            .then(res => res.json())
-            .then(data => {
-                if (data.error) {
-                    alert('Error: ' + data.error);
-                    return;
-                }
-                
-                orderId = data.order_id;
-
-                // Set session order_id via fetch
-                fetch('../api-fetch/set_session.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ order_id: orderId })
-                });
-
-                // Tampilkan QR code di image
-                const qrUrl = data.qr_url;
-                document.getElementById('qris-img').src = qrUrl;
-
-                // Simulasi loading delay (2 detik) untuk UX yang lebih baik
-                setTimeout(() => {
-                    showQRCode();
-                    pollStatus();
-                }, 2000);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Terjadi kesalahan saat memuat QR code');
-                
-                // Hide loading jika error
-                document.getElementById('loading-container').style.display = 'none';
-            });
-
-        function pollStatus() {
-            statusInterval = setInterval(() => {
-                fetch(`../api-fetch/check_status.php?order_id=${orderId}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        document.getElementById('status').innerText = "Status: " + data.transaction_status;
-                        if (data.transaction_status === "settlement") {
-                            clearAllIntervals();
-                            
-                            // Complete payment in session
-                            fetch('../api-fetch/complete_payment.php', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({ order_id: orderId })
-                            })
-                            .then(response => response.json())
-                            .then(result => {
-                                if (result.success) {
-                                    document.getElementById('status').style.color = "#28a745";
-                                    document.getElementById('next').style.display = "block";
-                                } else {
-                                    console.error('Failed to complete payment:', result);
-                                }
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error checking status:', error);
-                    });
-            }, 3000);
-        }
-
-        // Function untuk proceed ke layout selection
-        function proceedToLayout() {
-            console.log('Payment completed, transitioning to layout selection');
-            
-            // Clear intervals before navigation
-            clearAllIntervals();
-            
-            // Navigate langsung karena payment sudah completed via complete_payment.php
-            window.location.href = './selectlayout.php';
-        }
-
-        // Handle page unload
-        window.addEventListener('beforeunload', () => {
-            clearAllIntervals();
-        });
-    </script>
-
-    <!-- Session Timer Script -->
-    <script src="../includes/session-timer.js"></script>
-    
-    <?php PWAHelper::addPWAScript(); ?>
+  <!-- Session Timer Script -->
+  <script src="../includes/session-timer.js"></script>
+  
+  <?php PWAHelper::addPWAScript(); ?>
 </body>
 
 </html>

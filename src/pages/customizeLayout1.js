@@ -952,30 +952,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     for (const [index, imageData] of state.storedImages.slice(0, imagesToProcess).entries()) {
       try {
-        // Try to get original from localStorage first
-        let originalImageData = imageData;
-        const originalData = localStorage.getItem('fotobox_originals');
-        if (originalData) {
-          try {
-            const originals = JSON.parse(originalData);
-            if (originals[index]) {
-              console.log(`📁 Using original photo ${index + 1} from localStorage`);
-              originalImageData = originals[index];
-            }
-          } catch (e) {
-            console.warn('⚠️ Could not parse localStorage originals:', e);
-          }
-        }
-
-        // Compress to download quality if using session data
-        let processedImageData = originalImageData;
-        if (originalImageData === imageData) {
-          // If same as session data, enhance it
-          processedImageData = await compressImage(imageData, 'download');
-          console.log(`🚀 Enhanced session photo ${index + 1} to download quality`);
-        }
-
-        const img = await loadImage(processedImageData);
+        const img = await loadImage(imageData);
         const xPosition = (CONFIG.CANVAS_WIDTH - CONFIG.PHOTO_WIDTH) / 2;
         const positions = [
           { x: xPosition, y: CONFIG.MARGIN_TOP, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },

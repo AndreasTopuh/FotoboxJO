@@ -37,7 +37,7 @@ SessionManager::requireValidPaymentSession();
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pembayaran Virtual Bank BCA - GoBooth</title>
+  <title>Pembayaran Virtual Bank BNI - GoBooth</title>
   
   <?php PWAHelper::addPWAHeaders(); ?>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
@@ -121,7 +121,7 @@ SessionManager::requireValidPaymentSession();
       margin-bottom: 0.5rem;
     }
 
-    .va-container, .qr-container {
+    .va-container {
       background: rgba(226, 133, 133, 0.1);
       border: 2px solid #E28585;
       border-radius: 15px;
@@ -146,12 +146,28 @@ SessionManager::requireValidPaymentSession();
       font-family: 'Courier New', monospace;
     }
 
+    .expiry-info {
+      color: #333;
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+
     .status-container {
       margin-top: 1rem;
       padding: 1rem;
       background: rgba(226, 133, 133, 0.1);
       border-radius: 10px;
       border-left: 4px solid #E28585;
+    }
+
+    .error-container {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(220, 53, 69, 0.1);
+      border-radius: 10px;
+      border-left: 4px solid #dc3545;
+      color: #dc3545;
+      text-align: center;
     }
 
     .loading-container {
@@ -243,14 +259,14 @@ SessionManager::requireValidPaymentSession();
       <div class="payment-content">
         <!-- Kiri -->
         <div class="payment-left">
-          <h1 class="payment-title">Pembayaran Virtual Bank BCA</h1>
+          <h1 class="payment-title">Pembayaran Virtual Bank BNI</h1>
           <div class="payment-instructions">
             <p style="margin-bottom: 0.5rem;"><strong>Cara Pembayaran:</strong></p>
             <ol>
-              <li>Buka aplikasi mobile banking BCA atau ATM BCA</li>
+              <li>Buka aplikasi mobile banking BNI atau ATM BNI</li>
               <li>Pilih menu "Transfer" atau "Virtual Account"</li>
               <li>Masukkan nomor Virtual Account di sebelah kanan</li>
-              <li>Konfirmasi nominal pembayaran</li>
+              <li>Konfirmasi nominal pembayaran (Rp 15.000)</li>
               <li>Selesaikan transaksi pembayaran</li>
             </ol>
           </div>
@@ -269,8 +285,14 @@ SessionManager::requireValidPaymentSession();
           
           <!-- VA Container (Hidden saat loading) -->
           <div id="va-container" class="va-container" style="display: none;">
-            <h4 style="margin: 0 0 1rem 0; color: #333;">Nomor Virtual Account BCA:</h4>
+            <h4 style="margin: 0 0 1rem 0; color: #333;">Nomor Virtual Account BNI:</h4>
             <div id="va" class="va-number"></div>
+            <p id="expiry" class="expiry-info"></p>
+          </div>
+          
+          <!-- Error Container (Hidden saat loading) -->
+          <div id="error-container" class="error-container" style="display: none;">
+            <p id="error-message" style="margin: 0; font-weight: 600;"></p>
           </div>
           
           <!-- Status Container (Hidden saat loading) -->
@@ -284,142 +306,161 @@ SessionManager::requireValidPaymentSession();
     </div>
   </div>
 
-    <script>
-        let orderId = "";
-        let statusInterval;
+  <script>
+    let orderId = "";
+    let statusInterval;
 
-        // Function untuk reset session dan kembali ke home
-        function resetSessionAndGoHome() {
-            // Clear all intervals first
-            clearAllIntervals();
-            
-            // Reset session via API
-            fetch('../api-fetch/reset_session.php', {
+    // Function untuk reset session dan kembali ke home
+    function resetSessionAndGoHome() {
+      // Clear all intervals first
+      clearAllIntervals();
+      
+      // Reset session via API
+      fetch('../api-fetch/reset_session.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      .then(response => response.json())
+      .then(result => {
+        console.log('Session reset result:', result);
+        // Navigate to home regardless of reset result
+        window.location.href = '/index.php';
+      })
+      .catch(error => {
+        console.error('Error resetting session:', error);
+        // Navigate to home even if reset fails
+        window.location.href = '/index.php';
+      });
+    }
+
+    // Clear all intervals
+    function clearAllIntervals() {
+      if (statusInterval) clearInterval(statusInterval);
+    }
+
+    // Function untuk hide loading dan show VA
+    function showVirtualAccount() {
+      // Hide loading
+      document.getElementById('loading-container').style.display = 'none';
+      
+      // Show VA dan status (timer dihandle oleh session-timer.js)
+      document.getElementById('va-container').style.display = 'block';
+      document.getElementById('status-container').style.display = 'block';
+    }
+
+    // Function untuk show error
+    function showError(message) {
+      document.getElementById('loading-container').style.display = 'none';
+      document.getElementById('error-container').style.display = 'block';
+      document.getElementById('error-message').textContent = message;
+    }
+
+    // Fetch Virtual Account dengan loading
+    fetch('../api-fetch/charge_bank.php')
+      .then(res => res.json())
+      .then(data => {
+        if (data.error || !data.va_number || !data.order_id) {
+          console.error('Error response:', data);
+          if (data.status_code === '402') {
+            showError('Metode pembayaran BNI belum diaktifkan. Silakan coba metode pembayaran lain atau hubungi support@gofotobox.online.');
+          } else {
+            showError(data.error || 'Invalid response from server. Silakan coba lagi nanti.');
+          }
+          return;
+        }
+        
+        orderId = data.order_id;
+
+        // Set session order_id via fetch
+        fetch('../api-fetch/set_session.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ order_id: orderId })
+        });
+
+        // Tampilkan Virtual Account dan waktu kedaluwarsa
+        document.getElementById('va').textContent = data.va_number;
+        document.getElementById('expiry').textContent = 'Kedaluwarsa: ' + (data.expiry_time || 'Tidak tersedia');
+
+        // Simulasi loading delay (2 detik) untuk UX yang lebih baik
+        setTimeout(() => {
+          showVirtualAccount();
+          pollStatus();
+        }, 2000);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showError('Terjadi kesalahan saat membuat Virtual Account. Silakan coba lagi atau hubungi support@gofotobox.online.');
+      });
+
+    function pollStatus() {
+      statusInterval = setInterval(() => {
+        fetch(`../api-fetch/check_status.php?order_id=${orderId}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.error) {
+              console.error('Error checking status:', data.error);
+              return;
+            }
+            document.getElementById('status').innerText = "Status: " + data.transaction_status;
+            if (data.transaction_status === "settlement") {
+              clearAllIntervals();
+              
+              // Complete payment in session
+              fetch('../api-fetch/complete_payment.php', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ order_id: orderId })
+              })
+              .then(response => response.json())
+              .then(result => {
+                if (result.success) {
+                  document.getElementById('status').style.color = "#28a745";
+                  document.getElementById('next').style.display = "block";
+                } else {
+                  console.error('Failed to complete payment:', result);
                 }
-            })
-            .then(response => response.json())
-            .then(result => {
-                console.log('Session reset result:', result);
-                // Navigate to home regardless of reset result
-                window.location.href = '/index.php';
-            })
-            .catch(error => {
-                console.error('Error resetting session:', error);
-                // Navigate to home even if reset fails
-                window.location.href = '/index.php';
-            });
-        }
+              });
+            } else if (data.transaction_status === "expire" || data.transaction_status === "cancel") {
+              clearAllIntervals();
+              document.getElementById('status').style.color = "#dc3545";
+              document.getElementById('status').innerText = "Status: Transaksi " + data.transaction_status;
+              showError('Transaksi telah kedaluwarsa atau dibatalkan. Silakan mulai ulang.');
+            }
+          })
+          .catch(error => {
+            console.error('Error checking status:', error);
+          });
+      }, 3000);
+    }
 
-        // Clear all intervals
-        function clearAllIntervals() {
-            if (statusInterval) clearInterval(statusInterval);
-        }
+    // Function untuk proceed ke layout selection
+    function proceedToLayout() {
+      console.log('Payment completed, transitioning to layout selection');
+      
+      // Clear intervals before navigation
+      clearAllIntervals();
+      
+      // Navigate langsung karena payment sudah completed via complete_payment.php
+      window.location.href = './selectlayout.php';
+    }
 
-        // Function untuk hide loading dan show VA
-        function showVirtualAccount() {
-            // Hide loading
-            document.getElementById('loading-container').style.display = 'none';
-            
-            // Show VA dan status (timer dihandle oleh session-timer.js)
-            document.getElementById('va-container').style.display = 'block';
-            document.getElementById('status-container').style.display = 'block';
-        }
+    // Handle page unload
+    window.addEventListener('beforeunload', () => {
+      clearAllIntervals();
+    });
+  </script>
 
-        // Fetch Virtual Account dengan loading
-        fetch('../api-fetch/charge_bank.php')
-            .then(res => res.json())
-            .then(data => {
-                if (data.error) {
-                    alert('Error: ' + data.error);
-                    return;
-                }
-                
-                orderId = data.order_id;
-
-                // Set session order_id via fetch
-                fetch('../api-fetch/set_session.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ order_id: orderId })
-                });
-
-                // Tampilkan Virtual Account
-                document.getElementById('va').textContent = data.va_number;
-
-                // Simulasi loading delay (2 detik) untuk UX yang lebih baik
-                setTimeout(() => {
-                    showVirtualAccount();
-                    pollStatus();
-                }, 2000);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Terjadi kesalahan saat membuat Virtual Account');
-                
-                // Hide loading jika error
-                document.getElementById('loading-container').style.display = 'none';
-            });
-
-        function pollStatus() {
-            statusInterval = setInterval(() => {
-                fetch(`../api-fetch/check_status.php?order_id=${orderId}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        document.getElementById('status').innerText = "Status: " + data.transaction_status;
-                        if (data.transaction_status === "settlement") {
-                            clearAllIntervals();
-                            
-                            // Complete payment in session
-                            fetch('../api-fetch/complete_payment.php', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({ order_id: orderId })
-                            })
-                            .then(response => response.json())
-                            .then(result => {
-                                if (result.success) {
-                                    document.getElementById('status').style.color = "#28a745";
-                                    document.getElementById('next').style.display = "block";
-                                } else {
-                                    console.error('Failed to complete payment:', result);
-                                }
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error checking status:', error);
-                    });
-            }, 3000);
-        }
-
-        // Function untuk proceed ke layout selection
-        function proceedToLayout() {
-            console.log('Payment completed, transitioning to layout selection');
-            
-            // Clear intervals before navigation
-            clearAllIntervals();
-            
-            // Navigate langsung karena payment sudah completed via complete_payment.php
-            window.location.href = './selectlayout.php';
-        }
-
-        // Handle page unload
-        window.addEventListener('beforeunload', () => {
-            clearAllIntervals();
-        });
-    </script>
-
-    <!-- Session Timer Script -->
-    <script src="../includes/session-timer.js"></script>
-    
-    <?php PWAHelper::addPWAScript(); ?>
+  <!-- Session Timer Script -->
+  <script src="../includes/session-timer.js"></script>
+  
+  <?php PWAHelper::addPWAScript(); ?>
 </body>
 
 </html>

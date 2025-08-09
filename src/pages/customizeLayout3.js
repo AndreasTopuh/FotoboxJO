@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   // Configuration constants
-  const CONFIG = {
-    CANVAS_WIDTH: 1200,
-    CANVAS_HEIGHT: 1800,
+ const CONFIG = {
+    CANVAS_WIDTH: 1224,
+    CANVAS_HEIGHT: 1836,
     BORDER_WIDTH: 62,
     MARGIN_TOP: 120,
     SPACING: 37,
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     EMAILJS_SERVICE_ID: 'service_gtqjb2j',
     EMAILJS_TEMPLATE_ID: 'template_pp5i4hm',
     LOGO_SRC: '/src/assets/logo.png',
-  };
+};
 
   // State variables
   let state = {
@@ -831,11 +831,45 @@ document.addEventListener('DOMContentLoaded', () => {
         <head>
           <title>Print Photo</title>
           <style>
-            @page { size: 4in 6in; margin: 0; }
-            * { margin: 0; padding: 0; border: none; box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            html, body { width: 4in; height: 6in; margin: 0; padding: 0; overflow: hidden; }
-            .print-container { width: 4in; height: 6in; position: absolute; top: 0; left: 0; }
-            .print-image { width: 4in; height: 6in; object-fit: cover; position: absolute; top: 0; left: 0; }
+            @page {     
+                        size: 4in 6in; 
+                        margin: 0; 
+                    }
+                    * { 
+                        margin: 0; 
+                        padding: 0; 
+                        border: none; 
+                        box-sizing: border-box; 
+                        -webkit-print-color-adjust: exact; 
+                        print-color-adjust: exact; 
+                    }
+                    html, body { 
+                        width: 4in; 
+                        height: 6in; 
+                        margin: 0; 
+                        padding: 0; 
+                        overflow: hidden; 
+                    }
+                    .print-container { 
+                        width: 4in; 
+                        height: 6in; 
+                        position: absolute; 
+                        top: 0; 
+                        left: 0; 
+                        margin: 0;
+                        padding: 0;
+                    }
+                    .print-image { 
+                        width: 4in; 
+                        height: 6in; 
+                        object-fit: contain; 
+                        object-position: center;
+                        position: absolute; 
+                        top: 0; 
+                        left: 0; 
+                        margin: 0;
+                        padding: 0;
+                    }
           </style>
         </head>
         <body>

@@ -23,6 +23,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // Main initialization function
     async function initializeApp() {
         console.log('🔄 Initializing photobooth customization...');
+        
+        // Debug: Check if DOM elements exist
+        const photoPreview = document.getElementById('photoPreview');
+        console.log('🔍 photoPreview element:', photoPreview ? 'Found' : 'Not found');
+        
+        // Check for possible frame container IDs
+        const frameContainerIds = ['dynamicFramesContainer', 'frames-container', 'framesContainer'];
+        frameContainerIds.forEach(id => {
+            const element = document.getElementById(id);
+            console.log(`🔍 ${id}:`, element ? 'Found' : 'Not found');
+        });
+        
+        // Check for possible sticker container IDs  
+        const stickerContainerIds = ['dynamicStickersContainer', 'stickers-container', 'stickersContainer'];
+        stickerContainerIds.forEach(id => {
+            const element = document.getElementById(id);
+            console.log(`🔍 ${id}:`, element ? 'Found' : 'Not found');
+        });
+        
         try {
             // Load assets from database first
             await loadAssetsFromDatabase();
@@ -49,10 +68,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetch('/src/api-fetch/get-stickers.php')
             ]);
 
+            console.log('🔍 Frames response status:', framesResponse.status);
+            console.log('🔍 Stickers response status:', stickersResponse.status);
+
             if (framesResponse.ok) {
                 const framesData = await framesResponse.json();
-                availableFrames = framesData.data || [];
-                console.log(`✅ Loaded ${availableFrames.length} frames from database`);
+                console.log('🔍 Frames data received:', framesData);
+                
+                if (framesData.success && framesData.data && Array.isArray(framesData.data)) {
+                    availableFrames = framesData.data;
+                    console.log(`✅ Loaded ${availableFrames.length} frames from database:`, availableFrames);
+                } else {
+                    console.warn('⚠️ Invalid frames data structure, using fallback');
+                    availableFrames = getFallbackFrames();
+                }
             } else {
                 console.warn('⚠️ Failed to load frames from database, using fallback');
                 availableFrames = getFallbackFrames();
@@ -60,8 +89,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (stickersResponse.ok) {
                 const stickersData = await stickersResponse.json();
-                availableStickers = stickersData.data || [];
-                console.log(`✅ Loaded ${availableStickers.length} stickers from database`);
+                console.log('🔍 Stickers data received:', stickersData);
+                
+                if (stickersData.success && stickersData.data && Array.isArray(stickersData.data)) {
+                    availableStickers = stickersData.data;
+                    console.log(`✅ Loaded ${availableStickers.length} stickers from database:`, availableStickers);
+                } else {
+                    console.warn('⚠️ Invalid stickers data structure, using fallback');
+                    availableStickers = getFallbackStickers();
+                }
             } else {
                 console.warn('⚠️ Failed to load stickers from database, using fallback');
                 availableStickers = getFallbackStickers();
@@ -73,54 +109,134 @@ document.addEventListener('DOMContentLoaded', () => {
             availableFrames = getFallbackFrames();
             availableStickers = getFallbackStickers();
         }
+        
+        console.log(`🎯 Final frames count: ${availableFrames.length}`);
+        console.log(`🎯 Final stickers count: ${availableStickers.length}`);
+        
+        // Ensure we have at least fallback data
+        if (availableFrames.length === 0) {
+            console.warn('⚠️ No frames available, forcing fallback');
+            availableFrames = getFallbackFrames();
+        }
+        
+        if (availableStickers.length === 0) {
+            console.warn('⚠️ No stickers available, forcing fallback');
+            availableStickers = getFallbackStickers();
+        }
     }
 
     // Create dynamic controls for frames and stickers
     async function createDynamicControls() {
         console.log('🔄 Creating dynamic asset controls...');
         
-        // Create frame controls
-        const framesContainer = document.getElementById('frames-container');
+        // Create frame controls - try multiple possible container IDs
+        const possibleFrameContainers = [
+            'dynamicFramesContainer',
+            'frames-container', 
+            'framesContainer'
+        ];
+        
+        let framesContainer = null;
+        for (const containerId of possibleFrameContainers) {
+            framesContainer = document.getElementById(containerId);
+            if (framesContainer) {
+                console.log(`✅ Found frames container: ${containerId}`);
+                break;
+            }
+        }
+        
         if (framesContainer) {
-            framesContainer.innerHTML = ''; // Clear loading placeholder
+            // Remove loading placeholder only
+            const loadingPlaceholder = framesContainer.querySelector('.loading-placeholder');
+            if (loadingPlaceholder) loadingPlaceholder.remove();
             
+            console.log(`🔄 Creating ${availableFrames.length} frame buttons...`);
             availableFrames.forEach((frame, index) => {
                 const button = document.createElement('button');
                 button.id = `frame_${frame.id}`;
-                button.className = 'buttonFrames frame-dynamic';
-                button.style.backgroundColor = frame.warna || '#ffffff';
+                button.className = 'buttonBgFrames frame-dynamic';
+                
+                // Handle both image frames and color frames
+                if (frame.file_path) {
+                    // Image frame
+                    button.style.backgroundImage = `url('${frame.file_path}')`;
+                    button.style.backgroundSize = 'cover';
+                    button.style.backgroundPosition = 'center';
+                    button.setAttribute('data-frame-path', frame.file_path);
+                } else if (frame.warna) {
+                    // Color frame
+                    button.style.backgroundColor = frame.warna;
+                    button.setAttribute('data-frame-color', frame.warna);
+                }
+                
                 button.setAttribute('data-frame-id', frame.id);
-                button.setAttribute('data-frame-color', frame.warna);
                 button.setAttribute('data-frame-name', frame.nama);
+                button.title = frame.nama;
                 
                 button.addEventListener('click', () => {
-                    backgroundColor = frame.warna;
+                    // Remove active class from all frame buttons
+                    document.querySelectorAll('.buttonBgFrames, .buttonFrames').forEach(btn => 
+                        btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    if (frame.file_path) {
+                        backgroundType = 'image';
+                        backgroundImage = frame.file_path;
+                        backgroundColor = null;
+                    } else if (frame.warna) {
+                        backgroundType = 'color';
+                        backgroundColor = frame.warna;
+                        backgroundImage = null;
+                    }
+                    
                     redrawCanvas();
-                    console.log(`🎯 Selected frame: ${frame.nama} (${frame.warna})`);
+                    console.log(`🎯 Selected frame: ${frame.nama}`);
                 });
                 
                 framesContainer.appendChild(button);
+                console.log(`✅ Created frame button: ${frame.nama}`);
             });
             
             console.log(`✅ Created ${availableFrames.length} frame controls`);
+        } else {
+            console.error('❌ No frames container found with any of these IDs:', possibleFrameContainers);
         }
         
-        // Create sticker controls
-        const stickersContainer = document.getElementById('stickers-container');
+        // Create sticker controls - try multiple possible container IDs
+        const possibleStickerContainers = [
+            'dynamicStickersContainer',
+            'stickers-container',
+            'stickersContainer'
+        ];
+        
+        let stickersContainer = null;
+        for (const containerId of possibleStickerContainers) {
+            stickersContainer = document.getElementById(containerId);
+            if (stickersContainer) {
+                console.log(`✅ Found stickers container: ${containerId}`);
+                break;
+            }
+        }
+        
         if (stickersContainer) {
-            stickersContainer.innerHTML = ''; // Clear loading placeholder
+            // Remove loading placeholder only
+            const loadingPlaceholder = stickersContainer.querySelector('.loading-placeholder');
+            if (loadingPlaceholder) loadingPlaceholder.remove();
             
-            // Add "none" sticker button first
-            const noneButton = document.createElement('button');
-            noneButton.id = 'noneSticker';
-            noneButton.className = 'buttonStickers sticker-none';
-            noneButton.innerHTML = '<img src="../assets/block (1).png" alt="None" class="shape-icon">';
-            noneButton.addEventListener('click', () => {
-                selectedSticker = null;
-                redrawCanvas();
-                console.log('🎯 No sticker selected');
-            });
-            stickersContainer.appendChild(noneButton);
+            // Initialize existing "None" sticker button
+            const noneButton = document.getElementById('noneSticker');
+            if (noneButton) {
+                noneButton.addEventListener('click', () => {
+                    // Remove active class from all sticker buttons
+                    document.querySelectorAll('.buttonStickers').forEach(btn => 
+                        btn.classList.remove('active'));
+                    noneButton.classList.add('active');
+                    
+                    selectedSticker = null;
+                    redrawCanvas();
+                    console.log('🎯 No sticker selected');
+                });
+            }
             
             // Add database stickers
             availableStickers.forEach((sticker, index) => {
@@ -134,24 +250,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 img.src = sticker.file_path;
                 img.alt = sticker.nama;
                 img.className = 'sticker-icon';
+                img.style.width = '40px';
+                img.style.height = '40px';
+                img.style.objectFit = 'contain';
                 button.appendChild(img);
                 
-                // Create sticker object
-                const stickerObj = {
-                    image: new Image(),
-                    src: sticker.file_path,
-                    name: sticker.nama,
-                    id: sticker.id
-                };
-                
-                stickerObj.image.onload = () => {
-                    console.log(`✅ Sticker preloaded: ${sticker.nama}`);
-                };
-                
-                stickerObj.image.src = sticker.file_path;
-                
                 button.addEventListener('click', () => {
-                    selectedSticker = stickerObj;
+                    // Remove active class from all sticker buttons
+                    document.querySelectorAll('.buttonStickers').forEach(btn => 
+                        btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    selectedSticker = sticker.file_path;
                     redrawCanvas();
                     console.log(`🎯 Selected sticker: ${sticker.nama}`);
                 });
@@ -160,6 +270,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             console.log(`✅ Created ${availableStickers.length} sticker controls`);
+        } else {
+            console.error('❌ No stickers container found with any of these IDs:', possibleStickerContainers);
         }
         
         // Mark containers as loaded
@@ -172,10 +284,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fallback frames if database fails
     function getFallbackFrames() {
         return [
-            { id: 'fallback-1', nama: 'Pink', warna: '#FFB6C1' },
-            { id: 'fallback-2', nama: 'Blue', warna: '#87CEEB' },
-            { id: 'fallback-3', nama: 'Yellow', warna: '#FFFFE0' },
-            { id: 'fallback-4', nama: 'White', warna: '#FFFFFF' }
+            { id: 1, nama: 'Matcha Frame', file_path: '/src/assets/frame-backgrounds/matcha.jpg' },
+            { id: 2, nama: 'Black Star Frame', file_path: '/src/assets/frame-backgrounds/blackStar.jpg' },
+            { id: 3, nama: 'Blue Stripe Frame', file_path: '/src/assets/frame-backgrounds/blueStripe.jpg' },
+            { id: 4, nama: 'Pink Color', warna: '#FFB6C1' },
+            { id: 5, nama: 'Blue Color', warna: '#87CEEB' },
+            { id: 6, nama: 'Yellow Color', warna: '#FFFFE0' },
+            { id: 7, nama: 'White Color', warna: '#FFFFFF' }
         ];
     }
 
@@ -444,7 +559,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function sendPhotoEmail(email) {
+        console.log('📧 Starting sendPhotoEmail for:', email);
+        
         if (!finalCanvas) {
+            console.error('❌ No finalCanvas available');
             alert('Tidak ada foto untuk dikirim');
             return;
         }
@@ -455,13 +573,19 @@ document.addEventListener('DOMContentLoaded', () => {
         sendBtn.disabled = true;
 
         try {
+            console.log('🔄 Converting canvas to blob...');
             const blob = await new Promise(resolve => finalCanvas.toBlob(resolve, 'image/png'));
+            console.log('✅ Blob created, size:', blob.size);
+            
+            console.log('🔄 Converting to base64...');
             const base64data = await new Promise(resolve => {
                 const reader = new FileReader();
                 reader.onloadend = () => resolve(reader.result);
                 reader.readAsDataURL(blob);
             });
+            console.log('✅ Base64 conversion complete');
 
+            console.log('📤 Sending to server...');
             const response = await fetch('../api-fetch/save_final_photo_v2.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -469,16 +593,25 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const text = await response.text();
+            console.log('📥 Server response received:', text.substring(0, 200));
+            
             if (text.trim().startsWith('<') || text.includes('<br />') || text.includes('<b>')) {
+                console.error('❌ Server returned HTML error page');
                 throw new Error('Server returned HTML error page');
             }
 
             const data = JSON.parse(text);
+            console.log('✅ Response parsed:', data);
+            
             if (!data.success) {
+                console.error('❌ Server error:', data.message);
                 throw new Error(data.message || 'Server error');
             }
 
+            console.log('📷 Photo saved successfully! URL:', data.url);
             const photoLink = window.location.origin + data.url;
+            console.log('🔗 Full photo link:', photoLink);
+            
             const emailParams = {
                 email,
                 to_email: email,
@@ -493,7 +626,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 message: `Halo Sobat! Link foto Anda: ${photoLink}`
             };
 
+            console.log('📧 Sending email with params:', emailParams);
             await emailjs.send('service_gtqjb2j', 'template_pp5i4hm', emailParams);
+            console.log('✅ Email sent successfully!');
             
             // Mark email as sent and disable button
             emailSent = true;
@@ -503,11 +638,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 emailBtn.style.opacity = '0.5';
                 emailBtn.style.cursor = 'not-allowed';
                 emailBtn.innerHTML = '✅ Email Terkirim';
+                console.log('✅ Email button updated');
             }
             
             showValidationError('Email berhasil dikirim! ✅ Cek inbox Anda.');
             document.querySelector('.input-validation span').style.color = '#28a745';
             setTimeout(() => {
+                console.log('🔄 Closing email modal');
                 document.getElementById('emailModal').style.display = 'none';
                 document.getElementById('emailInput').value = '';
                 hideValidationError();
@@ -516,6 +653,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('❌ Email error:', error);
             showValidationError('Error: ' + error.message);
         } finally {
+            console.log('🔄 Resetting send button');
             sendBtn.innerHTML = originalHtml;
             sendBtn.disabled = false;
         }
@@ -530,15 +668,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        const canvasWidth = 1205;
-        const canvasHeight = 1795;
+        const canvasWidth = 1224; // 10.2 cm at 300 DPI
+        const canvasHeight = 1836; // 15.2 cm at 300 DPI
         const borderWidth = 62;
         const marginTopLeft = 120;
         const marginTopRight = 240;
         const spacing = 37;
         const photoWidth = 477;
         const photoHeight = 567;
-        const expectedPhotos = 4;
+        const expectedPhotos = 4;   
 
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;
@@ -550,6 +688,7 @@ document.addEventListener('DOMContentLoaded', () => {
             drawPhotos();
         } else if (backgroundImage) {
             const bgImg = new Image();
+            bgImg.crossOrigin = 'anonymous';
             bgImg.onload = () => {
                 ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
                 drawPhotos();
@@ -571,6 +710,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         function drawPhotos() {
+            console.log('🖼️ Drawing photos... Expected:', expectedPhotos, 'Available:', storedImages.length);
+            
             if (storedImages.length < expectedPhotos) {
                 console.warn(`⚠️ Layout requires ${expectedPhotos} photos, found: ${storedImages.length}`);
             }
@@ -582,37 +723,62 @@ document.addEventListener('DOMContentLoaded', () => {
             const centerSpacing = availableWidth - (photoWidth * 2);
             const leftColumnX = borderWidth;
             const rightColumnX = borderWidth + photoWidth + centerSpacing;
+            
+            console.log('📐 Layout calculations:', {
+                availableWidth,
+                centerSpacing,
+                leftColumnX,
+                rightColumnX
+            });
 
             storedImages.slice(0, imagesToProcess).forEach((imageData, index) => {
+                console.log(`📸 Loading photo ${index + 1}:`, imageData);
+                
                 const img = new Image();
+                img.crossOrigin = 'anonymous';
+                
                 img.onload = () => {
+                    console.log(`✅ Photo ${index + 1} loaded successfully`);
                     const positions = [
                         { x: leftColumnX, y: marginTopLeft, width: photoWidth, height: photoHeight },
                         { x: leftColumnX, y: marginTopLeft + photoHeight + spacing, width: photoWidth, height: photoHeight },
                         { x: rightColumnX, y: marginTopRight, width: photoWidth, height: photoHeight },
                         { x: rightColumnX, y: marginTopRight + photoHeight + spacing, width: photoWidth, height: photoHeight }
                     ];
-                    drawCroppedImage(ctx, img, positions[index], selectedShape);
+                    
+                    try {
+                        drawCroppedImage(ctx, img, positions[index], selectedShape);
+                        console.log(`✅ Photo ${index + 1} drawn at position:`, positions[index]);
+                    } catch (error) {
+                        console.error(`❌ Error drawing photo ${index + 1}:`, error);
+                    }
+                    
                     loadedCount++;
                     if (loadedCount === imagesToProcess) {
+                        console.log('🎨 All photos loaded, drawing stickers and logos...');
                         drawStickersAndLogos(ctx, canvas);
                         updateCanvasPreview(canvas);
                     }
                 };
+                
                 img.onerror = () => {
-                    console.error('❌ Failed to load image:', imageData);
+                    console.error(`❌ Failed to load photo ${index + 1}:`, imageData);
                     loadedCount++;
                     if (loadedCount === imagesToProcess) {
+                        console.log('🎨 Processing complete (with errors), drawing stickers and logos...');
                         drawStickersAndLogos(ctx, canvas);
                         updateCanvasPreview(canvas);
                     }
                 };
+                
                 img.src = imageData;
             });
         }
     }
 
     function drawCroppedImage(ctx, img, pos, shape) {
+        console.log('✂️ Drawing cropped image with shape:', shape, 'at position:', pos);
+        
         const { x, y, width, height } = pos;
         const imgAspect = img.width / img.height;
         const targetAspect = width / height;
@@ -630,7 +796,14 @@ document.addEventListener('DOMContentLoaded', () => {
             sy = (img.height - sHeight) / 2;
         }
 
-        drawPhotoWithShape(ctx, img, x, y, width, height, shape, sx, sy, sWidth, sHeight);
+        console.log('📐 Crop calculations:', { sx, sy, sWidth, sHeight });
+        
+        try {
+            drawPhotoWithShape(ctx, img, x, y, width, height, shape, sx, sy, sWidth, sHeight);
+            console.log('✅ Photo drawn successfully with shape:', shape);
+        } catch (error) {
+            console.error('❌ Error in drawPhotoWithShape:', error);
+        }
     }
 
     function drawPhotoWithShape(ctx, img, x, y, width, height, shape, sx, sy, sWidth, sHeight) {
@@ -664,22 +837,37 @@ document.addEventListener('DOMContentLoaded', () => {
     function drawStickersAndLogos(ctx, canvas) {
         if (selectedSticker) {
             const stickerImg = new Image();
-            stickerImg.onload = () => ctx.drawImage(stickerImg, 0, 0, canvas.width, canvas.height);
-            stickerImg.onerror = () => console.error('❌ Failed to load sticker:', selectedSticker);
+            stickerImg.crossOrigin = 'anonymous';
+            stickerImg.onload = () => {
+                ctx.drawImage(stickerImg, 0, 0, canvas.width, canvas.height);
+                console.log('✅ Sticker applied');
+            };
+            stickerImg.onerror = () => {
+                console.error('❌ Failed to load sticker:', selectedSticker);
+            };
             stickerImg.src = selectedSticker;
         }
 
         const logoBtn = document.getElementById('engLogo');
         if (logoBtn && logoBtn.classList.contains('active')) {
             const logoImg = new Image();
-            logoImg.onload = () => ctx.drawImage(logoImg, 20, canvas.height - 60, 100, 40);
-            logoImg.onerror = () => console.error('❌ Failed to load logo:', '/src/assets/logo.png');
+            logoImg.crossOrigin = 'anonymous';
+            logoImg.onload = () => {
+                ctx.drawImage(logoImg, 20, canvas.height - 60, 100, 40);
+                console.log('✅ Logo applied');
+            };
+            logoImg.onerror = () => {
+                console.error('❌ Failed to load logo');
+            };
             logoImg.src = '/src/assets/logo.png';
         }
     }
 
     function updateCanvasPreview(canvas) {
+        console.log('🖼️ Updating canvas preview...');
+        
         if (photoCustomPreview) {
+            console.log('✅ Preview container found, updating...');
             photoCustomPreview.innerHTML = '';
             Object.assign(canvas.style, {
                 maxWidth: '300px',
@@ -693,8 +881,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 margin: '0 auto'
             });
             photoCustomPreview.appendChild(canvas);
+            console.log('✅ Canvas added to preview container');
+        } else {
+            console.warn('⚠️ Photo preview container not found');
         }
+        
         finalCanvas = canvas;
+        console.log('✅ Final canvas updated');
     }
 
     // Initialize sticker controls with database data

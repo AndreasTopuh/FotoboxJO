@@ -302,6 +302,18 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
 
       <!-- Payment Options -->
       <div class="payment-options">
+        <!-- Payment Link (Rekomendasi) -->
+        <a href="#" onclick="startPaymentSession('link'); return false;" class="payment-option" style="border-color: #007bff; color: #007bff;">
+          🔗 Payment Link (Multi Platform)
+          <span style="background: #007bff; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">MUDAH</span>
+        </a>
+
+        <!-- Snap Payment (Rekomendasi) -->
+        <a href="#" onclick="startPaymentSession('snap'); return false;" class="payment-option" style="border-color: #00AA13; color: #00AA13;">
+          💳 Pembayaran Digital (GoPay, QRIS, ShopeePay)
+          <span style="background: #00AA13; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">REKOMENDASI</span>
+        </a>
+
         <!-- QRIS -->
         <a href="#" onclick="startPaymentSession('qris'); return false;" class="payment-option">
           QRIS
@@ -439,7 +451,11 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
 
         if (result.success) {
           // Timer 20 menit sudah dimulai di server, redirect ke halaman pembayaran
-          if (method === 'qris') {
+          if (method === 'link') {
+            window.location.href = 'payment-link.php';
+          } else if (method === 'snap') {
+            window.location.href = 'payment-snap.php';
+          } else if (method === 'qris') {
             window.location.href = 'payment-qris.php';
           } else if (method === 'bank') {
             window.location.href = 'payment-bank.php';

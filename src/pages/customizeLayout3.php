@@ -68,7 +68,7 @@ require_once '../includes/pwa-helper.php';
             .print-image {
                 width: 4in;
                 height: 6in;
-                object-fit: cover;
+                object-fit: contain;
                 object-position: center;
                 position: absolute;
                 top: 0;
@@ -82,6 +82,7 @@ require_once '../includes/pwa-helper.php';
                 left: 50% !important;
                 transform: translate(-50%, -50%) !important;
                 margin: 0 !important;
+                padding: 0 !important;
                 box-shadow: none !important;
             }
 
