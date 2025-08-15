@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test QRIS QR Code Generation</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
+        .container { margin: 20px auto; max-width: 600px; }
+        .qr-container { margin: 20px; padding: 20px; border: 2px solid #E28585; border-radius: 10px; }
+        canvas { border: 1px solid #ddd; margin: 10px; }
+        button { padding: 10px 20px; margin: 10px; background: #E28585; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .info { margin: 10px 0; padding: 10px; background: #f9f9f9; border-radius: 5px; text-align: left; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test QRIS QR Code Generation</h1>
+        
+        <button onclick="testFullPaymentFlow()">Test Full Payment Flow</button>
+        <button onclick="testSimpleQR()">Test Simple QR</button>
+        
+        <div id="result" class="info" style="display: none;">
+            <h3>API Response:</h3>
+            <pre id="api-response"></pre>
+        </div>
+        
+        <div id="qr-display" class="qr-container" style="display: none;">
+            <h3>Generated QR Codes:</h3>
+            <div id="qr-list"></div>
+        </div>
+    </div>
+    
+    <script>
+        async function testFullPaymentFlow() {
+            try {
+                // Call the charge_qris.php API
+                const response = await fetch('/FotoboxJO/src/api-fetch/charge_qris.php');
+                const data = await response.json();
+                
+                // Display API response
+                document.getElementById('api-response').textContent = JSON.stringify(data, null, 2);
+                document.getElementById('result').style.display = 'block';
+                
+                if (data.success && data.order_id) {
+                    // Generate QR code with payment info
+                    await generatePaymentQR(data.order_id, data.gross_amount || 15000);
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Network error: ' + error.message);
+            }
+        }
+        
+        async function testSimpleQR() {
+            const orderId = 'TEST-ORDER-' + Date.now();
+            await generatePaymentQR(orderId, 15000);
+        }
+        
+        async function generatePaymentQR(orderId, amount) {
+            const qrList = document.getElementById('qr-list');
+            const display = document.getElementById('qr-display');
+            
+            // Create canvas element
+            const canvas = document.createElement('canvas');
+            canvas.style.width = '250px';
+            canvas.style.height = '250px';
+            
+            const qrData = {
+                merchant: "GoBooth PhotoBox",
+                amount: amount,
+                order_id: orderId,
+                description: "Photo Booth Session",
+                payment_method: "QRIS",
+                timestamp: new Date().toISOString()
+            };
+            
+            const qrText = JSON.stringify(qrData, null, 2);
+            
+            const options = {
+                width: 250,
+                height: 250,
+                margin: 2,
+                color: {
+                    dark: '#000000',
+                    light: '#FFFFFF'
+                }
+            };
+            
+            try {
+                await QRCode.toCanvas(canvas, qrText, options);
+                
+                const container = document.createElement('div');
+                container.innerHTML = `
+                    <h4>Order: ${orderId}</h4>
+                    <p>Amount: Rp ${amount.toLocaleString('id-ID')}</p>
+                `;
+                container.appendChild(canvas);
+                
+                qrList.appendChild(container);
+                display.style.display = 'block';
+                
+                console.log('✅ QR Code generated successfully');
+            } catch (error) {
+                console.error('Error generating QR:', error);
+                alert('Failed to generate QR code: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

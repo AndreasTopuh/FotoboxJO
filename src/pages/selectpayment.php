@@ -302,33 +302,21 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
 
       <!-- Payment Options -->
       <div class="payment-options">
-        <!-- Payment Link (Rekomendasi) -->
-        <a href="#" onclick="startPaymentSession('link'); return false;" class="payment-option" style="border-color: #007bff; color: #007bff;">
-          🔗 Payment Link (Multi Platform)
-          <span style="background: #007bff; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">MUDAH</span>
-        </a>
-
-        <!-- Snap Payment (Rekomendasi) -->
-        <a href="#" onclick="startPaymentSession('snap'); return false;" class="payment-option" style="border-color: #00AA13; color: #00AA13;">
-          💳 Pembayaran Digital (GoPay, QRIS, ShopeePay)
-          <span style="background: #00AA13; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">REKOMENDASI</span>
-        </a>
-
-        <!-- QRIS -->
-        <a href="#" onclick="startPaymentSession('qris'); return false;" class="payment-option">
-          QRIS
-          <img src="../assets/qris.png" alt="QRIS Logo">
-        </a>
-
-        <!-- BCA -->
+        <!-- BNI Virtual Account -->
         <a href="#" onclick="startPaymentSession('bank'); return false;" class="payment-option">
-          Virtual Bank (BCA)
-          <img src="../assets/bca.png" alt="BCA Logo">
+          Payment Transfer Virtual Bank BNI
+          <img src="../assets/bca.png" alt="BNI Bank" style="width: 50px; height: 50px; object-fit: contain;">
+        </a>
+
+        <!-- QRIS Gopay -->
+        <a href="#" onclick="startPaymentSession('qris'); return false;" class="payment-option">
+          Payment E-Money QRIS (Gopay)
+          <img src="../assets/qris.png" alt="QRIS" style="width: 50px; height: 50px; object-fit: contain;">
         </a>
 
         <!-- Cash Payment -->
         <a href="#" onclick="showCashModal(); return false;" class="payment-option">
-          Cash Payment
+          Code Cash
           <img src="../assets/icons/cash-icon.png" alt="Cash" style="width: 50px; height: 50px; background: #4CAF50; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">💰</img>
         </a>
       </div>
@@ -451,14 +439,10 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
 
         if (result.success) {
           // Timer 20 menit sudah dimulai di server, redirect ke halaman pembayaran
-          if (method === 'link') {
-            window.location.href = 'payment-link.php';
-          } else if (method === 'snap') {
-            window.location.href = 'payment-snap.php';
+          if (method === 'bank') {
+            window.location.href = 'payment-bank.php';
           } else if (method === 'qris') {
             window.location.href = 'payment-qris.php';
-          } else if (method === 'bank') {
-            window.location.href = 'payment-bank.php';
           }
         } else {
           alert('Gagal memulai sesi pembayaran. Silakan coba lagi.');

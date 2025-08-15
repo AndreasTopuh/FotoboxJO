@@ -37,7 +37,6 @@
     <link rel="stylesheet" href="./src/pages/home-styles.css">
     <style>
         :root {
-            --pink: #ff7daf;
             /* Warna pink utama untuk gradien animasi */
             --text-pink: #f2005b;
             /* Warna pink sekunder untuk gradien animasi */

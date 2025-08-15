@@ -1,4 +1,90 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // ⚡ COMPRESSION CONFIGURATION - 3-Level Quality System
+  const COMPRESSION_CONFIG = {
+    SESSION_QUALITY: 0.85,       SESSION_MAX_WIDTH: 1600,     SESSION_MAX_HEIGHT: 1200,
+    DOWNLOAD_QUALITY: 0.95,      DOWNLOAD_MAX_WIDTH: 2400,    DOWNLOAD_MAX_HEIGHT: 1800,
+    THUMB_QUALITY: 0.6,          THUMB_MAX_WIDTH: 400,        THUMB_MAX_HEIGHT: 300
+  };
+
+  // 🚀 FAST COMPRESSION FUNCTION
+  function compressImage(imageData, mode = 'session') {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          const settings = getCompressionSettings(mode);
+          
+          // Calculate dimensions maintaining aspect ratio
+          let { width, height } = img;
+          const aspectRatio = width / height;
+          
+          if (width > settings.maxWidth) {
+            width = settings.maxWidth;
+            height = width / aspectRatio;
+          }
+          
+          if (height > settings.maxHeight) {
+            height = settings.maxHeight;
+            width = height * aspectRatio;
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          // High quality settings for better compression
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          
+          // Draw and compress
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', settings.quality);
+          
+          console.log(`✅ Image compressed for ${mode}:`, {
+            original: `${img.width}x${img.height}`,
+            compressed: `${width}x${height}`,
+            quality: settings.quality
+          });
+          
+          resolve(compressedDataUrl);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      
+      img.onerror = () => reject(new Error('Failed to load image for compression'));
+      img.src = imageData;
+    });
+  }
+
+  function getCompressionSettings(mode) {
+    switch (mode) {
+      case 'download':
+        return {
+          quality: COMPRESSION_CONFIG.DOWNLOAD_QUALITY,
+          maxWidth: COMPRESSION_CONFIG.DOWNLOAD_MAX_WIDTH,
+          maxHeight: COMPRESSION_CONFIG.DOWNLOAD_MAX_HEIGHT
+        };
+      case 'thumb':
+        return {
+          quality: COMPRESSION_CONFIG.THUMB_QUALITY,
+          maxWidth: COMPRESSION_CONFIG.THUMB_MAX_WIDTH,
+          maxHeight: COMPRESSION_CONFIG.THUMB_MAX_HEIGHT
+        };
+      default: // session
+        return {
+          quality: COMPRESSION_CONFIG.SESSION_QUALITY,
+          maxWidth: COMPRESSION_CONFIG.SESSION_MAX_WIDTH,
+          maxHeight: COMPRESSION_CONFIG.SESSION_MAX_HEIGHT
+        };
+    }
+  }
+
   // Configuration constants
   const CONFIG = {
     CANVAS_WIDTH: 1224,
@@ -470,6 +556,121 @@ document.addEventListener('DOMContentLoaded', () => {
     state.finalCanvas = canvas;
   }
 
+  /**
+   * Generates high quality version of the canvas for print/download
+   */
+  async function generateHighQualityCanvas() {
+    console.log('🎨 Generating high quality canvas for print...');
+    
+    if (!state.storedImages.length) {
+      console.warn('⚠️ No images available for high quality generation');
+      return state.finalCanvas;
+    }
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Use higher resolution for print
+    const printScale = 2; // 2x resolution for better print quality
+    canvas.width = CONFIG.CANVAS_WIDTH * printScale;
+    canvas.height = CONFIG.CANVAS_HEIGHT * printScale;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Scale context for high resolution
+    ctx.scale(printScale, printScale);
+
+    // Apply background
+    if (state.backgroundType === 'color') {
+      ctx.fillStyle = state.backgroundColor;
+      ctx.fillRect(0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
+      await drawHighQualityPhotos(ctx, canvas, printScale);
+    } else if (state.backgroundImage) {
+      try {
+        const bgImg = await loadImage(state.backgroundImage);
+        ctx.drawImage(bgImg, 0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
+        await drawHighQualityPhotos(ctx, canvas, printScale);
+      } catch (error) {
+        console.error('❌ Failed to load background image:', state.backgroundImage);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
+        await drawHighQualityPhotos(ctx, canvas, printScale);
+      }
+    } else {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
+      await drawHighQualityPhotos(ctx, canvas, printScale);
+    }
+    
+    console.log('✅ High quality canvas generated');
+    return canvas;
+  }
+
+  /**
+   * Draws photos on high quality canvas
+   */
+  async function drawHighQualityPhotos(ctx, canvas, printScale) {
+    if (state.storedImages.length < CONFIG.EXPECTED_PHOTOS) {
+      console.warn(`⚠️ Layout requires ${CONFIG.EXPECTED_PHOTOS} photos, found: ${state.storedImages.length}`);
+    }
+
+    const imagesToProcess = Math.min(state.storedImages.length, CONFIG.EXPECTED_PHOTOS);
+    let loadedCount = 0;
+
+    const availableWidth = CONFIG.CANVAS_WIDTH - (CONFIG.BORDER_WIDTH * 2);
+    const centerSpacing = availableWidth - (CONFIG.PHOTO_WIDTH * 2);
+    const leftColumnX = CONFIG.BORDER_WIDTH;
+    const rightColumnX = CONFIG.BORDER_WIDTH + CONFIG.PHOTO_WIDTH + centerSpacing;
+
+    for (const [index, imageData] of state.storedImages.slice(0, imagesToProcess).entries()) {
+      try {
+        const img = await loadImage(imageData);
+        const positions = [
+          { x: leftColumnX, y: CONFIG.MARGIN_TOP, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },
+          { x: leftColumnX, y: CONFIG.MARGIN_TOP + CONFIG.PHOTO_HEIGHT + CONFIG.SPACING, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },
+          { x: leftColumnX, y: CONFIG.MARGIN_TOP + (CONFIG.PHOTO_HEIGHT + CONFIG.SPACING) * 2, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },
+          { x: leftColumnX, y: CONFIG.MARGIN_TOP + (CONFIG.PHOTO_HEIGHT + CONFIG.SPACING) * 3, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },
+          { x: rightColumnX, y: CONFIG.MARGIN_TOP, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },
+          { x: rightColumnX, y: CONFIG.MARGIN_TOP + CONFIG.PHOTO_HEIGHT + CONFIG.SPACING, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },
+          { x: rightColumnX, y: CONFIG.MARGIN_TOP + (CONFIG.PHOTO_HEIGHT + CONFIG.SPACING) * 2, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },
+          { x: rightColumnX, y: CONFIG.MARGIN_TOP + (CONFIG.PHOTO_HEIGHT + CONFIG.SPACING) * 3, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },
+        ];
+        
+        drawCroppedImage(ctx, img, positions[index], state.selectedShape);
+        loadedCount++;
+        
+        if (loadedCount === imagesToProcess) {
+          await drawHighQualityStickersAndLogos(ctx, canvas);
+        }
+      } catch (error) {
+        console.error(`❌ Failed to load image: ${imageData}`);
+      }
+    }
+  }
+
+  /**
+   * Draws high quality stickers and logos
+   */
+  async function drawHighQualityStickersAndLogos(ctx, canvas) {
+    if (state.selectedSticker) {
+      try {
+        const stickerImg = await loadImage(state.selectedSticker);
+        ctx.drawImage(stickerImg, 0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
+      } catch (error) {
+        console.error('❌ Failed to load sticker:', state.selectedSticker);
+      }
+    }
+
+    const logoBtn = document.getElementById('engLogo');
+    if (logoBtn && logoBtn.classList.contains('active')) {
+      try {
+        const logoImg = await loadImage(CONFIG.LOGO_SRC);
+        ctx.drawImage(logoImg, 20, CONFIG.CANVAS_HEIGHT - 60, 100, 40);
+      } catch (error) {
+        console.error('❌ Failed to load logo:', CONFIG.LOGO_SRC);
+      }
+    }
+  }
+
   // Control Initialization
   /**
    * Initializes all controls
@@ -533,6 +734,31 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
+   * Updates continue button state based on requirements
+   */
+  function updateContinueButtonState() {
+    const continueBtn = document.getElementById('continueBtn');
+    if (!continueBtn) return;
+
+    const canContinue = state.emailSent && state.printUsed;
+    
+    if (canContinue) {
+      continueBtn.disabled = false;
+      continueBtn.style.opacity = '1';
+      continueBtn.style.cursor = 'pointer';
+      continueBtn.innerHTML = '🎉 Lanjut ke Terima Kasih';
+    } else {
+      continueBtn.disabled = true;
+      continueBtn.style.opacity = '0.5';
+      continueBtn.style.cursor = 'not-allowed';
+      const missingActions = [];
+      if (!state.emailSent) missingActions.push('Email');
+      if (!state.printUsed) missingActions.push('Print');
+      continueBtn.innerHTML = `⏳ ${missingActions.join(' & ')} Dulu`;
+    }
+  }
+
+  /**
    * Initializes action buttons
    */
   function initializeActionButtons() {
@@ -548,18 +774,29 @@ document.addEventListener('DOMContentLoaded', () => {
           handleError('Tidak ada gambar untuk dikirim ke email', 'alert');
         }
       },
-      printBtn: () => {
+      printBtn: async () => {
         if (state.printUsed) {
           handleError('Print sudah pernah digunakan!', 'alert');
           return;
         }
         if (state.finalCanvas) {
-          showSimplePrintPopup(state.finalCanvas.toDataURL('image/jpeg', 1.0));
+          console.log('🖨️ Generating high quality canvas for print...');
+          const highQualityCanvas = await generateHighQualityCanvas();
+          showSimplePrintPopup(highQualityCanvas.toDataURL('image/jpeg', 1.0));
         } else {
           handleError('Tidak ada gambar untuk di-print', 'alert');
         }
       },
-      continueBtn: () => (window.location.href = 'thankyou.php'),
+      continueBtn: () => {
+        if (state.emailSent && state.printUsed) {
+          window.location.href = 'thankyou.php';
+        } else {
+          const missingActions = [];
+          if (!state.emailSent) missingActions.push('Email');
+          if (!state.printUsed) missingActions.push('Print');
+          handleError(`Silakan ${missingActions.join(' dan ')} foto terlebih dahulu!`, 'alert');
+        }
+      },
     };
 
     Object.entries(buttons).forEach(([id, handler]) => {
@@ -568,6 +805,9 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', handler);
       }
     });
+
+    // Initialize continue button state
+    updateContinueButtonState();
   }
 
   // Email Modal
@@ -712,21 +952,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const sendBtn = document.getElementById('sendEmailBtn');
     const originalHtml = sendBtn.innerHTML;
-    sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan & Mengirim...';
+    sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating High Quality...';
     sendBtn.disabled = true;
 
     try {
-      const blob = await new Promise((resolve) => state.finalCanvas.toBlob(resolve, 'image/png'));
+      console.log('📧 Starting high quality email process...');
+      
+      // Generate high quality version
+      const highQualityCanvas = await generateHighQualityCanvas();
+      
+      sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing for Email...';
+      
+      const blob = await new Promise((resolve) => highQualityCanvas.toBlob(resolve, 'image/jpeg', 0.95));
       const base64data = await new Promise((resolve) => {
         const reader = new FileReader();
         reader.onloadend = () => resolve(reader.result);
         reader.readAsDataURL(blob);
       });
 
+      sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving High Quality Photo...';
+
       const response = await fetch('../api-fetch/save_final_photo_v2.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ image: base64data }),
+        body: JSON.stringify({ 
+          image: base64data,
+          quality: 'high',
+          source: 'customize_high_quality'
+        }),
       });
 
       const text = await response.text();
@@ -739,6 +992,8 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error(data.message || 'Server error');
       }
 
+      sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending Email...';
+
       const photoLink = window.location.origin + data.url;
       const emailParams = {
         email,
@@ -750,8 +1005,9 @@ document.addEventListener('DOMContentLoaded', () => {
         name: 'Sobat',
         user_name: 'Sobat',
         to_name: 'Sobat',
-        from_name: 'GOFOTOBOX',
-        message: `Halo Sobat! Link foto Anda: ${photoLink}`,
+        from_name: 'GOFOTOBOX - HIGH QUALITY',
+        message: `Halo Sobat! Link foto berkualitas tinggi Anda: ${photoLink}`,
+        subject: 'Foto Berkualitas Tinggi dari GOFOTOBOX'
       };
 
       await emailjs.send(CONFIG.EMAILJS_SERVICE_ID, CONFIG.EMAILJS_TEMPLATE_ID, emailParams);
@@ -764,6 +1020,10 @@ document.addEventListener('DOMContentLoaded', () => {
         emailBtn.style.cursor = 'not-allowed';
         emailBtn.innerHTML = '✅ Email Terkirim';
       }
+      
+      // Update continue button state
+      updateContinueButtonState();
+      
       showValidationError('Email berhasil dikirim! ✅ Cek inbox Anda.');
       document.querySelector('.input-validation span').style.color = '#28a745';
       setTimeout(() => {
@@ -860,6 +1120,10 @@ document.addEventListener('DOMContentLoaded', () => {
             printBtn.style.cursor = 'not-allowed';
             printBtn.innerHTML = '✅ Sudah Print';
           }
+          
+          // Update continue button state
+          updateContinueButtonState();
+          
           popup.remove();
         }, 500);
       };

@@ -14,7 +14,7 @@ require_once '../includes/pwa-helper.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Customize your Layout 1 photobooth photos with frames, stickers, and text.">
+    <meta name="description" content="Customize your Layout 2 photobooth photos with frames, stickers, and text.">
     <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -158,6 +158,7 @@ require_once '../includes/pwa-helper.php';
     <div class="gradientBgCanvas"></div>
 
     <main class="customize-content-wrapper">
+
         <!-- Customization Options -->
         <section class="customize-left-section">
             <h1 class="customize-title">Customize Your Photo</h1>

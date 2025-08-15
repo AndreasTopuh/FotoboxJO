@@ -2,16 +2,28 @@
 require_once '../../vendor/autoload.php';
 
 // Load .env dengan aman
-if (!file_exists(__DIR__ . '/.env')) {
+if (!file_exists(__DIR__ . '/../../.env')) {
     echo json_encode(['error' => '.env file not found']);
     exit;
 }
 
-$dotenv = parse_ini_file(__DIR__ . '/.env', false, INI_SCANNER_RAW);
+$dotenv = parse_ini_file(__DIR__ . '/../../.env', false, INI_SCANNER_RAW);
+
+// Validasi parsing .env
+if (!$dotenv) {
+    echo json_encode(['error' => 'Failed to parse .env file']);
+    exit;
+}
 
 // Validasi SERVER_KEY
 if (empty($dotenv['SERVER_KEY'])) {
     echo json_encode(['error' => 'SERVER_KEY not found in .env']);
+    exit;
+}
+
+// Validasi format SERVER_KEY
+if (strpos($dotenv['SERVER_KEY'], 'YOUR_ACTUAL_SERVER_KEY_HERE') !== false) {
+    echo json_encode(['error' => 'Please configure your actual Midtrans SERVER_KEY in .env file']);
     exit;
 }
 
@@ -50,7 +62,16 @@ $params = array(
 );
 
 try {
+    error_log("Attempting to charge BNI with params: " . json_encode($params));
+    
     $charge = \Midtrans\CoreApi::charge($params);
+    
+    error_log("Charge response: " . json_encode($charge));
+    
+    if (empty($charge->va_numbers)) {
+        error_log("Error: No VA numbers in charge response");
+        throw new Exception('No virtual account number generated');
+    }
 
     echo json_encode([
         'success' => true,
@@ -59,20 +80,11 @@ try {
         'order_id' => $orderId,
         'expiry_time' => $charge->expiry_time ?? null
     ]);
-} catch (\Midtrans\Error\ApiException $e) {
-    // Error dari Midtrans API
+} catch (Exception $e) {
+    error_log("Error in charge_bank.php: " . $e->getMessage());
     echo json_encode([
         'success' => false,
         'error' => $e->getMessage(),
-        'status_code' => $e->getCode(),
-        'mode' => $mode
-    ]);
-} catch (\Exception $e) {
-    // Error umum PHP
-    echo json_encode([
-        'success' => false,
-        'error' => $e->getMessage(),
-        'status_code' => $e->getCode(),
         'mode' => $mode
     ]);
 }

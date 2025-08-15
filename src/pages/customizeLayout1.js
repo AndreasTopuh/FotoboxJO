@@ -86,8 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Configuration constants
   const CONFIG = {
-    CANVAS_WIDTH: 1200,
-    CANVAS_HEIGHT: 1800,
+    CANVAS_WIDTH: 1224,
+    CANVAS_HEIGHT: 1836,
     MARGIN_TOP: 142,
     SPACING: 72,
     PHOTO_WIDTH: 967.5,
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     EXPECTED_PHOTOS: 2,
     EMAILJS_SERVICE_ID: 'service_gtqjb2j',
     EMAILJS_TEMPLATE_ID: 'template_pp5i4hm',
-    LOGO_SRC: '../assets/logoFrame/blackLogo.jpg',
+    LOGO_SRC: '/src/assets/logo.png',
   };
 
   // State variables
@@ -557,6 +557,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('🎛️ Initializing controls...');
     initializeFrameControls();
     initializeShapeControls();
+    initializeLogoControls();
     initializeActionButtons();
     initializeEmailModal();
     console.log('✅ Controls initialized');
@@ -612,6 +613,53 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
+   * Initializes logo controls
+   */
+  function initializeLogoControls() {
+    const nonLogo = document.getElementById('nonLogo');
+    const engLogo = document.getElementById('engLogo');
+
+    if (nonLogo) {
+      nonLogo.addEventListener('click', () => {
+        setActiveButton('.logoCustomBtn', nonLogo);
+        redrawCanvas();
+      });
+    }
+
+    if (engLogo) {
+      engLogo.addEventListener('click', () => {
+        setActiveButton('.logoCustomBtn', engLogo);
+        redrawCanvas();
+      });
+    }
+  }
+
+  /**
+   * Updates continue button state based on requirements
+   */
+  function updateContinueButtonState() {
+    const continueBtn = document.getElementById('continueBtn');
+    if (!continueBtn) return;
+
+    const canContinue = state.emailSent && state.printUsed;
+    
+    if (canContinue) {
+      continueBtn.disabled = false;
+      continueBtn.style.opacity = '1';
+      continueBtn.style.cursor = 'pointer';
+      continueBtn.innerHTML = '🎉 Lanjut ke Terima Kasih';
+    } else {
+      continueBtn.disabled = true;
+      continueBtn.style.opacity = '0.5';
+      continueBtn.style.cursor = 'not-allowed';
+      const missingActions = [];
+      if (!state.emailSent) missingActions.push('Email');
+      if (!state.printUsed) missingActions.push('Print');
+      continueBtn.innerHTML = `⏳ ${missingActions.join(' & ')} Dulu`;
+    }
+  }
+
+  /**
    * Initializes action buttons
    */
   function initializeActionButtons() {
@@ -648,7 +696,16 @@ document.addEventListener('DOMContentLoaded', () => {
           handleError('Tidak ada gambar untuk di-print', 'alert');
         }
       },
-      continueBtn: () => (window.location.href = 'thankyou.php'),
+      continueBtn: () => {
+        if (state.emailSent && state.printUsed) {
+          window.location.href = 'thankyou.php';
+        } else {
+          const missingActions = [];
+          if (!state.emailSent) missingActions.push('Email');
+          if (!state.printUsed) missingActions.push('Print');
+          handleError(`Silakan ${missingActions.join(' dan ')} foto terlebih dahulu!`, 'alert');
+        }
+      },
     };
 
     Object.entries(buttons).forEach(([id, handler]) => {
@@ -657,6 +714,9 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', handler);
       }
     });
+
+    // Initialize continue button state
+    updateContinueButtonState();
   }
 
   // Email Modal
@@ -869,6 +929,9 @@ document.addEventListener('DOMContentLoaded', () => {
         emailBtn.style.cursor = 'not-allowed';
         emailBtn.innerHTML = '✅ Email Terkirim (HQ)';
       }
+      
+      // Update continue button state
+      updateContinueButtonState();
       
       showValidationError('Email berkualitas tinggi berhasil dikirim! ✅ Cek inbox Anda.');
       document.querySelector('.input-validation span').style.color = '#28a745';
@@ -1103,6 +1166,9 @@ document.addEventListener('DOMContentLoaded', () => {
               printBtn.style.cursor = 'not-allowed';
               printBtn.innerHTML = '✅ Sudah Print (HQ)';
             }
+            
+            // Update continue button state
+            updateContinueButtonState();
             
             popup.remove();
             console.log('✅ High quality print completed');
