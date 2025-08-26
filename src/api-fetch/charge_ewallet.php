@@ -55,7 +55,7 @@ $mode = $isProduction ? 'PRODUCTION' : 'SANDBOX';
 
 // Read input data
 $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
-$orderId = $input['order_id'] ?? 'ORDER-BNI-' . time();
+$orderId = $input['order_id'] ?? 'ORDER-GOPAY-' . time();
 $grossAmount = $input['gross_amount'] ?? 15000;
 
 // Validasi input
@@ -72,15 +72,15 @@ if (!$grossAmount || !is_numeric($grossAmount) || $grossAmount <= 0) {
 }
 
 $params = array(
-    'payment_type' => 'bank_transfer',
+    'payment_type' => 'gopay',
     'transaction_details' => array(
         'order_id' => $orderId,
         'gross_amount' => intval($grossAmount),
     ),
     'customer_details' => array(
-        'first_name' => 'Bank',
+        'first_name' => 'GoPay',
         'last_name' => 'User',
-        'email' => 'bank@example.com',
+        'email' => 'gopay@example.com',
         'phone' => '08123456789'
     ),
     'item_details' => array(
@@ -91,8 +91,9 @@ $params = array(
             'name' => 'Photo Booth Session'
         )
     ),
-    'bank_transfer' => array(
-        'bank' => 'bni'
+    'gopay' => array(
+        'enable_callback' => true,
+        'callback_url' => null
     ),
     'custom_expiry' => array(
         'order_time' => gmdate('Y-m-d H:i:s', time()) . ' +0000',
@@ -102,7 +103,7 @@ $params = array(
 );
 
 try {
-    error_log("Attempting to charge BNI with params: " . json_encode($params));
+    error_log("Attempting to charge GoPay with params: " . json_encode($params));
     error_log("Current server time: " . date('Y-m-d H:i:s O'));
     
     $charge = \Midtrans\CoreApi::charge($params);
@@ -110,22 +111,33 @@ try {
     error_log("Charge response: " . json_encode($charge));
     error_log("Expiry time from Midtrans: " . ($charge->expiry_time ?? 'null'));
     
-    if (empty($charge->va_numbers)) {
-        error_log("Error: No VA numbers in charge response");
-        throw new Exception('No virtual account number generated');
+    // Validasi response
+    if (empty($charge->actions)) {
+        error_log("Error: No actions in charge response");
+        throw new Exception('No payment actions generated');
+    }
+
+    // Extract QR code URL dari actions
+    $qrCodeUrl = null;
+    
+    foreach ($charge->actions as $action) {
+        if ($action->name === 'generate-qr-code') {
+            $qrCodeUrl = $action->url;
+        }
     }
 
     echo json_encode([
         'success' => true,
         'mode' => $mode,
         'transaction_id' => $charge->transaction_id ?? null,
-        'va_number' => $charge->va_numbers[0]->va_number ?? null,
         'order_id' => $orderId,
+        'qr_code_url' => $qrCodeUrl,
         'expiry_time' => $charge->expiry_time ?? null,
         'transaction_status' => $charge->transaction_status ?? 'pending'
     ]);
+    
 } catch (Exception $e) {
-    error_log("Error in charge_bank.php: " . $e->getMessage());
+    error_log("Error in charge_ewallet.php: " . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         'success' => false,
@@ -133,3 +145,4 @@ try {
         'mode' => $mode
     ]);
 }
+?>

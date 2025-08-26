@@ -37,7 +37,7 @@ SessionManager::requireValidPaymentSession();
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pembayaran Virtual Bank BNI - GoBooth</title>
+  <title>Pembayaran E-Wallet GoPay/QRIS - GoBooth</title>
   
   <?php PWAHelper::addPWAHeaders(); ?>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
@@ -121,7 +121,7 @@ SessionManager::requireValidPaymentSession();
       margin-bottom: 0.5rem;
     }
 
-    .va-container {
+    .qr-container {
       background: rgba(226, 133, 133, 0.1);
       border: 2px solid #E28585;
       border-radius: 15px;
@@ -131,44 +131,33 @@ SessionManager::requireValidPaymentSession();
       max-width: 400px;
     }
 
-    .va-number {
-      font-size: 1.3rem;
-      font-weight: bold;
-      color: #E28585;
-      padding: 1.2rem;
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 8px;
+    .qr-code {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 1rem auto;
+      display: inline-block;
       border: 2px solid #E28585;
-      letter-spacing: 1px;
-      margin: 1rem 0;
-      word-break: break-all;
-      line-height: 1.4;
-      font-family: 'Courier New', monospace;
     }
 
-    .va-label {
+    .qr-code img {
+      width: 200px;
+      height: 200px;
+      display: block;
+    }
+
+    .qr-label {
       font-size: 1.1rem;
       font-weight: 600;
       color: #333;
       margin-bottom: 1rem;
     }
 
-    .payment-amount {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #E28585;
-      text-align: center;
-      margin: 1rem 0;
-      padding: 1rem;
-      background: rgba(255, 255, 255, 0.7);
-      border-radius: 10px;
-      border: 2px solid #E28585;
-    }
-
     .expiry-info {
       color: #333;
       font-weight: 600;
       margin-top: 1rem;
+      font-size: 0.9rem;
     }
 
     .status-container {
@@ -250,6 +239,34 @@ SessionManager::requireValidPaymentSession();
       box-shadow: 0 8px 25px rgba(226, 133, 133, 0.3);
     }
 
+    .wallet-logos {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 10px;
+    }
+
+    .wallet-logo {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
+
+    .payment-amount {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #E28585;
+      text-align: center;
+      margin: 1rem 0;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 10px;
+      border: 2px solid #E28585;
+    }
+
     @media (max-width: 768px) {
       .payment-content {
         flex-direction: column;
@@ -272,44 +289,45 @@ SessionManager::requireValidPaymentSession();
 
   <div class="container">
     <div class="payment-card">
-      <a href="#" onclick="cancelAndGoHome()" class="back-button">← Kembali ke Home</a>
+      <a href="#" onclick="cancelAndGoHome()" class="back-button">← Kembali</a>
       
       <div class="payment-content">
         <div class="payment-left">
-          <h1 class="payment-title">Pembayaran Virtual Bank BNI</h1>
+          <h1 class="payment-title">Pembayaran E-Wallet</h1>
           <div class="payment-amount">Rp 15.000</div>
           
           <div class="payment-instructions">
             <p><strong>Cara Pembayaran:</strong></p>
             <ol>
-              <li>Buka aplikasi mobile banking atau ATM BNI</li>
-              <li>Pilih menu Transfer ke Virtual Account</li>
-              <li>Masukkan nomor Virtual Account di bawah</li>
-              <li>Masukkan nominal pembayaran Rp 15.000</li>
-              <li>Konfirmasi pembayaran</li>
+              <li>Scan QR Code dengan aplikasi e-wallet Anda</li>
+              <li>Konfirmasi pembayaran di aplikasi</li>
+              <li>Tunggu konfirmasi pembayaran berhasil</li>
               <li>Sistem akan otomatis melanjutkan ke tahap selanjutnya</li>
             </ol>
             
-            <p><strong>Catatan:</strong></p>
-            <p style="color: #666; font-size: 0.9rem;">
-              Virtual Account berlaku selama 20 menit. Pembayaran dapat dilakukan 
-              dari bank mana saja yang mendukung transfer antar bank.
-            </p>
+            <p><strong>E-Wallet yang Didukung:</strong></p>
+            <div class="wallet-logos">
+              <span style="font-size: 12px; color: #666; text-align: center; width: 100%;">
+                GoPay, OVO, DANA, LinkAja, ShopeePay, dan e-wallet lainnya yang mendukung QRIS
+              </span>
+            </div>
           </div>
         </div>
 
         <div class="payment-right">
           <div id="loadingContainer" class="loading-container">
             <div class="loading-spinner"></div>
-            <p style="color: #666; margin-top: 1rem;">Membuat Virtual Account...</p>
+            <p style="color: #666; margin-top: 1rem;">Menyiapkan QR Code...</p>
             <div class="loading-progress">
               <div class="progress-bar"></div>
             </div>
           </div>
 
-          <div id="vaContainer" class="va-container" style="display: none;">
-            <div class="va-label">Nomor Virtual Account BNI</div>
-            <div class="va-number" id="vaNumber"></div>
+          <div id="qrContainer" class="qr-container" style="display: none;">
+            <div class="qr-label">Scan QR Code di bawah ini</div>
+            <div class="qr-code">
+              <img id="qrImage" src="" alt="QR Code" />
+            </div>
             <div class="expiry-info">
               <p id="expiryText">Berlaku sampai: <span id="expiryTime">-</span></p>
             </div>
@@ -381,16 +399,19 @@ SessionManager::requireValidPaymentSession();
       }
     }
 
-    // Function untuk show Virtual Account
-    function showVirtualAccount(vaNumber, expiry) {
+    // Function untuk show QR code
+    function showQRCode(qrImageUrl, expiry) {
       document.getElementById('loadingContainer').style.display = 'none';
       
-      const vaContainer = document.getElementById('vaContainer');
-      const vaNumberEl = document.getElementById('vaNumber');
+      const qrContainer = document.getElementById('qrContainer');
+      const qrImage = document.getElementById('qrImage');
       const expiryTime = document.getElementById('expiryTime');
       
-      // Set VA number
-      vaNumberEl.textContent = vaNumber;
+      // Set QR image
+      qrImage.src = qrImageUrl;
+      qrImage.onerror = function() {
+        showError('Gagal memuat QR Code. Silakan coba lagi.');
+      };
       
       // Set expiry time
       if (expiry) {
@@ -398,15 +419,15 @@ SessionManager::requireValidPaymentSession();
         expiryTime.textContent = expiryDate.toLocaleString('id-ID', {
           timeZone: 'Asia/Makassar',
           year: 'numeric',
-          month: '2-digit', 
-          day: '2-digit',
+          month: '2-digit',
+          day: '2-digit', 
           hour: '2-digit',
           minute: '2-digit',
           second: '2-digit'
         });
       }
       
-      vaContainer.style.display = 'block';
+      qrContainer.style.display = 'block';
       
       // Show status container
       document.getElementById('statusContainer').style.display = 'block';
@@ -415,13 +436,13 @@ SessionManager::requireValidPaymentSession();
     // Function untuk show error
     function showError(message) {
       document.getElementById('loadingContainer').style.display = 'none';
-      document.getElementById('vaContainer').style.display = 'none';
+      document.getElementById('qrContainer').style.display = 'none';
       document.getElementById('errorContainer').style.display = 'block';
       document.getElementById('errorMessage').textContent = message;
     }
 
     // Initialize payment
-    fetch('../api-fetch/charge_bank.php', {
+    fetch('../api-fetch/charge_ewallet.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -436,14 +457,17 @@ SessionManager::requireValidPaymentSession();
         orderId = data.order_id;
         transactionId = data.transaction_id;
         
-        showVirtualAccount(data.va_number, data.expiry_time);
+        // Build QR image URL
+        const qrImageUrl = `../api-fetch/get_qr_image.php?transaction_id=${encodeURIComponent(transactionId)}`;
+        
+        showQRCode(qrImageUrl, data.expiry_time);
         
         // Start polling status
         statusInterval = setInterval(() => pollStatus(), 3000);
         pollStatus(); // Initial check
         
       } else {
-        showError(data.error || 'Gagal membuat Virtual Account');
+        showError(data.error || 'Gagal membuat transaksi');
       }
     })
     .catch(error => {
@@ -466,7 +490,9 @@ SessionManager::requireValidPaymentSession();
         const statusMessage = document.getElementById('statusMessage');
         
         switch(status) {
+          case 'capture':
           case 'settlement':
+          case 'success':
             // Payment successful
             clearAllIntervals();
             statusMessage.innerHTML = '<strong style="color: #28a745;">✓ Pembayaran Berhasil!</strong><br>Mengalihkan ke halaman selanjutnya...';
@@ -504,13 +530,13 @@ SessionManager::requireValidPaymentSession();
           case 'deny':
           case 'cancel':
           case 'expire':
-          case 'failure':
+          case 'failed':
             // Payment failed
             clearAllIntervals();
             statusMessage.innerHTML = `<strong style="color: #dc3545;">✗ Pembayaran ${status.toUpperCase()}</strong><br>Silakan coba lagi.`;
             
             setTimeout(() => {
-              cancelAndGoHome();
+              resetSessionAndGoHome();
             }, 3000);
             break;
             
@@ -527,6 +553,15 @@ SessionManager::requireValidPaymentSession();
     window.addEventListener('beforeunload', () => {
       clearAllIntervals();
     });
+
+    // Auto-refresh QR code every 5 minutes to prevent expiry
+    setInterval(() => {
+      if (transactionId) {
+        const qrImage = document.getElementById('qrImage');
+        const currentSrc = qrImage.src;
+        qrImage.src = currentSrc.split('?')[0] + `?transaction_id=${encodeURIComponent(transactionId)}&t=${Date.now()}`;
+      }
+    }, 300000); // 5 minutes
   </script>
 
   <!-- Session Timer Script -->

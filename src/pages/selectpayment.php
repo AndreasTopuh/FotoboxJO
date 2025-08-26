@@ -308,9 +308,9 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
           <img src="../assets/bca.png" alt="BNI Bank" style="width: 50px; height: 50px; object-fit: contain;">
         </a>
 
-        <!-- QRIS Gopay -->
-        <a href="#" onclick="startPaymentSession('qris'); return false;" class="payment-option">
-          Payment E-Money QRIS (Gopay)
+        <!-- E-Wallet GoPay/QRIS -->
+        <a href="#" onclick="startPaymentSession('ewallet'); return false;" class="payment-option">
+          E-Wallet GoPay/QRIS
           <img src="../assets/qris.png" alt="QRIS" style="width: 50px; height: 50px; object-fit: contain;">
         </a>
 
@@ -443,6 +443,8 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
             window.location.href = 'payment-bank.php';
           } else if (method === 'qris') {
             window.location.href = 'payment-qris.php';
+          } else if (method === 'ewallet') {
+            window.location.href = 'payment-ewallet.php';
           }
         } else {
           alert('Gagal memulai sesi pembayaran. Silakan coba lagi.');

@@ -1,5 +1,6 @@
 {
     "require": {
-        "midtrans/midtrans-php": "^2.6"
+        "midtrans/midtrans-php": "^2.6",
+        "endroid/qr-code": "^4.8"
     }
 }
