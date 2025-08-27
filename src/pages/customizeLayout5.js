@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Configuration constants - Layout5 specific (4 photos, 2x2)
+  // Configuration constants - Layout5 specific (6 photos, asymmetric layout)
   const CONFIG = {
     CANVAS_WIDTH: 1224,
     CANVAS_HEIGHT: 1836,
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     SPACING: 37,
     PHOTO_WIDTH: 477,
     PHOTO_HEIGHT: 567,
-    EXPECTED_PHOTOS: 4,
+    EXPECTED_PHOTOS: 6,
     EMAILJS_SERVICE_ID: 'service_gtqjb2j',
     EMAILJS_TEMPLATE_ID: 'template_pp5i4hm',
     LOGO_SRC: '/src/assets/logo.png',
@@ -462,13 +462,31 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   async function loadPhotos() {
     console.log('🔄 Loading photos...');
-    const response = await fetch('../api-fetch/get_photos.php');
-    const data = await response.json();
-    if (!data.success || !data.photos) {
-      throw new Error('No photos found in session');
+    try {
+      const response = await fetch('../api-fetch/get_photos.php');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        console.error('❌ Failed to load photos:', data.error || 'Unknown error');
+        throw new Error(data.error || 'No photos found in session');
+      }
+      
+      if (!data.photos || !Array.isArray(data.photos) || data.photos.length === 0) {
+        console.error('❌ No valid photos found in response');
+        throw new Error('No photos available');
+      }
+      
+      state.storedImages = data.photos;
+      console.log(`✅ Loaded ${state.storedImages.length} images:`, state.storedImages);
+    } catch (error) {
+      console.error('❌ Error loading photos:', error.message);
+      throw error; // Re-throw to be handled by initializeApp
     }
-    state.storedImages = data.photos;
-    console.log(`✅ Loaded ${state.storedImages.length} images:`, state.storedImages);
   }
 
   // Canvas Management
@@ -825,6 +843,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } finally {
       sendBtn.innerHTML = originalHtml;
       sendBtn.disabled = false;
+    }
   }
 
   // Canvas Drawing Functions
@@ -1126,5 +1145,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Start the application
   initializeApp();
-});
 });

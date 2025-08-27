@@ -2,7 +2,15 @@
 session_start();
 
 // Include debug logger
-require_once(__DIR__ . '/../../debug_logger.php');
+if (file_exists(__DIR__ . '/../../debug_logger.php')) {
+    require_once(__DIR__ . '/../../debug_logger.php');
+} else {
+    // Fallback function if debug_logger.php doesn't exist
+    function debugLog($message, $context = null) {
+        // Simple fallback - you can implement actual logging here
+        error_log("DEBUG: $message" . ($context ? ' - ' . json_encode($context) : ''));
+    }
+}
 debugLog("🔄 save_photos.php called", $_SERVER['REQUEST_METHOD']);
 
 // Set headers untuk menangani CORS dan timeout

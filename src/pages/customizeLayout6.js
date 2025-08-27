@@ -304,13 +304,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load photos from server
     async function loadPhotos() {
         console.log('🔄 Loading photos...');
-        const response = await fetch('../api-fetch/get_photos.php');
-        const data = await response.json();
-        if (!data.success || !data.photos) {
-            throw new Error('No photos found in session');
+        try {
+            const response = await fetch('../api-fetch/get_photos.php');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            if (!data.success) {
+                console.error('❌ Failed to load photos:', data.error || 'Unknown error');
+                throw new Error(data.error || 'No photos found in session');
+            }
+            
+            if (!data.photos || !Array.isArray(data.photos) || data.photos.length === 0) {
+                console.error('❌ No valid photos found in response');
+                throw new Error('No photos available');
+            }
+            
+            storedImages = data.photos;
+            console.log(`✅ Loaded ${storedImages.length} images:`, storedImages);
+        } catch (error) {
+            console.error('❌ Error loading photos:', error.message);
+            throw error; // Re-throw to be handled by initializeApp
         }
-        storedImages = data.photos;
-        console.log(`✅ Loaded ${storedImages.length} images:`, storedImages);
     }
 
     // Initialize canvas

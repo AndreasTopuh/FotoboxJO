@@ -1,0 +1,21 @@
+[2025-08-27 00:24:00] DEBUG: 🔄 get_photos.php called - "GET"
+[2025-08-27 00:24:00] DEBUG: 📥 Processing GET request - {"session_id":"92cotvn6e4oniudnm8g7mbhclt","session_type":"customize"}
+[2025-08-27 00:24:00] DEBUG: 🔍 Session debugging - {"all_session_keys":["session_state","state_updated_at","session_type","session_start","session_expires","payment_completed","main_timer_start","payment_completed_at","order_id","is_developer_session","selected_payment_method","selected_layout","layout_selected_at","photo_start_time","photo_expired_time","captured_photos","photos_saved_time","customize_start_time","customize_expired_time"]}
+[2025-08-27 00:24:00] DEBUG: ✅ Photos found in session - {"count":6,"size_mb":0.21}
+[2025-08-27 00:24:51] DEBUG: 🔄 save_photos.php called - "POST"
+[2025-08-27 00:24:51] DEBUG: 📥 Processing POST request
+[2025-08-27 00:24:51] DEBUG: 📊 JSON decoded successfully - {"photos_count":6}
+[2025-08-27 00:24:51] DEBUG: 💾 Data size check - {"size_mb":0.25,"max_mb":50}
+[2025-08-27 00:24:51] DEBUG: ✅ Photos saved to session - {"count":6,"session_id":"92cotvn6e4oniudnm8g7mbhclt"}
+[2025-08-27 00:24:51] DEBUG: 🔄 create_customize_session.php called - "POST"
+[2025-08-27 00:24:51] DEBUG: 📥 Creating customize session - {"session_id":"92cotvn6e4oniudnm8g7mbhclt"}
+[2025-08-27 00:24:51] DEBUG: 📊 Photos in session - {"has_photos":true,"count":6}
+[2025-08-27 00:24:51] DEBUG: ✅ Customize session created - {"expires_at":1756255191,"has_photos":true}
+[2025-08-27 00:24:52] DEBUG: 🔄 get_photos.php called - "GET"
+[2025-08-27 00:24:52] DEBUG: 📥 Processing GET request - {"session_id":"92cotvn6e4oniudnm8g7mbhclt","session_type":"customize"}
+[2025-08-27 00:24:52] DEBUG: 🔍 Session debugging - {"all_session_keys":["session_state","state_updated_at","session_type","session_start","session_expires","payment_completed","main_timer_start","payment_completed_at","order_id","is_developer_session","selected_payment_method","selected_layout","layout_selected_at","photo_start_time","photo_expired_time","captured_photos","photos_saved_time","customize_start_time","customize_expired_time"]}
+[2025-08-27 00:24:52] DEBUG: ✅ Photos found in session - {"count":6,"size_mb":0.25}
+[2025-08-27 00:27:55] DEBUG: 🔄 get_photos.php called - "GET"
+[2025-08-27 00:27:55] DEBUG: 📥 Processing GET request - {"session_id":"92cotvn6e4oniudnm8g7mbhclt","session_type":"customize"}
+[2025-08-27 00:27:55] DEBUG: 🔍 Session debugging - {"all_session_keys":["session_state","state_updated_at","session_type","session_start","session_expires","payment_completed","main_timer_start","payment_completed_at","order_id","is_developer_session","selected_payment_method","selected_layout","layout_selected_at","photo_start_time","photo_expired_time","captured_photos","photos_saved_time","customize_start_time","customize_expired_time"]}
+[2025-08-27 00:27:55] DEBUG: ✅ Photos found in session - {"count":6,"size_mb":0.25}

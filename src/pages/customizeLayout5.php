@@ -1,10 +1,11 @@
 <?php
 session_start();
-// Initialize session if not set or expired
+// Initialize customize session if not set or expired, but preserve photo data
 if (!isset($_SESSION['customize_expired_time']) || time() > $_SESSION['customize_expired_time']) {
     $_SESSION['customize_start_time'] = time();
     $_SESSION['customize_expired_time'] = time() + (15 * 60);
     $_SESSION['session_type'] = 'customize';
+    // Don't clear captured_photos here - keep them for the customize session
 }
 require_once '../includes/pwa-helper.php';
 ?>
