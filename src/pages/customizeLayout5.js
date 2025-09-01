@@ -593,6 +593,34 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
+   * Updates continue button state based on email and print completion
+   */
+  function updateContinueButtonState() {
+    const continueBtn = document.getElementById('continueBtn');
+    if (!continueBtn) return;
+    
+    const canContinue = state.emailSent && state.printUsed;
+    
+    if (canContinue) {
+      continueBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Lanjut ke Terima Kasih';
+      continueBtn.disabled = false;
+      continueBtn.style.opacity = '1';
+      continueBtn.style.cursor = 'pointer';
+      continueBtn.classList.remove('disabled');
+    } else {
+      const missingActions = [];
+      if (!state.emailSent) missingActions.push('Email');
+      if (!state.printUsed) missingActions.push('Print');
+      
+      continueBtn.innerHTML = `⏳ ${missingActions.join(' & ')} Dulu`;
+      continueBtn.disabled = true;
+      continueBtn.style.opacity = '0.5';
+      continueBtn.style.cursor = 'not-allowed';
+      continueBtn.classList.add('disabled');
+    }
+  }
+
+  /**
    * Initializes action buttons
    */
   function initializeActionButtons() {
@@ -619,7 +647,18 @@ document.addEventListener('DOMContentLoaded', () => {
           handleError('Tidak ada gambar untuk di-print');
         }
       },
-      continueBtn: () => window.location.href = 'thankyou.php'
+      continueBtn: () => {
+        // Check if both email and print are completed
+        if (!state.emailSent || !state.printUsed) {
+          const missing = [];
+          if (!state.emailSent) missing.push('mengirim email');
+          if (!state.printUsed) missing.push('print foto');
+          
+          alert(`⚠️ Anda harus ${missing.join(' dan ')} terlebih dahulu!`);
+          return;
+        }
+        window.location.href = 'thankyou.php';
+      }
     };
 
     Object.entries(buttons).forEach(([id, handler]) => {
@@ -628,6 +667,9 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', handler);  
       }
     });
+
+    // Set initial continue button state (disabled)
+    updateContinueButtonState();
   }
 
   // Email Modal Management
@@ -830,6 +872,10 @@ document.addEventListener('DOMContentLoaded', () => {
         emailBtn.style.cursor = 'not-allowed';
         emailBtn.innerHTML = '✅ Email Terkirim';
       }
+      
+      // Update continue button state
+      updateContinueButtonState();
+      
       showValidationError('Email berhasil dikirim! ✅ Cek inbox Anda.');
       document.querySelector('.input-validation span').style.color = '#28a745';
       setTimeout(() => {
@@ -1128,6 +1174,10 @@ document.addEventListener('DOMContentLoaded', () => {
             printBtn.style.cursor = 'not-allowed';
             printBtn.innerHTML = '✅ Sudah Print';
           }
+          
+          // Update continue button state
+          updateContinueButtonState();
+          
           popup.remove();
         }, 500);
       };

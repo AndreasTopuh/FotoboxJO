@@ -39,7 +39,10 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     <meta name="twitter:description"
         content="Take instant photobooth-style photos online with Layout 2. Perfect for 4-photo grids." />
     <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png" />
-    <link rel="stylesheet" href="home-styles.css?v=<?php echo time(); ?>" />
+    <link rel="stylesheet" href="../../static/css/main.css?v=<?php echo time(); ?>" />
+    <link rel="stylesheet" href="../../static/css/canvas.css?v=<?php echo time(); ?>" />
+    <link rel="stylesheet" href="../../static/css/responsive.css?v=<?php echo time(); ?>" />
+    <link rel="stylesheet" href="./home-styles.css?php echo time(); ?>" />
     <!-- Cache Control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
@@ -52,19 +55,41 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
         rel="stylesheet" />
     <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png" />
     <style>
-        *{ 
+        * {
             overflow: hidden;
         }
+
         /* Adjustments to fit content within 1280x1024 viewport */
         #videoContainer {
 
-            height: 750px;
+            height: 700px;
 
         }
 
         .photo-preview-container {
 
             padding: 0.5rem 0;
+        }
+
+        /* Override .main-content-card styles for this page only */
+        .main-content-card {
+            width: unset !important;
+            min-width: unset !important;
+            max-width: unset !important;
+            height: calc(100vh - 1rem) !important;
+            background: unset !important;
+            backdrop-filter: unset !important;
+            -webkit-backdrop-filter: unset !important;
+            border-radius: unset !important;
+            box-shadow: unset !important;
+            padding: unset !important;
+            position: unset !important;
+            overflow: unset !important;
+            display: unset !important;
+            flex-direction: unset !important;
+            touch-action: unset !important;
+            overflow-x: unset !important;
+            overscroll-behavior-x: unset !important;
         }
     </style>
 </head>
@@ -217,8 +242,6 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
 
     <script src="canvasLayout2.js"></script>
     <script src="debug-camera.js"></script>
-
-
     <!-- Session Timer Script -->
     <script src="../includes/session-timer.js"></script>
 

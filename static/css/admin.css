@@ -1,0 +1,149 @@
+/* Admin Pages Specific Styles */
+
+/* Admin related styles would go here */
+/* Since the original CSS doesn't have specific admin-only classes, */
+/* this file can be used for future admin-specific styling */
+
+/* Example admin styles that might be needed: */
+.admin-container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(15px);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+}
+
+.admin-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--pink-primary);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.admin-input {
+  padding: 12px 16px;
+  border: 2px solid rgba(233, 30, 99, 0.2);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.admin-input:focus {
+  border-color: var(--pink-primary);
+  box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.2);
+}
+
+.admin-btn {
+  background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.admin-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.admin-table th {
+  background: var(--pink-primary);
+  color: white;
+  font-weight: 600;
+}
+
+.admin-table tr:hover {
+  background: rgba(233, 30, 99, 0.05);
+}
+
+.admin-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.admin-delete-btn {
+  background: linear-gradient(135deg, #dc3545, #e55a6a);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.admin-delete-btn:hover {
+  background: linear-gradient(135deg, #c82333, #dc3545);
+  transform: scale(1.05);
+}
+
+.admin-edit-btn {
+  background: linear-gradient(135deg, #ffc107, #ffcd39);
+  color: #333;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.admin-edit-btn:hover {
+  background: linear-gradient(135deg, #e0a800, #ffc107);
+  transform: scale(1.05);
+}
+
+/* Admin responsive */
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 1rem;
+    margin: 1rem;
+  }
+
+  .admin-title {
+    font-size: 1.5rem;
+  }
+
+  .admin-table {
+    font-size: 0.85rem;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 8px 12px;
+  }
+
+  .admin-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+}

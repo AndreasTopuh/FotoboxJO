@@ -24,7 +24,10 @@ require_once '../includes/pwa-helper.php';
     <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png">
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="home-styles.css">
+    <link rel="stylesheet" href="../../static/css/main.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="../../static/css/customize.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="../../static/css/layout-variables.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="../../static/css/responsive.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Syne:wght@400;700&family=Poppins:wght@400;600;700&family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap">

@@ -1,0 +1,310 @@
+/* Responsive Media Queries */
+
+/* Mobile devices */
+@media (max-width: 768px) {
+  body {
+    position: relative;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .main-content-card {
+    width: 100%;
+    overflow-x: hidden;
+    touch-action: pan-y pinch-zoom;
+  }
+
+  .canvas-centered {
+    padding: 0.3rem;
+  }
+
+  .main-content-card {
+    padding: 1.5rem;
+    margin: 1rem;
+    height: calc(100vh - 0.6rem);
+  }
+
+  .horizontal-layout {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .photo-preview-container,
+  .camera-container,
+  .controls-container {
+    max-width: 100%;
+  }
+
+  /* Mobile Photo Scroll Buttons */
+  .photo-scroll-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+
+  .photo-scroll-left {
+    left: 10px;
+  }
+
+  .photo-scroll-right {
+    right: 10px;
+  }
+
+  /* Original Photo Navigation */
+  .photo-nav-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .photo-nav-btn.prev-photo-btn {
+    left: 5px;
+  }
+
+  .photo-nav-btn.next-photo-btn {
+    right: 5px;
+  }
+
+  #videoContainer {
+    height: 320px;
+  }
+
+  .carousel-container {
+    max-width: 95%;
+    max-height: 95vh;
+    padding: 20px 15px;
+    margin: 10px;
+  }
+
+  .carousel-image {
+    max-height: 55vh;
+    margin: 15px auto;
+  }
+
+  .carousel-nav-btn {
+    width: 45px;
+    height: 45px;
+    font-size: 16px;
+  }
+
+  .carousel-nav-btn.prev-btn {
+    left: 10px;
+  }
+
+  .carousel-nav-btn.next-btn {
+    right: 10px;
+  }
+
+  .carousel-close-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 18px;
+    top: 10px;
+    right: 10px;
+  }
+
+  .carousel-retake-btn {
+    padding: 10px 20px;
+    font-size: 13px;
+    bottom: 15px;
+  }
+
+  .carousel-indicators {
+    bottom: 60px;
+    gap: 8px;
+  }
+
+  .carousel-indicator {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .main-content-card {
+    padding: 1rem;
+    margin: 0.5rem;
+  }
+
+  #videoContainer {
+    height: 240px;
+  }
+
+  .carousel-container {
+    max-width: 98%;
+    padding: 15px 10px;
+  }
+
+  .carousel-image {
+    max-height: 50vh;
+  }
+
+  .carousel-nav-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .carousel-retake-btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+}
+
+/* Large screens */
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1000px;
+  }
+
+  .glass-card {
+    max-width: 1100px;
+  }
+
+  .canvas-title {
+    font-size: 2rem;
+  }
+
+  .hero-title {
+    font-size: 1.2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.1rem;
+  }
+}
+
+/* Extra large screens */
+@media (min-width: 1600px) {
+  .container {
+    max-width: 1200px;
+  }
+
+  .glass-card {
+    max-width: 1300px;
+  }
+
+  .main-content-card {
+    max-width: 98vw;
+  }
+}
+
+/* Landscape tablets */
+@media (max-width: 1024px) and (orientation: landscape) {
+  .horizontal-layout {
+    gap: 0.5rem;
+  }
+
+  .controls-container {
+    max-width: 30%;
+  }
+
+  #videoContainer {
+    height: 400px;
+  }
+}
+
+/* Portrait tablets */
+@media (max-width: 1024px) and (orientation: portrait) {
+  .horizontal-layout {
+    flex-direction: column;
+  }
+
+  .controls-container {
+    max-width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .camera-settings,
+  .filter-section {
+    flex: 1;
+    min-width: 250px;
+  }
+
+  #videoContainer {
+    height: 450px;
+  }
+}
+
+/* High DPI screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .glass-card {
+    backdrop-filter: blur(12px);
+  }
+
+  .main-content-card {
+    backdrop-filter: blur(12px);
+  }
+}
+
+/* Touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .filterBtn:hover,
+  .photo-nav-btn:hover,
+  .carousel-nav-btn:hover {
+    transform: none;
+  }
+
+  .start-btn:hover {
+    transform: none;
+  }
+
+  button:hover {
+    filter: none;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .direction-arrows {
+    animation: none;
+  }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: none;
+    }
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      transform: none;
+    }
+  }
+  
+  @keyframes bounceScale {
+    0%, 100% {
+      transform: none;
+    }
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .glass-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .main-content-card {
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  .hero-title,
+  .canvas-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .hero-subtitle {
+    color: rgba(255, 255, 255, 0.7);
+  }
+}

@@ -43,7 +43,8 @@ SessionManager::requirePayment();
     <meta name="twitter:title" content="Photobooth | Free Online Photobooth Anytime, Anywhere">
     <meta name="twitter:description" content="Take instant photobooth-style photos online. Customize with over 100 frame colors, add stickers and frames, and download high-quality photo strips instantly.">
     <meta name="twitter:image" content="https://www.photobooth-io.cc/assets/home-mockup.png">
-    <link rel="stylesheet" href="home-styles.css" />
+    <link rel="stylesheet" href="../../static/css/main.css?v=<?php echo time(); ?>" />
+    <link rel="stylesheet" href="../../static/css/responsive.css?v=<?php echo time(); ?>" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png" />

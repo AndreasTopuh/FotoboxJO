@@ -2,9 +2,9 @@
 class SessionManager {
     
     // Timer constants
-    const SESSION_TIMEOUT = 1200; // 20 menit dalam detik (total session time)
+    const SESSION_TIMEOUT = 900; // 15 menit dalam detik (total session time)
     const PAYMENT_TIMEOUT = 300; // 5 menit untuk pembayaran
-    const LAYOUT_TIMEOUT = 900; // 15 menit untuk layout selection
+    const LAYOUT_TIMEOUT = 600; // 10 menit untuk layout selection
     
     // Session states - progressive flow
     const STATE_START = 'start';
@@ -60,10 +60,10 @@ class SessionManager {
         session_destroy();
         session_start();
         
-        // Set session dengan timer 20 menit total
+        // Set session dengan timer 15 menit total
         $_SESSION['session_type'] = 'payment';
         $_SESSION['session_start'] = time();
-        $_SESSION['session_expires'] = time() + self::SESSION_TIMEOUT; // 20 menit total
+        $_SESSION['session_expires'] = time() + self::SESSION_TIMEOUT; // 15 menit total
         $_SESSION['payment_completed'] = false;
         $_SESSION['main_timer_start'] = time(); // Main timer dimulai saat pilih metode pembayaran
         
@@ -81,7 +81,7 @@ class SessionManager {
         $_SESSION['payment_completed'] = true;
         $_SESSION['payment_completed_at'] = time();
         $_SESSION['session_type'] = 'layout_selection';
-        // Tidak mengubah session_expires karena tetap menggunakan timer 20 menit dari awal
+        // Tidak mengubah session_expires karena tetap menggunakan timer 15 menit dari awal
         
         if ($orderId) {
             $_SESSION['order_id'] = $orderId;
@@ -99,7 +99,7 @@ class SessionManager {
         
         $_SESSION['selected_layout'] = $layoutId;
         $_SESSION['layout_selected_at'] = time();
-        // Tidak mengubah session_expires karena tetap menggunakan timer 20 menit dari awal
+        // Tidak mengubah session_expires karena tetap menggunakan timer 15 menit dari awal
         
         self::setSessionState(self::STATE_LAYOUT_SELECTED);
         

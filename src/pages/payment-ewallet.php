@@ -41,7 +41,9 @@ SessionManager::requireValidPaymentSession();
   
   <?php PWAHelper::addPWAHeaders(); ?>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="home-styles.css" />
+  <link rel="stylesheet" href="../../static/css/main.css?v=<?php echo time(); ?>" />
+  <link rel="stylesheet" href="../../static/css/payment.css?v=<?php echo time(); ?>" />
+  <link rel="stylesheet" href="../../static/css/responsive.css?v=<?php echo time(); ?>" />
   <style>
     .container {
       display: flex;
@@ -294,7 +296,7 @@ SessionManager::requireValidPaymentSession();
       <div class="payment-content">
         <div class="payment-left">
           <h1 class="payment-title">Pembayaran E-Wallet</h1>
-          <div class="payment-amount">Rp 15.000</div>
+          <div class="payment-amount">Rp 30.000</div>
           
           <div class="payment-instructions">
             <p><strong>Cara Pembayaran:</strong></p>
@@ -448,7 +450,7 @@ SessionManager::requireValidPaymentSession();
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        gross_amount: 15000
+        gross_amount: 30000
       })
     })
     .then(response => response.json())

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gofotobox-v3.0.18';
+const CACHE_NAME = 'gofotobox-v3.0.20';
 const IS_DEVELOPMENT = self.location.hostname === 'localhost' || self.location.hostname.includes('dev');
 
 // Essential files that should be cached
@@ -7,7 +7,13 @@ const urlsToCache = [
   '/index.php',
   '/offline.html',
   '/manifest.json',
-  '/src/pages/home-styles.css',
+  '/static/css/main.css',
+  '/static/css/canvas.css',
+  '/static/css/customize.css',
+  '/static/css/payment.css',
+  '/static/css/admin.css',
+  '/static/css/responsive.css',
+  '/static/css/index.css',
   '/src/assets/icons/logo-gofotobox-new-192.png',
   '/src/assets/icons/logo-gofotobox-new-512.png',
   '/src/assets/icons/logo-gofotobox-new-180.png',

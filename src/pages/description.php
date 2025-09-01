@@ -12,7 +12,8 @@
     <meta name="apple-mobile-web-app-title" content="GoFotobox">
     <link rel="apple-touch-icon" href="/src/assets/icons/logo-gofotobox-new-180.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="home-styles.css">
+    <link rel="stylesheet" href="../../static/css/main.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="../../static/css/responsive.css?v=<?php echo time(); ?>">
     <style>
         * {
             overflow: hidden;
@@ -46,13 +47,13 @@
         }
 
         .header h1 {
-            font-size: 1.8rem;
+            font-size: 1.9rem;
             margin: 0;
         }
 
         .header p {
             color: white;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             margin: 0.2rem 0;
         }
 
@@ -88,13 +89,13 @@
         .step-number {
             background: linear-gradient(135deg, #E28585, #FF6B9D);
             color: #fff;
-            width: 25px;
-            height: 25px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             font-weight: bold;
             margin-right: 0.8rem;
             box-shadow: 0 2px 5px rgba(226, 133, 133, 0.3);
@@ -103,14 +104,14 @@
 
         .step-text h3 {
             margin: 0 0 0.2rem 0;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 600;
             color: #333;
         }
 
         .step-text p {
             margin: 0;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: #666;
             line-height: 1.3;
         }
@@ -148,7 +149,7 @@
 
         .layout-box h4 {
             margin: 0;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: #333;
             font-weight: 600;
         }
@@ -157,7 +158,7 @@
             text-align: center;
             margin-bottom: 0.8rem;
             color: #333;
-            font-size: 1rem;
+            font-size: 1.05rem;
             font-weight: 700;
             position: relative;
         }
@@ -184,7 +185,7 @@
 
         .timer-info p {
             margin: 0;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             text-align: center;
             color: #666;
             line-height: 1.3;
@@ -205,7 +206,7 @@
             font-weight: 600;
             text-decoration: none;
             text-align: center;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             flex: 1;
         }
 
@@ -223,7 +224,7 @@
             cursor: pointer;
             font-family: 'Poppins', sans-serif;
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
@@ -246,11 +247,11 @@
             }
 
             .header h1 {
-                font-size: 1.5rem;
+                font-size: 1.6rem;
             }
 
             .header p {
-                font-size: 0.7rem;
+                font-size: 0.75rem;
             }
 
             .card {

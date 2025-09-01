@@ -1,0 +1,41 @@
+/* Layout Color Variables */
+:root {
+  /* Layout 1 - Pink Theme */
+  --pink-primary: #e91e63;
+  --pink-light: #f48fb1;
+  --pink-dark: #ad1457;
+  
+  /* Layout 2 - Blue Theme */
+  --blue-primary: #2196f3;
+  --blue-light: #64b5f6;
+  --blue-dark: #1565c0;
+  
+  /* Layout 3 - Green Theme */
+  --green-primary: #4caf50;
+  --green-light: #81c784;
+  --green-dark: #2e7d32;
+  
+  /* Layout 4 - Purple Theme */
+  --purple-primary: #9c27b0;
+  --purple-light: #ba68c8;
+  --purple-dark: #6a1b9a;
+  
+  /* Layout 5 - Orange Theme */
+  --orange-primary: #ff9800;
+  --orange-light: #ffb74d;
+  --orange-dark: #ef6c00;
+  
+  /* Layout 6 - Teal Theme */
+  --teal-primary: #009688;
+  --teal-light: #4db6ac;
+  --teal-dark: #00695c;
+  
+  /* Common Variables */
+  --upload-orange: #ff9800;
+  --upload-orange-light: #ffcc02;
+  --text-primary: #333;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 20px;
+}

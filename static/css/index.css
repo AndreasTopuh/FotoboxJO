@@ -1,0 +1,13 @@
+/* Main CSS File - Imports all CSS modules */
+
+/* Import all CSS modules in order */
+@import url('main.css');       /* Variables, base styles, layout */
+@import url('canvas.css');     /* Canvas/camera specific styles */
+@import url('customize.css');  /* Customize page specific styles */
+@import url('payment.css');    /* Payment & selection pages */
+@import url('admin.css');      /* Admin pages specific styles */
+@import url('responsive.css'); /* Media queries and responsive design */
+
+/* This file serves as the main entry point for all styles.
+   Individual pages can import specific CSS files as needed,
+   or use this file to get all styles at once. */

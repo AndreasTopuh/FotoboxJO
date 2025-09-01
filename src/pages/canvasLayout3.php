@@ -39,7 +39,9 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     <meta name="twitter:description"
         content="Take instant photobooth-style photos online with Layout 3. Perfect for 6-photo grids." />
     <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png" />
-    <link rel="stylesheet" href="home-styles.css?v=<?php echo time(); ?>" />
+    <link rel="stylesheet" href="../../static/css/main.css?v=<?php echo time(); ?>" />
+    <link rel="stylesheet" href="../../static/css/canvas.css?v=<?php echo time(); ?>" />
+    <link rel="stylesheet" href="../../static/css/responsive.css?v=<?php echo time(); ?>" />
     <!-- Cache Control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
@@ -51,27 +53,44 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     <link href="https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap"
         rel="stylesheet" />
     <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png" />
-    <?php PWAHelper::addPWAHeaders(); ?>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description"
-        content="Take instant photobooth-style photos online with Layout 2 (4 photos). Perfect for photo grids and printing." />
-    <meta name="keywords"
-        content="photobooth, photo layout, photo grid, online photobooth, layout 2, 4 photos" />
-    <title>Photobooth | Layout 2 - 4 Photos</title>
-    <link rel="canonical" href="https://www.gofotobox.online" />
-    <meta property="og:title" content="Photobooth | Layout 2 - 4 Photos" />
-    <meta property="og:description"
-        content="Take instant photobooth-style photos online with Layout 2. Perfect for 4-photo grids." />
-    <meta property="og:image" content="https://www.gofotobox.online/assets/home-mockup.png" />
-    <meta property="og:url" content="https://www.gofotobox.online" />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Photobooth | Layout 2 - 4 Photos" />
-    <meta name="twitter:description"
-        content="Take instant photobooth-style photos online with Layout 2. Perfect for 4-photo grids." />
-    <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png" />
-    <link rel="stylesheet" href="home-styles.css?v=<?php echo time(); ?>" />
+    <style>
+        * {
+            overflow: hidden;
+        }
+
+        /* Adjustments to fit content within 1280x1024 viewport */
+        #videoContainer {
+
+            height: 700px;
+
+        }
+
+        .photo-preview-container {
+
+            padding: 0.5rem 0;
+        }
+
+        /* Override .main-content-card styles for this page only */
+        .main-content-card {
+            width: unset !important;
+            min-width: unset !important;
+            max-width: unset !important;
+            height: calc(100vh - 1rem) !important;
+            background: unset !important;
+            backdrop-filter: unset !important;
+            -webkit-backdrop-filter: unset !important;
+            border-radius: unset !important;
+            box-shadow: unset !important;
+            padding: unset !important;
+            position: unset !important;
+            overflow: unset !important;
+            display: unset !important;
+            flex-direction: unset !important;
+            touch-action: unset !important;
+            overflow-x: unset !important;
+            overscroll-behavior-x: unset !important;
+        }
+    </style>
     <!-- Cache Control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
@@ -100,190 +119,6 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             padding: 0.5rem 0;
         }
     </style>
-    <!-- <style>
-        /* Adjustments to fit content within 1280x1024 viewport */
-        .canvas-centered {
-            padding: 0.2rem;
-            min-height: auto;
-            height: 100vh;
-        }
-
-        .main-content-card {
-            height: calc(100vh - 0.4rem);
-            padding: 0.3rem;
-            min-width: 90vw;
-            max-width: 95vw;
-        }
-
-        .horizontal-layout {
-            gap: 0.5rem;
-            height: calc(100vh - 1rem);
-            flex-direction: row;
-        }
-
-        #videoContainer {
-            height: 400px;
-            /* Reduced from 637px to fit within viewport */
-            width: 100%;
-            border-radius: 12px;
-        }
-
-        .camera-container {
-            margin-top: 0.5rem;
-            margin-bottom: 0.5rem;
-            gap: 10px;
-        }
-
-        .photo-preview-container {
-            padding: 0.5rem 0;
-            margin-bottom: 0.5rem;
-        }
-
-        .photo-preview-grid {
-            gap: 0.8rem;
-            padding: 0.5rem;
-        }
-
-        .photo-preview-slot {
-            max-width: 100px;
-            width: 100%;
-            aspect-ratio: 4 / 3;
-        }
-
-        .controls-container {
-            margin-top: 0.5rem;
-            max-width: 20%;
-            gap: 0.5rem;
-        }
-
-        .camera-settings,
-        .filter-section {
-            padding: 0.6rem;
-        }
-
-        .settings-title,
-        .filter-title {
-            font-size: 0.8rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .setting-group {
-            margin-bottom: 0.6rem;
-        }
-
-        .setting-label {
-            font-size: 0.75rem;
-            margin-bottom: 0.3rem;
-        }
-
-        .custom-select {
-            padding: 8px 12px;
-            font-size: 0.75rem;
-        }
-
-        .timer-selector::before {
-            font-size: 0.8rem;
-            left: 8px;
-        }
-
-        .filter-buttons-grid {
-            gap: 6px;
-            margin-bottom: 0.6rem;
-        }
-
-        .filterBtn {
-            height: 40px;
-        }
-
-        #gridToggleBtn {
-            padding: 6px 12px;
-            font-size: 0.7rem;
-        }
-
-        .action-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        #startBtn,
-        #captureAllBtn,
-        #doneBtn {
-            padding: 8px 20px;
-            font-size: 0.9rem;
-            border-radius: 15px;
-        }
-
-        #retakeAllBtn {
-            padding: 4px 12px;
-            font-size: 0.7rem;
-            border-radius: 5px;
-        }
-
-        #progressCounter {
-            font-size: 1.8rem;
-            margin: 0.8rem 0;
-        }
-
-        #progressCounter::after {
-            width: 30px;
-            height: 1.5px;
-            bottom: -6px;
-        }
-
-        .timer-box {
-            top: 10px;
-            right: 10px;
-            padding: 10px 15px;
-            font-size: 0.8rem;
-        }
-
-        .timer-box #timer-display,
-        .timer-box #session-timer-display {
-            font-size: 1.2rem;
-            margin-bottom: 3px;
-        }
-
-        .timer-box p {
-            font-size: 0.7rem;
-        }
-
-        @media (max-width: 1024px) {
-            .horizontal-layout {
-                gap: 0.4rem;
-            }
-
-            .photo-preview-container,
-            .controls-container {
-                max-width: 25%;
-            }
-
-            #videoContainer {
-                height: 350px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .horizontal-layout {
-                flex-direction: column;
-                height: auto;
-            }
-
-            .photo-preview-container,
-            .camera-container,
-            .controls-container {
-                max-width: 100%;
-            }
-
-            #videoContainer {
-                height: 300px;
-            }
-
-            .controls-container {
-                max-width: 100%;
-            }
-        }
-    </style> -->
 </head>
 
 <body>
@@ -425,7 +260,6 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                         <div class="progress-display">
                             <div id="progressCounter">0/6</div>
                         </div>
-
                     </div>
                 </div>
             </div>

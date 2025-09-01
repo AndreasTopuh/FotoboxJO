@@ -33,7 +33,9 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
   <?php PWAHelper::addPWAHeaders(); ?>
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="home-styles.css" />
+  <link rel="stylesheet" href="../../static/css/main.css?v=<?php echo time(); ?>" />
+  <link rel="stylesheet" href="../../static/css/payment.css?v=<?php echo time(); ?>" />
+  <link rel="stylesheet" href="../../static/css/responsive.css?v=<?php echo time(); ?>" />
   <style>
     .container {
       display: flex;
@@ -161,45 +163,65 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
       background: rgba(0, 0, 0, 0.8);
       z-index: 2000;
       backdrop-filter: blur(5px);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay[style*="flex"] {
+      display: flex !important;
     }
 
     .modal-content {
-      max-width: 400px;
-      margin: 250px auto;
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      width: 100%;
+      max-width: 450px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      position: relative;
+      margin: 0;
     }
 
     .modal-title {
       color: #333;
       font-size: 1.5rem;
       font-weight: 700;
-      margin-bottom: 1rem;
+      margin-bottom: 20px;
       text-align: center;
     }
 
     .modal-input {
       width: 100%;
-      padding: 12px;
+      padding: 15px;
       border: 2px solid #E28585;
-      border-radius: 8px;
-      font-size: 1rem;
-      margin-bottom: 1rem;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      margin-bottom: 20px;
       text-align: center;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
+      background: #f8f9fa;
+      box-sizing: border-box;
     }
 
     .modal-buttons {
       display: flex;
-      gap: 1rem;
+      gap: 15px;
       justify-content: center;
+      margin-top: 25px;
     }
 
     .modal-btn {
-      padding: 10px 20px;
+      padding: 12px 25px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
+      font-size: 1rem;
+      min-width: 100px;
     }
 
     .modal-btn-primary {
@@ -209,81 +231,170 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
 
     .modal-btn-primary:hover {
       background: #d67373;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(226, 133, 133, 0.3);
     }
 
     .modal-btn-secondary {
       background: #f0f0f0;
       color: #333;
+      border: 2px solid #ddd;
     }
 
     .modal-btn-secondary:hover {
       background: #e0e0e0;
+      transform: translateY(-1px);
     }
 
     /* Virtual Keyboard Styles */
     .virtual-keyboard {
-      margin-top: 1rem;
-      padding: 1rem;
-      background: #f8f8f8;
-      border-radius: 10px;
-      border: 1px solid #ddd;
+      margin: 20px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 15px;
+      border: 2px solid #e9ecef;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     .keyboard-row {
       display: flex;
       justify-content: center;
-      gap: 8px;
-      margin-bottom: 8px;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .keyboard-row:last-child {
+      margin-bottom: 0;
     }
 
     .keyboard-key {
       background: white;
       border: 2px solid #E28585;
-      border-radius: 8px;
-      padding: 12px 16px;
+      border-radius: 10px;
+      padding: 15px;
       font-size: 1.1rem;
       font-weight: 600;
       color: #333;
       cursor: pointer;
       transition: all 0.2s ease;
       user-select: none;
-      min-width: 50px;
+      min-width: 55px;
+      height: 55px;
       text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .keyboard-key:hover {
       background: rgba(226, 133, 133, 0.1);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     }
 
     .keyboard-key:active {
       background: rgba(226, 133, 133, 0.2);
       transform: translateY(0);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     }
 
     .keyboard-key.wide {
-      min-width: 80px;
+      min-width: 85px;
       background: rgba(226, 133, 133, 0.1);
+      border-color: rgba(226, 133, 133, 0.6);
     }
 
     .keyboard-key.wide:hover {
       background: rgba(226, 133, 133, 0.2);
+      border-color: #E28585;
     }
 
     .keyboard-display {
       background: #fff;
       border: 2px solid #E28585;
-      border-radius: 8px;
-      padding: 8px;
-      margin-bottom: 10px;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
       text-align: center;
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       font-weight: 600;
-      letter-spacing: 4px;
-      min-height: 40px;
+      letter-spacing: 8px;
+      min-height: 50px;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-family: 'Courier New', monospace;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Responsive Modal Styles */
+    @media (max-width: 768px) {
+      .modal-content {
+        padding: 20px;
+        max-width: 95%;
+        margin: 10px;
+      }
+
+      .modal-title {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+      }
+
+      .virtual-keyboard {
+        padding: 15px;
+        margin: 15px 0;
+      }
+
+      .keyboard-key {
+        min-width: 45px;
+        height: 45px;
+        font-size: 1rem;
+        padding: 10px;
+      }
+
+      .keyboard-key.wide {
+        min-width: 70px;
+      }
+
+      .keyboard-display {
+        font-size: 1.2rem;
+        letter-spacing: 6px;
+        min-height: 45px;
+        padding: 12px;
+      }
+
+      .modal-input {
+        padding: 12px;
+        font-size: 1rem;
+      }
+
+      .modal-btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+        min-width: 80px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .keyboard-row {
+        gap: 8px;
+      }
+
+      .keyboard-key {
+        min-width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+      }
+
+      .keyboard-key.wide {
+        min-width: 60px;
+      }
+
+      .keyboard-display {
+        font-size: 1.1rem;
+        letter-spacing: 4px;
+      }
     }
   </style>
 </head>
@@ -380,13 +491,16 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
       <h3 class="modal-title">Developer Access</h3>
       <!-- Virtual Keyboard -->
       <div class="virtual-keyboard">
+        <div id="keyboardDisplay" class="keyboard-display">_____</div>
+        
         <input
           type="password"
           id="developerCode"
           class="modal-input"
           placeholder="Masukkan kode akses"
           maxlength="5"
-          readonly />
+          readonly
+          style="display: none;" />
 
         <div class="keyboard-row">
           <button class="keyboard-key" onclick="addDigit('1')">1</button>
@@ -457,7 +571,7 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
 
     // Cash Modal Functions
     function showCashModal() {
-      document.getElementById('cashModal').style.display = 'block';
+      document.getElementById('cashModal').style.display = 'flex';
     }
 
     function closeCashModal() {
@@ -492,7 +606,7 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
 
       try {
         // Verify cash code with API
-        const response = await fetch('../api-fetch/verify_cash_code.php', {
+        const response = await fetch('../api-fetch/ve   rify_cash_code.php', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -536,7 +650,7 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
 
     // Developer Modal Functions
     function showDeveloperModal() {
-      document.getElementById('developerModal').style.display = 'block';
+      document.getElementById('developerModal').style.display = 'flex';
       updateKeyboardDisplay();
     }
 
@@ -571,7 +685,9 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
       const display = document.getElementById('keyboardDisplay');
       const value = input.value;
       const masked = '●'.repeat(value.length) + '_'.repeat(5 - value.length);
-      display.textContent = masked;
+      if (display) {
+        display.textContent = masked;
+      }
     }
 
     async function verifyDeveloperCode() {
@@ -582,7 +698,7 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
         return;
       }
 
-      if (code === '54321') {
+      if (code === '00000') {
         try {
           // Start developer session dengan timer 20 menit tapi skip payment
           const response = await fetch('../api-fetch/set_session.php', {

@@ -1,0 +1,156 @@
+/* Payment & Selection Pages Specific Styles */
+
+/* Payment Section */
+.select-payment {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  gap: 1.5rem;
+  flex-wrap: nowrap;
+}
+
+.select-payment-left {
+  flex: 1;
+  text-align: left;
+  padding-right: 1rem;
+  max-width: 50%;
+}
+
+.select-payment-divider {
+  width: 1px;
+  min-height: 300px;
+  background: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
+
+.select-payment-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  max-width: 50%;
+}
+
+.select-payment-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.13);
+  backdrop-filter: blur(6px);
+  border-radius: 12px;
+  padding: 14px 20px;
+  transition: transform 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.select-payment-option:hover {
+  transform: scale(1.02);
+  cursor: pointer;
+}
+
+.select-payment-option .start-btn {
+  font-size: 0.9rem;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.select-payment-option span {
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.select-payment-option img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.payment-qris-instructions {
+  margin: 0;
+}
+
+.payment-qris-instructions ol {
+  text-align: left;
+  font-size: 0.9rem;
+  line-height: 1.3;
+  margin: 0.5rem 0 0;
+}
+
+.payment-qris-instructions li {
+  margin-bottom: 0.2rem;
+}
+
+.payment-qris-instructions p {
+  margin: 0.3rem 0 0;
+  font-weight: 600;
+}
+
+.qr-container {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 220px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.status-container {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  width: 220px;
+  backdrop-filter: blur(6px);
+  text-align: center;
+}
+
+/* Mobile responsive for payment */
+@media (max-width: 768px) {
+  .select-payment {
+    flex-direction: column;
+    text-align: center;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .select-payment-left {
+    padding-right: 0;
+    max-width: 100%;
+  }
+
+  .select-payment-divider {
+    display: none;
+  }
+
+  .select-payment-right {
+    align-items: center;
+    max-width: 100%;
+  }
+
+  .select-payment-option {
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .qr-container,
+  .status-container {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .payment-qris-instructions ol {
+    font-size: 0.85rem;
+  }
+
+  .qr-container img {
+    width: 150px !important;
+    height: 150px !important;
+  }
+}

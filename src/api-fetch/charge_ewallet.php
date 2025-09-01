@@ -56,7 +56,7 @@ $mode = $isProduction ? 'PRODUCTION' : 'SANDBOX';
 // Read input data
 $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
 $orderId = $input['order_id'] ?? 'ORDER-GOPAY-' . time();
-$grossAmount = $input['gross_amount'] ?? 15000;
+$grossAmount = $input['gross_amount'] ?? 30000;
 
 // Validasi input
 if (!$orderId || strlen($orderId) < 5) {

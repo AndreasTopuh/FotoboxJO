@@ -11,7 +11,8 @@ require_once '../includes/pwa-helper.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GoBooth - Terima Kasih</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="home-styles.css" />
+    <link rel="stylesheet" href="../../static/css/main.css?v=<?php echo time(); ?>" />
+    <link rel="stylesheet" href="../../static/css/responsive.css?v=<?php echo time(); ?>" />
 </head>
 
 <body>
