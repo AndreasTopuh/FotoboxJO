@@ -52,6 +52,40 @@ class Database
         return $stmt->execute([$id]);
     }
 
+    // Layout-specific Frame methods
+    public static function getFramesByLayout($layout_id)
+    {
+        $db = self::connect();
+        $table_name = "table_frame_layout" . $layout_id;
+        $stmt = $db->query("SELECT * FROM {$table_name} WHERE is_active = 1 ORDER BY created_at DESC");
+        return $stmt->fetchAll();
+    }
+
+    public static function insertFrameToLayout($layout_id, $nama, $warna, $filename, $file_path, $file_size)
+    {
+        $db = self::connect();
+        $table_name = "table_frame_layout" . $layout_id;
+        $stmt = $db->prepare("INSERT INTO {$table_name} (nama, warna, filename, file_path, file_size) VALUES (?, ?, ?, ?, ?)");
+        return $stmt->execute([$nama, $warna, $filename, $file_path, $file_size]);
+    }
+
+    public static function deleteFrameFromLayout($layout_id, $id)
+    {
+        $db = self::connect();
+        $table_name = "table_frame_layout" . $layout_id;
+        $stmt = $db->prepare("UPDATE {$table_name} SET is_active = 0 WHERE id = ?");
+        return $stmt->execute([$id]);
+    }
+
+    public static function getFrameFromLayout($layout_id, $id)
+    {
+        $db = self::connect();
+        $table_name = "table_frame_layout" . $layout_id;
+        $stmt = $db->prepare("SELECT * FROM {$table_name} WHERE id = ? AND is_active = 1");
+        $stmt->execute([$id]);
+        return $stmt->fetch();
+    }
+
     // Sticker methods
     public static function getAllStickers()
     {

@@ -1,3 +1,8 @@
+/*
+ * ⚡ CUSTOMIZE LAYOUT 4 - LAYOUT-SPECIFIC FRAMES VERSION
+ * ✅ Updated: Uses frames specific to Layout 4 only
+ * 📝 API: /src/api-fetch/get-frames-by-layout.php?layout_id=4
+ */
 document.addEventListener('DOMContentLoaded', () => {
   // ⚡ COMPRESSION CONFIGURATION - 3-Level Quality System
   const COMPRESSION_CONFIG = {
@@ -193,21 +198,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Asset Loading
   /**
-   * Loads frames and stickers from database
+   * Loads frames and stickers from database - Layout 4 specific
    */
   async function loadAssetsFromDatabase() {
-    console.log('🔄 Loading frames and stickers from database...');
+    console.log('🔄 Loading Layout 4 frames and stickers from database...');
     try {
       const [framesResponse, stickersResponse] = await Promise.all([
-        fetch('/src/api-fetch/get-frames.php'),
+        fetch('/src/api-fetch/get-frames-by-layout.php?layout_id=4'),
         fetch('/src/api-fetch/get-stickers.php'),
       ]);
 
       const framesData = await framesResponse.json();
       const stickersData = await stickersResponse.json();
 
-      state.availableFrames = framesData.success ? framesData.data : getFallbackFrames();
-      console.log(`✅ Loaded ${state.availableFrames.length} frames from database`);
+      state.availableFrames = framesData.success ? framesData.frames : getFallbackFrames();
+      console.log(`✅ Loaded ${state.availableFrames.length} Layout 4 frames from database`);
 
       state.availableStickers = stickersData.success ? stickersData.data : getFallbackStickers();
       console.log(`✅ Loaded ${state.availableStickers.length} stickers from database`);

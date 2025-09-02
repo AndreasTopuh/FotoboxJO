@@ -1,4 +1,9 @@
-document.addEventListener('DOMContentLoaded', () => {
+/*
+ * ⚡ CUSTOMIZE LAYOUT 6 - LAYOUT-SPECIFIC FRAMES VERSION
+ * ✅ Updated: Uses frames specific to Layout 6 only
+ * 📝 API: /src/api-fetch/get-frames-by-layout.php?layout_id=6
+ */
+document.addEventListener('DOMContentLoaded', function() {
     // Variables
     let storedImages = [];
     let finalCanvas = null;
@@ -61,10 +66,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load assets from database
     async function loadAssetsFromDatabase() {
         try {
-            console.log('🔄 Loading frames and stickers from database...');
+            console.log('🔄 Loading Layout 6 frames and stickers from database...');
             
             const [framesResponse, stickersResponse] = await Promise.all([
-                fetch('/src/api-fetch/get-frames.php'),
+                fetch('/src/api-fetch/get-frames-by-layout.php?layout_id=6'),
                 fetch('/src/api-fetch/get-stickers.php')
             ]);
 
@@ -75,9 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const framesData = await framesResponse.json();
                 console.log('🔍 Frames data received:', framesData);
                 
-                if (framesData.success && framesData.data && Array.isArray(framesData.data)) {
-                    availableFrames = framesData.data;
-                    console.log(`✅ Loaded ${availableFrames.length} frames from database:`, availableFrames);
+                if (framesData.success && framesData.frames && Array.isArray(framesData.frames)) {
+                    availableFrames = framesData.frames;
+                    console.log(`✅ Loaded ${availableFrames.length} Layout 6 frames from database:`, availableFrames);
                 } else {
                     console.warn('⚠️ Invalid frames data structure, using fallback');
                     availableFrames = getFallbackFrames();

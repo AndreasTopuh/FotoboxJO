@@ -15,10 +15,17 @@ $message = $_GET['msg'] ?? '';
 try {
     $frames = Database::getAllFrames();
     $stickers = Database::getAllStickers();
+
+    // Get frames by layout for layout-specific management
+    $framesByLayout = [];
+    for ($i = 1; $i <= 6; $i++) {
+        $framesByLayout[$i] = Database::getFramesByLayout($i);
+    }
 } catch (Exception $e) {
     $message = "Database error: " . $e->getMessage();
     $frames = [];
     $stickers = [];
+    $framesByLayout = [];
 }
 ?>
 <!DOCTYPE html>
@@ -312,12 +319,18 @@ try {
         }
 
         /* Tabs */
-        .tabs {
+        .tabs,
+        .layout-tabs {
             display: flex;
             margin-bottom: 20px;
             background: #f8f9fa;
             padding: 5px;
             border-radius: 10px;
+        }
+
+        .layout-tabs {
+            flex-wrap: wrap;
+            gap: 5px;
         }
 
         .tab-btn {
@@ -331,6 +344,11 @@ try {
             transition: all 0.3s ease;
         }
 
+        .layout-tabs .tab-btn {
+            flex: 0 1 auto;
+            min-width: 120px;
+        }
+
         .tab-btn.active {
             background: #E28585;
             color: white;
@@ -342,6 +360,22 @@ try {
 
         .tab-content.active {
             display: block;
+        }
+
+        /* Color Indicator */
+        .color-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .gallery-item {
+            position: relative;
         }
 
         /* Image Modal */
@@ -490,6 +524,12 @@ try {
                     <a href="?section=assets" class="<?= $currentSection === 'assets' ? 'active' : '' ?>">
                         <i class="fas fa-images"></i>
                         Manage Assets
+                    </a>
+                </li>
+                <li>
+                    <a href="?section=layout-frames" class="<?= $currentSection === 'layout-frames' ? 'active' : '' ?>">
+                        <i class="fas fa-layer-group"></i>
+                        Layout Frames
                     </a>
                 </li>
                 <li>
@@ -672,6 +712,61 @@ try {
                             <?php endforeach; ?>
                         </div>
                     </div>
+                <?php elseif ($currentSection === 'layout-frames'): ?>
+                    <!-- Layout-Specific Frames Management -->
+                    <div class="layout-tabs">
+                        <?php for ($i = 1; $i <= 6; $i++): ?>
+                            <button class="tab-btn <?= $i === 1 ? 'active' : '' ?>" onclick="switchLayoutTab(<?= $i ?>)">
+                                <i class="fas fa-th-large"></i> Layout <?= $i ?>
+                            </button>
+                        <?php endfor; ?>
+                    </div>
+
+                    <?php for ($layout = 1; $layout <= 6; $layout++): ?>
+                        <div id="layout-<?= $layout ?>-tab" class="tab-content <?= $layout === 1 ? 'active' : '' ?>">
+                            <div class="upload-section">
+                                <h3><i class="fas fa-upload"></i> Upload Frame for Layout <?= $layout ?></h3>
+                                <form action="api/upload-frame-layout.php" method="POST" enctype="multipart/form-data" class="upload-form">
+                                    <input type="hidden" name="layout_id" value="<?= $layout ?>">
+                                    <div class="form-group">
+                                        <label>Frame Name</label>
+                                        <input type="text" name="nama" placeholder="e.g., Layout <?= $layout ?> Frame" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Frame Color</label>
+                                        <input type="color" name="warna" value="#FFFFFF" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Frame Image</label>
+                                        <input type="file" name="frame" accept="image/*" required>
+                                    </div>
+                                    <button type="submit" class="upload-btn">
+                                        <i class="fas fa-upload"></i> Upload to Layout <?= $layout ?>
+                                    </button>
+                                </form>
+                            </div>
+
+                            <h3>Layout <?= $layout ?> Frames (<?= count($framesByLayout[$layout] ?? []) ?>)</h3>
+                            <div class="gallery-grid">
+                                <?php foreach ($framesByLayout[$layout] ?? [] as $frame): ?>
+                                    <div class="gallery-item">
+                                        <img
+                                            src="<?= htmlspecialchars($frame['file_path']) ?>"
+                                            alt="<?= htmlspecialchars($frame['nama']) ?>"
+                                            onclick="openImageModal('<?= htmlspecialchars($frame['file_path']) ?>', '<?= htmlspecialchars($frame['nama']) ?>', 'Layout <?= $layout ?> Frame', '<?= htmlspecialchars($frame['filename']) ?>', '<?= round($frame['file_size'] / 1024, 1) ?>', '<?= htmlspecialchars($frame['warna']) ?>')">
+                                        <h4><?= htmlspecialchars($frame['nama']) ?></h4>
+                                        <div class="meta">
+                                            Layout <?= $layout ?> • <?= date('M d, Y', strtotime($frame['created_at'])) ?>
+                                        </div>
+                                        <div class="color-indicator" style="background-color: <?= htmlspecialchars($frame['warna']) ?>"></div>
+                                        <button onclick="deleteLayoutFrame(<?= $layout ?>, <?= $frame['id'] ?>)" class="delete-btn">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endfor; ?>
                 <?php endif; ?>
             </div>
         </div>
@@ -711,9 +806,51 @@ try {
             event.target.classList.add('active');
         }
 
+        function switchLayoutTab(layoutId) {
+            // Hide all layout tabs
+            document.querySelectorAll('[id^="layout-"][id$="-tab"]').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active class from all layout buttons
+            document.querySelectorAll('.layout-tabs .tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected layout tab
+            document.getElementById('layout-' + layoutId + '-tab').classList.add('active');
+
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
         function deleteAsset(type, id) {
             if (confirm('Are you sure you want to delete this ' + type + '?')) {
                 window.location.href = `api/delete-${type}.php?id=${id}`;
+            }
+        }
+
+        function deleteLayoutFrame(layoutId, frameId) {
+            if (confirm('Are you sure you want to delete this frame from Layout ' + layoutId + '?')) {
+                // Create form to send POST request
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'api/delete-frame-layout.php';
+
+                const layoutInput = document.createElement('input');
+                layoutInput.type = 'hidden';
+                layoutInput.name = 'layout_id';
+                layoutInput.value = layoutId;
+
+                const frameInput = document.createElement('input');
+                frameInput.type = 'hidden';
+                frameInput.name = 'frame_id';
+                frameInput.value = frameId;
+
+                form.appendChild(layoutInput);
+                form.appendChild(frameInput);
+                document.body.appendChild(form);
+                form.submit();
             }
         }
 
