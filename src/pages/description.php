@@ -18,6 +18,7 @@
         * {
             overflow: hidden;
         }
+
         body {
             margin: 0;
             font-family: 'Poppins', sans-serif;
@@ -64,10 +65,12 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.3);
-            min-height: 500px; /* Set a minimum height to fill more vertical space */
+            min-height: 500px;
+            /* Set a minimum height to fill more vertical space */
             display: flex;
             flex-direction: column;
-            justify-content: normal; /* Distribute content to use available space */
+            justify-content: normal;
+            /* Distribute content to use available space */
         }
 
         .step {
@@ -121,7 +124,8 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 0.8rem;
             margin-bottom: 1rem;
-            flex-grow: 1; /* Allow the grid to grow and fill space */
+            flex-grow: 1;
+            /* Allow the grid to grow and fill space */
         }
 
         .layout-box {
@@ -243,7 +247,8 @@
             .main-wrapper {
                 grid-template-columns: 1fr;
                 padding: 0.5rem;
-                min-height: auto; /* Reset for mobile to avoid excessive height */
+                min-height: auto;
+                /* Reset for mobile to avoid excessive height */
             }
 
             .header h1 {
@@ -256,7 +261,8 @@
 
             .card {
                 padding: 0.8rem;
-                min-height: auto; /* Allow cards to adjust naturally on mobile */
+                min-height: auto;
+                /* Allow cards to adjust naturally on mobile */
             }
 
             .footer-buttons {
@@ -288,7 +294,7 @@
                 <div class="step-number">2</div>
                 <div class="step-text">
                     <h3>Lakukan Pembayaran</h3>
-                    <p>Akan memulaikan sesi foto selama 20 menit terhitung dari pembayaran</p>
+                    <p>Akan memulaikan sesi foto selama 15 menit terhitung dari pembayaran</p>
                 </div>
             </div>
             <div class="step">
@@ -351,8 +357,8 @@
             </div>
             <div class="timer-info">
                 <p>
-                    ⏰ Waktu total: 20 menit setelah pembayaran<br>
-                    📸 Setiap foto memiliki countdown 3 detik
+                    ⏰ Waktu total: 15 menit setelah pembayaran<br>
+                    📸 Setiap foto boleh diatur countdownnya
                 </p>
             </div>
         </div>

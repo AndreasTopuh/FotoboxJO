@@ -426,10 +426,10 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
         </a>
 
         <!-- Cash Payment -->
-        <a href="#" onclick="showCashModal(); return false;" class="payment-option">
+        <!-- <a href="#" onclick="showCashModal(); return false;" class="payment-option">
           Code Cash
           <img src="../assets/icons/cash-icon.png" alt="Cash" style="width: 50px; height: 50px; background: #4CAF50; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">💰</img>
-        </a>
+        </a> -->
       </div>
     </div>
   </div>
@@ -606,7 +606,7 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
 
       try {
         // Verify cash code with API
-        const response = await fetch('../api-fetch/ve   rify_cash_code.php', {
+        const response = await fetch('../api-fetch/verify_cash_code.php', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -698,7 +698,7 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
         return;
       }
 
-      if (code === '00000') {
+      if (code === '13131') { // Ganti dengan kode akses developer yang diinginkan
         try {
           // Start developer session dengan timer 20 menit tapi skip payment
           const response = await fetch('../api-fetch/set_session.php', {
