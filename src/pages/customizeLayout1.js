@@ -108,12 +108,14 @@ document.addEventListener('DOMContentLoaded', () => {
     storedImages: [],
     finalCanvas: null,
     selectedSticker: null,
+    selectedFrameSticker: null,
     selectedShape: 'default',
     backgroundType: 'color',
     backgroundColor: '#FFFFFF',
     backgroundImage: null,
     availableFrames: [],
     availableStickers: [],
+    availableFrameStickers: [],
     emailSent: false,
     printUsed: false,
     imageCache: new Map(), // Cache untuk gambar
@@ -124,7 +126,9 @@ document.addEventListener('DOMContentLoaded', () => {
     photoCustomPreview: document.getElementById('photoPreview'),
     framesContainer: document.getElementById('dynamicFramesContainer'),
     stickersContainer: document.getElementById('dynamicStickersContainer'),
+    frameStickerContainer: document.getElementById('dynamicFrameStickerContainer'),
     noneSticker: document.getElementById('noneSticker'),
+    noneFrameSticker: document.getElementById('noneFrameSticker'),
     emailModal: document.getElementById('emailModal'),
     emailInput: document.getElementById('emailInput'),
   };
@@ -201,23 +205,34 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadAssetsFromDatabase() {
     console.log('🔄 Loading Layout 1 frames and stickers from database...');
     try {
-      const [framesResponse, stickersResponse] = await Promise.all([
-        fetch('/src/api-fetch/get-frames-by-layout.php?layout_id=1'),
-        fetch('/src/api-fetch/get-stickers.php'),
+      const [framesResponse, stickersResponse, comboResponse] = await Promise.all([
+        fetch('../api-fetch/get-frames-by-layout.php?layout_id=1'),
+        fetch('../api-fetch/get-stickers-by-layout.php?layout_id=1'),
+        fetch('../api-fetch/get-frame-sticker-combo.php?layout_id=1')
       ]);
 
       const framesData = await framesResponse.json();
       const stickersData = await stickersResponse.json();
+      const comboData = await comboResponse.json();
+
+      console.log('🔍 Debug - Frames Response:', framesData);
+      console.log('🔍 Debug - Stickers Response:', stickersData);
+      console.log('🔍 Debug - Combo Response:', comboData);
 
       state.availableFrames = framesData.success ? framesData.frames : getFallbackFrames();
       console.log(`✅ Loaded ${state.availableFrames.length} Layout 1 frames from database`);
 
       state.availableStickers = stickersData.success ? stickersData.data : getFallbackStickers();
-      console.log(`✅ Loaded ${state.availableStickers.length} stickers from database`);
+      console.log(`✅ Loaded ${state.availableStickers.length} Layout 1 stickers from database`);
+
+      state.availableFrameStickers = comboData.success ? comboData.data : [];
+      console.log(`✅ Loaded ${state.availableFrameStickers.length} Layout 1 frame & sticker combos from database`);
+      console.log('🔍 Debug - Frame Stickers Array:', state.availableFrameStickers);
     } catch (error) {
       console.error('❌ Error loading assets from database:', error);
       state.availableFrames = getFallbackFrames();
       state.availableStickers = getFallbackStickers();
+      state.availableFrameStickers = [];
     }
   }
 
@@ -300,6 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
         stickerBtn.addEventListener('click', () => {
           setActiveButton('.buttonStickers', stickerBtn);
           state.selectedSticker = sticker.file_path;
+          state.selectedFrameSticker = null; // Clear frame-sticker combo
           redrawCanvas();
           console.log(`🌟 Selected sticker: ${sticker.nama}`);
         });
@@ -309,6 +325,41 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log(`✅ Created ${state.availableStickers.length} dynamic sticker controls`);
     }
 
+    // Create dynamic frame & sticker combos
+    if (DOM.frameStickerContainer) {
+      const loadingPlaceholder = DOM.frameStickerContainer.querySelector('.loading-placeholder');
+      if (loadingPlaceholder) loadingPlaceholder.remove();
+
+      state.availableFrameStickers.forEach((frameSticker) => {
+        const frameStickerBtn = document.createElement('button');
+        frameStickerBtn.id = `frameSticker_${frameSticker.id}`;
+        frameStickerBtn.className = 'dynamic-frame-sticker-btn buttonFrameStickers';
+        frameStickerBtn.setAttribute('data-frame-sticker-id', frameSticker.id);
+        frameStickerBtn.setAttribute('data-frame-sticker-path', frameSticker.file_path);
+
+        const img = document.createElement('img');
+        img.src = frameSticker.file_path;
+        img.alt = frameSticker.nama;
+        img.className = 'frame-sticker-icon';
+        img.style.width = '60px';
+        img.style.height = '60px';
+        img.style.objectFit = 'contain';
+
+        frameStickerBtn.appendChild(img);
+
+        frameStickerBtn.addEventListener('click', () => {
+          setActiveButton('.buttonFrameStickers', frameStickerBtn);
+          state.selectedFrameSticker = frameSticker.file_path;
+          state.selectedSticker = null; // Clear regular sticker
+          redrawCanvas();
+          console.log(`🎪 Selected frame & sticker combo: ${frameSticker.nama}`);
+        });
+
+        DOM.frameStickerContainer.appendChild(frameStickerBtn);
+      });
+      console.log(`✅ Created ${state.availableFrameStickers.length} dynamic frame & sticker combo controls`);
+    }
+
     // Initialize "None" sticker button
     if (DOM.noneSticker) {
       DOM.noneSticker.addEventListener('click', () => {
@@ -316,6 +367,16 @@ document.addEventListener('DOMContentLoaded', () => {
         state.selectedSticker = null;
         redrawCanvas();
         console.log('🚫 No sticker selected');
+      });
+    }
+
+    // Initialize "None" frame & sticker button
+    if (DOM.noneFrameSticker) {
+      DOM.noneFrameSticker.addEventListener('click', () => {
+        setActiveButton('.buttonFrameStickers', DOM.noneFrameSticker);
+        state.selectedFrameSticker = null;
+        redrawCanvas();
+        console.log('🚫 No frame & sticker combo selected');
       });
     }
   }
@@ -529,20 +590,34 @@ document.addEventListener('DOMContentLoaded', () => {
    * @param {HTMLCanvasElement} canvas - Canvas element
    */
   async function drawStickersAndLogos(ctx, canvas) {
-    if (state.selectedSticker) {
+    // Draw Frame & Sticker combo (priority over regular sticker)
+    if (state.selectedFrameSticker) {
+      try {
+        const frameStickerImg = await loadImage(state.selectedFrameSticker);
+        ctx.drawImage(frameStickerImg, 0, 0, canvas.width, canvas.height);
+        console.log('🎪 Frame & sticker combo applied');
+      } catch (error) {
+        console.error('❌ Failed to load frame & sticker combo:', state.selectedFrameSticker);
+      }
+    }
+    // Draw regular sticker (only if no Frame & Sticker combo is selected)
+    else if (state.selectedSticker) {
       try {
         const stickerImg = await loadImage(state.selectedSticker);
         ctx.drawImage(stickerImg, 0, 0, canvas.width, canvas.height);
+        console.log('🌟 Regular sticker applied');
       } catch (error) {
         console.error('❌ Failed to load sticker:', state.selectedSticker);
       }
     }
 
+    // Draw logo
     const logoBtn = document.getElementById('engLogo');
     if (logoBtn && logoBtn.classList.contains('active')) {
       try {
         const logoImg = await loadImage(CONFIG.LOGO_SRC);
         ctx.drawImage(logoImg, 20, canvas.height - 60, 100, 40);
+        console.log('🏷️ Logo applied');
       } catch (error) {
         console.error('❌ Failed to load logo:', CONFIG.LOGO_SRC);
       }

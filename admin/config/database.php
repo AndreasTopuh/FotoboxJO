@@ -94,17 +94,49 @@ class Database
         return $stmt->fetchAll();
     }
 
-    public static function insertSticker($nama, $filename, $file_path, $file_size)
+    // Get stickers by layout (NULL layout_id means universal stickers)
+    public static function getStickersByLayout($layout_id)
     {
         $db = self::connect();
-        $stmt = $db->prepare("INSERT INTO table_sticker (nama, filename, file_path, file_size) VALUES (?, ?, ?, ?)");
-        return $stmt->execute([$nama, $filename, $file_path, $file_size]);
+        $stmt = $db->prepare("SELECT * FROM table_sticker WHERE (layout_id = ? OR layout_id IS NULL) AND is_active = 1 ORDER BY created_at DESC");
+        $stmt->execute([$layout_id]);
+        return $stmt->fetchAll();
+    }
+
+    public static function insertSticker($nama, $filename, $file_path, $file_size, $layout_id = null)
+    {
+        $db = self::connect();
+        $stmt = $db->prepare("INSERT INTO table_sticker (nama, filename, file_path, file_size, layout_id) VALUES (?, ?, ?, ?, ?)");
+        return $stmt->execute([$nama, $filename, $file_path, $file_size, $layout_id]);
     }
 
     public static function deleteSticker($id)
     {
         $db = self::connect();
         $stmt = $db->prepare("UPDATE table_sticker SET is_active = 0 WHERE id = ?");
+        return $stmt->execute([$id]);
+    }
+
+    // Frame & Sticker Combo methods
+    public static function getFrameStickerComboByLayout($layout_id)
+    {
+        $db = self::connect();
+        $stmt = $db->prepare("SELECT * FROM table_frame_sticker_combo WHERE layout_id = ? AND is_active = 1 ORDER BY created_at DESC");
+        $stmt->execute([$layout_id]);
+        return $stmt->fetchAll();
+    }
+
+    public static function insertFrameStickerCombo($layout_id, $nama, $filename, $file_path, $file_size)
+    {
+        $db = self::connect();
+        $stmt = $db->prepare("INSERT INTO table_frame_sticker_combo (layout_id, nama, filename, file_path, file_size) VALUES (?, ?, ?, ?, ?)");
+        return $stmt->execute([$layout_id, $nama, $filename, $file_path, $file_size]);
+    }
+
+    public static function deleteFrameStickerCombo($id)
+    {
+        $db = self::connect();
+        $stmt = $db->prepare("UPDATE table_frame_sticker_combo SET is_active = 0 WHERE id = ?");
         return $stmt->execute([$id]);
     }
 }

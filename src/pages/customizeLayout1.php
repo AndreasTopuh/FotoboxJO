@@ -3,7 +3,7 @@ session_start();
 // Initialize customize session if not set or expired, but preserve photo data
 if (!isset($_SESSION['customize_expired_time']) || time() > $_SESSION['customize_expired_time']) {
     $_SESSION['customize_start_time'] = time();
-    $_SESSION['customize_expired_time'] = time() + (15 * 60);
+    $_SESSION['customize_expired_time'] = time() + (10 * 60);
     $_SESSION['session_type'] = 'customize';
     // Don't clear captured_photos here - keep them for the customize session
 }
@@ -130,7 +130,8 @@ require_once '../includes/pwa-helper.php';
 
         /* Dynamic assets styling */
         .dynamic-frame-btn,
-        .dynamic-sticker-btn {
+        .dynamic-sticker-btn,
+        .dynamic-frame-sticker-btn {
             position: relative;
             overflow: hidden;
             border: 2px solid transparent;
@@ -138,22 +139,97 @@ require_once '../includes/pwa-helper.php';
         }
 
         .dynamic-frame-btn:hover,
-        .dynamic-sticker-btn:hover {
+        .dynamic-sticker-btn:hover,
+        .dynamic-frame-sticker-btn:hover {
             border-color: #E28585;
             transform: scale(1.05);
         }
 
         .dynamic-frame-btn.active,
-        .dynamic-sticker-btn.active {
+        .dynamic-sticker-btn.active,
+        .dynamic-frame-sticker-btn.active {
             border-color: #E28585;
             background: rgba(226, 133, 133, 0.1);
         }
 
         .dynamic-frame-btn img,
-        .dynamic-sticker-btn img {
+        .dynamic-sticker-btn img,
+        .dynamic-frame-sticker-btn img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        /* Stickers container styling */
+        #dynamicStickersContainer {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            /* 3 kolom, konsisten dengan combo */
+            gap: 8px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        /* Frame & sticker combo container styling */
+        #dynamicFrameStickerContainer {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            /* 3 kolom, jika lebih akan ke baris bawah */
+            gap: 8px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        /* Enhanced button styling for stickers and combos */
+        .buttonStickers,
+        .buttonFrameStickers {
+            width: 50px;
+            height: 50px;
+            border: 2px solid rgba(233, 30, 99, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .buttonStickers:hover,
+        .buttonFrameStickers:hover {
+            border-color: #E28585;
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(226, 133, 133, 0.3);
+        }
+
+        .buttonStickers.active,
+        .buttonFrameStickers.active {
+            border-color: #E28585;
+            background: rgba(226, 133, 133, 0.1);
+            box-shadow: 0 0 0 2px rgba(226, 133, 133, 0.3);
+        }
+
+        .buttonStickers img,
+        .buttonFrameStickers img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        /* Special styling for "None" buttons */
+        .sticker-none,
+        .frame-sticker-none {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .sticker-none img,
+        .frame-sticker-none img {
+            width: 24px;
+            height: 24px;
+            opacity: 0.6;
+            object-fit: contain;
         }
     </style>
 </head>
@@ -191,14 +267,25 @@ require_once '../includes/pwa-helper.php';
                 </div>
             </div>
 
-            <!-- Stickers (Dynamic from Database) -->
+            <!-- Stickers (Dynamic from Database - Layout 1 specific) -->
             <div class="customize-options-group">
                 <h3 class="customize-options-label">Stickers</h3>
                 <div id="dynamicStickersContainer" class="customize-buttons-grid stickers-grid">
                     <button id="noneSticker" class="buttonStickers sticker-none">
                         <img src="../assets/block (1).png" alt="None" class="shape-icon">
                     </button>
-                    <div class="loading-placeholder">Loading stickers...</div>
+                    <div class="loading-placeholder">Loading layout 1 stickers...</div>
+                </div>
+            </div>
+
+            <!-- Frame & Sticker Combo (Dynamic from Database - Layout 1 specific) -->
+            <div class="customize-options-group">
+                <h3 class="customize-options-label">Frame & Sticker</h3>
+                <div id="dynamicFrameStickerContainer" class="customize-buttons-grid stickers-grid">
+                    <button id="noneFrameSticker" class="buttonFrameStickers frame-sticker-none">
+                        <img src="../assets/block (1).png" alt="None" class="shape-icon">
+                    </button>
+                    <div class="loading-placeholder">Loading layout 1 frame & sticker combos...</div>
                 </div>
             </div>
 

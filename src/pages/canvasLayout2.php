@@ -5,10 +5,10 @@ require_once '../includes/session-protection.php';
 // Include PWA helper
 require_once '../includes/pwa-helper.php';
 
-// Set photo session timing - 7 menit untuk foto
+// Set photo session timing - 10 menit untuk foto
 if (!isset($_SESSION["photo_start_time"])) {
     $_SESSION["photo_start_time"] = time();
-    $_SESSION["photo_expired_time"] = time() + (7 * 60); // 7 menit untuk foto
+    $_SESSION["photo_expired_time"] = time() + (10 * 60); // 10 menit untuk foto
 }
 
 // Hitung waktu tersisa

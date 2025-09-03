@@ -425,11 +425,11 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
           <img src="../assets/qris.png" alt="QRIS" style="width: 50px; height: 50px; object-fit: contain;">
         </a>
 
-        <!-- Cash Payment -->
+        <!-- Cash Payment
         <a href="#" onclick="showCashModal(); return false;" class="payment-option">
           Code Cash
           <img src="../assets/icons/cash-icon.png" alt="Cash" style="width: 50px; height: 50px; background: #4CAF50; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">💰</img>
-        </a>
+        </a> -->
       </div>
     </div>
   </div>

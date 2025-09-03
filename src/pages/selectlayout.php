@@ -88,7 +88,7 @@ SessionManager::requirePayment();
                                 <p class="layout-description">Photo Grid (6 Photos)</p>
                             </div>
                         </button>
-                        <button class="layout-card" id="layout4Btn" data-layout="layout4">
+                        <!-- <button class="layout-card" id="layout4Btn" data-layout="layout4">
                             <img src="../assets/layouts/layout4.png" class="layout-img" alt="layout 4" loading="eager">
                             <div class="layout-info">
                                 <h5 class="layout-label">Layout 4</h5>
@@ -101,7 +101,7 @@ SessionManager::requirePayment();
                                 <h5 class="layout-label">Layout 5</h5>
                                 <p class="layout-description">Photo Grid (6 Photos)</p>
                             </div>
-                        </button>
+                        </button> -->
                         <button class="layout-card" id="layout6Btn" data-layout="layout6">
                             <img src="../assets/layouts/layout6.png" class="layout-img" alt="layout 6" loading="eager">
                             <div class="layout-info">

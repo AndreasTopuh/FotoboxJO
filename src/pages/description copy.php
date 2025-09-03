@@ -35,7 +35,7 @@
                 <div class="step-number">2</div>
                 <div class="step-text">
                     <h3>Lakukan Pembayaran</h3>
-                    <p>Akan memulaikan sesi foto selama 15 menit terhitung dari pembayaran</p>
+                    <p>Akan memulaikan sesi foto selama 10 menit terhitung dari pembayaran</p>
                 </div>
             </div>
             <div class="step">
@@ -98,7 +98,7 @@
             </div>
             <div class="timer-info">
                 <p>
-                    ⏰ Waktu total: 15 menit setelah pembayaran<br>
+                    ⏰ Waktu total: 10 menit setelah pembayaran<br>
                     📸 Setiap foto boleh diatur countdownnya
                 </p>
             </div>

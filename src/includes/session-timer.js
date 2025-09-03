@@ -1,6 +1,6 @@
 /**
  * Session Timer Client-Side Handler
- * Menangani timer 15 menit dari server dan sinkronisasi dengan backend
+ * Menangani timer 10 menit dari server dan sinkronisasi dengan backend
  */
 
 class SessionTimer {

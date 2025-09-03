@@ -27,13 +27,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $hasPhotos = isset($_SESSION['captured_photos']) && is_array($_SESSION['captured_photos']) && count($_SESSION['captured_photos']) > 0;
         debugLog("📊 Photos in session", ['has_photos' => $hasPhotos, 'count' => $hasPhotos ? count($_SESSION['captured_photos']) : 0]);
         
-        // Reset previous customize session jika ada
+    // Reset previous customize session jika ada
         unset($_SESSION['customize_start_time']);
         unset($_SESSION['customize_expired_time']);
         
-        // Set session customize dengan waktu expired 15 menit (sama dengan customizeLayout)
+    // Set session customize dengan waktu expired 10 menit
         $_SESSION['customize_start_time'] = time();
-        $_SESSION['customize_expired_time'] = time() + (15 * 60); // 15 menit
+    $_SESSION['customize_expired_time'] = time() + (10 * 60); // 10 menit
         $_SESSION['session_type'] = 'customize';
         
         debugLog("✅ Customize session created", ['expires_at' => $_SESSION['customize_expired_time'], 'has_photos' => $hasPhotos]);
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode([
             'success' => true,
             'message' => 'Customize session created',
-            'expires_in' => 900, // 15 minutes in seconds
+            'expires_in' => 600, // 10 minutes in seconds
             'has_photos' => $hasPhotos,
             'photos_count' => $hasPhotos ? count($_SESSION['captured_photos']) : 0
         ]);

@@ -533,6 +533,18 @@ try {
                     </a>
                 </li>
                 <li>
+                    <a href="?section=layout-stickers" class="<?= $currentSection === 'layout-stickers' ? 'active' : '' ?>">
+                        <i class="fas fa-smile"></i>
+                        Layout Stickers
+                    </a>
+                </li>
+                <li>
+                    <a href="?section=frame-sticker-combos" class="<?= $currentSection === 'frame-sticker-combos' ? 'active' : '' ?>">
+                        <i class="fas fa-object-group"></i>
+                        Frame & Sticker Combos
+                    </a>
+                </li>
+                <li>
                     <a href="../src/pages/admin-new.php" target="_blank" style="border-left: 3px solid #4CAF50;">
                         <i class="fas fa-money-bill-wave"></i>
                         Cash Code Generator
@@ -556,6 +568,12 @@ try {
                         <i class="fas fa-tachometer-alt"></i> Dashboard
                     <?php elseif ($currentSection === 'assets'): ?>
                         <i class="fas fa-images"></i> Manage Assets
+                    <?php elseif ($currentSection === 'layout-frames'): ?>
+                        <i class="fas fa-layer-group"></i> Layout Frames
+                    <?php elseif ($currentSection === 'layout-stickers'): ?>
+                        <i class="fas fa-smile"></i> Layout Stickers
+                    <?php elseif ($currentSection === 'frame-sticker-combos'): ?>
+                        <i class="fas fa-object-group"></i> Frame & Sticker Combos
                     <?php endif; ?>
                 </h1>
             </div>
@@ -767,6 +785,128 @@ try {
                             </div>
                         </div>
                     <?php endfor; ?>
+
+                <?php elseif ($currentSection === 'layout-stickers'): ?>
+                    <!-- Layout-Specific Stickers Management -->
+                    <div class="layout-tabs">
+                        <?php for ($i = 1; $i <= 6; $i++): ?>
+                            <button class="tab-btn <?= $i === 1 ? 'active' : '' ?>" onclick="switchLayoutTab(<?= $i ?>)">
+                                <i class="fas fa-th-large"></i> Layout <?= $i ?>
+                            </button>
+                        <?php endfor; ?>
+                    </div>
+
+                    <?php for ($layout = 1; $layout <= 6; $layout++): ?>
+                        <div id="layout-<?= $layout ?>-tab" class="tab-content <?= $layout === 1 ? 'active' : '' ?>">
+                            <div class="upload-section">
+                                <h3><i class="fas fa-upload"></i> Upload Sticker for Layout <?= $layout ?></h3>
+                                <form action="api/upload-layout-sticker.php" method="POST" enctype="multipart/form-data" class="upload-form">
+                                    <input type="hidden" name="layout_id" value="<?= $layout ?>">
+                                    <div class="form-group">
+                                        <label>Sticker Name</label>
+                                        <input type="text" name="nama" placeholder="e.g., Layout <?= $layout ?> Sticker" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Sticker Image</label>
+                                        <input type="file" name="sticker_image" accept="image/*" required>
+                                    </div>
+                                    <button type="submit" class="upload-btn">
+                                        <i class="fas fa-upload"></i> Upload to Layout <?= $layout ?>
+                                    </button>
+                                </form>
+                            </div>
+
+                            <h3>Layout <?= $layout ?> Stickers</h3>
+                            <div class="gallery-grid">
+                                <?php
+                                try {
+                                    $layoutStickers = Database::getStickersByLayout($layout);
+                                    foreach ($layoutStickers as $sticker):
+                                        if ($sticker['layout_id'] == $layout): // Only show layout-specific stickers
+                                ?>
+                                            <div class="gallery-item">
+                                                <img
+                                                    src="<?= htmlspecialchars($sticker['file_path']) ?>"
+                                                    alt="<?= htmlspecialchars($sticker['nama']) ?>"
+                                                    onclick="openImageModal('<?= htmlspecialchars($sticker['file_path']) ?>', '<?= htmlspecialchars($sticker['nama']) ?>', 'Layout <?= $layout ?> Sticker', '<?= htmlspecialchars($sticker['filename']) ?>', '<?= round($sticker['file_size'] / 1024, 1) ?>', '')">
+                                                <h4><?= htmlspecialchars($sticker['nama']) ?></h4>
+                                                <div class="meta">
+                                                    Layout <?= $layout ?> • <?= date('M d, Y', strtotime($sticker['created_at'])) ?>
+                                                </div>
+                                                <button onclick="deleteLayoutSticker(<?= $sticker['id'] ?>)" class="delete-btn">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </div>
+                                <?php
+                                        endif;
+                                    endforeach;
+                                } catch (Exception $e) {
+                                    echo "<p>Error loading stickers: " . $e->getMessage() . "</p>";
+                                }
+                                ?>
+                            </div>
+                        </div>
+                    <?php endfor; ?>
+
+                <?php elseif ($currentSection === 'frame-sticker-combos'): ?>
+                    <!-- Frame & Sticker Combos Management -->
+                    <div class="layout-tabs">
+                        <?php for ($i = 1; $i <= 6; $i++): ?>
+                            <button class="tab-btn <?= $i === 1 ? 'active' : '' ?>" onclick="switchLayoutTab(<?= $i ?>)">
+                                <i class="fas fa-th-large"></i> Layout <?= $i ?>
+                            </button>
+                        <?php endfor; ?>
+                    </div>
+
+                    <?php for ($layout = 1; $layout <= 6; $layout++): ?>
+                        <div id="layout-<?= $layout ?>-tab" class="tab-content <?= $layout === 1 ? 'active' : '' ?>">
+                            <div class="upload-section">
+                                <h3><i class="fas fa-upload"></i> Upload Frame & Sticker Combo for Layout <?= $layout ?></h3>
+                                <form action="api/upload-frame-sticker-combo.php" method="POST" enctype="multipart/form-data" class="upload-form">
+                                    <input type="hidden" name="layout_id" value="<?= $layout ?>">
+                                    <div class="form-group">
+                                        <label>Combo Name</label>
+                                        <input type="text" name="nama" placeholder="e.g., Layout <?= $layout ?> Frame & Sticker Combo" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Combo Image (Frame + Sticker)</label>
+                                        <input type="file" name="combo_image" accept="image/*" required>
+                                    </div>
+                                    <button type="submit" class="upload-btn">
+                                        <i class="fas fa-upload"></i> Upload to Layout <?= $layout ?>
+                                    </button>
+                                </form>
+                            </div>
+
+                            <h3>Layout <?= $layout ?> Frame & Sticker Combos</h3>
+                            <div class="gallery-grid">
+                                <?php
+                                try {
+                                    $layoutCombos = Database::getFrameStickerComboByLayout($layout);
+                                    foreach ($layoutCombos as $combo):
+                                ?>
+                                        <div class="gallery-item">
+                                            <img
+                                                src="<?= htmlspecialchars($combo['file_path']) ?>"
+                                                alt="<?= htmlspecialchars($combo['nama']) ?>"
+                                                onclick="openImageModal('<?= htmlspecialchars($combo['file_path']) ?>', '<?= htmlspecialchars($combo['nama']) ?>', 'Layout <?= $layout ?> Frame & Sticker Combo', '<?= htmlspecialchars($combo['filename']) ?>', '<?= round($combo['file_size'] / 1024, 1) ?>', '')">
+                                            <h4><?= htmlspecialchars($combo['nama']) ?></h4>
+                                            <div class="meta">
+                                                Layout <?= $layout ?> • <?= date('M d, Y', strtotime($combo['created_at'])) ?>
+                                            </div>
+                                            <button onclick="deleteFrameStickerCombo(<?= $combo['id'] ?>)" class="delete-btn">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </div>
+                                <?php
+                                    endforeach;
+                                } catch (Exception $e) {
+                                    echo "<p>Error loading combos: " . $e->getMessage() . "</p>";
+                                }
+                                ?>
+                            </div>
+                        </div>
+                    <?php endfor; ?>
                 <?php endif; ?>
             </div>
         </div>
@@ -851,6 +991,18 @@ try {
                 form.appendChild(frameInput);
                 document.body.appendChild(form);
                 form.submit();
+            }
+        }
+
+        function deleteLayoutSticker(stickerId) {
+            if (confirm('Are you sure you want to delete this layout sticker?')) {
+                window.location.href = `api/delete-sticker.php?id=${stickerId}`;
+            }
+        }
+
+        function deleteFrameStickerCombo(comboId) {
+            if (confirm('Are you sure you want to delete this frame & sticker combo?')) {
+                window.location.href = `api/delete-frame-sticker-combo.php?id=${comboId}`;
             }
         }
 
