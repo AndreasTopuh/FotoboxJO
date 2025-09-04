@@ -434,15 +434,15 @@ require_once '../includes/pwa-helper.php';
             </div>
 
             <!-- Background Frames (Dynamic from Database) -->
-            <div class="customize-options-group">
+            <!-- <div class="customize-options-group">
                 <h3 class="customize-options-label">Background Frames</h3>
                 <div id="dynamicFramesContainer" class="customize-buttons-grid">
                     <div class="loading-placeholder">Loading frames...</div>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Stickers (Dynamic from Database - Layout 1 specific) -->
-            <div class="customize-options-group">
+            <!-- <div class="customize-options-group">
                 <h3 class="customize-options-label">Stickers</h3>
                 <div id="dynamicStickersContainer" class="customize-buttons-grid stickers-grid">
                     <button type="button" id="noneSticker" class="buttonStickers sticker-none">
@@ -450,7 +450,7 @@ require_once '../includes/pwa-helper.php';
                     </button>
                     <div class="loading-placeholder">Loading layout 1 stickers...</div>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Frame & Sticker Combo (Dynamic from Database - Layout 1 specific) -->
             <div class="customize-options-group">
