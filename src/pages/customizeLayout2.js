@@ -4,19 +4,23 @@
  * 📝 API: /src/api-fetch/get-frames-by-layout.php?layout_id=2
  */
 document.addEventListener('DOMContentLoaded', () => {
-  // ⚡ COMPRESSION CONFIGURATION - 3-Level Quality System
+  // ⚡ COMPRESSION CONFIGURATION - ENHANCED & SYNCHRONIZED Quality System
+  // ✅ SYNCHRONIZED dengan canvasLayout2.js untuk konsistensi kualitas end-to-end
   const COMPRESSION_CONFIG = {
-    SESSION_QUALITY: 0.85,
-    SESSION_MAX_WIDTH: 1600,
-    SESSION_MAX_HEIGHT: 1200,
+    // Untuk session storage (temporary) - HIGH QUALITY untuk hasil yang konsisten
+    SESSION_QUALITY: 0.9,        // 90% - selaras dengan canvasLayout2.js
+    SESSION_MAX_WIDTH: 2000,     // Naikan untuk preserve detail dari capture
+    SESSION_MAX_HEIGHT: 2400,    // Naikan untuk preserve detail dari capture
 
-    DOWNLOAD_QUALITY: 0.95,
-    DOWNLOAD_MAX_WIDTH: 2400,
-    DOWNLOAD_MAX_HEIGHT: 1800,
+    // Untuk download/print (high quality) - MAXIMUM QUALITY
+    DOWNLOAD_QUALITY: 0.98,      // 98% - selaras dengan canvasLayout2.js
+    DOWNLOAD_MAX_WIDTH: 3000,    // Full resolution untuk print berkualitas
+    DOWNLOAD_MAX_HEIGHT: 3600,   // Layout 2 dapat resolution tinggi seperti Layout 1
 
-    THUMB_QUALITY: 0.6,
-    THUMB_MAX_WIDTH: 400,
-    THUMB_MAX_HEIGHT: 300
+    // Untuk preview thumbnail - BALANCED PREVIEW
+    THUMB_QUALITY: 0.8,          // 80% - tetap bagus untuk preview
+    THUMB_MAX_WIDTH: 600,        // Naikan selaras dengan canvasLayout2.js
+    THUMB_MAX_HEIGHT: 800        // Naikan selaras dengan canvasLayout2.js
   };
 
   // 🚀 FAST COMPRESSION FUNCTION
@@ -454,7 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * Redraws the canvas with current settings
+   * Redraws the canvas with current settings - Enhanced with 1.5x Preview Scaling
    */
   async function redrawCanvas() {
     if (!state.storedImages.length) {
@@ -464,28 +468,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = CONFIG.CANVAS_WIDTH;
-    canvas.height = CONFIG.CANVAS_HEIGHT;
+    
+    // ✅ ENHANCED PREVIEW SCALING - Same as Layout 1
+    const previewScale = 1.5;
+    canvas.width = CONFIG.CANVAS_WIDTH * previewScale;  // 1836px enhanced resolution
+    canvas.height = CONFIG.CANVAS_HEIGHT * previewScale; // 2754px enhanced resolution
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Scale context for consistent drawing
+    ctx.scale(previewScale, previewScale);
+    
+    // Enhanced rendering quality
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
 
     if (state.backgroundType === 'color') {
       ctx.fillStyle = state.backgroundColor;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
       await drawPhotos(ctx, canvas);
     } else if (state.backgroundImage) {
       try {
         const bgImg = await loadImage(state.backgroundImage);
-        ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+        ctx.drawImage(bgImg, 0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
         await drawPhotos(ctx, canvas);
       } catch (error) {
         console.error('❌ Failed to load background image:', state.backgroundImage);
         ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
         await drawPhotos(ctx, canvas);
       }
     } else {
       ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
       await drawPhotos(ctx, canvas);
     }
   }
@@ -634,8 +648,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * Draws stickers and logos on the canvas
-   * @param {CanvasRenderingContext2D} ctx - Canvas context
+   * Draws stickers and logos on the canvas with proper scaling
+   * @param {CanvasRenderingContext2D} ctx - Canvas context (already scaled)
    * @param {HTMLCanvasElement} canvas - Canvas element
    */
   async function drawStickersAndLogos(ctx, canvas) {
@@ -643,7 +657,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (state.selectedFrameSticker) {
       try {
         const frameStickerImg = await loadImage(state.selectedFrameSticker);
-        ctx.drawImage(frameStickerImg, 0, 0, canvas.width, canvas.height);
+        // ✅ CORRECT: Use CONFIG dimensions, context akan handle scaling
+        ctx.drawImage(frameStickerImg, 0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
         console.log('🎪 Frame & sticker combo applied');
       } catch (error) {
         console.error('❌ Failed to load frame & sticker combo:', state.selectedFrameSticker);
@@ -651,7 +666,8 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (state.selectedSticker) {
       try {
         const stickerImg = await loadImage(state.selectedSticker);
-        ctx.drawImage(stickerImg, 0, 0, canvas.width, canvas.height);
+        // ✅ CORRECT: Use CONFIG dimensions, context akan handle scaling
+        ctx.drawImage(stickerImg, 0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
         console.log('🌟 Regular sticker applied');
       } catch (error) {
         console.error('❌ Failed to load sticker:', state.selectedSticker);
@@ -662,7 +678,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (logoBtn && logoBtn.classList.contains('active')) {
       try {
         const logoImg = await loadImage(CONFIG.LOGO_SRC);
-        ctx.drawImage(logoImg, 20, canvas.height - 60, 100, 40);
+        // ✅ CORRECT: Use CONFIG dimensions untuk posisi yang tepat
+        ctx.drawImage(logoImg, 20, CONFIG.CANVAS_HEIGHT - 60, 100, 40);
         console.log('🏷️ Logo applied');
       } catch (error) {
         console.error('❌ Failed to load logo:', CONFIG.LOGO_SRC);
@@ -671,15 +688,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * Updates the canvas preview in the DOM
+   * Updates the canvas preview in the DOM - Enhanced with optimal preview sizing
    * @param {HTMLCanvasElement} canvas - Canvas element
    */
   function updateCanvasPreview(canvas) {
     if (DOM.photoCustomPreview) {
       DOM.photoCustomPreview.innerHTML = '';
       Object.assign(canvas.style, {
-        maxWidth: '300px',
-        maxHeight: '450px',
+        // ✅ ENHANCED PREVIEW SIZE - Same as Layout 1 for consistency
+        maxWidth: '350px',       // Increased from 300px for better preview
+        maxHeight: '525px',      // Increased from 450px to maintain ratio
         width: 'auto',
         height: 'auto',
         border: '2px solid #ddd',
@@ -687,6 +705,10 @@ document.addEventListener('DOMContentLoaded', () => {
         boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
         display: 'block',
         margin: '0 auto',
+        // Enhanced rendering
+        imageRendering: 'auto',
+        '-ms-interpolation-mode': 'bicubic',
+        filter: 'none'
       });
       DOM.photoCustomPreview.appendChild(canvas);
     }
@@ -1192,7 +1214,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * Generates high quality version of the canvas for print/download
+   * Generates high quality version of the canvas for print/download - Enhanced 3x Scale
    */
   async function generateHighQualityCanvas() {
     console.log('🎨 Generating high quality canvas for print...');
@@ -1205,10 +1227,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     
-    const printScale = 2;
-    canvas.width = CONFIG.CANVAS_WIDTH * printScale;
-    canvas.height = CONFIG.CANVAS_HEIGHT * printScale;
+    // ✅ ENHANCED: 3x scale untuk maximum print quality (same as Layout 1)
+    const printScale = 3.0;
+    canvas.width = CONFIG.CANVAS_WIDTH * printScale;   // 3672px
+    canvas.height = CONFIG.CANVAS_HEIGHT * printScale; // 5508px
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Enhanced rendering quality
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     
     ctx.scale(printScale, printScale);
 

@@ -638,7 +638,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * Draws stickers and logos on the canvas
+   * Draws stickers and logos on the canvas with proper scaling
    * @param {CanvasRenderingContext2D} ctx - Canvas context
    * @param {HTMLCanvasElement} canvas - Canvas element
    */
@@ -647,8 +647,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (state.selectedFrameSticker) {
       try {
         const frameStickerImg = await loadImage(state.selectedFrameSticker);
-        ctx.drawImage(frameStickerImg, 0, 0, canvas.width, canvas.height);
-        console.log('🎪 Frame & sticker combo applied');
+        // 🎨 USE CONFIG DIMENSIONS - bukan canvas.width/height yang sudah di-scale
+        ctx.drawImage(frameStickerImg, 0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
+        console.log('🎪 Frame & sticker combo applied with proper scale');
       } catch (error) {
         console.error('❌ Failed to load frame & sticker combo:', state.selectedFrameSticker);
       }
@@ -657,20 +658,22 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (state.selectedSticker) {
       try {
         const stickerImg = await loadImage(state.selectedSticker);
-        ctx.drawImage(stickerImg, 0, 0, canvas.width, canvas.height);
-        console.log('🌟 Regular sticker applied');
+        // 🎨 USE CONFIG DIMENSIONS - bukan canvas.width/height yang sudah di-scale
+        ctx.drawImage(stickerImg, 0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
+        console.log('🌟 Regular sticker applied with proper scale');
       } catch (error) {
         console.error('❌ Failed to load sticker:', state.selectedSticker);
       }
     }
 
-    // Draw logo
+    // Draw logo with proper scaling
     const logoBtn = document.getElementById('engLogo');
     if (logoBtn && logoBtn.classList.contains('active')) {
       try {
         const logoImg = await loadImage(CONFIG.LOGO_SRC);
-        ctx.drawImage(logoImg, 20, canvas.height - 60, 100, 40);
-        console.log('🏷️ Logo applied');
+        // 🎨 USE CONFIG DIMENSIONS - scale akan diterapkan oleh context
+        ctx.drawImage(logoImg, 20, CONFIG.CANVAS_HEIGHT - 60, 100, 40);
+        console.log('🏷️ Logo applied with proper scale');
       } catch (error) {
         console.error('❌ Failed to load logo:', CONFIG.LOGO_SRC);
       }
@@ -1312,13 +1315,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * Draws stickers and logos on high quality canvas
+   * Draws stickers and logos on high quality canvas with proper scaling
+   * @param {CanvasRenderingContext2D} ctx - Canvas context (already scaled)
+   * @param {HTMLCanvasElement} canvas - Canvas element
+   * @param {number} printScale - Scale factor (3x for print)
    */
   async function drawHighQualityStickersAndLogos(ctx, canvas, printScale) {
     // Draw Frame & Sticker combo (priority over regular sticker)
     if (state.selectedFrameSticker) {
       try {
         const frameStickerImg = await loadImage(state.selectedFrameSticker);
+        // ✅ CORRECT: Use CONFIG dimensions, context akan handle scaling
         ctx.drawImage(frameStickerImg, 0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
         console.log('🎪 High quality frame & sticker combo applied');
       } catch (error) {
@@ -1329,6 +1336,7 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (state.selectedSticker) {
       try {
         const stickerImg = await loadImage(state.selectedSticker);
+        // ✅ CORRECT: Use CONFIG dimensions, context akan handle scaling
         ctx.drawImage(stickerImg, 0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
         console.log('🌟 High quality regular sticker applied');
       } catch (error) {
@@ -1336,11 +1344,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Draw logo
+    // Draw logo with proper scaling
     const logoBtn = document.getElementById('engLogo');
     if (logoBtn && logoBtn.classList.contains('active')) {
       try {
         const logoImg = await loadImage(CONFIG.LOGO_SRC);
+        // ✅ CORRECT: Use CONFIG dimensions untuk posisi yang tepat
         ctx.drawImage(logoImg, 20, CONFIG.CANVAS_HEIGHT - 60, 100, 40);
         console.log('🏷️ High quality logo applied');
       } catch (error) {

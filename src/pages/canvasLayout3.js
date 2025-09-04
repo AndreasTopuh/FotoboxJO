@@ -1,20 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 🚀 COMPRESSION CONFIGURATION - 3-Level Quality System for Layout 2 (4 Photos)
+    // 🚀 COMPRESSION CONFIGURATION - ENHANCED & SYNCHRONIZED Quality System for Layout 3
+    // ✅ SYNCHRONIZED dengan customizeLayout3.js untuk konsistensi kualitas end-to-end
+    // 📸 Layout 3: 6 photos - membutuhkan resolution tinggi untuk detail yang baik
     const COMPRESSION_CONFIG = {
-        // Untuk session storage (temporary) - FAST SAVE
-        SESSION_QUALITY: 0.5,        // 50% untuk performa cepat
-        SESSION_MAX_WIDTH: 1200,     // Resize untuk storage
-        SESSION_MAX_HEIGHT: 800,
+        // Untuk session storage (temporary) - HIGH QUALITY untuk hasil yang konsisten
+        SESSION_QUALITY: 0.9,        // 90% - selaras dengan Layout 1 & 2
+        SESSION_MAX_WIDTH: 2000,     // Naikan untuk preserve detail untuk customize
+        SESSION_MAX_HEIGHT: 2400,    // Naikan untuk preserve detail untuk customize
         
-        // Untuk download/print (high quality) - BEST QUALITY  
-DOWNLOAD_QUALITY: 1.05,      // 95% - hampir lossless
-        DOWNLOAD_MAX_WIDTH: 2400,    // Full resolution
-        DOWNLOAD_MAX_HEIGHT: 1600,
+        // Untuk download/print (high quality) - MAXIMUM QUALITY  
+        DOWNLOAD_QUALITY: 0.98,      // 98% - selaras dengan Layout 1 & 2 (FIXED: was 1.05!)
+        DOWNLOAD_MAX_WIDTH: 3000,    // Full resolution untuk print berkualitas
+        DOWNLOAD_MAX_HEIGHT: 3600,   // Layout 3 dapat resolution tinggi seperti Layout 1 & 2
         
-        // Untuk preview thumbnail - FAST PREVIEW
-        THUMB_QUALITY: 0.6,          // 60% - kecil untuk preview
-        THUMB_MAX_WIDTH: 300,
-        THUMB_MAX_HEIGHT: 200
+        // Untuk preview thumbnail - BALANCED PREVIEW
+        THUMB_QUALITY: 0.8,          // 80% - tetap bagus untuk preview
+        THUMB_MAX_WIDTH: 600,        // Naikan selaras dengan Layout 1 & 2
+        THUMB_MAX_HEIGHT: 800        // Naikan selaras dengan Layout 1 & 2
     };
 
     // 🚀 FAST COMPRESSION FUNCTION
