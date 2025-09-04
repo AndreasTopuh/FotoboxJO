@@ -119,6 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
     emailSent: false,
     printUsed: false,
     imageCache: new Map(), // Cache untuk gambar
+    brightness: 1.0, // Default brightness (1.0 = normal, 0.5 = darker, 2.0 = brighter)
   };
 
   // DOM Elements
@@ -131,6 +132,13 @@ document.addEventListener('DOMContentLoaded', () => {
     noneFrameSticker: document.getElementById('noneFrameSticker'),
     emailModal: document.getElementById('emailModal'),
     emailInput: document.getElementById('emailInput'),
+    // Brightness controls
+    brightnessSlider: document.getElementById('brightnessSlider'),
+    brightnessValue: document.getElementById('brightnessValue'),
+    darkerBtn: document.getElementById('darkerBtn'),
+    normalBtn: document.getElementById('normalBtn'),
+    brighterBtn: document.getElementById('brighterBtn'),
+    superBrightBtn: document.getElementById('superBrightBtn'),
   };
 
   // Utility Functions
@@ -268,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
       DOM.framesContainer.innerHTML = '';
       state.availableFrames.forEach((frame) => {
         const frameBtn = document.createElement('button');
+        frameBtn.type = 'button'; // Prevent form submission
         frameBtn.id = `frame_${frame.id}`;
         frameBtn.className = 'dynamic-frame-btn buttonBgFrames';
         frameBtn.style.backgroundImage = `url('${frame.file_path}')`;
@@ -277,7 +286,8 @@ document.addEventListener('DOMContentLoaded', () => {
         frameBtn.setAttribute('data-frame-id', frame.id);
         frameBtn.setAttribute('data-frame-path', frame.file_path);
 
-        frameBtn.addEventListener('click', () => {
+        frameBtn.addEventListener('click', (e) => {
+          e.preventDefault(); // Prevent any form submission
           setActiveButton('.dynamic-frame-btn', frameBtn);
           state.backgroundType = 'image';
           state.backgroundImage = frame.file_path;
@@ -297,6 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       state.availableStickers.forEach((sticker) => {
         const stickerBtn = document.createElement('button');
+        stickerBtn.type = 'button'; // Prevent form submission
         stickerBtn.id = `sticker_${sticker.id}`;
         stickerBtn.className = 'dynamic-sticker-btn buttonStickers';
         stickerBtn.setAttribute('data-sticker-id', sticker.id);
@@ -312,12 +323,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         stickerBtn.appendChild(img);
 
-        stickerBtn.addEventListener('click', () => {
+        stickerBtn.addEventListener('click', (e) => {
+          e.preventDefault(); // Prevent any form submission
           setActiveButton('.buttonStickers', stickerBtn);
           state.selectedSticker = sticker.file_path;
           state.selectedFrameSticker = null; // Clear frame-sticker combo
           redrawCanvas();
-          console.log(`🌟 Selected sticker: ${sticker.nama}`);
+          console.log(`🦋 Selected sticker: ${sticker.nama}`);
         });
 
         DOM.stickersContainer.appendChild(stickerBtn);
@@ -332,6 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       state.availableFrameStickers.forEach((frameSticker) => {
         const frameStickerBtn = document.createElement('button');
+        frameStickerBtn.type = 'button'; // Prevent form submission
         frameStickerBtn.id = `frameSticker_${frameSticker.id}`;
         frameStickerBtn.className = 'dynamic-frame-sticker-btn buttonFrameStickers';
         frameStickerBtn.setAttribute('data-frame-sticker-id', frameSticker.id);
@@ -347,7 +360,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         frameStickerBtn.appendChild(img);
 
-        frameStickerBtn.addEventListener('click', () => {
+        frameStickerBtn.addEventListener('click', (e) => {
+          e.preventDefault(); // Prevent any form submission
+          e.stopPropagation(); // Prevent event bubbling
           setActiveButton('.buttonFrameStickers', frameStickerBtn);
           state.selectedFrameSticker = frameSticker.file_path;
           state.selectedSticker = null; // Clear regular sticker
@@ -362,7 +377,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize "None" sticker button
     if (DOM.noneSticker) {
-      DOM.noneSticker.addEventListener('click', () => {
+      DOM.noneSticker.addEventListener('click', (e) => {
+        e.preventDefault(); // Prevent any form submission
         setActiveButton('.buttonStickers', DOM.noneSticker);
         state.selectedSticker = null;
         redrawCanvas();
@@ -372,7 +388,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize "None" frame & sticker button
     if (DOM.noneFrameSticker) {
-      DOM.noneFrameSticker.addEventListener('click', () => {
+      DOM.noneFrameSticker.addEventListener('click', (e) => {
+        e.preventDefault(); // Prevent any form submission
         setActiveButton('.buttonFrameStickers', DOM.noneFrameSticker);
         state.selectedFrameSticker = null;
         redrawCanvas();
@@ -534,7 +551,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * Draws a photo with specified shape
+   * Draws a photo with specified shape and brightness adjustment
    * @param {CanvasRenderingContext2D} ctx - Canvas context
    * @param {HTMLImageElement} img - Image to draw
    * @param {number} x - X position
@@ -549,6 +566,26 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   function drawPhotoWithShape(ctx, img, x, y, width, height, shape, sx, sy, sWidth, sHeight) {
     ctx.save();
+    
+    // Apply enhanced brightness filter with more dramatic effect
+    if (state.brightness !== 1.0) {
+      const brightness = state.brightness;
+      let brightnessPercent;
+      let contrastPercent = 100;
+      
+      if (brightness > 1.0) {
+        // For brighter values: exponential curve for more dramatic effect
+        brightnessPercent = 100 + (brightness - 1.0) * 100; // Max 300% at 3.0
+        contrastPercent = 100 + (brightness - 1.0) * 20; // Slight contrast boost
+      } else {
+        // For darker values: linear scaling
+        brightnessPercent = brightness * 100;
+        contrastPercent = 100 - (1.0 - brightness) * 10; // Slight contrast reduction
+      }
+      
+      ctx.filter = `brightness(${brightnessPercent}%) contrast(${contrastPercent}%)`;
+    }
+    
     if (shape === 'rounded') {
       roundedRect(ctx, x, y, width, height, 20);
       ctx.clip();
@@ -557,7 +594,11 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.rect(x, y, width, height);
       ctx.clip();
     }
+    
     ctx.drawImage(img, sx, sy, sWidth, sHeight, x, y, width, height);
+    
+    // Reset filter
+    ctx.filter = 'none';
     ctx.restore();
   }
 
@@ -653,12 +694,109 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   function initializeControls() {
     console.log('🎛️ Initializing controls...');
+    initializeBrightnessControls();
     initializeFrameControls();
     initializeShapeControls();
     initializeLogoControls();
     initializeActionButtons();
     initializeEmailModal();
     console.log('✅ Controls initialized');
+  }
+
+  /**
+   * Initializes brightness controls
+   */
+  function initializeBrightnessControls() {
+    console.log('🌞 Initializing brightness controls...');
+    
+    // Brightness slider
+    if (DOM.brightnessSlider) {
+      DOM.brightnessSlider.addEventListener('input', (e) => {
+        const brightness = parseFloat(e.target.value);
+        state.brightness = brightness;
+        updateBrightnessDisplay(brightness);
+        updateBrightnessButtons(brightness);
+        redrawCanvas();
+      });
+    }
+
+    // Preset buttons
+    if (DOM.darkerBtn) {
+      DOM.darkerBtn.addEventListener('click', () => {
+        setBrightness(0.7);
+      });
+    }
+
+    if (DOM.normalBtn) {
+      DOM.normalBtn.addEventListener('click', () => {
+        setBrightness(1.0);
+      });
+    }
+
+    if (DOM.brighterBtn) {
+      DOM.brighterBtn.addEventListener('click', () => {
+        setBrightness(2.0);
+      });
+    }
+
+    if (DOM.superBrightBtn) {
+      DOM.superBrightBtn.addEventListener('click', () => {
+        setBrightness(2.8);
+      });
+    }
+  }
+
+  /**
+   * Sets brightness value and updates all controls
+   * @param {number} brightness - Brightness value (0.3 - 3.0)
+   */
+  function setBrightness(brightness) {
+    state.brightness = brightness;
+    
+    // Update slider
+    if (DOM.brightnessSlider) {
+      DOM.brightnessSlider.value = brightness;
+    }
+    
+    // Update display
+    updateBrightnessDisplay(brightness);
+    updateBrightnessButtons(brightness);
+    
+    // Redraw canvas
+    redrawCanvas();
+  }
+
+  /**
+   * Updates brightness display percentage
+   * @param {number} brightness - Brightness value
+   */
+  function updateBrightnessDisplay(brightness) {
+    if (DOM.brightnessValue) {
+      const percentage = Math.round(brightness * 100);
+      DOM.brightnessValue.textContent = `${percentage}%`;
+    }
+  }
+
+  /**
+   * Updates active state of brightness buttons
+   * @param {number} brightness - Current brightness value
+   */
+  function updateBrightnessButtons(brightness) {
+    // Remove active class from all buttons
+    [DOM.darkerBtn, DOM.normalBtn, DOM.brighterBtn, DOM.superBrightBtn].forEach(btn => {
+      if (btn) btn.classList.remove('active');
+    });
+
+    // Add active class based on brightness value
+    if (brightness <= 0.8) {
+      if (DOM.darkerBtn) DOM.darkerBtn.classList.add('active');
+    } else if (brightness >= 2.5) {
+      if (DOM.superBrightBtn) DOM.superBrightBtn.classList.add('active');
+    } else if (brightness >= 1.5) {
+      if (DOM.brighterBtn) DOM.brighterBtn.classList.add('active');
+    } else {
+      if (DOM.normalBtn) DOM.normalBtn.classList.add('active');
+    }
   }
 
   /**
@@ -1141,22 +1279,36 @@ document.addEventListener('DOMContentLoaded', () => {
    * Draws stickers and logos on high quality canvas
    */
   async function drawHighQualityStickersAndLogos(ctx, canvas, printScale) {
-    if (state.selectedSticker) {
+    // Draw Frame & Sticker combo (priority over regular sticker)
+    if (state.selectedFrameSticker) {
+      try {
+        const frameStickerImg = await loadImage(state.selectedFrameSticker);
+        ctx.drawImage(frameStickerImg, 0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
+        console.log('🎪 High quality frame & sticker combo applied');
+      } catch (error) {
+        console.error('❌ Failed to load high quality frame & sticker combo:', state.selectedFrameSticker);
+      }
+    }
+    // Draw regular sticker (only if no Frame & Sticker combo is selected)
+    else if (state.selectedSticker) {
       try {
         const stickerImg = await loadImage(state.selectedSticker);
         ctx.drawImage(stickerImg, 0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
+        console.log('🌟 High quality regular sticker applied');
       } catch (error) {
-        console.error('❌ Failed to load sticker:', state.selectedSticker);
+        console.error('❌ Failed to load high quality sticker:', state.selectedSticker);
       }
     }
 
+    // Draw logo
     const logoBtn = document.getElementById('engLogo');
     if (logoBtn && logoBtn.classList.contains('active')) {
       try {
         const logoImg = await loadImage(CONFIG.LOGO_SRC);
         ctx.drawImage(logoImg, 20, CONFIG.CANVAS_HEIGHT - 60, 100, 40);
+        console.log('🏷️ High quality logo applied');
       } catch (error) {
-        console.error('❌ Failed to load logo:', CONFIG.LOGO_SRC);
+        console.error('❌ Failed to load high quality logo:', CONFIG.LOGO_SRC);
       }
     }
   }

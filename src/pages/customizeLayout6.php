@@ -116,6 +116,50 @@ require_once '../includes/pwa-helper.php';
             animation: pulse-loading 1.5s ease-in-out infinite;
         }
 
+        /* Frame & Sticker Combo styling */
+        .buttonFrameStickers {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .buttonFrameStickers:hover {
+            border-color: #007bff;
+            transform: scale(1.05);
+        }
+
+        .buttonFrameStickers.active {
+            border-color: #007bff;
+            background-color: #e3f2fd;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        .buttonFrameStickers img {
+            max-width: 40px;
+            max-height: 40px;
+            object-fit: contain;
+        }
+
+        .frame-sticker-none img {
+            max-width: 30px;
+            max-height: 30px;
+        }
+
+        /* Updated grid for combo sections */
+        .stickers-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 10px;
+            justify-items: center;
+        }
+
         @keyframes pulse-loading {
 
             0%,
@@ -204,14 +248,25 @@ require_once '../includes/pwa-helper.php';
                 </div>
             </div>
 
-            <!-- Stickers (Dynamic from Database) -->
+            <!-- Stickers (Dynamic from Database - Layout 6 specific) -->
             <div class="customize-options-group">
                 <h3 class="customize-options-label">Stickers</h3>
                 <div id="dynamicStickersContainer" class="customize-buttons-grid stickers-grid">
                     <button id="noneSticker" class="buttonStickers sticker-none">
                         <img src="../assets/block (1).png" alt="None" class="shape-icon">
                     </button>
-                    <div class="loading-placeholder">Loading stickers...</div>
+                    <div class="loading-placeholder">Loading layout 6 stickers...</div>
+                </div>
+            </div>
+
+            <!-- Frame & Sticker Combo (Dynamic from Database - Layout 6 specific) -->
+            <div class="customize-options-group">
+                <h3 class="customize-options-label">Frame & Sticker</h3>
+                <div id="dynamicFrameStickerContainer" class="customize-buttons-grid stickers-grid">
+                    <button id="noneFrameSticker" class="buttonFrameStickers frame-sticker-none">
+                        <img src="../assets/block (1).png" alt="None" class="shape-icon">
+                    </button>
+                    <div class="loading-placeholder">Loading layout 6 frame & sticker combos...</div>
                 </div>
             </div>
 

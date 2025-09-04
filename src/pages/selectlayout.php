@@ -102,13 +102,13 @@ SessionManager::requirePayment();
                                 <p class="layout-description">Photo Grid (6 Photos)</p>
                             </div>
                         </button> -->
-                        <button class="layout-card" id="layout6Btn" data-layout="layout6">
+                        <!-- <button class="layout-card" id="layout6Btn" data-layout="layout6">
                             <img src="../assets/layouts/layout6.png" class="layout-img" alt="layout 6" loading="eager">
                             <div class="layout-info">
                                 <h5 class="layout-label">Layout 6</h5>
                                 <p class="layout-description">Photo Grid (4 Photos)</p>
                             </div>
-                        </button>
+                        </button> -->
                     </div>
                     <div class="carousel-nav">
                         <button class="nav-btn prev-btn" id="prevBtn" style="padding: 0.7rem;">‹</button>

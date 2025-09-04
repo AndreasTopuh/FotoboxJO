@@ -34,21 +34,21 @@ try {
     if (json_last_error() !== JSON_ERROR_NONE) {
         throw new Exception('Invalid JSON input: ' . json_last_error_msg());
     }
-    
+
     if (!isset($input['image']) || empty($input['image'])) {
         throw new Exception('No image data provided');
     }
 
     $imageData = $input['image'];
-    
+
     // Validate base64 image data
     if (!preg_match('/^data:image\/(png|jpg|jpeg);base64,/', $imageData)) {
         throw new Exception('Invalid image data format');
     }
-    
+
     // Generate unique token
     $token = bin2hex(random_bytes(16));
-    
+
     // Use /tmp directory for guaranteed write permissions
     $photoDir = '/tmp/photobooth-photos';
     if (!file_exists($photoDir)) {
@@ -56,22 +56,22 @@ try {
             throw new Exception('Failed to create photo directory');
         }
     }
-    
+
     $filename = "{$photoDir}/{$token}.png";
     $metaFile = "{$photoDir}/{$token}.meta"; // NEW: metadata file
-    $expire = time() + (30 * 60); // 30 minutes from now
-    
+    $expire = time() + (2 * 60 * 60); // 2 hours from now
+
     // Save image
     $imageContent = base64_decode(preg_replace('/^data:image\/(png|jpg|jpeg);base64,/', '', $imageData));
     if ($imageContent === false) {
         throw new Exception('Failed to decode base64 image');
     }
-    
+
     $bytesWritten = @file_put_contents($filename, $imageContent);
     if ($bytesWritten === false) {
         throw new Exception('Failed to save image to file system');
     }
-    
+
     // NEW: Save metadata to file (more reliable than session)
     $metadata = [
         'token' => $token,
@@ -80,23 +80,23 @@ try {
         'created' => time(),
         'timezone' => date_default_timezone_get()
     ];
-    
+
     $metaWritten = @file_put_contents($metaFile, json_encode($metadata));
     if ($metaWritten === false) {
         throw new Exception('Failed to save metadata file');
     }
-    
+
     // KEEP: Also save to session for backward compatibility
     if (!isset($_SESSION['photo_tokens'])) {
         $_SESSION['photo_tokens'] = [];
     }
-    
+
     $_SESSION['photo_tokens'][$token] = [
         'expire' => $expire,
         'filename' => $filename,
         'created' => time()
     ];
-    
+
     // Return success response
     $response = [
         'success' => true,
@@ -105,16 +105,15 @@ try {
         'expires_at' => date('Y-m-d H:i:s', $expire),
         'storage_method' => 'file_and_session'
     ];
-    
+
     // Clean output buffer and send JSON
     ob_clean();
     echo json_encode($response);
     exit;
-
 } catch (Exception $e) {
     // Clean output buffer before sending error
     ob_clean();
-    
+
     $errorResponse = [
         'success' => false,
         'error' => $e->getMessage(),
@@ -124,8 +123,7 @@ try {
             'timestamp' => time()
         ]
     ];
-    
+
     echo json_encode($errorResponse);
     exit;
 }
-?>

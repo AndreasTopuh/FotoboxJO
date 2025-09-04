@@ -1,6 +1,7 @@
 {
     "require": {
         "midtrans/midtrans-php": "^2.6",
-        "endroid/qr-code": "^4.8"
+        "endroid/qr-code": "^4.8",
+        "phpmailer/phpmailer": "^6.10"
     }
 }

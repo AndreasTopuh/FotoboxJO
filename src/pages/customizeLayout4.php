@@ -190,14 +190,25 @@ require_once '../includes/pwa-helper.php';
                 </div>
             </div>
 
-            <!-- Stickers (Dynamic from Database) -->
+            <!-- Stickers (Dynamic from Database - Layout 4 specific) -->
             <div class="customize-options-group">
                 <h3 class="customize-options-label">Stickers</h3>
                 <div id="dynamicStickersContainer" class="customize-buttons-grid stickers-grid">
                     <button id="noneSticker" class="buttonStickers sticker-none">
                         <img src="../assets/block (1).png" alt="None" class="shape-icon">
                     </button>
-                    <div class="loading-placeholder">Loading stickers...</div>
+                    <div class="loading-placeholder">Loading layout 4 stickers...</div>
+                </div>
+            </div>
+
+            <!-- Frame & Sticker Combo (Dynamic from Database - Layout 4 specific) -->
+            <div class="customize-options-group">
+                <h3 class="customize-options-label">Frame & Sticker</h3>
+                <div id="dynamicFrameStickerContainer" class="customize-buttons-grid stickers-grid">
+                    <button id="noneFrameSticker" class="buttonFrameStickers frame-sticker-none">
+                        <img src="../assets/block (1).png" alt="None" class="shape-icon">
+                    </button>
+                    <div class="loading-placeholder">Loading layout 4 frame & sticker combos...</div>
                 </div>
             </div>
 

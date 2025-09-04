@@ -1443,4 +1443,133 @@ DOWNLOAD_QUALITY: 1.05,      // 95% - hampir lossless
     if(uploadInput) {
         uploadInput.addEventListener('change', handleImageUpload);
     }
+
+    // Asset Loading - Layout 5 specific
+    async function loadAssetsFromDatabase() {
+        console.log('🔄 Loading Layout 5 frames and stickers from database...');
+        try {
+            const [framesResponse, stickersResponse, comboResponse] = await Promise.all([
+                fetch('../api-fetch/get-frames.php'), // Universal frames
+                fetch('../api-fetch/get-stickers-by-layout.php?layout_id=5'),
+                fetch('../api-fetch/get-frame-sticker-combo.php?layout_id=5')
+            ]);
+
+            const framesData = await framesResponse.json();
+            const stickersData = await stickersResponse.json();
+            const comboData = await comboResponse.json();
+
+            console.log('🔍 Debug - Frames Response:', framesData);
+            console.log('🔍 Debug - Stickers Response:', stickersData);
+            console.log('🔍 Debug - Combo Response:', comboData);
+
+            // Load frames (universal)
+            if (framesData.success && framesData.frames) {
+                loadDynamicFrames(framesData.frames);
+            }
+
+            // Load layout 5 specific stickers
+            if (stickersData.success && stickersData.data) {
+                loadDynamicStickers(stickersData.data);
+            }
+
+            // Load layout 5 specific frame & sticker combos
+            if (comboData.success && comboData.data) {
+                loadDynamicFrameStickerCombos(comboData.data);
+            }
+
+            console.log(`✅ Loaded Layout 5 assets successfully`);
+        } catch (error) {
+            console.error('❌ Error loading Layout 5 assets from database:', error);
+        }
+    }
+
+    // Dynamic frame loading (universal)
+    function loadDynamicFrames(frames) {
+        const container = document.getElementById('dynamicFramesContainer');
+        if (!container) return;
+
+        container.innerHTML = '';
+        frames.forEach(frame => {
+            const button = document.createElement('button');
+            button.id = `frame_${frame.id}`;
+            button.className = 'dynamic-frame-btn buttonBgFrames';
+            button.style.backgroundImage = `url('${frame.file_path}')`;
+            button.style.backgroundSize = 'cover';
+            button.style.backgroundPosition = 'center';
+            button.title = frame.nama;
+            button.setAttribute('data-frame-id', frame.id);
+            button.setAttribute('data-frame-path', frame.file_path);
+            container.appendChild(button);
+        });
+        console.log(`✅ Created ${frames.length} dynamic frame controls`);
+    }
+
+    // Dynamic sticker loading (layout 5 specific)
+    function loadDynamicStickers(stickers) {
+        const container = document.getElementById('dynamicStickersContainer');
+        if (!container) return;
+
+        // Keep the "None" button
+        const noneButton = document.getElementById('noneSticker');
+        container.innerHTML = '';
+        if (noneButton) {
+            container.appendChild(noneButton);
+        }
+
+        stickers.forEach(sticker => {
+            const button = document.createElement('button');
+            button.id = `sticker_${sticker.id}`;
+            button.className = 'dynamic-sticker-btn buttonStickers';
+            button.setAttribute('data-sticker-id', sticker.id);
+            button.setAttribute('data-sticker-path', sticker.file_path); // Fixed: use file_path
+
+            const img = document.createElement('img');
+            img.src = `../${sticker.file_path}`; // Fixed: use file_path
+            img.alt = sticker.nama; // Fixed: use nama
+            img.className = 'sticker-icon';
+            img.style.width = '40px';
+            img.style.height = '40px';
+            img.style.objectFit = 'contain';
+
+            button.appendChild(img);
+            container.appendChild(button);
+        });
+        console.log(`✅ Created ${stickers.length} dynamic sticker controls for Layout 5`);
+    }
+
+    // Dynamic frame & sticker combo loading (layout 5 specific)
+    function loadDynamicFrameStickerCombos(combos) {
+        const container = document.getElementById('dynamicFrameStickerContainer');
+        if (!container) return;
+
+        // Keep the "None" button
+        const noneButton = document.getElementById('noneFrameSticker');
+        container.innerHTML = '';
+        if (noneButton) {
+            container.appendChild(noneButton);
+        }
+
+        combos.forEach(combo => {
+            const button = document.createElement('button');
+            button.id = `frameSticker_${combo.id}`;
+            button.className = 'dynamic-frame-sticker-btn buttonFrameStickers';
+            button.setAttribute('data-frame-sticker-id', combo.id);
+            button.setAttribute('data-frame-sticker-path', combo.file_path); // Fixed: use file_path
+
+            const img = document.createElement('img');
+            img.src = `../${combo.file_path}`; // Fixed: use file_path
+            img.alt = combo.nama; // Fixed: use nama
+            img.className = 'frame-sticker-icon';
+            img.style.width = '40px';
+            img.style.height = '40px';
+            img.style.objectFit = 'contain';
+
+            button.appendChild(img);
+            container.appendChild(button);
+        });
+        console.log(`✅ Created ${combos.length} dynamic frame & sticker combo controls for Layout 5`);
+    }
+
+    // Initialize Layout 5 assets on page load
+    loadAssetsFromDatabase();
 });

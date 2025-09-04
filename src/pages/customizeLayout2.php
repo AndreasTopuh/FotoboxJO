@@ -130,7 +130,8 @@ require_once '../includes/pwa-helper.php';
 
         /* Dynamic assets styling */
         .dynamic-frame-btn,
-        .dynamic-sticker-btn {
+        .dynamic-sticker-btn,
+        .dynamic-frame-sticker-btn {
             position: relative;
             overflow: hidden;
             border: 2px solid transparent;
@@ -138,22 +139,237 @@ require_once '../includes/pwa-helper.php';
         }
 
         .dynamic-frame-btn:hover,
-        .dynamic-sticker-btn:hover {
+        .dynamic-sticker-btn:hover,
+        .dynamic-frame-sticker-btn:hover {
             border-color: #E28585;
             transform: scale(1.05);
         }
 
         .dynamic-frame-btn.active,
-        .dynamic-sticker-btn.active {
+        .dynamic-sticker-btn.active,
+        .dynamic-frame-sticker-btn.active {
             border-color: #E28585;
             background: rgba(226, 133, 133, 0.1);
         }
 
         .dynamic-frame-btn img,
-        .dynamic-sticker-btn img {
+        .dynamic-sticker-btn img,
+        .dynamic-frame-sticker-btn img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        /* Stickers container styling */
+        #dynamicStickersContainer {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        /* Frame & sticker combo container styling */
+        #dynamicFrameStickerContainer {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        /* Enhanced button styling for stickers and combos */
+        .buttonStickers,
+        .buttonFrameStickers {
+            width: 50px;
+            height: 50px;
+            border: 2px solid rgba(233, 30, 99, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .buttonStickers:hover,
+        .buttonFrameStickers:hover {
+            border-color: #E28585;
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(226, 133, 133, 0.3);
+        }
+
+        .buttonStickers.active,
+        .buttonFrameStickers.active {
+            border-color: #E28585;
+            background: rgba(226, 133, 133, 0.1);
+            box-shadow: 0 0 0 2px rgba(226, 133, 133, 0.3);
+        }
+
+        .buttonStickers img,
+        .buttonFrameStickers img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        /* Special styling for "None" buttons */
+        .sticker-none,
+        .frame-sticker-none {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .sticker-none img,
+        .frame-sticker-none img {
+            width: 24px;
+            height: 24px;
+            opacity: 0.6;
+            object-fit: contain;
+        }
+
+        /* Brightness controls styling */
+        .brightness-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(226, 133, 133, 0.2);
+        }
+
+        .brightness-slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brightness-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            min-width: 140px;
+        }
+
+        .brightness-slider {
+            flex: 1;
+            height: 6px;
+            background: linear-gradient(to right, #333, #fff);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .brightness-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #E28585;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .brightness-slider::-webkit-slider-thumb:hover {
+            background: #d67575;
+            transform: scale(1.1);
+        }
+
+        .brightness-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #E28585;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .brightness-value {
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .brightness-value span {
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .brightness-preset-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .brightness-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(226, 133, 133, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .brightness-btn:hover {
+            background: rgba(226, 133, 133, 0.2);
+            border-color: #E28585;
+            transform: translateY(-2px);
+        }
+
+        .brightness-btn.active {
+            background: rgba(226, 133, 133, 0.3);
+            border-color: #E28585;
+            box-shadow: 0 0 0 2px rgba(226, 133, 133, 0.3);
+        }
+
+        .brightness-btn i {
+            font-size: 14px;
+        }
+
+        .darker-btn {
+            color: #ddd;
+        }
+
+        .normal-btn {
+            color: #fff;
+        }
+
+        .brighter-btn {
+            color: #ffe066;
+        }
+
+        .super-bright-btn {
+            color: #ff6b35;
+            background: rgba(255, 107, 53, 0.1);
+        }
+
+        .super-bright-btn:hover {
+            background: rgba(255, 107, 53, 0.2);
+        }
+
+        .super-bright-btn.active {
+            background: rgba(255, 107, 53, 0.3);
+            border-color: #ff6b35;
+            box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.3);
         }
     </style>
 </head>
@@ -166,6 +382,38 @@ require_once '../includes/pwa-helper.php';
         <!-- Customization Options -->
         <section class="customize-left-section">
             <h1 class="customize-title">Customize Your Photo</h1>
+
+            <!-- Photo Brightness -->
+            <div class="customize-options-group">
+                <h3 class="customize-options-label">Brightness / Kecerahan</h3>
+                <div class="brightness-controls">
+                    <div class="brightness-slider-container">
+                        <label for="brightnessSlider" class="brightness-label">
+                            <i class="fas fa-sun"></i> Adjust Brightness
+                        </label>
+                        <input type="range" id="brightnessSlider" min="0.3" max="3.0" step="0.1" value="1.0" class="brightness-slider">
+                        <div class="brightness-value">
+                            <span id="brightnessValue">100%</span>
+                        </div>
+                    </div>
+
+                    <!-- <div class="brightness-preset-buttons">
+                        <button id="darkerBtn" class="brightness-btn darker-btn">
+                            <i class="fas fa-moon"></i> Darker
+                        </button>
+                        <button id="normalBtn" class="brightness-btn normal-btn active">
+                            <i class="fas fa-adjust"></i> Normal
+                        </button>
+                        <button id="brighterBtn" class="brightness-btn brighter-btn">
+                            <i class="fas fa-sun"></i> Brighter
+                        </button>
+                        <!-- <button id="superBrightBtn" class="brightness-btn super-bright-btn">
+                            <i class="fas fa-fire"></i> Super Bright
+                        </button> -->
+                    </div> 
+
+                </div>
+            </div>
 
             <!-- Frame Color -->
             <div class="customize-options-group">
@@ -191,14 +439,25 @@ require_once '../includes/pwa-helper.php';
                 </div>
             </div>
 
-            <!-- Stickers (Dynamic from Database) -->
+            <!-- Stickers (Dynamic from Database - Layout 2 specific) -->
             <div class="customize-options-group">
                 <h3 class="customize-options-label">Stickers</h3>
                 <div id="dynamicStickersContainer" class="customize-buttons-grid stickers-grid">
                     <button id="noneSticker" class="buttonStickers sticker-none">
                         <img src="../assets/block (1).png" alt="None" class="shape-icon">
                     </button>
-                    <div class="loading-placeholder">Loading stickers...</div>
+                    <div class="loading-placeholder">Loading layout 2 stickers...</div>
+                </div>
+            </div>
+
+            <!-- Frame & Sticker Combo (Dynamic from Database - Layout 2 specific) -->
+            <div class="customize-options-group">
+                <h3 class="customize-options-label">Frame & Sticker</h3>
+                <div id="dynamicFrameStickerContainer" class="customize-buttons-grid stickers-grid">
+                    <button id="noneFrameSticker" class="buttonFrameStickers frame-sticker-none">
+                        <img src="../assets/block (1).png" alt="None" class="shape-icon">
+                    </button>
+                    <div class="loading-placeholder">Loading layout 2 frame & sticker combos...</div>
                 </div>
             </div>
 

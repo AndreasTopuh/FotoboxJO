@@ -231,6 +231,148 @@ require_once '../includes/pwa-helper.php';
             opacity: 0.6;
             object-fit: contain;
         }
+
+        /* Brightness controls styling */
+        .brightness-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(226, 133, 133, 0.2);
+        }
+
+        .brightness-slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brightness-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            min-width: 140px;
+        }
+
+        .brightness-slider {
+            flex: 1;
+            height: 6px;
+            background: linear-gradient(to right, #333, #fff);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .brightness-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #E28585;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .brightness-slider::-webkit-slider-thumb:hover {
+            background: #d67575;
+            transform: scale(1.1);
+        }
+
+        .brightness-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #E28585;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .brightness-value {
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .brightness-value span {
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .brightness-preset-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .brightness-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(226, 133, 133, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .brightness-btn:hover {
+            background: rgba(226, 133, 133, 0.2);
+            border-color: #E28585;
+            transform: translateY(-2px);
+        }
+
+        .brightness-btn.active {
+            background: rgba(226, 133, 133, 0.3);
+            border-color: #E28585;
+            box-shadow: 0 0 0 2px rgba(226, 133, 133, 0.3);
+        }
+
+        .brightness-btn i {
+            font-size: 14px;
+        }
+
+        .darker-btn {
+            color: #ddd;
+        }
+
+        .normal-btn {
+            color: #fff;
+        }
+
+        .brighter-btn {
+            color: #ffe066;
+        }
+
+        .super-bright-btn {
+            color: #ff6b35;
+            background: rgba(255, 107, 53, 0.1);
+        }
+
+        .super-bright-btn:hover {
+            background: rgba(255, 107, 53, 0.2);
+        }
+
+        .super-bright-btn.active {
+            background: rgba(255, 107, 53, 0.3);
+            border-color: #ff6b35;
+            box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.3);
+        }
     </style>
 </head>
 
@@ -242,6 +384,38 @@ require_once '../includes/pwa-helper.php';
         <!-- Customization Options -->
         <section class="customize-left-section">
             <h1 class="customize-title">Customize Your Photo</h1>
+
+            <!-- Photo Brightness -->
+            <div class="customize-options-group">
+                <h3 class="customize-options-label">Brightness / Kecerahan</h3>
+                <div class="brightness-controls">
+                    <div class="brightness-slider-container">
+                        <label for="brightnessSlider" class="brightness-label">
+                            <i class="fas fa-sun"></i> Adjust Brightness
+                        </label>
+                        <input type="range" id="brightnessSlider" min="0.3" max="3.0" step="0.1" value="1.0" class="brightness-slider">
+                        <div class="brightness-value">
+                            <span id="brightnessValue">100%</span>
+                        </div>
+                    </div>
+
+                    <!-- <div class="brightness-preset-buttons">
+                        <button id="darkerBtn" class="brightness-btn darker-btn">
+                            <i class="fas fa-moon"></i> Darker
+                        </button>
+                        <button id="normalBtn" class="brightness-btn normal-btn active">
+                            <i class="fas fa-adjust"></i> Normal
+                        </button>
+                        <button id="brighterBtn" class="brightness-btn brighter-btn">
+                            <i class="fas fa-sun"></i> Brighter
+                        </button>
+                        <!-- <button id="superBrightBtn" class="brightness-btn super-bright-btn">
+                            <i class="fas fa-fire"></i> Super Bright
+                        </button> -->
+                    </div> 
+
+                </div>
+            </div>
 
             <!-- Frame Color -->
             <div class="customize-options-group">
@@ -271,7 +445,7 @@ require_once '../includes/pwa-helper.php';
             <div class="customize-options-group">
                 <h3 class="customize-options-label">Stickers</h3>
                 <div id="dynamicStickersContainer" class="customize-buttons-grid stickers-grid">
-                    <button id="noneSticker" class="buttonStickers sticker-none">
+                    <button type="button" id="noneSticker" class="buttonStickers sticker-none">
                         <img src="../assets/block (1).png" alt="None" class="shape-icon">
                     </button>
                     <div class="loading-placeholder">Loading layout 1 stickers...</div>
@@ -282,7 +456,7 @@ require_once '../includes/pwa-helper.php';
             <div class="customize-options-group">
                 <h3 class="customize-options-label">Frame & Sticker</h3>
                 <div id="dynamicFrameStickerContainer" class="customize-buttons-grid stickers-grid">
-                    <button id="noneFrameSticker" class="buttonFrameStickers frame-sticker-none">
+                    <button type="button" id="noneFrameSticker" class="buttonFrameStickers frame-sticker-none">
                         <img src="../assets/block (1).png" alt="None" class="shape-icon">
                     </button>
                     <div class="loading-placeholder">Loading layout 1 frame & sticker combos...</div>
@@ -320,13 +494,13 @@ require_once '../includes/pwa-helper.php';
 
     <!-- Action Buttons -->
     <footer class="customize-action-buttons">
-        <button class="customize-action-btn email-btn" id="emailBtn">
+        <button type="button" class="customize-action-btn email-btn" id="emailBtn">
             <i class="fas fa-envelope"></i> Kirim ke Email
         </button>
-        <button class="customize-action-btn print-btn" id="printBtn">
+        <button type="button" class="customize-action-btn print-btn" id="printBtn">
             <i class="fas fa-print"></i> Print
         </button>
-        <button class="customize-action-btn continue-btn" id="continueBtn">
+        <button type="button" class="customize-action-btn continue-btn" id="continueBtn">
             <i class="fas fa-arrow-right"></i> Lanjutkan
         </button>
     </footer>
