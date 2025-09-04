@@ -1,20 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 🚀 COMPRESSION CONFIGURATION - 3-Level Quality System for Layout 1 (2 Photos)
+    // 🚀 COMPRESSION CONFIGURATION - ENHANCED & SYNCHRONIZED Quality System
+    // ✅ SYNCHRONIZED dengan customizeLayout1.js untuk konsistensi kualitas end-to-end
     const COMPRESSION_CONFIG = {
-        // Untuk session storage (temporary) - FAST SAVE
-        SESSION_QUALITY: 0.5,        // 50% untuk performa cepat
-        SESSION_MAX_WIDTH: 1200,     // Resize untuk storage
-        SESSION_MAX_HEIGHT: 800,
+        // Untuk session storage (temporary) - HIGH QUALITY untuk hasil yang konsisten
+        SESSION_QUALITY: 0.9,        // 90% - selaras dengan customizeLayout1.js
+        SESSION_MAX_WIDTH: 2000,     // Naikan untuk preserve detail untuk customize
+        SESSION_MAX_HEIGHT: 2400,    // Naikan untuk preserve detail untuk customize
         
         // Untuk download/print (high quality) - BEST QUALITY  
-        DOWNLOAD_QUALITY: 0.95,      // 95% - hampir lossless
-        DOWNLOAD_MAX_WIDTH: 2400,    // Full resolution
-        DOWNLOAD_MAX_HEIGHT: 1600,
+        DOWNLOAD_QUALITY: 0.98,      // 98% - selaras dengan customizeLayout1.js
+        DOWNLOAD_MAX_WIDTH: 3000,    // Full resolution untuk print berkualitas
+        DOWNLOAD_MAX_HEIGHT: 3600,
         
-        // Untuk preview thumbnail - FAST PREVIEW
-        THUMB_QUALITY: 0.6,          // 60% - kecil untuk preview
-        THUMB_MAX_WIDTH: 300,
-        THUMB_MAX_HEIGHT: 200
+        // Untuk preview thumbnail - BALANCED PREVIEW
+        THUMB_QUALITY: 0.8,          // 80% - tetap bagus untuk preview
+        THUMB_MAX_WIDTH: 600,        // Naikan selaras dengan customizeLayout1.js
+        THUMB_MAX_HEIGHT: 800        // Naikan selaras dengan customizeLayout1.js
     };
 
     // 🚀 FAST COMPRESSION FUNCTION
@@ -694,8 +695,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function applyFilter(filterClass) {
         if (!video) return;
         
-        // Remove existing filters
-        video.classList.remove("sepia", "grayscale","smooth","gray","vintage");
+        // Remove existing filters - TAMBAH "bnw" ke daftar
+        video.classList.remove("sepia", "grayscale", "smooth", "gray", "vintage", "bnw");
 
         // Apply new filter if not 'none'
         if (filterClass !== "none") {
@@ -861,10 +862,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 imageData = await applyMirrorEffect(imageData);
             }
             
-            const compressedImage = await compressImage(imageData, 'session'); // Compress for preview
-            images.push(compressedImage);
+            // 🚀 DUAL QUALITY SYSTEM - High quality untuk storage, thumb untuk preview
+            const sessionImage = await compressImage(imageData, 'session'); // 90% quality, 2000x2400 untuk customize
+            const thumbImage = await compressImage(imageData, 'thumb');     // 80% quality, 600x800 untuk preview
             
-            updatePhotoPreview(images.length - 1, compressedImage);
+            images.push(sessionImage); // Store high quality untuk customize
+            
+            updatePhotoPreview(images.length - 1, thumbImage); // Preview dengan thumb quality
             updateUI();
             
         } catch (error) {
@@ -944,10 +948,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     imageData = await applyMirrorEffect(imageData);
                 }
                 
-                const compressedImage = await compressImage(imageData, 'session');
-                images.push(compressedImage);
+                // 🚀 DUAL QUALITY SYSTEM - High quality untuk storage, thumb untuk preview
+                const sessionImage = await compressImage(imageData, 'session'); // 90% quality untuk customize
+                const thumbImage = await compressImage(imageData, 'thumb');     // 80% quality untuk preview
                 
-                updatePhotoPreview(images.length - 1, compressedImage);
+                images.push(sessionImage); // Store high quality
+                
+                updatePhotoPreview(images.length - 1, thumbImage); // Preview dengan thumb
                 updateUI();
                 
                 console.log(`Auto Photo ${images.length}/${expectedPhotos} captured successfully`);
@@ -1151,11 +1158,8 @@ document.addEventListener('DOMContentLoaded', () => {
             video.srcObject.getTracks().forEach(track => track.stop());
             video.srcObject = null;
         }
-        // Hide grid when camera stops
-        if (gridOverlay) {
-            gridOverlay.style.display = 'none';
-            if (gridToggleBtn) gridToggleBtn.textContent = 'Tampilkan Grid';
-        }
+        // 🎯 GRID PRESERVATION - Don't auto-hide grid, respect user choice
+        console.log('📷 Camera stream stopped - Grid state preserved');
     }
     
     // Start camera if on canvasLayout1.php
@@ -1163,14 +1167,46 @@ document.addEventListener('DOMContentLoaded', () => {
         startCamera();
     }
 
-    // Toggle grid visibility
+    // 🎯 GRID STATE MANAGEMENT - Enhanced Control
+    let gridVisible = false; // Track grid state
+    
+    // Toggle grid visibility with persistent state
     if (gridToggleBtn) {
+        // Initialize grid state
+        if (gridOverlay) {
+            gridOverlay.style.display = 'none';
+            gridToggleBtn.textContent = 'Tampilkan Grid';
+            gridToggleBtn.classList.remove('grid-active');
+            gridVisible = false;
+        }
+        
         gridToggleBtn.addEventListener('click', () => {
             if (gridOverlay) {
-                gridOverlay.style.display = gridOverlay.style.display === 'grid' ? 'none' : 'grid';
-                gridToggleBtn.textContent = gridOverlay.style.display === 'grid' ? 'Sembunyikan Grid' : 'Tampilkan Grid';
+                gridVisible = !gridVisible;
+                gridOverlay.style.display = gridVisible ? 'grid' : 'none';
+                gridToggleBtn.textContent = gridVisible ? 'Sembunyikan Grid' : 'Tampilkan Grid';
+                
+                // Update visual state
+                if (gridVisible) {
+                    gridToggleBtn.classList.add('grid-active');
+                } else {
+                    gridToggleBtn.classList.remove('grid-active');
+                }
+                
+                // Store user preference
+                localStorage.setItem('fotobox_grid_preference', gridVisible.toString());
+                console.log(`📐 Grid ${gridVisible ? 'ditampilkan' : 'disembunyikan'}`);
             }
         });
+        
+        // Restore user preference on page load
+        const savedGridPref = localStorage.getItem('fotobox_grid_preference');
+        if (savedGridPref === 'true' && gridOverlay) {
+            gridVisible = true;
+            gridOverlay.style.display = 'grid';
+            gridToggleBtn.textContent = 'Sembunyikan Grid';
+            gridToggleBtn.classList.add('grid-active');
+        }
     }
 
     // Legacy function - not used in new single-capture system
@@ -1200,11 +1236,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         countdownText.style.display = "none";
         
-        // Show grid again after countdown
-        if (gridOverlay) {
-            gridOverlay.style.display = 'grid';
-            if (gridToggleBtn) gridToggleBtn.textContent = 'Sembunyikan Grid';
-        }
+        // 🎯 GRID PRESERVATION - Maintain user's grid preference, don't force show
+        console.log('⏰ Countdown completed - Grid state unchanged');
     }
     
     // Automatically trigger the countdown when option changes
@@ -1245,15 +1278,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const reader = new FileReader();
             reader.onload = async function(e) {
                 const imageData = e.target.result;
-                const compressedImage = await compressImage(imageData, 'session'); // Compress for preview
+                
+                // 🚀 DUAL QUALITY SYSTEM - High quality untuk storage, thumb untuk preview
+                const sessionImage = await compressImage(imageData, 'session'); // 90% quality untuk customize
+                const thumbImage = await compressImage(imageData, 'thumb');     // 80% quality untuk preview
 
-                images.push(compressedImage);
+                images.push(sessionImage); // Store high quality
 
                 if (photoContainer) {
                     const container = document.createElement('div');
                     container.style.position = 'relative';
                     const imgElement = document.createElement('img');
-                    imgElement.src = compressedImage;
+                    imgElement.src = thumbImage; // Preview dengan thumb quality
                     imgElement.classList.add('photo');
                     imgElement.addEventListener('click', () => openCarousel(images.length - 1));
                     const retakeBtn = document.createElement('button');

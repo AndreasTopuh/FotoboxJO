@@ -4,22 +4,22 @@
  * 📝 API: /src/api-fetch/get-frames-by-layout.php?layout_id=1
  */
 document.addEventListener('DOMContentLoaded', () => {
-  // ⚡ COMPRESSION CONFIGURATION - 3-Level Quality System
+  // ⚡ COMPRESSION CONFIGURATION - OPTIMIZED 3-Level Quality System
   const COMPRESSION_CONFIG = {
-    // Untuk session storage (temporary) - BALANCED QUALITY
-    SESSION_QUALITY: 0.85,       // 85% - bagus untuk customize & print
-    SESSION_MAX_WIDTH: 1600,     // Cukup untuk print 4R
-    SESSION_MAX_HEIGHT: 1200,
+    // Untuk session storage (temporary) - HIGH QUALITY for better preview
+    SESSION_QUALITY: 0.9,        // 90% - lebih tinggi untuk preview yang tajam
+    SESSION_MAX_WIDTH: 2000,     // Naikan untuk preserve detail canvas 1224px
+    SESSION_MAX_HEIGHT: 2400,    // Naikan untuk preserve detail canvas 1836px
 
     // Untuk download/print (high quality) - BEST QUALITY
-    DOWNLOAD_QUALITY: 0.95,      // 95% - hampir lossless
-    DOWNLOAD_MAX_WIDTH: 2400,    // Full resolution
-    DOWNLOAD_MAX_HEIGHT: 1800,
+    DOWNLOAD_QUALITY: 0.98,      // 98% - hampir lossless untuk print
+    DOWNLOAD_MAX_WIDTH: 3000,    // Full resolution untuk print berkualitas
+    DOWNLOAD_MAX_HEIGHT: 3600,
     
-    // Untuk preview thumbnail - FAST PREVIEW
-    THUMB_QUALITY: 0.6,          // 60% - kecil untuk preview
-    THUMB_MAX_WIDTH: 400,
-    THUMB_MAX_HEIGHT: 300
+    // Untuk preview thumbnail - BALANCED PREVIEW  
+    THUMB_QUALITY: 0.8,          // 80% - selaras dengan canvasLayout1.js
+    THUMB_MAX_WIDTH: 600,        // Naikan untuk detail lebih baik
+    THUMB_MAX_HEIGHT: 800
   };
 
   // 🚀 FAST COMPRESSION FUNCTION
@@ -446,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * Redraws the canvas with current settings
+   * Redraws the canvas with current settings - Enhanced for better preview
    */
   async function redrawCanvas() {
     if (!state.storedImages.length) {
@@ -454,20 +454,27 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    // 🎨 CREATE HIGH RESOLUTION PREVIEW CANVAS
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = CONFIG.CANVAS_WIDTH;
-    canvas.height = CONFIG.CANVAS_HEIGHT;
+    
+    // Use 1.5x scale for better preview quality
+    const previewScale = 1.5;
+    canvas.width = CONFIG.CANVAS_WIDTH * previewScale;
+    canvas.height = CONFIG.CANVAS_HEIGHT * previewScale;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Scale context for high resolution preview
+    ctx.scale(previewScale, previewScale);
 
     if (state.backgroundType === 'color') {
       ctx.fillStyle = state.backgroundColor;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
       await drawPhotos(ctx, canvas);
     } else if (state.backgroundImage) {
       try {
         const bgImg = await loadImage(state.backgroundImage);
-        ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+        ctx.drawImage(bgImg, 0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
         await drawPhotos(ctx, canvas);
         updateCanvasPreview(canvas);
       } catch (error) {
@@ -479,8 +486,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } else {
       ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
       await drawPhotos(ctx, canvas);
+      updateCanvasPreview(canvas);
     }
   }
 
@@ -566,6 +574,10 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   function drawPhotoWithShape(ctx, img, x, y, width, height, shape, sx, sy, sWidth, sHeight) {
     ctx.save();
+    
+    // 🎨 ENHANCED IMAGE RENDERING - High quality smoothing
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     
     // Apply enhanced brightness filter with more dramatic effect
     if (state.brightness !== 1.0) {
@@ -666,15 +678,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * Updates the canvas preview in the DOM
+   * Updates the canvas preview in the DOM with enhanced quality
    * @param {HTMLCanvasElement} canvas - Canvas element
    */
   function updateCanvasPreview(canvas) {
     if (DOM.photoCustomPreview) {
       DOM.photoCustomPreview.innerHTML = '';
+      
+      // 🎨 ENHANCED HIGH-RES PREVIEW - Superior quality display
       Object.assign(canvas.style, {
-        maxWidth: '300px',
-        maxHeight: '450px',
+        maxWidth: '350px',           // Display size
+        maxHeight: '525px',          // Maintain aspect ratio
         width: 'auto',
         height: 'auto',
         border: '2px solid #ddd',
@@ -682,7 +696,22 @@ document.addEventListener('DOMContentLoaded', () => {
         boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
         display: 'block',
         margin: '0 auto',
+        // Enhanced rendering for high-res canvas
+        imageRendering: 'auto',
+        imageRendering: '-webkit-optimize-contrast',
+        imageRendering: 'pixelated',
+        '-ms-interpolation-mode': 'bicubic',
+        // Smooth downscaling from high-res canvas
+        filter: 'none'
       });
+      
+      // Set canvas context smoothing for better quality
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+      }
+      
       DOM.photoCustomPreview.appendChild(canvas);
     }
     state.finalCanvas = canvas;
@@ -921,12 +950,14 @@ document.addEventListener('DOMContentLoaded', () => {
           console.log('🖨️ Generating high quality for print...');
           try {
             const highQualityCanvas = await generateHighQualityCanvas();
-            const highQualityDataUrl = highQualityCanvas.toDataURL('image/jpeg', 0.95);
+            // 🖨️ GENERATE HIGH QUALITY for PRINT - Maximum quality
+            const highQualityDataUrl = highQualityCanvas.toDataURL('image/jpeg', 0.98);
             showSimplePrintPopup(highQualityDataUrl);
           } catch (error) {
             console.error('❌ Error generating high quality for print:', error);
             // Fallback to normal quality
-            showSimplePrintPopup(state.finalCanvas.toDataURL('image/jpeg', 1.0));
+            // 🖨️ SHOW HIGH QUALITY PRINT PREVIEW
+            showSimplePrintPopup(highQualityDataUrl);
           }
         } else {
           handleError('Tidak ada gambar untuk di-print', 'alert');
@@ -1108,7 +1139,8 @@ document.addEventListener('DOMContentLoaded', () => {
       
       sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing for Email...';
       
-      const blob = await new Promise((resolve) => highQualityCanvas.toBlob(resolve, 'image/jpeg', 0.95));
+      // 📧 ENHANCED EMAIL QUALITY - Higher compression for excellent email quality
+      const blob = await new Promise((resolve) => highQualityCanvas.toBlob(resolve, 'image/jpeg', 0.98));
       const base64data = await new Promise((resolve) => {
         const reader = new FileReader();
         reader.onloadend = () => resolve(reader.result);
@@ -1203,11 +1235,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     
-    // Use higher resolution for print
-    const printScale = 2; // 2x resolution for better print quality
+    // 🖨️ ENHANCED PRINT QUALITY - Higher resolution for premium prints
+    const printScale = 3; // 3x resolution untuk print quality maksimal (3672x5508)
     canvas.width = CONFIG.CANVAS_WIDTH * printScale;
     canvas.height = CONFIG.CANVAS_HEIGHT * printScale;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // 🎨 HIGH QUALITY RENDERING SETTINGS
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     
     // Scale context for high resolution
     ctx.scale(printScale, printScale);
@@ -1374,7 +1410,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Generate high quality version
         const highQualityCanvas = await generateHighQualityCanvas();
-        const highQualityDataUrl = highQualityCanvas.toDataURL('image/jpeg', 0.95);
+        // 🖨️ ENHANCED PRINT QUALITY - Maximum quality for print
+        const highQualityDataUrl = highQualityCanvas.toDataURL('image/jpeg', 0.98);
         
         printBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 5px;"></i> Opening Print Dialog...';
         
