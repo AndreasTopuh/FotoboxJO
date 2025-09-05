@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gofotobox-v32';
+const CACHE_NAME = 'gofotobox-v34';
 const IS_DEVELOPMENT = self.location.hostname === 'localhost' || self.location.hostname.includes('dev');
 
 // Essential files that should be cached

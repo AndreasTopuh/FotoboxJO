@@ -23,25 +23,26 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description"
-        content="Take instant photobooth-style photos online with Layout 6 (4 photos). Perfect for photo grids and printing." />
+        content="Take instant photobooth-style photos online with Layout 1 (2 photos). Perfect for photo strips and printing." />
     <meta name="keywords"
-        content="photobooth, photo layout, photo grid, online photobooth, layout 6, 4 photos" />
-    <title>Photobooth | Layout 6 - 4 Photos</title>
+        content="photobooth, photo layout, photo strip, online photobooth, layout 1, 2 photos" />
+    <title>Photobooth | Layout 1 - 2 Photos</title>
     <link rel="canonical" href="https://www.gofotobox.online" />
-    <meta property="og:title" content="Photobooth | Layout 6 - 4 Photos" />
+    <meta property="og:title" content="Photobooth | Layout 1 - 2 Photos" />
     <meta property="og:description"
-        content="Take instant photobooth-style photos online with Layout 6. Perfect for 4-photo grids." />
+        content="Take instant photobooth-style photos online with Layout 1. Perfect for 2-photo strips." />
     <meta property="og:image" content="https://www.gofotobox.online/assets/home-mockup.png" />
     <meta property="og:url" content="https://www.gofotobox.online" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Photobooth | Layout 6 - 4 Photos" />
+    <meta name="twitter:title" content="Photobooth | Layout 1 - 2 Photos" />
     <meta name="twitter:description"
-        content="Take instant photobooth-style photos online with Layout 6. Perfect for 4-photo grids." />
+        content="Take instant photobooth-style photos online with Layout 1. Perfect for 2-photo strips." />
     <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png" />
     <link rel="stylesheet" href="../../static/css/main.css?v=<?php echo time(); ?>" />
     <link rel="stylesheet" href="../../static/css/canvas.css?v=<?php echo time(); ?>" />
     <link rel="stylesheet" href="../../static/css/responsive.css?v=<?php echo time(); ?>" />
+    <link rel="stylesheet" href="./home-styles.css?php echo time(); ?>" />
     <!-- Cache Control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
@@ -354,9 +355,6 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                             </button>
                         </div>
 
-                        <?php
-
-                        ?>
                         <div class="photo-preview-container">
                             <div class="photo-preview-grid" id="photoContainer">
                                 <!-- Slot photo akan di-generate oleh JS sesuai jumlah photo -->
@@ -365,7 +363,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                         <script>
                             // Enhanced photo container initialization with modal support
                             document.addEventListener('DOMContentLoaded', function() {
-                                var photoCount = window.photoCount || 4; // Layout 6 has 4 photos
+                                var photoCount = window.photoCount || 2; // fallback to 2 if not set
                                 var container = document.getElementById('photoContainer');
 
                                 if (container) {
@@ -406,7 +404,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
 
                     <!-- Right Section: Controls (Filter, Settings, Buttons) -->
                     <div class="controls-container">
-                        <!-- Pengaturan Timer -->
+                        <!-- Camera Settings -->
                         <div class="camera-settings">
                             <h3 class="settings-title">Pengaturan Timer</h3>
                             <div class="setting-group">
@@ -446,7 +444,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                             <button id="doneBtn" style="display: none;">LANJUT EDIT</button>
                         </div>
                         <div class="progress-display">
-                            <div id="progressCounter">0/4</div>
+                            <div id="progressCounter">0/2</div>
                         </div>
 
                     </div>
@@ -455,9 +453,8 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
         </div>
     </main>
 
-    <script src="canvasLayout6.js"></script>
+    <script src="canvasLayout1.js"></script>
     <script src="debug-camera.js"></script>
-
 
     <!-- Session Timer Script -->
     <script src="../includes/session-timer.js"></script>
@@ -471,7 +468,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                     const photoElements = document.querySelectorAll('#photoPreview img, #photoPreview canvas, .photo');
                     if (photoElements.length > 0) {
                         // Has photos, go to customize
-                        window.location.href = 'customizeLayout6.php';
+                        window.location.href = 'customizeLayout1.php';
                     } else {
                         // No photos, reset and go to index
                         window.location.href = '/';

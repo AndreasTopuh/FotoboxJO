@@ -90,22 +90,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Configuration constants
- const CONFIG = {
-  CANVAS_WIDTH: 1224,
-  CANVAS_HEIGHT: 1836,
-  MARGIN_TOP: 142,
-  SPACING: 72,
-  // ✅ PERBESAR FOTO untuk menghilangkan area hitam kiri-kanan
-  PHOTO_WIDTH: 1052,          // Naik dari 767.6 ke 1052 (hampir penuh)
-  PHOTO_HEIGHT: 574.2,        // Tetap proporsional
-  PHOTO_MARGIN_LEFT: 86,      // Margin kiri tetap 86px
-  PHOTO_MARGIN_RIGHT: 86,     // Margin kanan tetap 86px
-  // Total: 86 + 1052 + 86 = 1224px (pas dengan canvas width)
-  EXPECTED_PHOTOS: 2,
-  EMAILJS_SERVICE_ID: 'service_gtqjb2j',
-  EMAILJS_TEMPLATE_ID: 'template_pp5i4hm',
-  LOGO_SRC: '/src/assets/logo.png',
-};
+  const CONFIG = {
+    CANVAS_WIDTH: 1224,
+    CANVAS_HEIGHT: 1836,
+    MARGIN_TOP: 142,
+    SPACING: 72,
+    PHOTO_WIDTH: 967.5,
+    PHOTO_HEIGHT: 574.2,
+    EXPECTED_PHOTOS: 2,
+    EMAILJS_SERVICE_ID: 'service_gtqjb2j',
+    EMAILJS_TEMPLATE_ID: 'template_pp5i4hm',
+    LOGO_SRC: '/src/assets/logo.png',
+  };
 
   // State variables
   let state = {
@@ -512,7 +508,7 @@ document.addEventListener('DOMContentLoaded', () => {
     for (const [index, imageData] of state.storedImages.slice(0, imagesToProcess).entries()) {
       try {
         const img = await loadImage(imageData);
-        const xPosition = CONFIG.PHOTO_MARGIN_LEFT; // ✅ Gunakan margin kiri 86px, bukan center
+        const xPosition = (CONFIG.CANVAS_WIDTH - CONFIG.PHOTO_WIDTH) / 2;
         const positions = [
           { x: xPosition, y: CONFIG.MARGIN_TOP, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },
           {
@@ -1482,7 +1478,7 @@ document.addEventListener('DOMContentLoaded', () => {
     for (const [index, imageData] of state.storedImages.slice(0, imagesToProcess).entries()) {
       try {
         const img = await loadImage(imageData);
-        const xPosition = CONFIG.PHOTO_MARGIN_LEFT; // ✅ Gunakan margin kiri 86px, bukan center
+        const xPosition = (CONFIG.CANVAS_WIDTH - CONFIG.PHOTO_WIDTH) / 2;
         const positions = [
           { x: xPosition, y: CONFIG.MARGIN_TOP, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },
           {
