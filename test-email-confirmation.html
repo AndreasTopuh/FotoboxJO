@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Confirmation Dialog - Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10001;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .dialog-box {
+            background: white;
+            padding: 35px 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 2px solid #E28585;
+            position: relative;
+            animation: slideInUp 0.4s ease-out;
+        }
+
+        .email-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .email-icon i {
+            font-size: 30px;
+            color: white;
+        }
+
+        h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            margin: 0;
+            color: #666;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .info-box {
+            background: rgba(255, 193, 7, 0.1);
+            padding: 18px;
+            border-radius: 12px;
+            margin: 25px 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .info-text {
+            margin: 0;
+            color: #856404;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-yes {
+            flex: 1;
+            background: linear-gradient(135deg, #E28585, #d67575);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(226, 133, 133, 0.3);
+        }
+
+        .btn-yes:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(226, 133, 133, 0.4);
+        }
+
+        .btn-no {
+            flex: 1;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-no:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        }
+
+        .test-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .test-button:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .response.email {
+            background: rgba(226, 133, 133, 0.1);
+            color: #721c24;
+            border: 1px solid #E28585;
+        }
+
+        .response.skip {
+            background: rgba(40, 167, 69, 0.1);
+            color: #155724;
+            border: 1px solid #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <button class="test-button" onclick="showDialog()">📧 Test Email Confirmation Dialog</button>
+        <div id="response" class="response"></div>
+        
+        <div id="emailConfirmationDialog" class="dialog-overlay" style="display: none;">
+            <div class="dialog-box">
+                <div style="margin-bottom: 25px;">
+                    <div class="email-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3>Kirim Foto ke Email?</h3>
+                    <p class="subtitle">Apakah Anda ingin mengirim foto ini ke alamat email Anda sebagai backup?</p>
+                </div>
+                
+                <div class="info-box">
+                    <p class="info-text">
+                        <i class="fas fa-info-circle" style="margin-right: 8px;"></i>
+                        <strong>Opsional:</strong> Anda bisa melanjutkan tanpa mengirim email, namun disarankan untuk backup foto.
+                    </p>
+                </div>
+
+                <div class="button-container">
+                    <button class="btn-yes" onclick="handleYes()">
+                        <i class="fas fa-check"></i> Ya, Kirim Email
+                    </button>
+                    
+                    <button class="btn-no" onclick="handleNo()">
+                        <i class="fas fa-arrow-right"></i> Tidak, Lanjutkan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showDialog() {
+            const dialog = document.getElementById('emailConfirmationDialog');
+            const response = document.getElementById('response');
+            dialog.style.display = 'flex';
+            response.style.display = 'none';
+        }
+
+        function handleYes() {
+            const dialog = document.getElementById('emailConfirmationDialog');
+            const response = document.getElementById('response');
+            
+            dialog.style.display = 'none';
+            response.className = 'response email';
+            response.style.display = 'block';
+            response.innerHTML = '<i class="fas fa-envelope"></i> Email modal akan dibuka (dalam aplikasi asli)';
+            
+            console.log('User chose to send email - would open email modal');
+        }
+
+        function handleNo() {
+            const dialog = document.getElementById('emailConfirmationDialog');
+            const response = document.getElementById('response');
+            
+            dialog.style.display = 'none';
+            response.className = 'response skip';
+            response.style.display = 'block';
+            response.innerHTML = '<i class="fas fa-check"></i> Redirect ke thankyou.php (dalam aplikasi asli)';
+            
+            console.log('User chose to skip email - would redirect to thankyou page');
+        }
+
+        // Auto show for demo
+        setTimeout(() => {
+            showDialog();
+        }, 1000);
+    </script>
+</body>
+</html>

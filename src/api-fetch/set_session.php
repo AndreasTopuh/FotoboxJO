@@ -59,6 +59,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
+    // Handle extend session action - untuk print process
+    if (isset($input['action']) && $input['action'] === 'extend') {
+        $extendMinutes = isset($input['extend_minutes']) ? (int)$input['extend_minutes'] : 5;
+        $reason = $input['reason'] ?? 'manual_extend';
+        
+        // Validate extend minutes (1-10 minutes allowed)
+        if ($extendMinutes < 1 || $extendMinutes > 10) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Invalid extend duration. Must be 1-10 minutes.',
+                'requested' => $extendMinutes
+            ]);
+            exit();
+        }
+
+        // Check if session is active (not expired)
+        if (SessionManager::isMainTimerExpired()) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Session has expired, cannot extend',
+                'session_state' => SessionManager::getSessionState(),
+                'time_remaining' => SessionManager::getMainTimerRemaining()
+            ]);
+            exit();
+        }
+
+        // Extend the session
+        try {
+            $currentStart = $_SESSION['main_timer_start'] ?? time();
+            $extendSeconds = $extendMinutes * 60;
+            
+            // Extend by adding time to the start (effectively extending duration)
+            $_SESSION['main_timer_start'] = $currentStart - $extendSeconds;
+            
+            // Log the extension
+            error_log("📏 Session extended by {$extendMinutes} minutes. Reason: {$reason}");
+
+            echo json_encode([
+                'success' => true,
+                'message' => "Session extended by {$extendMinutes} minutes",
+                'extended_minutes' => $extendMinutes,
+                'reason' => $reason,
+                'new_time_remaining' => SessionManager::getMainTimerRemaining(),
+                'session_state' => SessionManager::getSessionState(),
+                'timestamp' => date('Y-m-d H:i:s')
+            ]);
+            exit();
+            
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Failed to extend session: ' . $e->getMessage(),
+                'reason' => $reason
+            ]);
+            exit();
+        }
+    }
+
     // Handle cash session - same as developer but marked as cash
     if (isset($input['action']) && $input['action'] === 'start_cash_session') {
         // Start the 20-minute session timer (same as payment)

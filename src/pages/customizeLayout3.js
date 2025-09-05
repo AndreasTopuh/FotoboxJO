@@ -1025,26 +1025,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /**
    * Updates continue button state based on requirements
+   * New logic: Only requires print completion, email is optional
    */
   function updateContinueButtonState() {
     const continueBtn = document.getElementById('continueBtn');
     if (!continueBtn) return;
 
-    const canContinue = state.emailSent && state.printUsed;
+    // New logic: Only print is required, email is optional
+    const canContinue = state.printUsed;
     
     if (canContinue) {
       continueBtn.disabled = false;
       continueBtn.style.opacity = '1';
       continueBtn.style.cursor = 'pointer';
-      continueBtn.innerHTML = '🎉 Lanjut ke Terima Kasih';
+      
+      if (state.emailSent) {
+        continueBtn.innerHTML = '🎉 Lanjut ke Terima Kasih';
+      } else {
+        continueBtn.innerHTML = '📧 Lanjut (Opsional: Email)';
+      }
     } else {
       continueBtn.disabled = true;
       continueBtn.style.opacity = '0.5';
       continueBtn.style.cursor = 'not-allowed';
-      const missingActions = [];
-      if (!state.emailSent) missingActions.push('Email');
-      if (!state.printUsed) missingActions.push('Print');
-      continueBtn.innerHTML = `⏳ ${missingActions.join(' & ')} Dulu`;
+      continueBtn.innerHTML = '⏳ Print Foto Dulu';
     }
   }
 
@@ -1078,13 +1082,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       },
       continueBtn: () => {
-        if (state.emailSent && state.printUsed) {
-          window.location.href = 'thankyou.php';
+        // New logic: Only require print completion, email is optional
+        if (state.printUsed) {
+          // If email not sent, show confirmation dialog
+          if (!state.emailSent) {
+            showEmailConfirmationDialog();
+          } else {
+            // Both completed, go to thank you
+            window.location.href = 'thankyou.php';
+          }
         } else {
-          const missingActions = [];
-          if (!state.emailSent) missingActions.push('Email');
-          if (!state.printUsed) missingActions.push('Print');
-          handleError(`Silakan ${missingActions.join(' dan ')} foto terlebih dahulu!`, 'alert');
+          handleError('Silakan Print foto terlebih dahulu!', 'alert');
         }
       },
     };
@@ -1098,6 +1106,149 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize continue button state
     updateContinueButtonState();
+  }
+
+  /**
+   * Shows email confirmation dialog when continue is clicked without email
+   */
+  function showEmailConfirmationDialog() {
+    const existingDialog = document.getElementById('emailConfirmationDialog');
+    if (existingDialog) existingDialog.remove();
+
+    const dialog = document.createElement('div');
+    dialog.id = 'emailConfirmationDialog';
+    Object.assign(dialog.style, {
+      position: 'fixed',
+      top: '0',
+      left: '0',
+      width: '100%',
+      height: '100%',
+      background: 'rgba(0, 0, 0, 0.8)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: '10001',
+      animation: 'fadeIn 0.3s ease-in-out'
+    });
+
+    const dialogBox = document.createElement('div');
+    Object.assign(dialogBox.style, {
+      background: 'white',
+      padding: '35px 30px',
+      borderRadius: '15px',
+      textAlign: 'center',
+      maxWidth: '420px',
+      width: '90%',
+      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+      border: '2px solid #E28585',
+      position: 'relative',
+      animation: 'slideInUp 0.4s ease-out'
+    });
+
+    dialogBox.innerHTML = `
+      <div style="margin-bottom: 25px;">
+        <div style="width: 70px; height: 70px; background: linear-gradient(135deg, #ffc107, #e0a800); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+          <i class="fas fa-envelope" style="font-size: 30px; color: white;"></i>
+        </div>
+        <h3 style="margin: 0 0 10px 0; color: #333; font-size: 22px; font-weight: 600;">Kirim Foto ke Email?</h3>
+        <p style="margin: 0; color: #666; font-size: 15px; line-height: 1.5;">Apakah Anda ingin mengirim foto ini ke alamat email Anda sebagai backup?</p>
+      </div>
+      
+      <div style="background: rgba(255, 193, 7, 0.1); padding: 18px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid #ffc107;">
+        <p style="margin: 0; color: #856404; font-size: 14px; text-align: left;">
+          <i class="fas fa-info-circle" style="margin-right: 8px;"></i>
+          <strong>Opsional:</strong> Anda bisa melanjutkan tanpa mengirim email, namun disarankan untuk backup foto.
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 12px;">
+        <button id="confirmEmailYes" style="
+          flex: 1;
+          background: linear-gradient(135deg, #E28585, #d67575);
+          color: white;
+          border: none;
+          padding: 15px 20px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 15px;
+          font-weight: 600;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(226, 133, 133, 0.3);
+        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(226, 133, 133, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(226, 133, 133, 0.3)'">
+          <i class="fas fa-check"></i> Ya, Kirim Email
+        </button>
+        
+        <button id="confirmEmailNo" style="
+          flex: 1;
+          background: linear-gradient(135deg, #28a745, #20c997);
+          color: white;
+          border: none;
+          padding: 15px 20px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 15px;
+          font-weight: 600;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(40, 167, 69, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(40, 167, 69, 0.3)'">
+          <i class="fas fa-arrow-right"></i> Tidak, Lanjutkan
+        </button>
+      </div>
+    `;
+
+    dialog.appendChild(dialogBox);
+    document.body.appendChild(dialog);
+
+    // Add CSS animations if not already added
+    if (!document.getElementById('emailConfirmDialogStyles')) {
+      const style = document.createElement('style');
+      style.id = 'emailConfirmDialogStyles';
+      style.textContent = `
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideInUp {
+          from { 
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to { 
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    // Handle "Ya" button - Open email modal
+    document.getElementById('confirmEmailYes').addEventListener('click', () => {
+      dialog.remove();
+      showEmailModal(); // Open existing email modal
+    });
+
+    // Handle "Tidak" button - Go to thankyou directly
+    document.getElementById('confirmEmailNo').addEventListener('click', () => {
+      dialog.remove();
+      window.location.href = 'thankyou.php';
+    });
+
+    // Handle outside click - close dialog
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) {
+        dialog.remove();
+      }
+    });
+
+    // Handle escape key
+    const escapeHandler = (e) => {
+      if (e.key === 'Escape') {
+        dialog.remove();
+        document.removeEventListener('keydown', escapeHandler);
+      }
+    };
+    document.addEventListener('keydown', escapeHandler);
   }
 
   // Email Modal
@@ -1222,12 +1373,54 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * Validates email format
+   * Validates email format (Enhanced with EmailJS Helper)
    * @param {string} email - Email address
    * @returns {boolean} - Validity of email
    */
   function validateEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    // Enhanced validation using EmailJS Helper if available
+    if (typeof window.emailJSHelper !== 'undefined') {
+      const validation = window.emailJSHelper.validateEmail(email);
+      
+      // Show suggestions for common typos
+      if (!validation.isValid && validation.suggestions.length > 0) {
+        const suggestion = validation.suggestions[0];
+        const emailInput = document.getElementById('emailInput');
+        
+        // Show suggestion in validation message
+        showValidationError(`${validation.error}\n💡 Mungkin maksud Anda: ${suggestion}?`);
+        
+        // Auto-suggest after 2 seconds
+        setTimeout(() => {
+          if (emailInput && confirm(`Auto-correct ke "${suggestion}"?`)) {
+            emailInput.value = suggestion;
+            hideValidationError();
+            return true;
+          }
+        }, 2000);
+        
+        return false;
+      }
+      
+      if (!validation.isValid) {
+        showValidationError(validation.error);
+        return false;
+      }
+      
+      // Show success for Indonesian domains
+      if (validation.emailType === 'indonesian') {
+        console.log('✅ Indonesian email domain detected:', email);
+      }
+      
+      return true;
+    }
+    
+    // Fallback to basic validation
+    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!isValid) {
+      showValidationError('Format email tidak valid');
+    }
+    return isValid;
   }
 
   /**
@@ -1331,6 +1524,288 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Print Functionality
   /**
+   * Shows print notification dialog with loading animation and countdown
+   */
+  function showPrintNotificationDialog() {
+    const existingDialog = document.getElementById('printNotificationDialog');
+    if (existingDialog) existingDialog.remove();
+
+    // 🔒 ADDITIONAL BACKUP: Extend session saat print notification dimulai
+    fetch('/src/api-fetch/set_session.php', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
+      },
+      body: JSON.stringify({ 
+        action: 'extend',
+        extend_minutes: 3,
+        reason: 'print_notification_backup'
+      })
+    }).then(response => {
+      if (response.ok) {
+        console.log('⏰ Additional session extension for print notification backup');
+      }
+    }).catch(error => {
+      console.warn('⚠️ Backup session extension failed:', error);
+    });
+
+    const dialog = document.createElement('div');
+    dialog.id = 'printNotificationDialog';
+    Object.assign(dialog.style, {
+      position: 'fixed',
+      top: '0',
+      left: '0',
+      width: '100%',
+      height: '100%',
+      background: 'rgba(0, 0, 0, 0.8)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: '10000',
+      animation: 'fadeIn 0.3s ease-in-out'
+    });
+
+    const dialogBox = document.createElement('div');
+    Object.assign(dialogBox.style, {
+      background: 'white',
+      padding: '40px 35px',
+      borderRadius: '15px',
+      textAlign: 'center',
+      maxWidth: '450px',
+      width: '90%',
+      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+      border: '2px solid #E28585',
+      position: 'relative',
+      animation: 'slideInUp 0.4s ease-out'
+    });
+
+    dialogBox.innerHTML = `
+      <div style="margin-bottom: 25px;">
+        <div id="printIconContainer" style="width: 90px; height: 90px; background: linear-gradient(135deg, #E28585, #d67575); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; animation: pulse 2s infinite; position: relative; overflow: hidden;">
+          <i class="fas fa-print" style="font-size: 40px; color: white;"></i>
+          <div id="printIconOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.1); border-radius: 50%; display: none;"></div>
+        </div>
+        <h3 style="margin: 0 0 10px 0; color: #333; font-size: 24px; font-weight: 600;">Print Berhasil Dikirim!</h3>
+        <p style="margin: 0; color: #666; font-size: 16px; line-height: 1.4;">Foto Anda sedang diproses oleh printer</p>
+      </div>
+      
+      <!-- Loading Progress Section -->
+      <div id="loadingSection" style="background: rgba(226, 133, 133, 0.1); padding: 25px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid #E28585;">
+        <!-- Progress Ring -->
+        <div style="position: relative; width: 120px; height: 120px; margin: 0 auto 20px;">
+          <svg width="120" height="120" style="transform: rotate(-90deg);">
+            <circle cx="60" cy="60" r="50" stroke="rgba(226, 133, 133, 0.2)" stroke-width="6" fill="none"></circle>
+            <circle id="progressCircle" cx="60" cy="60" r="50" stroke="#E28585" stroke-width="6" fill="none" 
+              stroke-dasharray="314.16" stroke-dashoffset="314.16" 
+              style="transition: stroke-dashoffset 1s ease; stroke-linecap: round;">
+            </circle>
+          </svg>
+          <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+            <div id="countdownTime" style="font-size: 24px; font-weight: 700; color: #E28585; line-height: 1;">02:00</div>
+            <div style="font-size: 12px; color: #888; margin-top: 2px;">menit</div>
+          </div>
+        </div>
+        
+        <!-- Status Text -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 8px;">
+          <div id="loadingSpinner" style="width: 20px; height: 20px; border: 3px solid rgba(226, 133, 133, 0.3); border-top: 3px solid #E28585; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+          <span id="statusText" style="color: #333; font-weight: 600; font-size: 16px;">Sedang Memproses...</span>
+        </div>
+        <p id="instructionText" style="margin: 0; color: #777; font-size: 14px;">Harap menunggu di area printer</p>
+      </div>
+
+      <!-- Action Button -->
+      <button id="printNotificationBtn" style="
+        background: linear-gradient(135deg, #6c757d, #5a6268);
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 8px;
+        cursor: not-allowed;
+        font-size: 16px;
+        font-weight: 600;
+        width: 100%;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+        opacity: 0.7;
+      ">
+        <i class="fas fa-hourglass-half"></i> Tunggu Selesai...
+      </button>
+    `;
+
+    dialog.appendChild(dialogBox);
+    document.body.appendChild(dialog);
+
+    // Add CSS animation keyframes if not already added
+    if (!document.getElementById('printDialogStyles')) {
+      const style = document.createElement('style');
+      style.id = 'printDialogStyles';
+      style.textContent = `
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideInUp {
+          from { 
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to { 
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        @keyframes fadeOut {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+        @keyframes slideOutDown {
+          from { 
+            opacity: 1;
+            transform: translateY(0);
+          }
+          to { 
+            opacity: 0;
+            transform: translateY(30px);
+          }
+        }
+        @keyframes checkmark {
+          0% { transform: scale(0); }
+          50% { transform: scale(1.2); }
+          100% { transform: scale(1); }
+        }
+        @keyframes successPulse {
+          0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4); }
+          70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    // Countdown and Progress Animation
+    let timeLeft = 120; // 2 minutes in seconds
+    const totalTime = 120;
+    const progressCircle = document.getElementById('progressCircle');
+    const countdownElement = document.getElementById('countdownTime');
+    const statusText = document.getElementById('statusText');
+    const instructionText = document.getElementById('instructionText');
+    const actionButton = document.getElementById('printNotificationBtn');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const printIcon = dialogBox.querySelector('.fas.fa-print');
+    
+    const circumference = 2 * Math.PI * 50; // r = 50
+    
+    const countdownInterval = setInterval(() => {
+      timeLeft--;
+      
+      // Update countdown display
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      
+      // Update progress circle
+      const progress = (totalTime - timeLeft) / totalTime;
+      const offset = circumference * (1 - progress);
+      progressCircle.style.strokeDashoffset = offset;
+      
+      // Status updates at different stages
+      if (timeLeft === 90) { // 1.5 min left
+        statusText.textContent = 'Menyiapkan Tinta...';
+        instructionText.textContent = 'Printer sedang mempersiapkan tinta berkualitas tinggi';
+      } else if (timeLeft === 60) { // 1 min left
+        statusText.textContent = 'Memproses Gambar...';
+        instructionText.textContent = 'Sedang memproses foto dengan resolusi tinggi';
+      } else if (timeLeft === 30) { // 30 sec left
+        statusText.textContent = 'Mulai Mencetak...';
+        instructionText.textContent = 'Foto Anda sedang dicetak, hampir selesai!';
+        loadingSpinner.style.borderTopColor = '#28a745'; // Change to green
+      } else if (timeLeft === 10) { // 10 sec left
+        statusText.textContent = 'Finishing...';
+        instructionText.textContent = 'Menyelesaikan proses printing...';
+      }
+      
+      // When countdown reaches 0
+      if (timeLeft <= 0) {
+        clearInterval(countdownInterval);
+        
+        // Update to completed state
+        progressCircle.style.strokeDashoffset = '0';
+        progressCircle.style.stroke = '#28a745'; // Green color
+        countdownElement.textContent = '00:00';
+        
+        // Hide loading spinner
+        loadingSpinner.style.display = 'none';
+        
+        // Update status to completed
+        statusText.innerHTML = '<i class="fas fa-check-circle" style="color: #28a745; margin-right: 8px;"></i>Print Selesai!';
+        instructionText.textContent = 'Foto Anda sudah siap! Silakan ambil di area printer.';
+        instructionText.style.color = '#28a745';
+        instructionText.style.fontWeight = '600';
+        
+        // Update button to allow closing
+        actionButton.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
+        actionButton.style.cursor = 'pointer';
+        actionButton.style.opacity = '1';
+        actionButton.innerHTML = '<i class="fas fa-check"></i> OK, Saya Mengerti';
+        actionButton.style.animation = 'successPulse 2s ease-in-out 3';
+        
+        // Update print icon to success
+        printIcon.className = 'fas fa-check';
+        printIcon.parentElement.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
+        printIcon.parentElement.style.animation = 'checkmark 0.5s ease-out';
+        
+        // Enable button click
+        actionButton.onclick = handleDialogClose;
+      }
+    }, 1000);
+
+    // Handle button click (only when enabled)
+    function handleDialogClose() {
+      if (timeLeft <= 0) { // Only allow closing when completed
+        dialog.style.animation = 'fadeOut 0.3s ease-in-out';
+        dialogBox.style.animation = 'slideOutDown 0.3s ease-in';
+        
+        setTimeout(() => {
+          dialog.remove();
+          clearInterval(countdownInterval);
+        }, 300);
+      }
+    }
+
+    // Handle outside click (only when completed)
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog && timeLeft <= 0) {
+        handleDialogClose();
+      }
+    });
+
+    // Handle escape key (only when completed)
+    const escapeHandler = (e) => {
+      if (e.key === 'Escape' && timeLeft <= 0) {
+        handleDialogClose();
+        document.removeEventListener('keydown', escapeHandler);
+      }
+    };
+    document.addEventListener('keydown', escapeHandler);
+
+    // Cleanup on dialog removal
+    dialog.addEventListener('DOMNodeRemoved', () => {
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+      }
+    });
+  }
+
+  /**
    * Shows print preview popup
    * @param {string} imageDataUrl - Image data URL
    */
@@ -1367,7 +1842,10 @@ document.addEventListener('DOMContentLoaded', () => {
       <h3 style="margin: 0 0 15px 0; color: #333;">Print Preview</h3>
       <img src="${imageDataUrl}" style="max-width: 350px; height: auto; border: 2px solid #ddd; border-radius: 5px; margin-bottom: 20px;" alt="Print Preview" />
       <div>
-        <button id="directPrintBtn" style="background: #28a745; color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-size: 16px; margin-right: 10px; font-weight: bold;">🖨️ Print</button>
+        <button id="directPrintBtn" style="background: #28a745; color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-size: 16px; margin-right: 10px; font-weight: bold;">
+          <i class="fas fa-spinner fa-spin" style="display: none; margin-right: 5px;"></i>
+          🖨️ Print High Quality
+        </button>
         <button id="closePopupBtn" style="background: #6c757d; color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;">✖️ Close</button>
       </div>
     `;
@@ -1375,82 +1853,109 @@ document.addEventListener('DOMContentLoaded', () => {
     popup.appendChild(popupBox);
     document.body.appendChild(popup);
 
-    document.getElementById('directPrintBtn').addEventListener('click', () => {
-      const printWindow = window.open('', '_blank');
-      printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Print Photo</title>
-          <style>
-            @page {     
-                        size: 4in 6in; 
-                        margin: 0; 
-                    }
-                    * { 
-                        margin: 0; 
-                        padding: 0; 
-                        border: none; 
-                        box-sizing: border-box; 
-                        -webkit-print-color-adjust: exact; 
-                        print-color-adjust: exact; 
-                    }
-                    html, body { 
-                        width: 4in; 
-                        height: 6in; 
-                        margin: 0; 
-                        padding: 0; 
-                        overflow: hidden; 
-                    }
-                    .print-container { 
-                        width: 4in; 
-                        height: 6in; 
-                        position: absolute; 
-                        top: 0; 
-                        left: 0; 
-                        margin: 0;
-                        padding: 0;
-                    }
-                    .print-image { 
-                        width: 4in; 
-                        height: 6in; 
-                        object-fit: contain; 
-                        object-position: center;
-                        position: absolute; 
-                        top: 0; 
-                        left: 0; 
-                        margin: 0;
-                        padding: 0;
-                    }
-          </style>
-        </head>
-        <body>
-          <div class="print-container">
-            <img src="${imageDataUrl}" class="print-image" alt="Print Photo" />
-          </div>
-        </body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.onload = () => {
-        setTimeout(() => {
-          printWindow.print();
-          printWindow.close();
-          state.printUsed = true;
-          const printBtn = document.getElementById('printBtn');
-          if (printBtn) {
-            printBtn.disabled = true;
-            printBtn.style.opacity = '0.5';
-            printBtn.style.cursor = 'not-allowed';
-            printBtn.innerHTML = '✅ Sudah Print';
+    document.getElementById('directPrintBtn').addEventListener('click', async () => {
+      const printBtn = document.getElementById('directPrintBtn');
+      const spinner = printBtn.querySelector('.fa-spinner');
+      const originalText = printBtn.innerHTML;
+      
+      try {
+        // Show loading
+        printBtn.disabled = true;
+        printBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 5px;"></i> Extending Session...';
+        
+        // 🔒 EXTEND SESSION untuk print process (5 menit tambahan)
+        try {
+          const extendResponse = await fetch('/src/api-fetch/set_session.php', {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-cache'
+            },
+            body: JSON.stringify({ 
+              action: 'extend',
+              extend_minutes: 5,
+              reason: 'print_process'
+            })
+          });
+          
+          if (extendResponse.ok) {
+            console.log('⏰ Session extended for 5 minutes for print process');
+          } else {
+            console.warn('⚠️ Failed to extend session, continuing with print...');
           }
-          
-          // Update continue button state
-          updateContinueButtonState();
-          
-          popup.remove();
-        }, 500);
-      };
+        } catch (extendError) {
+          console.warn('⚠️ Session extend request failed:', extendError);
+          // Continue with print even if extend fails
+        }
+        
+        printBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 5px;"></i> Generating High Quality...';
+        console.log('🖨️ Starting high quality print process...');
+        
+        // Generate high quality version
+        const highQualityCanvas = await generateHighQualityCanvas();
+        // 🖨️ ENHANCED PRINT QUALITY - Maximum quality for print
+        const highQualityDataUrl = highQualityCanvas.toDataURL('image/jpeg', 0.98);
+        
+        printBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 5px;"></i> Opening Print Dialog...';
+        
+        // Print with high quality
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Print Photo - High Quality</title>
+            <style>
+              @page { size: 4in 6in; margin: 0; }
+              * { margin: 0; padding: 0; border: none; box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+              html, body { width: 4in; height: 6in; margin: 0; padding: 0; overflow: hidden; }
+              .print-container { width: 4in; height: 6in; position: absolute; top: 0; left: 0; }
+              .print-image { width: 4in; height: 6in; object-fit: cover; position: absolute; top: 0; left: 0; }
+            </style>
+          </head>
+          <body>
+            <div class="print-container">
+              <img src="${highQualityDataUrl}" class="print-image" alt="Print Photo - High Quality" />
+            </div>
+          </body>
+          </html>
+        `);
+        printWindow.document.close();
+        
+        printWindow.onload = () => {
+          setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+            
+            // Mark as used and update UI
+            state.printUsed = true;
+            const printBtn = document.getElementById('printBtn');
+            if (printBtn) {
+              printBtn.disabled = true;
+              printBtn.style.opacity = '0.5';
+              printBtn.style.cursor = 'not-allowed';
+              printBtn.innerHTML = '✅ Sudah Print (HQ)';
+            }
+            
+            // Update continue button state
+            updateContinueButtonState();
+            
+            popup.remove();
+            console.log('✅ High quality print completed');
+            
+            // Show print notification dialog
+            setTimeout(() => {
+              showPrintNotificationDialog();
+            }, 500);
+          }, 500);
+        };
+        
+      } catch (error) {
+        console.error('❌ Print error:', error);
+        alert('❌ Gagal print dengan kualitas tinggi. Coba lagi.');
+        printBtn.innerHTML = originalText;
+        printBtn.disabled = false;
+      }
     });
 
     document.getElementById('closePopupBtn').addEventListener('click', () => popup.remove());

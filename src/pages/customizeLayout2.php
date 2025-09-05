@@ -410,9 +410,9 @@ require_once '../includes/pwa-helper.php';
                         <!-- <button id="superBrightBtn" class="brightness-btn super-bright-btn">
                             <i class="fas fa-fire"></i> Super Bright
                         </button> -->
-                    </div> 
-
                 </div>
+
+            </div>
             </div>
 
             <!-- Frame Color -->
@@ -582,11 +582,19 @@ require_once '../includes/pwa-helper.php';
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <!-- Enhanced EmailJS Helper -->
+    <script src="../assets/js/emailjs-helper.js"></script>
     <script>
         (function() {
             emailjs.init({
                 publicKey: "9SDzOfKjxuULQ5ZW8"
             });
+
+            // Initialize enhanced EmailJS helper
+            if (typeof window.emailJSHelper !== 'undefined') {
+                window.emailJSHelper.init('9SDzOfKjxuULQ5ZW8');
+                console.log('✅ Enhanced EmailJS Helper loaded');
+            }
         })();
     </script>
     <script src="../assets/js/assets-manager.js"></script>
