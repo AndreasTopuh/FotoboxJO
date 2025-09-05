@@ -152,7 +152,7 @@ class SessionTimer {
         // Change color when time is running low
         if (this.timeRemaining <= 300) { // 5 minutes or less
             this.timerElement.style.background = 'linear-gradient(135deg, #FF4757, #FF3742)';
-        } else if (this.timeRemaining <= 600) { // 10 minutes or less
+        } else if (this.timeRemaining <= 900) { // 15 minutes or less
             this.timerElement.style.background = 'linear-gradient(135deg, #FFA726, #FF9800)';
         }
 

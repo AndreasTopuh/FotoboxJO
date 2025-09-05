@@ -1108,13 +1108,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       },
       continueBtn: () => {
-        if (state.emailSent && state.printUsed) {
-          window.location.href = 'thankyou.php';
+        // New logic: Only require print completion, email is optional
+        if (state.printUsed) {
+          // If email not sent, show confirmation dialog
+          if (!state.emailSent) {
+            showEmailConfirmationDialog();
+          } else {
+            // Both completed, go to thank you
+            window.location.href = 'thankyou.php';
+          }
         } else {
-          const missingActions = [];
-          if (!state.emailSent) missingActions.push('Email');
-          if (!state.printUsed) missingActions.push('Print');
-          handleError(`Silakan ${missingActions.join(' dan ')} foto terlebih dahulu!`, 'alert');
+          handleError('Silakan Print foto terlebih dahulu!', 'alert');
         }
       },
     };
@@ -1709,8 +1713,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Countdown and Progress Animation
-    let timeLeft = 120; // 2 minutes in seconds
-    const totalTime = 120;
+    let timeLeft = 72; // 2 minutes in seconds
+    const totalTime = 72;
     const progressCircle = document.getElementById('progressCircle');
     const countdownElement = document.getElementById('countdownTime');
     const statusText = document.getElementById('statusText');
@@ -1878,8 +1882,34 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         // Show loading
         printBtn.disabled = true;
-        printBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 5px;"></i> Generating High Quality...';
+        printBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 5px;"></i> Extending Session...';
         
+        // 🔒 EXTEND SESSION untuk print process (5 menit tambahan)
+        try {
+          const extendResponse = await fetch('/src/api-fetch/set_session.php', {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-cache'
+            },
+            body: JSON.stringify({ 
+              action: 'extend',
+              extend_minutes: 5,
+              reason: 'print_process'
+            })
+          });
+          
+          if (extendResponse.ok) {
+            console.log('⏰ Session extended for 5 minutes for print process');
+          } else {
+            console.warn('⚠️ Failed to extend session, continuing with print...');
+          }
+        } catch (extendError) {
+          console.warn('⚠️ Session extend request failed:', extendError);
+          // Continue with print even if extend fails
+        }
+        
+        printBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 5px;"></i> Generating High Quality...';
         console.log('🖨️ Starting high quality print process...');
         
         // Generate high quality version

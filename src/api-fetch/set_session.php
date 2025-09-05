@@ -63,12 +63,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($input['action']) && $input['action'] === 'extend') {
         $extendMinutes = isset($input['extend_minutes']) ? (int)$input['extend_minutes'] : 5;
         $reason = $input['reason'] ?? 'manual_extend';
-        
-        // Validate extend minutes (1-10 minutes allowed)
-        if ($extendMinutes < 1 || $extendMinutes > 10) {
+
+        // Validate extend minutes (1-15 minutes allowed)
+        if ($extendMinutes < 1 || $extendMinutes > 15) {
             echo json_encode([
                 'success' => false,
-                'error' => 'Invalid extend duration. Must be 1-10 minutes.',
+                'error' => 'Invalid extend duration. Must be 1-15 minutes.',
                 'requested' => $extendMinutes
             ]);
             exit();
@@ -89,10 +89,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $currentStart = $_SESSION['main_timer_start'] ?? time();
             $extendSeconds = $extendMinutes * 60;
-            
+
             // Extend by adding time to the start (effectively extending duration)
             $_SESSION['main_timer_start'] = $currentStart - $extendSeconds;
-            
+
             // Log the extension
             error_log("📏 Session extended by {$extendMinutes} minutes. Reason: {$reason}");
 
@@ -106,7 +106,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'timestamp' => date('Y-m-d H:i:s')
             ]);
             exit();
-            
         } catch (Exception $e) {
             echo json_encode([
                 'success' => false,

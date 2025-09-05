@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
     emailSent: false,
     printUsed: false,
     imageCache: new Map(),
-    brightness: 1.0, // Default brightness (1.0 = normal, 0.5 = darker, 2.0 = brighter)
+    brightness: 1.2, // Default brightness (1.0 = normal, 0.5 = darker, 2.0 = brighter)
   };
 
   // DOM Elements
@@ -1692,8 +1692,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Countdown and Progress Animation
-    let timeLeft = 120; // 2 minutes in seconds
-    const totalTime = 120;
+    let timeLeft = 72; // 1 minute in seconds
+    const totalTime = 72;
     const progressCircle = document.getElementById('progressCircle');
     const countdownElement = document.getElementById('countdownTime');
     const statusText = document.getElementById('statusText');
