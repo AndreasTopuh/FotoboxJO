@@ -1077,6 +1077,12 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (blackScreen) blackScreen.style.display = 'none';
                         }, 1000);
                     }
+                    
+                    // ✅ SHOW GRID AUTOMATICALLY when camera loads
+                    if (gridOverlay) {
+                        gridOverlay.style.display = 'grid';
+                        if (gridToggleBtn) gridToggleBtn.textContent = 'Sembunyikan Grid';
+                    }
                 });
             }
         } catch (error) {
@@ -1099,9 +1105,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Start camera if on canvasLayout1.php
+    // Start camera if on canvasLayout2.php
     if (window.location.pathname.endsWith("canvasLayout2.php") || window.location.pathname === "canvasLayout2.php") {
         startCamera();
+        
+        // ✅ FALLBACK: Show grid immediately if gridOverlay exists
+        setTimeout(() => {
+            if (gridOverlay && gridOverlay.style.display !== 'grid') {
+                gridOverlay.style.display = 'grid';
+                if (gridToggleBtn) gridToggleBtn.textContent = 'Sembunyikan Grid';
+            }
+        }, 1000); // Wait 1 second for camera to load
     }
 
     // Toggle grid visibility

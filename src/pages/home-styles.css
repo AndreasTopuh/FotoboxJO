@@ -1081,11 +1081,15 @@ video {
   z-index: 5;
   display: none;
   background-image:
-    linear-gradient(to bottom, transparent calc(33.33% - 0.5px), rgba(255, 255, 255, 0.6) calc(33.33% - 0.5px), rgba(255, 255, 255, 0.6) calc(33.33% + 0.5px), transparent calc(33.33% + 0.5px)),
-    linear-gradient(to bottom, transparent calc(66.66% - 0.5px), rgba(255, 255, 255, 0.6) calc(66.66% - 0.5px), rgba(255, 255, 255, 0.6) calc(66.66% + 0.5px), transparent calc(66.66% + 0.5px)),
-    linear-gradient(to right, transparent calc(33.33% - 0.5px), rgba(255, 255, 255, 0.6) calc(33.33% - 0.5px), rgba(255, 255, 255, 0.6) calc(33.33% + 0.5px), transparent calc(33.33% + 0.5px)),
-    linear-gradient(to right, transparent calc(66.66% - 0.5px), rgba(255, 255, 255, 0.6) calc(66.66% - 0.5px), rgba(255, 255, 255, 0.6) calc(66.66% + 0.5px), transparent calc(66.66% + 0.5px));
+    /* Horizontal lines - 5px thick */
+    linear-gradient(to bottom, transparent calc(33.33% - 2.5px), rgba(255, 255, 255, 0.9) calc(33.33% - 2.5px), rgba(255, 255, 255, 0.9) calc(33.33% + 2.5px), transparent calc(33.33% + 2.5px)),
+    linear-gradient(to bottom, transparent calc(66.66% - 2.5px), rgba(255, 255, 255, 0.9) calc(66.66% - 2.5px), rgba(255, 255, 255, 0.9) calc(66.66% + 2.5px), transparent calc(66.66% + 2.5px)),
+    /* Vertical lines - 5px thick */
+    linear-gradient(to right, transparent calc(33.33% - 2.5px), rgba(255, 255, 255, 0.9) calc(33.33% - 2.5px), rgba(255, 255, 255, 0.9) calc(33.33% + 2.5px), transparent calc(33.33% + 2.5px)),
+    linear-gradient(to right, transparent calc(66.66% - 2.5px), rgba(255, 255, 255, 0.9) calc(66.66% - 2.5px), rgba(255, 255, 255, 0.9) calc(66.66% + 2.5px), transparent calc(66.66% + 2.5px));
   background-size: 100% 100%;
+  /* Enhanced shadow for thicker lines */
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
 }
 
 #fullscreenMessage,

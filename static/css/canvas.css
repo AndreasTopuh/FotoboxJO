@@ -763,7 +763,7 @@ video {
   box-shadow: 0 0 10px rgba(226, 133, 133, 0.4);
 }
 
-/* Enhanced Grid Overlay - More Visible */
+/* Enhanced Grid Overlay - Thicker 5px Lines */
 .grid-overlay {
   position: absolute;
   top: 0;
@@ -774,15 +774,15 @@ video {
   z-index: 5;
   display: none;
   background-image:
-    /* Horizontal lines - More visible */
-    linear-gradient(to bottom, transparent calc(33.33% - 1px), rgba(255, 255, 255, 0.8) calc(33.33% - 1px), rgba(255, 255, 255, 0.8) calc(33.33% + 1px), transparent calc(33.33% + 1px)),
-    linear-gradient(to bottom, transparent calc(66.66% - 1px), rgba(255, 255, 255, 0.8) calc(66.66% - 1px), rgba(255, 255, 255, 0.8) calc(66.66% + 1px), transparent calc(66.66% + 1px)),
-    /* Vertical lines - More visible */
-    linear-gradient(to right, transparent calc(33.33% - 1px), rgba(255, 255, 255, 0.8) calc(33.33% - 1px), rgba(255, 255, 255, 0.8) calc(33.33% + 1px), transparent calc(33.33% + 1px)),
-    linear-gradient(to right, transparent calc(66.66% - 1px), rgba(255, 255, 255, 0.8) calc(66.66% - 1px), rgba(255, 255, 255, 0.8) calc(66.66% + 1px), transparent calc(66.66% + 1px));
+    /* Horizontal lines - 5px thick */
+    linear-gradient(to bottom, transparent calc(33.33% - 2.5px), rgba(255, 255, 255, 0.9) calc(33.33% - 2.5px), rgba(255, 255, 255, 0.9) calc(33.33% + 2.5px), transparent calc(33.33% + 2.5px)),
+    linear-gradient(to bottom, transparent calc(66.66% - 2.5px), rgba(255, 255, 255, 0.9) calc(66.66% - 2.5px), rgba(255, 255, 255, 0.9) calc(66.66% + 2.5px), transparent calc(66.66% + 2.5px)),
+    /* Vertical lines - 5px thick */
+    linear-gradient(to right, transparent calc(33.33% - 2.5px), rgba(255, 255, 255, 0.9) calc(33.33% - 2.5px), rgba(255, 255, 255, 0.9) calc(33.33% + 2.5px), transparent calc(33.33% + 2.5px)),
+    linear-gradient(to right, transparent calc(66.66% - 2.5px), rgba(255, 255, 255, 0.9) calc(66.66% - 2.5px), rgba(255, 255, 255, 0.9) calc(66.66% + 2.5px), transparent calc(66.66% + 2.5px));
   background-size: 100% 100%;
-  /* Add subtle shadow for better visibility */
-  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.3));
+  /* Enhanced shadow for thicker lines */
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
 }
 
 #fullscreenMessage,

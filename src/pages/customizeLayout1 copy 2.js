@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     DOWNLOAD_QUALITY: 0.98,
     DOWNLOAD_MAX_WIDTH: 3000,
     DOWNLOAD_MAX_HEIGHT: 3600,
-
     THUMB_QUALITY: 0.8,
     THUMB_MAX_WIDTH: 600,
     THUMB_MAX_HEIGHT: 800
@@ -22,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         img.onload = () => {
           let { width, height, quality, maxWidth, maxHeight } = getCompressionSettings(mode);
-
+          
           const aspectRatio = img.width / img.height;
           if (img.width > maxWidth || img.height > maxHeight) {
             if (aspectRatio > 1) {
@@ -39,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
           
           canvas.width = width;
           canvas.height = height;
-
+          
           ctx.drawImage(img, 0, 0, width, height);
           const compressedData = canvas.toDataURL('image/jpeg', quality);
           console.log(`✅ Image compressed successfully with quality: ${quality}`);
@@ -65,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const imageData = state.finalCanvas.toDataURL('image/jpeg', 1.0);
       const compressedData = await compressImage(imageData, 'session');
-
+      
       sessionStorage.setItem('compressedPreview', compressedData);
       console.log('✅ Compressed image saved to session storage');
       
@@ -78,12 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function getCompressionSettings(mode) {
     switch (mode) {
-      case 'session':
-        return {
-          quality: COMPRESSION_CONFIG.SESSION_QUALITY,
-          maxWidth: COMPRESSION_CONFIG.SESSION_MAX_WIDTH,
-          maxHeight: COMPRESSION_CONFIG.SESSION_MAX_HEIGHT
-        };
       case 'download':
         return {
           quality: COMPRESSION_CONFIG.DOWNLOAD_QUALITY,
@@ -105,19 +98,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  const CONFIG = {
-    CANVAS_WIDTH: 1224,
-    CANVAS_HEIGHT: 1836,
-    BORDER_WIDTH: 62,
-    MARGIN_TOP: 120,
-    SPACING: 37,
-    PHOTO_WIDTH: 477,
-    PHOTO_HEIGHT: 639,
-    EXPECTED_PHOTOS: 4,
-    EMAILJS_SERVICE_ID: 'service_gtqjb2j',
-    EMAILJS_TEMPLATE_ID: 'template_pp5i4hm',
-    LOGO_SRC: '/src/assets/logo.png',
-  };
+ const CONFIG = {
+  CANVAS_WIDTH: 1224,
+  CANVAS_HEIGHT: 1836,
+  MARGIN_TOP: 142,
+  SPACING: 72,
+
+  PHOTO_WIDTH: 1052,
+  PHOTO_HEIGHT: 574.2,
+  PHOTO_MARGIN_LEFT: 86,
+  PHOTO_MARGIN_RIGHT: 86,
+
+  EXPECTED_PHOTOS: 2,
+  EMAILJS_SERVICE_ID: 'service_gtqjb2j',
+  EMAILJS_TEMPLATE_ID: 'template_pp5i4hm',
+  LOGO_SRC: '/src/assets/logo.png',
+};
 
   let state = {
     storedImages: [],
@@ -247,26 +243,31 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function loadAssetsFromDatabase() {
-    console.log('🔄 Loading Layout 2 frames and stickers from database...');
+    console.log('🔄 Loading Layout 1 frames and stickers from database...');
     try {
       const [framesResponse, stickersResponse, comboResponse] = await Promise.all([
-        fetch('../api-fetch/get-frames-by-layout.php?layout_id=2'),
-        fetch('../api-fetch/get-stickers-by-layout.php?layout_id=2'),
-        fetch('../api-fetch/get-frame-sticker-combo.php?layout_id=2')
+        fetch('../api-fetch/get-frames-by-layout.php?layout_id=1'),
+        fetch('../api-fetch/get-stickers-by-layout.php?layout_id=1'),
+        fetch('../api-fetch/get-frame-sticker-combo.php?layout_id=1')
       ]);
 
       const framesData = await framesResponse.json();
       const stickersData = await stickersResponse.json();
       const comboData = await comboResponse.json();
 
+      console.log('🔍 Debug - Frames Response:', framesData);
+      console.log('🔍 Debug - Stickers Response:', stickersData);
+      console.log('🔍 Debug - Combo Response:', comboData);
+
       state.availableFrames = framesData.success ? framesData.frames : getFallbackFrames();
-      console.log(`✅ Loaded ${state.availableFrames.length} Layout 2 frames from database`);
+      console.log(`✅ Loaded ${state.availableFrames.length} Layout 1 frames from database`);
 
       state.availableStickers = stickersData.success ? stickersData.data : getFallbackStickers();
-      console.log(`✅ Loaded ${state.availableStickers.length} Layout 2 stickers from database`);
+      console.log(`✅ Loaded ${state.availableStickers.length} Layout 1 stickers from database`);
 
       state.availableFrameStickers = comboData.success ? comboData.data : [];
-      console.log(`✅ Loaded ${state.availableFrameStickers.length} Layout 2 frame & sticker combos from database`);
+      console.log(`✅ Loaded ${state.availableFrameStickers.length} Layout 1 frame & sticker combos from database`);
+      console.log('🔍 Debug - Frame Stickers Array:', state.availableFrameStickers);
     } catch (error) {
       console.error('❌ Error loading assets from database:', error);
       state.availableFrames = getFallbackFrames();
@@ -310,7 +311,6 @@ document.addEventListener('DOMContentLoaded', () => {
           state.backgroundType = 'image';
           state.backgroundImage = frame.file_path;
           redrawCanvas();
-          saveCustomizationSettings();
           console.log(`🎨 Selected frame: ${frame.nama}`);
         });
 
@@ -325,6 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       state.availableStickers.forEach((sticker) => {
         const stickerBtn = document.createElement('button');
+        stickerBtn.type = 'button';
         stickerBtn.id = `sticker_${sticker.id}`;
         stickerBtn.className = 'dynamic-sticker-btn buttonStickers';
         stickerBtn.setAttribute('data-sticker-id', sticker.id);
@@ -340,13 +341,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         stickerBtn.appendChild(img);
 
-        stickerBtn.addEventListener('click', () => {
+        stickerBtn.addEventListener('click', (e) => {
+          e.preventDefault();
           setActiveButton('.buttonStickers', stickerBtn);
           state.selectedSticker = sticker.file_path;
           state.selectedFrameSticker = null;
           redrawCanvas();
-          saveCustomizationSettings();
-          console.log(`🌟 Selected sticker: ${sticker.nama}`);
+          console.log(`🦋 Selected sticker: ${sticker.nama}`);
         });
 
         DOM.stickersContainer.appendChild(stickerBtn);
@@ -360,6 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       state.availableFrameStickers.forEach((frameSticker) => {
         const frameStickerBtn = document.createElement('button');
+        frameStickerBtn.type = 'button';
         frameStickerBtn.id = `frameSticker_${frameSticker.id}`;
         frameStickerBtn.className = 'dynamic-frame-sticker-btn buttonFrameStickers';
         frameStickerBtn.setAttribute('data-frame-sticker-id', frameSticker.id);
@@ -375,12 +377,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         frameStickerBtn.appendChild(img);
 
-        frameStickerBtn.addEventListener('click', () => {
+        frameStickerBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
           setActiveButton('.buttonFrameStickers', frameStickerBtn);
           state.selectedFrameSticker = frameSticker.file_path;
           state.selectedSticker = null;
           redrawCanvas();
-          saveCustomizationSettings();
           console.log(`🎪 Selected frame & sticker combo: ${frameSticker.nama}`);
         });
 
@@ -390,21 +393,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (DOM.noneSticker) {
-      DOM.noneSticker.addEventListener('click', () => {
+      DOM.noneSticker.addEventListener('click', (e) => {
+        e.preventDefault();
         setActiveButton('.buttonStickers', DOM.noneSticker);
         state.selectedSticker = null;
         redrawCanvas();
-        saveCustomizationSettings();
         console.log('🚫 No sticker selected');
       });
     }
 
     if (DOM.noneFrameSticker) {
-      DOM.noneFrameSticker.addEventListener('click', () => {
+      DOM.noneFrameSticker.addEventListener('click', (e) => {
+        e.preventDefault();
         setActiveButton('.buttonFrameStickers', DOM.noneFrameSticker);
         state.selectedFrameSticker = null;
         redrawCanvas();
-        saveCustomizationSettings();
         console.log('🚫 No frame & sticker combo selected');
       });
     }
@@ -465,9 +468,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     ctx.scale(previewScale, previewScale);
 
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-
     if (state.backgroundType === 'color') {
       ctx.fillStyle = state.backgroundColor;
       ctx.fillRect(0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
@@ -477,16 +477,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const bgImg = await loadImage(state.backgroundImage);
         ctx.drawImage(bgImg, 0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
         await drawPhotos(ctx, canvas);
+        updateCanvasPreview(canvas);
       } catch (error) {
         console.error('❌ Failed to load background image:', state.backgroundImage);
         ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         await drawPhotos(ctx, canvas);
+        updateCanvasPreview(canvas);
       }
     } else {
       ctx.fillStyle = '#FFFFFF';
       ctx.fillRect(0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
       await drawPhotos(ctx, canvas);
+      updateCanvasPreview(canvas);
     }
   }
 
@@ -498,28 +501,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const imagesToProcess = Math.min(state.storedImages.length, CONFIG.EXPECTED_PHOTOS);
     let loadedCount = 0;
 
-    const availableWidth = CONFIG.CANVAS_WIDTH - (CONFIG.BORDER_WIDTH * 2);
-    const centerSpacing = availableWidth - (CONFIG.PHOTO_WIDTH * 2);
-    const leftColumnX = CONFIG.BORDER_WIDTH;
-    const rightColumnX = CONFIG.BORDER_WIDTH + CONFIG.PHOTO_WIDTH + centerSpacing;
-
     for (const [index, imageData] of state.storedImages.slice(0, imagesToProcess).entries()) {
       try {
         const img = await loadImage(imageData);
+        const xPosition = CONFIG.PHOTO_MARGIN_LEFT;
         const positions = [
-          { x: leftColumnX, y: CONFIG.MARGIN_TOP, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },
-          { x: leftColumnX, y: CONFIG.MARGIN_TOP + CONFIG.PHOTO_HEIGHT + CONFIG.SPACING, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },
-          { x: rightColumnX, y: CONFIG.MARGIN_TOP, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },
-          { x: rightColumnX, y: CONFIG.MARGIN_TOP + CONFIG.PHOTO_HEIGHT + CONFIG.SPACING, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },
+          { x: xPosition, y: CONFIG.MARGIN_TOP, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },
+          {
+            x: xPosition,
+            y: CONFIG.MARGIN_TOP + CONFIG.PHOTO_HEIGHT + CONFIG.SPACING,
+            width: CONFIG.PHOTO_WIDTH,
+            height: CONFIG.PHOTO_HEIGHT,
+          },
         ];
         drawCroppedImage(ctx, img, positions[index], state.selectedShape);
         loadedCount++;
         if (loadedCount === imagesToProcess) {
           await drawStickersAndLogos(ctx, canvas);
           updateCanvasPreview(canvas);
+
+          saveCustomizationSettings();
         }
       } catch (error) {
-        console.error(`❌ Failed to load image ${index}:`, error);
         handleError(`Failed to load image: ${imageData}`, 'console');
       }
     }
@@ -528,7 +531,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function drawCroppedImage(ctx, img, pos, shape) {
     const { x, y, width, height } = pos;
     const imgAspect = img.width / img.height;
-    const targetAspect = (width / height);
+    const targetAspect = width / height;
     let sx, sy, sWidth, sHeight;
 
     if (imgAspect > targetAspect) {
@@ -606,16 +609,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const frameStickerImg = await loadImage(state.selectedFrameSticker);
 
         ctx.drawImage(frameStickerImg, 0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
-        console.log('🎪 Frame & sticker combo applied');
+        console.log('🎪 Frame & sticker combo applied with proper scale');
       } catch (error) {
         console.error('❌ Failed to load frame & sticker combo:', state.selectedFrameSticker);
       }
-    } else if (state.selectedSticker) {
+    }
+
+    else if (state.selectedSticker) {
       try {
         const stickerImg = await loadImage(state.selectedSticker);
 
         ctx.drawImage(stickerImg, 0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
-        console.log('🌟 Regular sticker applied');
+        console.log('🌟 Regular sticker applied with proper scale');
       } catch (error) {
         console.error('❌ Failed to load sticker:', state.selectedSticker);
       }
@@ -627,7 +632,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const logoImg = await loadImage(CONFIG.LOGO_SRC);
 
         ctx.drawImage(logoImg, 20, CONFIG.CANVAS_HEIGHT - 60, 100, 40);
-        console.log('🏷️ Logo applied');
+        console.log('🏷️ Logo applied with proper scale');
       } catch (error) {
         console.error('❌ Failed to load logo:', CONFIG.LOGO_SRC);
       }
@@ -637,8 +642,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateCanvasPreview(canvas) {
     if (DOM.photoCustomPreview) {
       DOM.photoCustomPreview.innerHTML = '';
-      Object.assign(canvas.style, {
 
+      Object.assign(canvas.style, {
         maxWidth: '350px',
         maxHeight: '525px',
         width: 'auto',
@@ -650,7 +655,10 @@ document.addEventListener('DOMContentLoaded', () => {
         margin: '0 auto',
 
         imageRendering: 'auto',
+        imageRendering: '-webkit-optimize-contrast',
+        imageRendering: 'pixelated',
         '-ms-interpolation-mode': 'bicubic',
+
         filter: 'none'
       });
 
@@ -664,10 +672,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     state.finalCanvas = canvas;
 
-    saveCustomizationSettings();
-    compressAndSaveFinalImage().catch(error => 
-      console.warn('⚠️ Failed to compress for session storage:', error)
-    );
+    compressAndSaveFinalImage().catch(error => {
+      console.warn('⚠️ Failed to compress for session storage:', error);
+    });
   }
 
   function initializeControls() {
@@ -730,8 +737,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateBrightnessButtons(brightness);
 
     redrawCanvas();
-
-    saveCustomizationSettings();
   }
 
   function updateBrightnessDisplay(brightness) {
@@ -779,7 +784,6 @@ document.addEventListener('DOMContentLoaded', () => {
           state.backgroundType = 'color';
           state.backgroundImage = null;
           redrawCanvas();
-          saveCustomizationSettings();
         });
       }
     });
@@ -797,7 +801,6 @@ document.addEventListener('DOMContentLoaded', () => {
         element.addEventListener('click', () => {
           state.selectedShape = shape;
           redrawCanvas();
-          saveCustomizationSettings();
         });
       }
     });
@@ -811,7 +814,6 @@ document.addEventListener('DOMContentLoaded', () => {
       nonLogo.addEventListener('click', () => {
         setActiveButton('.logoCustomBtn', nonLogo);
         redrawCanvas();
-        saveCustomizationSettings();
       });
     }
 
@@ -819,7 +821,6 @@ document.addEventListener('DOMContentLoaded', () => {
       engLogo.addEventListener('click', () => {
         setActiveButton('.logoCustomBtn', engLogo);
         redrawCanvas();
-        saveCustomizationSettings();
       });
     }
   }
@@ -997,15 +998,17 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
         if (state.finalCanvas) {
+
           console.log('🖨️ Generating high quality for print...');
           try {
             const highQualityCanvas = await generateHighQualityCanvas();
-            const highQualityDataUrl = highQualityCanvas.toDataURL('image/jpeg', 0.95);
+
+            const highQualityDataUrl = highQualityCanvas.toDataURL('image/jpeg', 0.98);
             showSimplePrintPopup(highQualityDataUrl);
           } catch (error) {
             console.error('❌ Error generating high quality for print:', error);
 
-            showSimplePrintPopup(state.finalCanvas.toDataURL('image/jpeg', 1.0));
+            showSimplePrintPopup(highQualityDataUrl);
           }
         } else {
           handleError('Tidak ada gambar untuk di-print', 'alert');
@@ -1195,12 +1198,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       console.log('📧 Starting high quality email process...');
-      
+
       const highQualityCanvas = await generateHighQualityCanvas();
       
-      sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing for Email...';
+      sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Compressing for Email...';
+
+      const highQualityDataUrl = highQualityCanvas.toDataURL('image/jpeg', 1.0);
+      const compressedEmailImage = await compressImage(highQualityDataUrl, 'download');
       
-      const blob = await new Promise((resolve) => highQualityCanvas.toBlob(resolve, 'image/jpeg', 0.95));
+      sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing for Email...';
+
+      const blob = await new Promise((resolve) => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        img.onload = () => {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+          canvas.toBlob(resolve, 'image/jpeg', 0.95);
+        };
+        img.src = compressedEmailImage;
+      });
+      
       const base64data = await new Promise((resolve) => {
         const reader = new FileReader();
         reader.onloadend = () => resolve(reader.result);
@@ -1257,7 +1277,7 @@ document.addEventListener('DOMContentLoaded', () => {
         emailBtn.style.cursor = 'not-allowed';
         emailBtn.innerHTML = '✅ Email Terkirim (HQ)';
       }
-      
+
       updateContinueButtonState();
       
       showValidationError('Email berkualitas tinggi berhasil dikirim! ✅ Cek inbox Anda.');
@@ -1291,14 +1311,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 
-    const printScale = 3.0;
+    const printScale = 3;
     canvas.width = CONFIG.CANVAS_WIDTH * printScale;
     canvas.height = CONFIG.CANVAS_HEIGHT * printScale;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
-    
+
     ctx.scale(printScale, printScale);
 
     if (state.backgroundType === 'color') {
@@ -1334,19 +1354,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const imagesToProcess = Math.min(state.storedImages.length, CONFIG.EXPECTED_PHOTOS);
     let loadedCount = 0;
 
-    const availableWidth = CONFIG.CANVAS_WIDTH - (CONFIG.BORDER_WIDTH * 2);
-    const centerSpacing = availableWidth - (CONFIG.PHOTO_WIDTH * 2);
-    const leftColumnX = CONFIG.BORDER_WIDTH;
-    const rightColumnX = CONFIG.BORDER_WIDTH + CONFIG.PHOTO_WIDTH + centerSpacing;
-
     for (const [index, imageData] of state.storedImages.slice(0, imagesToProcess).entries()) {
       try {
         const img = await loadImage(imageData);
+        const xPosition = CONFIG.PHOTO_MARGIN_LEFT;
         const positions = [
-          { x: leftColumnX, y: CONFIG.MARGIN_TOP, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },
-          { x: leftColumnX, y: CONFIG.MARGIN_TOP + CONFIG.PHOTO_HEIGHT + CONFIG.SPACING, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },
-          { x: rightColumnX, y: CONFIG.MARGIN_TOP, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },
-          { x: rightColumnX, y: CONFIG.MARGIN_TOP + CONFIG.PHOTO_HEIGHT + CONFIG.SPACING, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },
+          { x: xPosition, y: CONFIG.MARGIN_TOP, width: CONFIG.PHOTO_WIDTH, height: CONFIG.PHOTO_HEIGHT },
+          {
+            x: xPosition,
+            y: CONFIG.MARGIN_TOP + CONFIG.PHOTO_HEIGHT + CONFIG.SPACING,
+            width: CONFIG.PHOTO_WIDTH,
+            height: CONFIG.PHOTO_HEIGHT,
+          },
         ];
         drawCroppedImage(ctx, img, positions[index], state.selectedShape);
         loadedCount++;
@@ -1366,6 +1385,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (state.selectedFrameSticker) {
       try {
         const frameStickerImg = await loadImage(state.selectedFrameSticker);
+
         ctx.drawImage(frameStickerImg, 0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
         console.log('🎪 High quality frame & sticker combo applied');
       } catch (error) {
@@ -1376,6 +1396,7 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (state.selectedSticker) {
       try {
         const stickerImg = await loadImage(state.selectedSticker);
+
         ctx.drawImage(stickerImg, 0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
         console.log('🌟 High quality regular sticker applied');
       } catch (error) {
@@ -1387,6 +1408,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (logoBtn && logoBtn.classList.contains('active')) {
       try {
         const logoImg = await loadImage(CONFIG.LOGO_SRC);
+
         ctx.drawImage(logoImg, 20, CONFIG.CANVAS_HEIGHT - 60, 100, 40);
         console.log('🏷️ High quality logo applied');
       } catch (error) {
@@ -1394,7 +1416,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }
-
+  
   function showPrintNotificationDialog() {
     const existingDialog = document.getElementById('printNotificationDialog');
     if (existingDialog) existingDialog.remove();

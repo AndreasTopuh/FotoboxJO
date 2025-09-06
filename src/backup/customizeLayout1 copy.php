@@ -1,0 +1,617 @@
+<?php
+session_start();
+// Initialize customize session if not set or expired, but preserve photo data
+if (!isset($_SESSION['customize_expired_time']) || time() > $_SESSION['customize_expired_time']) {
+    $_SESSION['customize_start_time'] = time();
+    $_SESSION['customize_expired_time'] = time() + (10 * 60);
+    $_SESSION['session_type'] = 'customize';
+    // Don't clear captured_photos here - keep them for the customize session
+}
+require_once '../includes/pwa-helper.php';
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Customize your Layout 1 photobooth photos with frames, stickers, and text.">
+    <meta name="twitter:image" content="https://www.gofotobox.online/assets/home-mockup.png">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Photobooth | Customize Layout 1</title>
+    <link rel="icon" href="/src/assets/icons/photobooth-new-logo.png">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../../static/css/main.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="../../static/css/customize.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="../../static/css/layout-variables.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="../../static/css/responsive.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Syne:wght@400;700&family=Poppins:wght@400;600;700&family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap">
+
+    <?php PWAHelper::addPWAHeaders(); ?>
+
+    <style>
+        /* Print styles for 4R paper */
+        @page {
+            size: 4in 6in;
+            margin: 0;
+        }
+
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                margin: 0;
+                padding: 0;
+                border: none;
+                box-sizing: border-box;
+            }
+
+            html,
+            body {
+                width: 4in;
+                height: 6in;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                background: none;
+            }
+
+            .print-container {
+                width: 4in;
+                height: 6in;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+            .print-image {
+                width: 4in;
+                height: 6in;
+                object-fit: cover;
+                object-position: center;
+                position: absolute;
+                top: 0;
+                left: 0;
+                display: block;
+            }
+
+            .print-container .modal-content {
+                position: fixed !important;
+                top: 100px !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+            }
+
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Loading placeholder styles */
+        .loading-placeholder {
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            animation: pulse-loading 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse-loading {
+
+            0%,
+            100% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Dynamic assets styling */
+        .dynamic-frame-btn,
+        .dynamic-sticker-btn,
+        .dynamic-frame-sticker-btn {
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .dynamic-frame-btn:hover,
+        .dynamic-sticker-btn:hover,
+        .dynamic-frame-sticker-btn:hover {
+            border-color: #E28585;
+            transform: scale(1.05);
+        }
+
+        .dynamic-frame-btn.active,
+        .dynamic-sticker-btn.active,
+        .dynamic-frame-sticker-btn.active {
+            border-color: #E28585;
+            background: rgba(226, 133, 133, 0.1);
+        }
+
+        .dynamic-frame-btn img,
+        .dynamic-sticker-btn img,
+        .dynamic-frame-sticker-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Stickers container styling */
+        #dynamicStickersContainer {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            /* 3 kolom, konsisten dengan combo */
+            gap: 8px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        /* Frame & sticker combo container styling */
+        #dynamicFrameStickerContainer {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            /* 3 kolom, jika lebih akan ke baris bawah */
+            gap: 8px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        /* Enhanced button styling for stickers and combos */
+        .buttonStickers,
+        .buttonFrameStickers {
+            width: 50px;
+            height: 50px;
+            border: 2px solid rgba(233, 30, 99, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .buttonStickers:hover,
+        .buttonFrameStickers:hover {
+            border-color: #E28585;
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(226, 133, 133, 0.3);
+        }
+
+        .buttonStickers.active,
+        .buttonFrameStickers.active {
+            border-color: #E28585;
+            background: rgba(226, 133, 133, 0.1);
+            box-shadow: 0 0 0 2px rgba(226, 133, 133, 0.3);
+        }
+
+        .buttonStickers img,
+        .buttonFrameStickers img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        /* Special styling for "None" buttons */
+        .sticker-none,
+        .frame-sticker-none {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .sticker-none img,
+        .frame-sticker-none img {
+            width: 24px;
+            height: 24px;
+            opacity: 0.6;
+            object-fit: contain;
+        }
+
+        /* Brightness controls styling */
+        .brightness-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(226, 133, 133, 0.2);
+        }
+
+        .brightness-slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brightness-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            min-width: 140px;
+        }
+
+        .brightness-slider {
+            flex: 1;
+            height: 6px;
+            background: linear-gradient(to right, #333, #fff);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .brightness-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #E28585;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .brightness-slider::-webkit-slider-thumb:hover {
+            background: #d67575;
+            transform: scale(1.1);
+        }
+
+        .brightness-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #E28585;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .brightness-value {
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .brightness-value span {
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .brightness-preset-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .brightness-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(226, 133, 133, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .brightness-btn:hover {
+            background: rgba(226, 133, 133, 0.2);
+            border-color: #E28585;
+            transform: translateY(-2px);
+        }
+
+        .brightness-btn.active {
+            background: rgba(226, 133, 133, 0.3);
+            border-color: #E28585;
+            box-shadow: 0 0 0 2px rgba(226, 133, 133, 0.3);
+        }
+
+        .brightness-btn i {
+            font-size: 14px;
+        }
+
+        .darker-btn {
+            color: #ddd;
+        }
+
+        .normal-btn {
+            color: #fff;
+        }
+
+        .brighter-btn {
+            color: #ffe066;
+        }
+
+        .super-bright-btn {
+            color: #ff6b35;
+            background: rgba(255, 107, 53, 0.1);
+        }
+
+        .super-bright-btn:hover {
+            background: rgba(255, 107, 53, 0.2);
+        }
+
+        .super-bright-btn.active {
+            background: rgba(255, 107, 53, 0.3);
+            border-color: #ff6b35;
+            box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="gradientBgCanvas"></div>
+
+    <main class="customize-content-wrapper">
+
+        <!-- Customization Options -->
+        <section class="customize-left-section">
+            <h1 class="customize-title">Customize Your Photo</h1>
+
+            <!-- Photo Brightness -->
+            <div class="customize-options-group">
+                <h3 class="customize-options-label">Brightness / Kecerahan</h3>
+                <div class="brightness-controls">
+                    <div class="brightness-slider-container">
+                        <label for="brightnessSlider" class="brightness-label">
+                            <i class="fas fa-sun"></i> Adjust Brightness
+                        </label>
+                        <input type="range" id="brightnessSlider" min="0.3" max="3.0" step="0.1" value="1.0" class="brightness-slider">
+                        <div class="brightness-value">
+                            <span id="brightnessValue">100%</span>
+                        </div>
+                    </div>
+
+                    <!-- <div class="brightness-preset-buttons">
+                        <button id="darkerBtn" class="brightness-btn darker-btn">
+                            <i class="fas fa-moon"></i> Darker
+                        </button>
+                        <button id="normalBtn" class="brightness-btn normal-btn active">
+                            <i class="fas fa-adjust"></i> Normal
+                        </button>
+                        <button id="brighterBtn" class="brightness-btn brighter-btn">
+                            <i class="fas fa-sun"></i> Brighter
+                        </button>
+                        <!-- <button id="superBrightBtn" class="brightness-btn super-bright-btn">
+                            <i class="fas fa-fire"></i> Super Bright
+                        </button> -->
+                </div>
+
+            </div>
+            </div>
+
+            <!-- Frame Color -->
+            <div class="customize-options-group">
+                <h3 class="customize-options-label">Frame Color</h3>
+                <div class="customize-buttons-grid">
+                    <button id="pinkBtnFrame" class="buttonFrames frame-color-pink"></button>
+                    <button id="blueBtnFrame" class="buttonFrames frame-color-blue"></button>
+                    <button id="yellowBtnFrame" class="buttonFrames frame-color-yellow"></button>
+                    <button id="matchaBtnFrame" class="buttonFrames frame-color-matcha"></button>
+                    <button id="purpleBtnFrame" class="buttonFrames frame-color-purple"></button>
+                    <button id="brownBtnFrame" class="buttonFrames frame-color-brown"></button>
+                    <button id="redBtnFrame" class="buttonFrames frame-color-red"></button>
+                    <button id="whiteBtnFrame" class="buttonFrames frame-color-white"></button>
+                    <button id="blackBtnFrame" class="buttonFrames frame-color-black"></button>
+                </div>
+            </div>
+
+            <!-- Background Frames (Dynamic from Database) -->
+            <!-- <div class="customize-options-group">
+                <h3 class="customize-options-label">Background Frames</h3>
+                <div id="dynamicFramesContainer" class="customize-buttons-grid">
+                    <div class="loading-placeholder">Loading frames...</div>
+                </div>
+            </div> -->
+
+            <!-- Stickers (Dynamic from Database - Layout 1 specific) -->
+            <!-- <div class="customize-options-group">
+                <h3 class="customize-options-label">Stickers</h3>
+                <div id="dynamicStickersContainer" class="customize-buttons-grid stickers-grid">
+                    <button type="button" id="noneSticker" class="buttonStickers sticker-none">
+                        <img src="../assets/block (1).png" alt="None" class="shape-icon">
+                    </button>
+                    <div class="loading-placeholder">Loading layout 1 stickers...</div>
+                </div>
+            </div> -->
+
+            <!-- Frame & Sticker Combo (Dynamic from Database - Layout 1 specific) -->
+            <div class="customize-options-group">
+                <h3 class="customize-options-label">Frame & Sticker</h3>
+                <div id="dynamicFrameStickerContainer" class="customize-buttons-grid stickers-grid">
+                    <button type="button" id="noneFrameSticker" class="buttonFrameStickers frame-sticker-none">
+                        <img src="../assets/block (1).png" alt="None" class="shape-icon">
+                    </button>
+                    <div class="loading-placeholder">Loading layout 1 frame & sticker combos...</div>
+                </div>
+            </div>
+
+            <!-- Photo Shape -->
+            <div class="customize-options-group">
+                <h3 class="customize-options-label">Photo Shape</h3>
+                <div class="customize-buttons-grid shape-buttons">
+                    <button id="noneFrameShape" class="buttonShapes">
+                        <img src="../assets/block (1).png" alt="None" class="shape-icon">
+                    </button>
+                    <button id="softFrameShape" class="buttonShapes">
+                        <img src="../assets/corners.png" alt="Soft Edge Frame" class="shape-icon">
+                    </button>
+                </div>
+            </div>
+
+            <!-- Logo -->
+            <div class="customize-options-group">
+                <h3 class="customize-options-label">Logo</h3>
+                <div class="customize-logo-buttons">
+                    <button id="nonLogo" class="logoCustomBtn">None</button>
+                    <button id="engLogo" class="logoCustomBtn">Use</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Photo Preview -->
+        <section class="customize-right-section">
+            <div id="photoPreview" class="customize-photo-preview"></div>
+        </section>
+    </main>
+
+    <!-- Action Buttons -->
+    <footer class="customize-action-buttons">
+        <button type="button" class="customize-action-btn email-btn" id="emailBtn">
+            <i class="fas fa-envelope"></i> Kirim ke Email
+        </button>
+        <button type="button" class="customize-action-btn print-btn" id="printBtn">
+            <i class="fas fa-print"></i> Print
+        </button>
+        <button type="button" class="customize-action-btn continue-btn" id="continueBtn">
+            <i class="fas fa-arrow-right"></i> Lanjutkan
+        </button>
+    </footer>
+
+    <!-- Email Modal -->
+    <div id="emailModal" class="modal">
+        <div class="modal-content email-modal-content">
+            <button id="closeEmailModal" class="close-btn">&times;</button>
+            <div class="modal-header">
+                <h3 class="modal-title">Masukan Email Anda</h3>
+                <p class="modal-subtitle">Foto akan dikirim ke alamat email yang Anda masukkan</p>
+            </div>
+            <div class="email-input-container">
+                <input type="email" id="emailInput" placeholder="contoh@email.com" class="email-input">
+                <div class="input-validation">
+                    <span id="validation-message">Format email tidak valid</span>
+                </div>
+            </div>
+            <div id="virtualKeyboard" class="virtual-keyboard">
+                <div class="keyboard-row">
+                    <button class="key-btn" data-key="1">1</button>
+                    <button class="key-btn" data-key="2">2</button>
+                    <button class="key-btn" data-key="3">3</button>
+                    <button class="key-btn" data-key="4">4</button>
+                    <button class="key-btn" data-key="5">5</button>
+                    <button class="key-btn" data-key="6">6</button>
+                    <button class="key-btn" data-key="7">7</button>
+                    <button class="key-btn" data-key="8">8</button>
+                    <button class="key-btn" data-key="9">9</button>
+                    <button class="key-btn" data-key="0">0</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key-btn" data-key="q">Q</button>
+                    <button class="key-btn" data-key="w">W</button>
+                    <button class="key-btn" data-key="e">E</button>
+                    <button class="key-btn" data-key="r">R</button>
+                    <button class="key-btn" data-key="t">T</button>
+                    <button class="key-btn" data-key="y">Y</button>
+                    <button class="key-btn" data-key="u">U</button>
+                    <button class="key-btn" data-key="i">I</button>
+                    <button class="key-btn" data-key="o">O</button>
+                    <button class="key-btn" data-key="p">P</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key-btn" data-key="a">A</button>
+                    <button class="key-btn" data-key="s">S</button>
+                    <button class="key-btn" data-key="d">D</button>
+                    <button class="key-btn" data-key="f">F</button>
+                    <button class="key-btn" data-key="g">G</button>
+                    <button class="key-btn" data-key="h">H</button>
+                    <button class="key-btn" data-key="j">J</button>
+                    <button class="key-btn" data-key="k">K</button>
+                    <button class="key-btn" data-key="l">L</button>
+                    <button class="key-btn" data-key="@">@</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key-btn key-caps" data-key="caps">CAPS</button>
+                    <button class="key-btn" data-key="z">Z</button>
+                    <button class="key-btn" data-key="x">X</button>
+                    <button class="key-btn" data-key="c">C</button>
+                    <button class="key-btn" data-key="v">V</button>
+                    <button class="key-btn" data-key="b">B</button>
+                    <button class="key-btn" data-key="n">N</button>
+                    <button class="key-btn" data-key="m">M</button>
+                    <button class="key-btn key-backspace" data-key="backspace">⌫</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key-btn" data-key=".">.</button>
+                    <button class="key-btn" data-key="-">-</button>
+                    <button class="key-btn" data-key="_">_</button>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="cancelEmailBtn" class="btn-secondary">Batal</button>
+                <button id="sendEmailBtn" class="btn-primary">
+                    <i class="fas fa-paper-plane"></i> Kirim
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <!-- Enhanced EmailJS Helper -->
+    <script src="../assets/js/emailjs-helper.js"></script>
+    <script>
+        (function() {
+            emailjs.init({
+                publicKey: "9SDzOfKjxuULQ5ZW8"
+            });
+
+            // Initialize enhanced EmailJS helper
+            if (typeof window.emailJSHelper !== 'undefined') {
+                window.emailJSHelper.init('9SDzOfKjxuULQ5ZW8');
+                console.log('✅ Enhanced EmailJS Helper loaded');
+            }
+        })();
+    </script>
+    <script src="../assets/js/assets-manager.js"></script>
+    <script src="customizeLayout1.js"></script>
+    <script src="../includes/session-timer.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.sessionTimer) {
+                window.sessionTimer.onExpired = () => {
+                    window.location.href = 'thankyou.php';
+                };
+            }
+        });
+    </script>
+    <?php PWAHelper::addPWAScript(); ?>
+</body>
+
+</html>

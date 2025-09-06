@@ -1504,16 +1504,6 @@ document.addEventListener('DOMContentLoaded', () => {
         retakeAllBtn.addEventListener('click', () => retakeAllPhotos());
     }
 
-    // // Conditional keyboard listener
-    // if (KEYBOARD_CONFIG.ENABLE_SPACE_TO_CAPTURE) {
-    //     document.addEventListener('keydown', (event) => {
-    //         if (event.code === "Space") {
-    //             event.preventDefault(); 
-    //             capturePhoto();
-    //         }
-    //     });
-    // }
-
     if (doneBtn) {
         doneBtn.addEventListener('click', () => storeImageArray());
     }

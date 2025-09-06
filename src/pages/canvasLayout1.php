@@ -61,7 +61,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
 
         /* Adjustments to fit content within 1280x1024 viewport */
         #videoContainer {
-            height: 700px;
+            height: 720px;
         }
 
         .photo-preview-container {
@@ -454,7 +454,6 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     </main>
 
     <script src="canvasLayout1.js"></script>
-    <script src="debug-camera.js"></script>
 
     <!-- Session Timer Script -->
     <script src="../includes/session-timer.js"></script>

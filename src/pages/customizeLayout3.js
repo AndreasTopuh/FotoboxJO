@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 🚀 FAST COMPRESSION FUNCTION
   function compressImage(imageData, mode = 'session') {
+    console.log(`🔄 Compressing image with mode: ${mode}`);
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.crossOrigin = 'anonymous';
@@ -78,6 +79,26 @@ document.addEventListener('DOMContentLoaded', () => {
       img.onerror = () => reject(new Error('Failed to load image for compression'));
       img.src = imageData;
     });
+  }
+
+  // 🎯 COMPRESS AND SAVE FINAL IMAGE FOR SESSION STORAGE
+  async function compressAndSaveFinalImage() {
+    if (!state.finalCanvas) {
+      console.warn('⚠️ No final canvas to compress');
+      return;
+    }
+    
+    try {
+      const originalDataUrl = state.finalCanvas.toDataURL('image/jpeg', 1.0);
+      const compressedDataUrl = await compressImage(originalDataUrl, 'session');
+      
+      sessionStorage.setItem('customizeLayout3_compressedImage', compressedDataUrl);
+      sessionStorage.setItem('customizeLayout3_imageTimestamp', Date.now().toString());
+      
+      console.log('✅ Final image compressed and saved to session storage');
+    } catch (error) {
+      console.warn('⚠️ Failed to compress and save final image:', error);
+    }
   }
 
   function getCompressionSettings(mode) {
@@ -134,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
     emailSent: false,
     printUsed: false,
     imageCache: new Map(),
-    brightness: 1.2, // Default brightness (1.0 = normal, 0.5 = darker, 2.0 = brighter)
+    brightness: 1.0, // Default brightness (1.0 = normal, 0.5 = darker, 2.0 = brighter)
   };
 
   // DOM Elements
@@ -202,6 +223,56 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /**
+   * Saves current customization settings to session storage
+   */
+  function saveCustomizationSettings() {
+    const settings = {
+      selectedSticker: state.selectedSticker,
+      selectedFrameSticker: state.selectedFrameSticker,
+      selectedShape: state.selectedShape,
+      backgroundColor: state.backgroundColor,
+      backgroundType: state.backgroundType,
+      brightness: state.brightness,
+      timestamp: Date.now()
+    };
+    
+    try {
+      sessionStorage.setItem('customizeLayout3_settings', JSON.stringify(settings));
+      console.log('💾 Layout 3 customization settings saved');
+    } catch (error) {
+      console.warn('⚠️ Failed to save settings to session storage:', error);
+    }
+  }
+
+  /**
+   * Loads customization settings from session storage
+   */
+  function loadCustomizationSettings() {
+    try {
+      const settingsStr = sessionStorage.getItem('customizeLayout3_settings');
+      if (settingsStr) {
+        const settings = JSON.parse(settingsStr);
+        
+        // Check if settings are not too old (max 1 hour)
+        if (Date.now() - settings.timestamp < 3600000) {
+          state.selectedSticker = settings.selectedSticker;
+          state.selectedFrameSticker = settings.selectedFrameSticker;
+          state.selectedShape = settings.selectedShape || 'default';
+          state.backgroundColor = settings.backgroundColor || '#FFFFFF';
+          state.backgroundType = settings.backgroundType || 'color';
+          state.brightness = settings.brightness || 1.0;
+          
+          console.log('📂 Layout 3 customization settings loaded');
+          return true;
+        }
+      }
+    } catch (error) {
+      console.warn('⚠️ Failed to load settings from session storage:', error);
+    }
+    return false;
+  }
+
   // Initialization
   /**
    * Initializes the photobooth application
@@ -209,6 +280,9 @@ document.addEventListener('DOMContentLoaded', () => {
   async function initializeApp() {
     console.log('🔄 Initializing photobooth customization...');
     try {
+      // 💾 Load previous customization settings
+      loadCustomizationSettings();
+      
       await loadAssetsFromDatabase();
       await createDynamicControls();
       await loadPhotos();
@@ -340,6 +414,9 @@ document.addEventListener('DOMContentLoaded', () => {
           state.selectedFrameSticker = null; // Clear frame-sticker combo
           redrawCanvas();
           console.log(`🌟 Selected sticker: ${sticker.nama}`);
+          
+          // 💾 Auto-save settings
+          saveCustomizationSettings();
         });
 
         DOM.stickersContainer.appendChild(stickerBtn);
@@ -384,6 +461,9 @@ document.addEventListener('DOMContentLoaded', () => {
           state.selectedSticker = null; // Clear regular sticker
           redrawCanvas();
           console.log(`🎪 Selected frame & sticker combo: ${frameSticker.nama}`);
+          
+          // 💾 Auto-save settings
+          saveCustomizationSettings();
         });
 
         DOM.frameStickerContainer.appendChild(frameStickerBtn);
@@ -399,6 +479,9 @@ document.addEventListener('DOMContentLoaded', () => {
         state.selectedSticker = null;
         redrawCanvas();
         console.log('🚫 No sticker selected');
+        
+        // 💾 Auto-save settings
+        saveCustomizationSettings();
       });
     }
 
@@ -410,6 +493,9 @@ document.addEventListener('DOMContentLoaded', () => {
         state.selectedFrameSticker = null;
         redrawCanvas();
         console.log('🚫 No frame & sticker combo selected');
+        
+        // 💾 Auto-save settings
+        saveCustomizationSettings();
       });
     }
   }
@@ -723,6 +809,12 @@ document.addEventListener('DOMContentLoaded', () => {
       DOM.photoCustomPreview.appendChild(canvas);
     }
     state.finalCanvas = canvas;
+    
+    // 💾 Auto-save settings and compress image for session storage
+    saveCustomizationSettings();
+    compressAndSaveFinalImage().catch(error => 
+      console.warn('⚠️ Failed to compress for session storage:', error)
+    );
   }
 
   /**
@@ -873,6 +965,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeBrightnessControls();
     initializeFrameControls();
     initializeShapeControls();
+    initializeLogoControls();
     initializeActionButtons();
     initializeEmailModal();
     console.log('✅ Controls initialized');
@@ -939,6 +1032,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Redraw canvas
     redrawCanvas();
+    
+    // 💾 Auto-save settings
+    saveCustomizationSettings();
   }
 
   /**
@@ -997,7 +1093,11 @@ document.addEventListener('DOMContentLoaded', () => {
           state.backgroundColor = color;
           state.backgroundType = 'color';
           state.backgroundImage = null;
+          setActiveButton('.frame-color-btn', element);
           redrawCanvas();
+          
+          // 💾 Auto-save settings
+          saveCustomizationSettings();
         });
       }
     });
@@ -1017,10 +1117,42 @@ document.addEventListener('DOMContentLoaded', () => {
       if (element) {
         element.addEventListener('click', () => {
           state.selectedShape = shape;
+          setActiveButton('.frame-shape-btn', element);
           redrawCanvas();
+          
+          // 💾 Auto-save settings
+          saveCustomizationSettings();
         });
       }
     });
+  }
+
+  /**
+   * Initializes logo controls
+   */
+  function initializeLogoControls() {
+    const nonLogo = document.getElementById('nonLogo');
+    const engLogo = document.getElementById('engLogo');
+
+    if (nonLogo) {
+      nonLogo.addEventListener('click', () => {
+        setActiveButton('.logo-btn', nonLogo);
+        redrawCanvas();
+        
+        // 💾 Auto-save settings
+        saveCustomizationSettings();
+      });
+    }
+
+    if (engLogo) {
+      engLogo.addEventListener('click', () => {
+        setActiveButton('.logo-btn', engLogo);
+        redrawCanvas();
+        
+        // 💾 Auto-save settings
+        saveCustomizationSettings();
+      });
+    }
   }
 
   /**

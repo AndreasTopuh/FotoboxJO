@@ -1,17 +1,28 @@
+/*
+ * ⚡ CUSTOMIZE LAYOUT 2 - LAYOUT-SPECIFIC FRAMES VERSION
+ * ✅ Updated: Uses frames specific to Layout 2 only
+ * 📝 API: /src/api-fetch/get-frames-by-layout.php?layout_id=2
+ */
 document.addEventListener('DOMContentLoaded', () => {
+  // ⚡ COMPRESSION CONFIGURATION - OPTIMIZED 3-Level Quality System
   const COMPRESSION_CONFIG = {
-    SESSION_QUALITY: 0.9,
-    SESSION_MAX_WIDTH: 2000,
-    SESSION_MAX_HEIGHT: 2400,
-    DOWNLOAD_QUALITY: 0.98,
-    DOWNLOAD_MAX_WIDTH: 3000,
-    DOWNLOAD_MAX_HEIGHT: 3600,
+    // Untuk session storage (temporary) - HIGH QUALITY for better preview
+    SESSION_QUALITY: 0.9,        // 90% - lebih tinggi untuk preview yang tajam
+    SESSION_MAX_WIDTH: 2000,     // Naikan untuk preserve detail canvas 1224px
+    SESSION_MAX_HEIGHT: 2400,    // Naikan untuk preserve detail canvas 1836px
 
-    THUMB_QUALITY: 0.8,
-    THUMB_MAX_WIDTH: 600,
+    // Untuk download/print (high quality) - BEST QUALITY
+    DOWNLOAD_QUALITY: 0.98,      // 98% - hampir lossless untuk print
+    DOWNLOAD_MAX_WIDTH: 3000,    // Full resolution untuk print berkualitas
+    DOWNLOAD_MAX_HEIGHT: 3600,
+    
+    // Untuk preview thumbnail - BALANCED PREVIEW  
+    THUMB_QUALITY: 0.8,          // 80% - selaras dengan canvasLayout2.js
+    THUMB_MAX_WIDTH: 600,        // Naikan untuk detail lebih baik
     THUMB_MAX_HEIGHT: 800
   };
 
+  // 🚀 FAST COMPRESSION FUNCTION - ENHANCED WITH USAGE
   function compressImage(imageData, mode = 'session') {
     console.log(`🔄 Compressing image with mode: ${mode}`);
     return new Promise((resolve, reject) => {
@@ -22,7 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         img.onload = () => {
           let { width, height, quality, maxWidth, maxHeight } = getCompressionSettings(mode);
-
+          
+          // Calculate new dimensions
           const aspectRatio = img.width / img.height;
           if (img.width > maxWidth || img.height > maxHeight) {
             if (aspectRatio > 1) {
@@ -39,7 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
           
           canvas.width = width;
           canvas.height = height;
-
+          
+          // Draw and compress
           ctx.drawImage(img, 0, 0, width, height);
           const compressedData = canvas.toDataURL('image/jpeg', quality);
           console.log(`✅ Image compressed successfully with quality: ${quality}`);
@@ -56,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // 🎯 COMPRESS AND SAVE FINAL IMAGE FOR SESSION STORAGE
   async function compressAndSaveFinalImage() {
     if (!state.finalCanvas) {
       console.warn('⚠️ No final canvas available for compression');
@@ -65,7 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const imageData = state.finalCanvas.toDataURL('image/jpeg', 1.0);
       const compressedData = await compressImage(imageData, 'session');
-
+      
+      // Save compressed image to session storage for preview
       sessionStorage.setItem('compressedPreview', compressedData);
       console.log('✅ Compressed image saved to session storage');
       
@@ -105,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Configuration constants
   const CONFIG = {
     CANVAS_WIDTH: 1224,
     CANVAS_HEIGHT: 1836,
@@ -119,6 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
     LOGO_SRC: '/src/assets/logo.png',
   };
 
+  // State variables
   let state = {
     storedImages: [],
     finalCanvas: null,
@@ -133,10 +150,11 @@ document.addEventListener('DOMContentLoaded', () => {
     availableFrameStickers: [],
     emailSent: false,
     printUsed: false,
-    imageCache: new Map(),
-    brightness: 1.0,
+    imageCache: new Map(), // Cache untuk gambar
+    brightness: 1.0, // Default brightness (1.0 = normal, 0.5 = darker, 2.0 = brighter)
   };
 
+  // DOM Elements
   const DOM = {
     photoCustomPreview: document.getElementById('photoPreview'),
     framesContainer: document.getElementById('dynamicFramesContainer'),
@@ -146,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
     noneFrameSticker: document.getElementById('noneFrameSticker'),
     emailModal: document.getElementById('emailModal'),
     emailInput: document.getElementById('emailInput'),
-
+    // Brightness controls
     brightnessSlider: document.getElementById('brightnessSlider'),
     brightnessValue: document.getElementById('brightnessValue'),
     darkerBtn: document.getElementById('darkerBtn'),
@@ -155,6 +173,12 @@ document.addEventListener('DOMContentLoaded', () => {
     superBrightBtn: document.getElementById('superBrightBtn'),
   };
 
+  // Utility Functions
+  /**
+   * Loads an image and caches it
+   * @param {string} src - Image source URL
+   * @returns {Promise<Image>} - Loaded image
+   */
   async function loadImage(src) {
     if (state.imageCache.has(src)) {
       return state.imageCache.get(src);
@@ -171,11 +195,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /**
+   * Sets active state for a button and removes active from others
+   * @param {string} selector - CSS selector for buttons
+   * @param {HTMLElement} selectedButton - Button to set as active
+   */
   function setActiveButton(selector, selectedButton) {
     document.querySelectorAll(selector).forEach((btn) => btn.classList.remove('active'));
     selectedButton.classList.add('active');
   }
 
+  /**
+   * Handles errors consistently
+   * @param {string} message - Error message
+   * @param {string} type - Error type ('alert' or 'validation')
+   */
   function handleError(message, type = 'alert') {
     console.error(`❌ ${message}`);
     if (type === 'validation') {
@@ -185,6 +219,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /**
+   * Saves current customization settings to session storage
+   */
   function saveCustomizationSettings() {
     const settings = {
       selectedSticker: state.selectedSticker,
@@ -204,12 +241,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /**
+   * Loads customization settings from session storage
+   */
   function loadCustomizationSettings() {
     try {
       const settingsStr = sessionStorage.getItem('customizationSettings');
       if (settingsStr) {
         const settings = JSON.parse(settingsStr);
-
+        
+        // Check if settings are not too old (max 1 hour)
         if (Date.now() - settings.timestamp < 3600000) {
           state.selectedSticker = settings.selectedSticker;
           state.selectedFrameSticker = settings.selectedFrameSticker;
@@ -228,10 +269,14 @@ document.addEventListener('DOMContentLoaded', () => {
     return false;
   }
 
+  // Initialization
+  /**
+   * Initializes the photobooth application
+   */
   async function initializeApp() {
     console.log('🔄 Initializing photobooth customization...');
     try {
-
+      // 📂 Try to load previous customization settings
       loadCustomizationSettings();
       
       await loadAssetsFromDatabase();
@@ -246,6 +291,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Asset Loading
+  /**
+   * Loads frames and stickers from database - Layout 2 specific
+   */
   async function loadAssetsFromDatabase() {
     console.log('🔄 Loading Layout 2 frames and stickers from database...');
     try {
@@ -275,6 +324,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /**
+   * Returns fallback frames
+   * @returns {Array} - Array of fallback frame objects
+   */
   function getFallbackFrames() {
     return [
       { id: 1, nama: 'Matcha Frame', file_path: '/src/assets/frame-backgrounds/matcha.jpg' },
@@ -283,18 +336,26 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
   }
 
+  /**
+   * Returns fallback stickers
+   * @returns {Array} - Array of fallback sticker objects
+   */
   function getFallbackStickers() {
     return [{ id: 1, nama: 'Star Sticker', file_path: '/src/assets/stickers/bintang1.png' }];
   }
 
+  // Dynamic Controls
+  /**
+   * Creates dynamic frame and sticker controls
+   */
   async function createDynamicControls() {
     console.log('🔄 Creating dynamic controls...');
 
+    // Create dynamic frames
     if (DOM.framesContainer) {
       DOM.framesContainer.innerHTML = '';
       state.availableFrames.forEach((frame) => {
         const frameBtn = document.createElement('button');
-        frameBtn.type = 'button';
         frameBtn.id = `frame_${frame.id}`;
         frameBtn.className = 'dynamic-frame-btn buttonBgFrames';
         frameBtn.style.backgroundImage = `url('${frame.file_path}')`;
@@ -304,13 +365,11 @@ document.addEventListener('DOMContentLoaded', () => {
         frameBtn.setAttribute('data-frame-id', frame.id);
         frameBtn.setAttribute('data-frame-path', frame.file_path);
 
-        frameBtn.addEventListener('click', (e) => {
-          e.preventDefault();
+        frameBtn.addEventListener('click', () => {
           setActiveButton('.dynamic-frame-btn', frameBtn);
           state.backgroundType = 'image';
           state.backgroundImage = frame.file_path;
           redrawCanvas();
-          saveCustomizationSettings();
           console.log(`🎨 Selected frame: ${frame.nama}`);
         });
 
@@ -319,6 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log(`✅ Created ${state.availableFrames.length} dynamic frame controls`);
     }
 
+    // Create dynamic stickers
     if (DOM.stickersContainer) {
       const loadingPlaceholder = DOM.stickersContainer.querySelector('.loading-placeholder');
       if (loadingPlaceholder) loadingPlaceholder.remove();
@@ -343,9 +403,9 @@ document.addEventListener('DOMContentLoaded', () => {
         stickerBtn.addEventListener('click', () => {
           setActiveButton('.buttonStickers', stickerBtn);
           state.selectedSticker = sticker.file_path;
-          state.selectedFrameSticker = null;
+          state.selectedFrameSticker = null; // Clear frame-sticker combo
           redrawCanvas();
-          saveCustomizationSettings();
+          saveCustomizationSettings(); // 💾 Auto-save settings
           console.log(`🌟 Selected sticker: ${sticker.nama}`);
         });
 
@@ -354,6 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log(`✅ Created ${state.availableStickers.length} dynamic sticker controls`);
     }
 
+    // Create dynamic frame & sticker combos
     if (DOM.frameStickerContainer) {
       const loadingPlaceholder = DOM.frameStickerContainer.querySelector('.loading-placeholder');
       if (loadingPlaceholder) loadingPlaceholder.remove();
@@ -378,9 +439,9 @@ document.addEventListener('DOMContentLoaded', () => {
         frameStickerBtn.addEventListener('click', () => {
           setActiveButton('.buttonFrameStickers', frameStickerBtn);
           state.selectedFrameSticker = frameSticker.file_path;
-          state.selectedSticker = null;
+          state.selectedSticker = null; // Clear regular sticker
           redrawCanvas();
-          saveCustomizationSettings();
+          saveCustomizationSettings(); // 💾 Auto-save settings
           console.log(`🎪 Selected frame & sticker combo: ${frameSticker.nama}`);
         });
 
@@ -389,27 +450,33 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log(`✅ Created ${state.availableFrameStickers.length} dynamic frame & sticker combo controls`);
     }
 
+    // Initialize "None" sticker button
     if (DOM.noneSticker) {
       DOM.noneSticker.addEventListener('click', () => {
         setActiveButton('.buttonStickers', DOM.noneSticker);
         state.selectedSticker = null;
         redrawCanvas();
-        saveCustomizationSettings();
+        saveCustomizationSettings(); // 💾 Auto-save settings
         console.log('🚫 No sticker selected');
       });
     }
 
+    // Initialize "None" frame & sticker button
     if (DOM.noneFrameSticker) {
       DOM.noneFrameSticker.addEventListener('click', () => {
         setActiveButton('.buttonFrameStickers', DOM.noneFrameSticker);
         state.selectedFrameSticker = null;
         redrawCanvas();
-        saveCustomizationSettings();
+        saveCustomizationSettings(); // 💾 Auto-save settings
         console.log('🚫 No frame & sticker combo selected');
       });
     }
   }
 
+  // Photo Loading
+  /**
+   * Loads photos from server
+   */
   async function loadPhotos() {
     console.log('🔄 Loading photos...');
     try {
@@ -435,10 +502,14 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log(`✅ Loaded ${state.storedImages.length} images:`, state.storedImages);
     } catch (error) {
       console.error('❌ Error loading photos:', error.message);
-      throw error;
+      throw error; // Re-throw to be handled by initializeApp
     }
   }
 
+  // Canvas Management
+  /**
+   * Initializes the canvas
+   */
   function initializeCanvas() {
     if (!state.storedImages.length) {
       console.error('❌ No images available for canvas');
@@ -449,6 +520,9 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('✅ Canvas initialized');
   }
 
+  /**
+   * Redraws the canvas with current settings - Enhanced with 1.5x Preview Scaling
+   */
   async function redrawCanvas() {
     if (!state.storedImages.length) {
       console.warn('⚠️ No images available for redraw');
@@ -457,14 +531,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-
+    
+    // ✅ ENHANCED PREVIEW SCALING - Same as Layout 1
     const previewScale = 1.5;
-    canvas.width = CONFIG.CANVAS_WIDTH * previewScale;
-    canvas.height = CONFIG.CANVAS_HEIGHT * previewScale;
+    canvas.width = CONFIG.CANVAS_WIDTH * previewScale;  // 1836px enhanced resolution
+    canvas.height = CONFIG.CANVAS_HEIGHT * previewScale; // 2754px enhanced resolution
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+    
+    // Scale context for consistent drawing
     ctx.scale(previewScale, previewScale);
-
+    
+    // Enhanced rendering quality
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
@@ -490,6 +567,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /**
+   * Draws photos on the canvas
+   * @param {CanvasRenderingContext2D} ctx - Canvas context
+   * @param {HTMLCanvasElement} canvas - Canvas element
+   */
   async function drawPhotos(ctx, canvas) {
     if (state.storedImages.length < CONFIG.EXPECTED_PHOTOS) {
       console.warn(`⚠️ Layout requires ${CONFIG.EXPECTED_PHOTOS} photos, found: ${state.storedImages.length}`);
@@ -525,10 +607,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /**
+   * Draws a cropped image on the canvas
+   * @param {CanvasRenderingContext2D} ctx - Canvas context
+   * @param {HTMLImageElement} img - Image to draw
+   * @param {Object} pos - Position and size
+   * @param {string} shape - Shape type
+   */
   function drawCroppedImage(ctx, img, pos, shape) {
     const { x, y, width, height } = pos;
     const imgAspect = img.width / img.height;
-    const targetAspect = (width / height);
+    const targetAspect = width / height;
     let sx, sy, sWidth, sHeight;
 
     if (imgAspect > targetAspect) {
@@ -546,25 +635,37 @@ document.addEventListener('DOMContentLoaded', () => {
     drawPhotoWithShape(ctx, img, x, y, width, height, shape, sx, sy, sWidth, sHeight);
   }
 
+  /**
+   * Draws a photo with specified shape and brightness adjustment
+   * @param {CanvasRenderingContext2D} ctx - Canvas context
+   * @param {HTMLImageElement} img - Image to draw
+   * @param {number} x - X position
+   * @param {number} y - Y position
+   * @param {number} width - Width
+   * @param {number} height - Height
+   * @param {string} shape - Shape type
+   * @param {number} sx - Source X
+   * @param {number} sy - Source Y
+   * @param {number} sWidth - Source width
+   * @param {number} sHeight - Source height
+   */
   function drawPhotoWithShape(ctx, img, x, y, width, height, shape, sx, sy, sWidth, sHeight) {
     ctx.save();
-
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-
+    
+    // Apply enhanced brightness filter with more dramatic effect
     if (state.brightness !== 1.0) {
       const brightness = state.brightness;
       let brightnessPercent;
       let contrastPercent = 100;
       
       if (brightness > 1.0) {
-
-        brightnessPercent = 100 + (brightness - 1.0) * 100;
-        contrastPercent = 100 + (brightness - 1.0) * 20;
+        // For brighter values: exponential curve for more dramatic effect
+        brightnessPercent = 100 + (brightness - 1.0) * 100; // Max 300% at 3.0
+        contrastPercent = 100 + (brightness - 1.0) * 20; // Slight contrast boost
       } else {
-
+        // For darker values: linear scaling
         brightnessPercent = brightness * 100;
-        contrastPercent = 100 - (1.0 - brightness) * 10;
+        contrastPercent = 100 - (1.0 - brightness) * 10; // Slight contrast reduction
       }
       
       ctx.filter = `brightness(${brightnessPercent}%) contrast(${contrastPercent}%)`;
@@ -580,11 +681,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     ctx.drawImage(img, sx, sy, sWidth, sHeight, x, y, width, height);
-
+    
+    // Reset filter
     ctx.filter = 'none';
     ctx.restore();
   }
 
+  /**
+   * Draws a rounded rectangle
+   * @param {CanvasRenderingContext2D} ctx - Canvas context
+   * @param {number} x - X position
+   * @param {number} y - Y position
+   * @param {number} width - Width
+   * @param {number} height - Height
+   * @param {number} radius - Corner radius
+   */
   function roundedRect(ctx, x, y, width, height, radius) {
     ctx.beginPath();
     ctx.moveTo(x + radius, y);
@@ -599,12 +710,17 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.closePath();
   }
 
+  /**
+   * Draws stickers and logos on the canvas with proper scaling
+   * @param {CanvasRenderingContext2D} ctx - Canvas context (already scaled)
+   * @param {HTMLCanvasElement} canvas - Canvas element
+   */
   async function drawStickersAndLogos(ctx, canvas) {
-
+    // Priority: Frame & Sticker Combo > Regular Sticker
     if (state.selectedFrameSticker) {
       try {
         const frameStickerImg = await loadImage(state.selectedFrameSticker);
-
+        // ✅ CORRECT: Use CONFIG dimensions, context akan handle scaling
         ctx.drawImage(frameStickerImg, 0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
         console.log('🎪 Frame & sticker combo applied');
       } catch (error) {
@@ -613,7 +729,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (state.selectedSticker) {
       try {
         const stickerImg = await loadImage(state.selectedSticker);
-
+        // ✅ CORRECT: Use CONFIG dimensions, context akan handle scaling
         ctx.drawImage(stickerImg, 0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
         console.log('🌟 Regular sticker applied');
       } catch (error) {
@@ -625,7 +741,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (logoBtn && logoBtn.classList.contains('active')) {
       try {
         const logoImg = await loadImage(CONFIG.LOGO_SRC);
-
+        // ✅ CORRECT: Use CONFIG dimensions untuk posisi yang tepat
         ctx.drawImage(logoImg, 20, CONFIG.CANVAS_HEIGHT - 60, 100, 40);
         console.log('🏷️ Logo applied');
       } catch (error) {
@@ -634,13 +750,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /**
+   * Updates the canvas preview in the DOM - Enhanced with optimal preview sizing
+   * @param {HTMLCanvasElement} canvas - Canvas element
+   */
   function updateCanvasPreview(canvas) {
     if (DOM.photoCustomPreview) {
       DOM.photoCustomPreview.innerHTML = '';
       Object.assign(canvas.style, {
-
-        maxWidth: '350px',
-        maxHeight: '525px',
+        // ✅ ENHANCED PREVIEW SIZE - Same as Layout 1 for consistency
+        maxWidth: '350px',       // Increased from 300px for better preview
+        maxHeight: '525px',      // Increased from 450px to maintain ratio
         width: 'auto',
         height: 'auto',
         border: '2px solid #ddd',
@@ -648,28 +768,26 @@ document.addEventListener('DOMContentLoaded', () => {
         boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
         display: 'block',
         margin: '0 auto',
-
+        // Enhanced rendering
         imageRendering: 'auto',
         '-ms-interpolation-mode': 'bicubic',
         filter: 'none'
       });
-
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-      }
-      
       DOM.photoCustomPreview.appendChild(canvas);
     }
     state.finalCanvas = canvas;
-
+    
+    // 💾 Auto-save settings and compress image for session storage
     saveCustomizationSettings();
     compressAndSaveFinalImage().catch(error => 
-      console.warn('⚠️ Failed to compress for session storage:', error)
+      console.warn('⚠️ Failed to compress final image:', error)
     );
   }
 
+  // Control Initialization
+  /**
+   * Initializes all controls
+   */
   function initializeControls() {
     console.log('🎛️ Initializing controls...');
     initializeBrightnessControls();
@@ -681,9 +799,13 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('✅ Controls initialized');
   }
 
+  /**
+   * Initializes brightness controls
+   */
   function initializeBrightnessControls() {
     console.log('🌞 Initializing brightness controls...');
-
+    
+    // Brightness slider
     if (DOM.brightnessSlider) {
       DOM.brightnessSlider.addEventListener('input', (e) => {
         const brightness = parseFloat(e.target.value);
@@ -694,6 +816,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    // Preset buttons
     if (DOM.darkerBtn) {
       DOM.darkerBtn.addEventListener('click', () => {
         setBrightness(0.7);
@@ -719,21 +842,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /**
+   * Sets brightness value and updates all controls
+   * @param {number} brightness - Brightness value (0.3 - 3.0)
+   */
   function setBrightness(brightness) {
     state.brightness = brightness;
-
+    
+    // Update slider
     if (DOM.brightnessSlider) {
       DOM.brightnessSlider.value = brightness;
     }
-
+    
+    // Update display
     updateBrightnessDisplay(brightness);
     updateBrightnessButtons(brightness);
-
+    
+    // Redraw canvas
     redrawCanvas();
-
+    
+    // 💾 Auto-save settings
     saveCustomizationSettings();
   }
 
+  /**
+   * Updates brightness display percentage
+   * @param {number} brightness - Brightness value
+   */
   function updateBrightnessDisplay(brightness) {
     if (DOM.brightnessValue) {
       const percentage = Math.round(brightness * 100);
@@ -741,12 +876,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /**
+   * Updates active state of brightness buttons
+   * @param {number} brightness - Current brightness value
+   */
   function updateBrightnessButtons(brightness) {
-
+    // Remove active class from all buttons
     [DOM.darkerBtn, DOM.normalBtn, DOM.brighterBtn, DOM.superBrightBtn].forEach(btn => {
       if (btn) btn.classList.remove('active');
     });
 
+    // Add active class based on brightness value
     if (brightness <= 0.8) {
       if (DOM.darkerBtn) DOM.darkerBtn.classList.add('active');
     } else if (brightness >= 2.5) {
@@ -758,6 +898,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /**
+   * Initializes frame color controls
+   */
   function initializeFrameControls() {
     const colorButtons = [
       { id: 'pinkBtnFrame', color: '#FFB6C1' },
@@ -779,12 +922,15 @@ document.addEventListener('DOMContentLoaded', () => {
           state.backgroundType = 'color';
           state.backgroundImage = null;
           redrawCanvas();
-          saveCustomizationSettings();
+          saveCustomizationSettings(); // 💾 Auto-save settings
         });
       }
     });
   }
 
+  /**
+   * Initializes shape controls
+   */
   function initializeShapeControls() {
     const shapeButtons = [
       { id: 'noneFrameShape', shape: 'default' },
@@ -797,12 +943,15 @@ document.addEventListener('DOMContentLoaded', () => {
         element.addEventListener('click', () => {
           state.selectedShape = shape;
           redrawCanvas();
-          saveCustomizationSettings();
+          saveCustomizationSettings(); // 💾 Auto-save settings
         });
       }
     });
   }
 
+  /**
+   * Initializes logo controls
+   */
   function initializeLogoControls() {
     const nonLogo = document.getElementById('nonLogo');
     const engLogo = document.getElementById('engLogo');
@@ -811,7 +960,6 @@ document.addEventListener('DOMContentLoaded', () => {
       nonLogo.addEventListener('click', () => {
         setActiveButton('.logoCustomBtn', nonLogo);
         redrawCanvas();
-        saveCustomizationSettings();
       });
     }
 
@@ -819,15 +967,18 @@ document.addEventListener('DOMContentLoaded', () => {
       engLogo.addEventListener('click', () => {
         setActiveButton('.logoCustomBtn', engLogo);
         redrawCanvas();
-        saveCustomizationSettings();
       });
     }
   }
 
+  /**
+   * Updates continue button state - NEW LOGIC: Only requires print to be used
+   */
   function updateContinueButtonState() {
     const continueBtn = document.getElementById('continueBtn');
     if (!continueBtn) return;
 
+    // NEW LOGIC: Continue button aktif setelah print selesai
     const canContinue = state.printUsed;
     
     if (canContinue) {
@@ -843,6 +994,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /**
+   * Shows email confirmation dialog when continue is clicked without email
+   */
   function showEmailConfirmationDialog() {
     const existingDialog = document.getElementById('emailConfirmationDialog');
     if (existingDialog) existingDialog.remove();
@@ -931,6 +1085,7 @@ document.addEventListener('DOMContentLoaded', () => {
     dialog.appendChild(dialogBox);
     document.body.appendChild(dialog);
 
+    // Add CSS animations if not already added
     if (!document.getElementById('emailConfirmDialogStyles')) {
       const style = document.createElement('style');
       style.id = 'emailConfirmDialogStyles';
@@ -953,22 +1108,26 @@ document.addEventListener('DOMContentLoaded', () => {
       document.head.appendChild(style);
     }
 
+    // Handle "Ya" button - Open email modal
     document.getElementById('confirmEmailYes').addEventListener('click', () => {
       dialog.remove();
-      showEmailModal();
+      showEmailModal(); // Open existing email modal
     });
 
+    // Handle "Tidak" button - Go to thankyou directly
     document.getElementById('confirmEmailNo').addEventListener('click', () => {
       dialog.remove();
       window.location.href = 'thankyou.php';
     });
 
+    // Handle outside click - close dialog
     dialog.addEventListener('click', (e) => {
       if (e.target === dialog) {
         dialog.remove();
       }
     });
 
+    // Handle escape key
     const escapeHandler = (e) => {
       if (e.key === 'Escape') {
         dialog.remove();
@@ -978,6 +1137,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', escapeHandler);
   }
 
+  /**
+   * Initializes action buttons
+   */
   function initializeActionButtons() {
     const buttons = {
       emailBtn: () => {
@@ -1004,7 +1166,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showSimplePrintPopup(highQualityDataUrl);
           } catch (error) {
             console.error('❌ Error generating high quality for print:', error);
-
+            // Fallback to normal quality
             showSimplePrintPopup(state.finalCanvas.toDataURL('image/jpeg', 1.0));
           }
         } else {
@@ -1012,13 +1174,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       },
       continueBtn: () => {
-
+        // New logic: Only require print completion, email is optional
         if (state.printUsed) {
-
+          // If email not sent, show confirmation dialog
           if (!state.emailSent) {
             showEmailConfirmationDialog();
           } else {
-
+            // Both completed, go to thank you
             window.location.href = 'thankyou.php';
           }
         } else {
@@ -1034,9 +1196,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+    // Initialize continue button state
     updateContinueButtonState();
   }
 
+  // Email Modal
+  /**
+   * Shows the email modal
+   */
   function showEmailModal() {
     if (DOM.emailModal) {
       DOM.emailModal.style.display = 'block';
@@ -1048,6 +1215,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /**
+   * Initializes the email modal
+   */
   function initializeEmailModal() {
     const closeEmailModal = document.getElementById('closeEmailModal');
     const cancelEmailBtn = document.getElementById('cancelEmailBtn');
@@ -1072,6 +1242,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeVirtualKeyboard();
   }
 
+  /**
+   * Initializes the virtual keyboard
+   */
   function initializeVirtualKeyboard() {
     let capsLock = false;
 
@@ -1127,6 +1300,10 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCapsLockState();
   }
 
+  /**
+   * Shows validation error message
+   * @param {string} message - Error message
+   */
   function showValidationError(message) {
     const validationDiv = document.querySelector('.input-validation');
     const validationMessage = document.getElementById('validation-message');
@@ -1136,22 +1313,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /**
+   * Hides validation error message
+   */
   function hideValidationError() {
     const validationDiv = document.querySelector('.input-validation');
     if (validationDiv) validationDiv.style.display = 'none';
   }
 
+  /**
+   * Validates email format (Enhanced with EmailJS Helper)
+   * @param {string} email - Email address
+   * @returns {boolean} - Validity of email
+   */
   function validateEmail(email) {
-
+    // Enhanced validation using EmailJS Helper if available
     if (typeof window.emailJSHelper !== 'undefined') {
       const validation = window.emailJSHelper.validateEmail(email);
-
+      
+      // Show suggestions for common typos
       if (!validation.isValid && validation.suggestions.length > 0) {
         const suggestion = validation.suggestions[0];
         const emailInput = document.getElementById('emailInput');
-
+        
+        // Show suggestion in validation message
         showValidationError(`${validation.error}\n💡 Mungkin maksud Anda: ${suggestion}?`);
-
+        
+        // Auto-suggest after 2 seconds
         setTimeout(() => {
           if (emailInput && confirm(`Auto-correct ke "${suggestion}"?`)) {
             emailInput.value = suggestion;
@@ -1167,14 +1355,16 @@ document.addEventListener('DOMContentLoaded', () => {
         showValidationError(validation.error);
         return false;
       }
-
+      
+      // Show success for Indonesian domains
       if (validation.emailType === 'indonesian') {
         console.log('✅ Indonesian email domain detected:', email);
       }
       
       return true;
     }
-
+    
+    // Fallback to basic validation
     const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     if (!isValid) {
       showValidationError('Format email tidak valid');
@@ -1182,6 +1372,10 @@ document.addEventListener('DOMContentLoaded', () => {
     return isValid;
   }
 
+  /**
+   * Sends photo via email
+   * @param {string} email - Recipient email
+   */
   async function sendPhotoEmail(email) {
     if (!state.finalCanvas) {
       handleError('Tidak ada foto untuk dikirim', 'alert');
@@ -1280,6 +1474,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /**
+   * Generates high quality version of the canvas for print/download - Enhanced 3x Scale
+   */
   async function generateHighQualityCanvas() {
     console.log('🎨 Generating high quality canvas for print...');
     
@@ -1290,12 +1487,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-
+    
+    // ✅ ENHANCED: 3x scale untuk maximum print quality (same as Layout 1)
     const printScale = 3.0;
-    canvas.width = CONFIG.CANVAS_WIDTH * printScale;
-    canvas.height = CONFIG.CANVAS_HEIGHT * printScale;
+    canvas.width = CONFIG.CANVAS_WIDTH * printScale;   // 3672px
+    canvas.height = CONFIG.CANVAS_HEIGHT * printScale; // 5508px
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+    
+    // Enhanced rendering quality
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
     
@@ -1326,6 +1525,9 @@ document.addEventListener('DOMContentLoaded', () => {
     return canvas;
   }
 
+  /**
+   * Draws photos on high quality canvas
+   */
   async function drawHighQualityPhotos(ctx, canvas, printScale) {
     if (state.storedImages.length < CONFIG.EXPECTED_PHOTOS) {
       console.warn(`⚠️ Layout requires ${CONFIG.EXPECTED_PHOTOS} photos, found: ${state.storedImages.length}`);
@@ -1361,8 +1563,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /**
+   * Draws stickers and logos on high quality canvas
+   */
   async function drawHighQualityStickersAndLogos(ctx, canvas, printScale) {
-
+    // Draw Frame & Sticker combo (priority over regular sticker)
     if (state.selectedFrameSticker) {
       try {
         const frameStickerImg = await loadImage(state.selectedFrameSticker);
@@ -1372,7 +1577,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('❌ Failed to load high quality frame & sticker combo:', state.selectedFrameSticker);
       }
     }
-
+    // Draw regular sticker (only if no Frame & Sticker combo is selected)
     else if (state.selectedSticker) {
       try {
         const stickerImg = await loadImage(state.selectedSticker);
@@ -1383,6 +1588,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    // Draw logo
     const logoBtn = document.getElementById('engLogo');
     if (logoBtn && logoBtn.classList.contains('active')) {
       try {
@@ -1395,10 +1601,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /**
+   * Shows print notification dialog with loading animation and countdown
+   */
   function showPrintNotificationDialog() {
     const existingDialog = document.getElementById('printNotificationDialog');
     if (existingDialog) existingDialog.remove();
 
+    // 🔒 ADDITIONAL BACKUP: Extend session saat print notification dimulai
     fetch('/src/api-fetch/set_session.php', {
       method: 'POST',
       headers: { 
@@ -1505,6 +1715,7 @@ document.addEventListener('DOMContentLoaded', () => {
     dialog.appendChild(dialogBox);
     document.body.appendChild(dialog);
 
+    // Add CSS animation keyframes if not already added
     if (!document.getElementById('printDialogStyles')) {
       const style = document.createElement('style');
       style.id = 'printDialogStyles';
@@ -1558,7 +1769,8 @@ document.addEventListener('DOMContentLoaded', () => {
       document.head.appendChild(style);
     }
 
-    let timeLeft = 72;
+    // Countdown and Progress Animation
+    let timeLeft = 72; // 2 minutes in seconds
     const totalTime = 72;
     const progressCircle = document.getElementById('progressCircle');
     const countdownElement = document.getElementById('countdownTime');
@@ -1568,64 +1780,75 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingSpinner = document.getElementById('loadingSpinner');
     const printIcon = dialogBox.querySelector('.fas.fa-print');
     
-    const circumference = 2 * Math.PI * 50;
+    const circumference = 2 * Math.PI * 50; // r = 50
     
     const countdownInterval = setInterval(() => {
       timeLeft--;
-
+      
+      // Update countdown display
       const minutes = Math.floor(timeLeft / 60);
       const seconds = timeLeft % 60;
       countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
+      
+      // Update progress circle
       const progress = (totalTime - timeLeft) / totalTime;
       const offset = circumference * (1 - progress);
       progressCircle.style.strokeDashoffset = offset;
-
-      if (timeLeft === 90) {
+      
+      // Status updates at different stages
+      if (timeLeft === 90) { // 1.5 min left
         statusText.textContent = 'Menyiapkan Tinta...';
         instructionText.textContent = 'Printer sedang mempersiapkan tinta berkualitas tinggi';
-      } else if (timeLeft === 60) {
+      } else if (timeLeft === 60) { // 1 min left
         statusText.textContent = 'Memproses Gambar...';
         instructionText.textContent = 'Sedang memproses foto dengan resolusi tinggi';
-      } else if (timeLeft === 30) {
+      } else if (timeLeft === 30) { // 30 sec left
         statusText.textContent = 'Mulai Mencetak...';
         instructionText.textContent = 'Foto Anda sedang dicetak, hampir selesai!';
-        loadingSpinner.style.borderTopColor = '#28a745';
-      } else if (timeLeft === 10) {
+        loadingSpinner.style.borderTopColor = '#28a745'; // Change to green
+      } else if (timeLeft === 10) { // 10 sec left
         statusText.textContent = 'Finishing...';
         instructionText.textContent = 'Menyelesaikan proses printing...';
       }
-
+      
+      // When countdown reaches 0
       if (timeLeft <= 0) {
         clearInterval(countdownInterval);
-
+        
+        // Update to completed state
         progressCircle.style.strokeDashoffset = '0';
-        progressCircle.style.stroke = '#28a745';
+        progressCircle.style.stroke = '#28a745'; // Green color
         countdownElement.textContent = '00:00';
-
+        
+        // Hide loading spinner
         loadingSpinner.style.display = 'none';
-
+        
+        // Update status to completed
         statusText.innerHTML = '<i class="fas fa-check-circle" style="color: #28a745; margin-right: 8px;"></i>Print Selesai!';
         instructionText.textContent = 'Foto Anda sudah siap! Silakan ambil di area printer.';
         instructionText.style.color = '#28a745';
         instructionText.style.fontWeight = '600';
-
+        
+        // Update button to allow closing
         actionButton.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
         actionButton.style.cursor = 'pointer';
         actionButton.style.opacity = '1';
         actionButton.innerHTML = '<i class="fas fa-check"></i> OK, Saya Mengerti';
         actionButton.style.animation = 'successPulse 2s ease-in-out 3';
-
+        
+        // Update print icon to success
         printIcon.className = 'fas fa-check';
         printIcon.parentElement.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
         printIcon.parentElement.style.animation = 'checkmark 0.5s ease-out';
-
+        
+        // Enable button click
         actionButton.onclick = handleDialogClose;
       }
     }, 1000);
 
+    // Handle button click (only when enabled)
     function handleDialogClose() {
-      if (timeLeft <= 0) {
+      if (timeLeft <= 0) { // Only allow closing when completed
         dialog.style.animation = 'fadeOut 0.3s ease-in-out';
         dialogBox.style.animation = 'slideOutDown 0.3s ease-in';
         
@@ -1636,12 +1859,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    // Handle outside click (only when completed)
     dialog.addEventListener('click', (e) => {
       if (e.target === dialog && timeLeft <= 0) {
         handleDialogClose();
       }
     });
 
+    // Handle escape key (only when completed)
     const escapeHandler = (e) => {
       if (e.key === 'Escape' && timeLeft <= 0) {
         handleDialogClose();
@@ -1650,6 +1875,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     document.addEventListener('keydown', escapeHandler);
 
+    // Cleanup on dialog removal
     dialog.addEventListener('DOMNodeRemoved', () => {
       if (countdownInterval) {
         clearInterval(countdownInterval);
@@ -1657,6 +1883,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /**
+   * Shows print preview popup
+   * @param {string} imageDataUrl - Image data URL
+   */
   async function showSimplePrintPopup(imageDataUrl) {
     const existingPopup = document.getElementById('simplePrintPopup');
     if (existingPopup) existingPopup.remove();
@@ -1707,10 +1937,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const originalText = printBtn.innerHTML;
       
       try {
-
+        // Show loading
         printBtn.disabled = true;
         printBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 5px;"></i> Extending Session...';
-
+        
+        // 🔒 EXTEND SESSION untuk print process (5 menit tambahan)
         try {
           const extendResponse = await fetch('/src/api-fetch/set_session.php', {
             method: 'POST',
@@ -1732,18 +1963,20 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         } catch (extendError) {
           console.warn('⚠️ Session extend request failed:', extendError);
-
+          // Continue with print even if extend fails
         }
         
         printBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 5px;"></i> Generating High Quality...';
         console.log('🖨️ Starting high quality print process...');
-
+        
+        // Generate high quality version
         const highQualityCanvas = await generateHighQualityCanvas();
-
+        // 🖨️ ENHANCED PRINT QUALITY - Maximum quality for print
         const highQualityDataUrl = highQualityCanvas.toDataURL('image/jpeg', 0.98);
         
         printBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 5px;"></i> Opening Print Dialog...';
-
+        
+        // Print with high quality
         const printWindow = window.open('', '_blank');
         printWindow.document.write(`
           <!DOCTYPE html>
@@ -1771,7 +2004,8 @@ document.addEventListener('DOMContentLoaded', () => {
           setTimeout(() => {
             printWindow.print();
             printWindow.close();
-
+            
+            // Mark as used and update UI
             state.printUsed = true;
             const printBtn = document.getElementById('printBtn');
             if (printBtn) {
@@ -1780,12 +2014,14 @@ document.addEventListener('DOMContentLoaded', () => {
               printBtn.style.cursor = 'not-allowed';
               printBtn.innerHTML = '✅ Sudah Print (HQ)';
             }
-
+            
+            // Update continue button state
             updateContinueButtonState();
             
             popup.remove();
             console.log('✅ High quality print completed');
-
+            
+            // Show print notification dialog
             setTimeout(() => {
               showPrintNotificationDialog();
             }, 500);
@@ -1810,5 +2046,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Start the application
   initializeApp();
 });
