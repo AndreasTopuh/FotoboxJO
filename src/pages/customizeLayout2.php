@@ -1187,16 +1187,6 @@ require_once '../includes/pwa-helper.php';
                 </div>
 
             </div>
-            <!-- Frame & Sticker Combo (Dynamic from Database - Layout 2 specific) -->
-            <div class="customize-options-group">
-                <h3 class="customize-options-label">Frame & Sticker</h3>
-                <div id="dynamicFrameStickerContainer" class="customize-buttons-grid stickers-grid">
-                    <button id="noneFrameSticker" class="buttonFrameStickers frame-sticker-none">
-                        <img src="../assets/block (1).png" alt="None" class="shape-icon">
-                    </button>
-                    <div class="loading-placeholder">Loading layout 2 frame & sticker combos...</div>
-                </div>
-            </div>
             <!-- Frame Color -->
             <div class="customize-options-group frame-color-section">
                 <h3 class="customize-options-label">Frame Color</h3>
@@ -1212,7 +1202,18 @@ require_once '../includes/pwa-helper.php';
                     <button id="blackBtnFrame" class="buttonColorFrames frame-color-black" data-color="black"></button>
                 </div>
             </div>
-            
+
+            <!-- Frame & Sticker Combo (Dynamic from Database - Layout 2 specific) -->
+            <div class="customize-options-group">
+                <h3 class="customize-options-label">Frame & Sticker</h3>
+                <div id="dynamicFrameStickerContainer" class="customize-buttons-grid stickers-grid">
+                    <button id="noneFrameSticker" class="buttonFrameStickers frame-sticker-none">
+                        <img src="../assets/block (1).png" alt="None" class="shape-icon">
+                    </button>
+                    <div class="loading-placeholder">Loading layout 2 frame & sticker combos...</div>
+                </div>
+            </div>
+
 
             <!-- Background Frames (Dynamic from Database) -->
             <!-- <div class="customize-options-group">
