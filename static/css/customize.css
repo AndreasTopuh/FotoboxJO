@@ -55,11 +55,6 @@
   backdrop-filter: blur(10px);
   border-radius: 10px;
   border: 10px solid rgba(233, 30, 99, 0.1);
-  outline: 7px solid var(--pink-primary);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--pink-primary) transparent;
 }
 
 .customize-left-section::-webkit-scrollbar {
@@ -80,12 +75,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgb(255 111 166);
   backdrop-filter: blur(10px);
-  outline: 7px solid var(--pink-primary);
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(233, 30, 99, 0.1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .customize-photo-preview {

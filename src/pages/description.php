@@ -48,13 +48,13 @@
         }
 
         .header h1 {
-            font-size: 1.9rem;
+            font-size: 3rem;
             margin: 0;
         }
 
         .header p {
             color: white;
-            font-size: 0.85rem;
+            font-size: 1.3rem;
             margin: 0.2rem 0;
         }
 
@@ -278,7 +278,7 @@
 
     <div class="header">
         <h1>Cara Menggunakan GoFotobox</h1>
-        <p>Ikuti panduan langkah demi langkah dan pilih layout terbaikmu</p>
+        <p>Ikuti panduan langkah ini untuk menggunakan GoFotobox</p>
     </div>
 
     <div class="main-wrapper">
@@ -301,7 +301,7 @@
                 <div class="step-number">3</div>
                 <div class="step-text">
                     <h3>Pilih Layout</h3>
-                    <p>6 pilihan layout foto</p>
+                    <p>4 pilihan layout foto</p>
                 </div>
             </div>
             <div class="step">
@@ -342,24 +342,18 @@
                     <img src="../assets/layouts/layout3.png" alt="Layout 3">
                     <h4>Layout 3 (6 Foto)</h4>
                 </div>
-                <div class="layout-box">
+                <!-- <div class="layout-box">
                     <img src="../assets/layouts/layout4.png" alt="Layout 4">
                     <h4>Layout 4 (4 Foto)</h4>
                 </div>
                 <div class="layout-box">
                     <img src="../assets/layouts/layout5.png" alt="Layout 5">
                     <h4>Layout 5 (6 Foto)</h4>
-                </div>
+                </div> -->
                 <div class="layout-box">
                     <img src="../assets/layouts/layout6.png" alt="Layout 6">
                     <h4>Layout 6 (8 Foto)</h4>
                 </div>
-            </div>
-            <div class="timer-info">
-                <p>
-                    ⏰ Waktu total: 10 menit setelah pembayaran<br>
-                    📸 Setiap foto boleh diatur countdownnya
-                </p>
             </div>
         </div>
     </div>

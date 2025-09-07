@@ -1,0 +1,22 @@
+{
+    "timestamp": "2025-09-06 17:14:59",
+    "method": "POST",
+    "content_type": "multipart\/form-data; boundary=----WebKitFormBoundaryu7G6KYf7UTEfAN7t",
+    "content_length": "262247",
+    "raw_post": "",
+    "post_data": {
+        "layout_id": "1",
+        "upload_mode": "single",
+        "nama": "1"
+    },
+    "files_data": {
+        "combo_image": {
+            "name": "18.png",
+            "type": "image\/png",
+            "tmp_name": "\/tmp\/phpJlS6db",
+            "error": 0,
+            "size": 261768
+        }
+    }
+}
+

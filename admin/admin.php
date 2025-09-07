@@ -452,6 +452,55 @@ try {
             background: rgba(226, 133, 133, 0.8);
         }
 
+        .modal-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .modal-content:hover .modal-nav-btn {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-prev {
+            left: 20px;
+        }
+
+        .modal-next {
+            right: 20px;
+        }
+
+        .modal-nav-btn:hover {
+            background: rgba(226, 133, 133, 0.9);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .modal-nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-counter {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+            font-weight: bold;
+        }
+
         .gallery-item img {
             width: 100%;
             height: 120px;
@@ -500,6 +549,131 @@ try {
             .main-content {
                 padding: 15px;
             }
+        }
+
+        /* Multiple Upload Styles */
+        .form-group.full-width {
+            flex: 100%;
+            width: 100%;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            background-color: white;
+        }
+
+        .form-group select:focus {
+            outline: none;
+            border-color: #E28585;
+        }
+
+        .form-group small {
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .upload-progress {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid #E28585;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #E28585, #d67575);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-weight: 600;
+            color: #E28585;
+        }
+
+        .upload-results {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .upload-results h4 {
+            color: #E28585;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .result-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-item.success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .result-item.error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .result-item i {
+            font-size: 16px;
+        }
+
+        .result-summary {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary-stats {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .summary-stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .summary-stat.success {
+            color: #28a745;
+        }
+
+        .summary-stat.error {
+            color: #dc3545;
         }
     </style>
 </head>
@@ -635,16 +809,17 @@ try {
 
                 <?php elseif ($currentSection === 'assets'): ?>
                     <!-- Assets Management -->
-                    <div class="tabs">
+                    <div class="tab-buttons">
                         <button class="tab-btn active" onclick="switchTab('frames')">
                             <i class="fas fa-frame"></i> Frames
                         </button>
                         <button class="tab-btn" onclick="switchTab('stickers')">
                             <i class="fas fa-star"></i> Stickers
                         </button>
-                    </div>
-
-                    <!-- Frames Tab -->
+                        <button class="tab-btn" onclick="switchTab('multiple')">
+                            <i class="fas fa-cloud-upload-alt"></i> Multiple Upload
+                        </button>
+                    </div> <!-- Frames Tab -->
                     <div id="frames-tab" class="tab-content active">
                         <div class="upload-section">
                             <h3><i class="fas fa-upload"></i> Upload New Frame</h3>
@@ -730,6 +905,85 @@ try {
                             <?php endforeach; ?>
                         </div>
                     </div>
+
+                    <!-- Multiple Upload Tab -->
+                    <div id="multiple-tab" class="tab-content">
+                        <div class="upload-section">
+                            <h3><i class="fas fa-cloud-upload-alt"></i> Multiple Frame Upload</h3>
+                            <form id="multiple-frames-form" enctype="multipart/form-data" class="upload-form">
+                                <div class="form-group">
+                                    <label>Name Prefix</label>
+                                    <input type="text" name="name_prefix" placeholder="e.g., Wedding Frame" value="Frame" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Default Color</label>
+                                    <input type="color" name="default_color" value="#FFFFFF" required>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label>Select Multiple Frame Images</label>
+                                    <input type="file" name="frame_images[]" accept="image/*" multiple required>
+                                    <small>Hold Ctrl/Cmd to select multiple files. Max 5MB per file.</small>
+                                </div>
+                                <button type="submit" class="upload-btn">
+                                    <i class="fas fa-cloud-upload-alt"></i> Upload Multiple Frames
+                                </button>
+                            </form>
+
+                            <div id="multiple-frames-progress" class="upload-progress" style="display: none;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                                <div class="progress-text">Uploading...</div>
+                            </div>
+
+                            <div id="multiple-frames-results" class="upload-results" style="display: none;">
+                                <h4>Upload Results:</h4>
+                                <div class="results-content"></div>
+                            </div>
+                        </div>
+
+                        <div class="upload-section">
+                            <h3><i class="fas fa-cloud-upload-alt"></i> Multiple Sticker Upload</h3>
+                            <form id="multiple-stickers-form" enctype="multipart/form-data" class="upload-form">
+                                <div class="form-group">
+                                    <label>Name Prefix</label>
+                                    <input type="text" name="name_prefix" placeholder="e.g., Love Sticker" value="Sticker" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Target Layout (Optional)</label>
+                                    <select name="layout_id">
+                                        <option value="">Universal (All Layouts)</option>
+                                        <option value="1">Layout 1</option>
+                                        <option value="2">Layout 2</option>
+                                        <option value="3">Layout 3</option>
+                                        <option value="4">Layout 4</option>
+                                        <option value="5">Layout 5</option>
+                                        <option value="6">Layout 6</option>
+                                    </select>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label>Select Multiple Sticker Images</label>
+                                    <input type="file" name="sticker_images[]" accept="image/*" multiple required>
+                                    <small>Hold Ctrl/Cmd to select multiple files. Max 5MB per file.</small>
+                                </div>
+                                <button type="submit" class="upload-btn">
+                                    <i class="fas fa-cloud-upload-alt"></i> Upload Multiple Stickers
+                                </button>
+                            </form>
+
+                            <div id="multiple-stickers-progress" class="upload-progress" style="display: none;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                                <div class="progress-text">Uploading...</div>
+                            </div>
+
+                            <div id="multiple-stickers-results" class="upload-results" style="display: none;">
+                                <h4>Upload Results:</h4>
+                                <div class="results-content"></div>
+                            </div>
+                        </div>
+                    </div>
                 <?php elseif ($currentSection === 'layout-frames'): ?>
                     <!-- Layout-Specific Frames Management -->
                     <div class="layout-tabs">
@@ -762,6 +1016,41 @@ try {
                                         <i class="fas fa-upload"></i> Upload to Layout <?= $layout ?>
                                     </button>
                                 </form>
+                            </div>
+
+                            <div class="upload-section">
+                                <h3><i class="fas fa-cloud-upload-alt"></i> Multiple Upload for Layout <?= $layout ?></h3>
+                                <form id="multiple-layout-<?= $layout ?>-frames-form" enctype="multipart/form-data" class="upload-form">
+                                    <input type="hidden" name="layout_id" value="<?= $layout ?>">
+                                    <div class="form-group">
+                                        <label>Name Prefix</label>
+                                        <input type="text" name="name_prefix" placeholder="e.g., Layout <?= $layout ?> Frame" value="Layout <?= $layout ?> Frame" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Default Color</label>
+                                        <input type="color" name="default_color" value="#FFFFFF" required>
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label>Select Multiple Frame Images</label>
+                                        <input type="file" name="frame_images[]" accept="image/*" multiple required>
+                                        <small>Hold Ctrl/Cmd to select multiple files. Max 5MB per file.</small>
+                                    </div>
+                                    <button type="submit" class="upload-btn">
+                                        <i class="fas fa-cloud-upload-alt"></i> Upload Multiple to Layout <?= $layout ?>
+                                    </button>
+                                </form>
+
+                                <div id="multiple-layout-<?= $layout ?>-frames-progress" class="upload-progress" style="display: none;">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill"></div>
+                                    </div>
+                                    <div class="progress-text">Uploading...</div>
+                                </div>
+
+                                <div id="multiple-layout-<?= $layout ?>-frames-results" class="upload-results" style="display: none;">
+                                    <h4>Upload Results:</h4>
+                                    <div class="results-content"></div>
+                                </div>
                             </div>
 
                             <h3>Layout <?= $layout ?> Frames (<?= count($framesByLayout[$layout] ?? []) ?>)</h3>
@@ -878,6 +1167,37 @@ try {
                                 </form>
                             </div>
 
+                            <div class="upload-section">
+                                <h3><i class="fas fa-cloud-upload-alt"></i> Multiple Upload Frame & Sticker Combos for Layout <?= $layout ?></h3>
+                                <form id="multiple-combo-layout-<?= $layout ?>-form" enctype="multipart/form-data" class="upload-form">
+                                    <input type="hidden" name="layout_id" value="<?= $layout ?>">
+                                    <div class="form-group">
+                                        <label>Name Prefix</label>
+                                        <input type="text" name="name_prefix" placeholder="e.g., Wedding Combo" value="Layout <?= $layout ?> Combo" required>
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label>Select Multiple Combo Images (Frame + Sticker)</label>
+                                        <input type="file" name="combo_images[]" accept="image/*" multiple required>
+                                        <small>Hold Ctrl/Cmd to select multiple files. Max 5MB per file. These should be complete frame+sticker combinations.</small>
+                                    </div>
+                                    <button type="submit" class="upload-btn">
+                                        <i class="fas fa-cloud-upload-alt"></i> Upload Multiple Combos to Layout <?= $layout ?>
+                                    </button>
+                                </form>
+
+                                <div id="multiple-combo-layout-<?= $layout ?>-progress" class="upload-progress" style="display: none;">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill"></div>
+                                    </div>
+                                    <div class="progress-text">Uploading...</div>
+                                </div>
+
+                                <div id="multiple-combo-layout-<?= $layout ?>-results" class="upload-results" style="display: none;">
+                                    <h4>Upload Results:</h4>
+                                    <div class="results-content"></div>
+                                </div>
+                            </div>
+
                             <h3>Layout <?= $layout ?> Frame & Sticker Combos</h3>
                             <div class="gallery-grid">
                                 <?php
@@ -916,13 +1236,22 @@ try {
     <div id="imageModal" class="image-modal">
         <span class="close-modal" onclick="closeImageModal()">&times;</span>
         <div class="modal-content">
+            <button class="modal-nav-btn modal-prev" onclick="navigateModal(-1)">
+                <i class="fas fa-chevron-left"></i>
+            </button>
             <img id="modalImage" class="modal-image" src="" alt="">
+            <button class="modal-nav-btn modal-next" onclick="navigateModal(1)">
+                <i class="fas fa-chevron-right"></i>
+            </button>
             <div class="modal-info">
                 <h3 id="modalTitle"></h3>
                 <p id="modalType"></p>
                 <p id="modalFilename"></p>
                 <p id="modalFilesize"></p>
                 <p id="modalColor" style="display: none;"></p>
+                <div class="modal-counter">
+                    <span id="modalCounter">1 / 10</span>
+                </div>
             </div>
         </div>
     </div>
@@ -1007,7 +1336,36 @@ try {
         }
 
         // Image Modal Functions
+        let currentGallery = [];
+        let currentImageIndex = 0;
+
         function openImageModal(imageSrc, title, type, filename, filesize, color) {
+            // Get all gallery items from the current active tab/section
+            const activeTab = document.querySelector('.tab-content.active') || document.querySelector('[id*="tab"].active') || document.body;
+            const galleryItems = activeTab.querySelectorAll('.gallery-item img');
+
+            // Build gallery array
+            currentGallery = Array.from(galleryItems).map(img => ({
+                src: img.src,
+                title: img.alt,
+                type: img.closest('.gallery-item').querySelector('h4').textContent,
+                filename: img.src.split('/').pop(),
+                filesize: getFilesizeFromOnclick(img.getAttribute('onclick')),
+                color: getColorFromOnclick(img.getAttribute('onclick'))
+            }));
+
+            // Find current image index
+            currentImageIndex = currentGallery.findIndex(item => item.src === imageSrc);
+            if (currentImageIndex === -1) currentImageIndex = 0;
+
+            // Show modal
+            displayCurrentImage();
+        }
+
+        function displayCurrentImage() {
+            if (currentGallery.length === 0) return;
+
+            const currentItem = currentGallery[currentImageIndex];
             const modal = document.getElementById('imageModal');
             const modalImage = document.getElementById('modalImage');
             const modalTitle = document.getElementById('modalTitle');
@@ -1015,30 +1373,72 @@ try {
             const modalFilename = document.getElementById('modalFilename');
             const modalFilesize = document.getElementById('modalFilesize');
             const modalColor = document.getElementById('modalColor');
+            const modalCounter = document.getElementById('modalCounter');
 
             modal.style.display = 'block';
-            modalImage.src = imageSrc;
-            modalImage.alt = title;
-            modalTitle.textContent = title;
-            modalType.textContent = `Type: ${type}`;
-            modalFilename.textContent = `File: ${filename}`;
-            modalFilesize.textContent = `Size: ${filesize} KB`;
+            modalImage.src = currentItem.src;
+            modalImage.alt = currentItem.title;
+            modalTitle.textContent = currentItem.title;
+            modalType.textContent = `Type: ${currentItem.type}`;
+            modalFilename.textContent = `File: ${currentItem.filename}`;
+            modalFilesize.textContent = `Size: ${currentItem.filesize} KB`;
+            modalCounter.textContent = `${currentImageIndex + 1} / ${currentGallery.length}`;
 
-            if (color && color !== '') {
-                modalColor.innerHTML = `Color: <span style="display: inline-block; width: 20px; height: 20px; background: ${color}; border: 1px solid #ccc; vertical-align: middle; margin-left: 5px; border-radius: 3px;"></span> ${color}`;
+            if (currentItem.color && currentItem.color !== '') {
+                modalColor.innerHTML = `Color: <span style="display: inline-block; width: 20px; height: 20px; background: ${currentItem.color}; border: 1px solid #ccc; vertical-align: middle; margin-left: 5px; border-radius: 3px;"></span> ${currentItem.color}`;
                 modalColor.style.display = 'block';
             } else {
                 modalColor.style.display = 'none';
             }
 
+            // Update navigation buttons
+            const prevBtn = document.querySelector('.modal-prev');
+            const nextBtn = document.querySelector('.modal-next');
+
+            if (prevBtn) prevBtn.disabled = (currentImageIndex === 0);
+            if (nextBtn) nextBtn.disabled = (currentImageIndex === currentGallery.length - 1);
+
             // Prevent body scrolling when modal is open
             document.body.style.overflow = 'hidden';
+        }
+
+        function navigateModal(direction) {
+            if (currentGallery.length === 0) return;
+
+            const newIndex = currentImageIndex + direction;
+
+            if (newIndex >= 0 && newIndex < currentGallery.length) {
+                currentImageIndex = newIndex;
+                displayCurrentImage();
+            }
+        }
+
+        function getFilesizeFromOnclick(onclickStr) {
+            if (!onclickStr) return '0';
+            const match = onclickStr.match(/'([^']*)',\s*'[^']*'\s*\)$/);
+            if (match && match[1]) {
+                const parts = onclickStr.split("'");
+                for (let i = 0; i < parts.length; i++) {
+                    if (parts[i].includes('.') && !isNaN(parseFloat(parts[i]))) {
+                        return parts[i];
+                    }
+                }
+            }
+            return '0';
+        }
+
+        function getColorFromOnclick(onclickStr) {
+            if (!onclickStr) return '';
+            const parts = onclickStr.split("'");
+            return parts[parts.length - 2] || '';
         }
 
         function closeImageModal() {
             const modal = document.getElementById('imageModal');
             modal.style.display = 'none';
             document.body.style.overflow = 'auto';
+            currentGallery = [];
+            currentImageIndex = 0;
         }
 
         // Close modal when clicking outside the image
@@ -1048,10 +1448,23 @@ try {
             }
         });
 
-        // Close modal with Escape key
+        // Enhanced keyboard navigation
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeImageModal();
+            const modal = document.getElementById('imageModal');
+            if (modal.style.display === 'block') {
+                switch (e.key) {
+                    case 'Escape':
+                        closeImageModal();
+                        break;
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        navigateModal(-1);
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        navigateModal(1);
+                        break;
+                }
             }
         });
 
@@ -1086,7 +1499,410 @@ try {
                     }, 10000);
                 });
             });
+
+            // Multiple Frames Upload Handler
+            const multipleFramesForm = document.getElementById('multiple-frames-form');
+            if (multipleFramesForm) {
+                multipleFramesForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    handleMultipleUpload('frames', this);
+                });
+            }
+
+            // Multiple Stickers Upload Handler
+            const multipleStickersForm = document.getElementById('multiple-stickers-form');
+            if (multipleStickersForm) {
+                multipleStickersForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    handleMultipleUpload('stickers', this);
+                });
+            }
+
+            // Multiple Layout Frames Upload Handlers
+            for (let i = 1; i <= 6; i++) {
+                const multipleLayoutFramesForm = document.getElementById(`multiple-layout-${i}-frames-form`);
+                if (multipleLayoutFramesForm) {
+                    multipleLayoutFramesForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        handleMultipleLayoutUpload(i, this);
+                    });
+                }
+
+                // Multiple Frame-Sticker-Combos Upload Handlers
+                const multipleComboForm = document.getElementById(`multiple-combo-layout-${i}-form`);
+                if (multipleComboForm) {
+                    multipleComboForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        handleMultipleComboUpload(i, this);
+                    });
+                }
+            }
         });
+
+        function handleMultipleUpload(type, form) {
+            const formData = new FormData(form);
+            const submitBtn = form.querySelector('.upload-btn');
+            const originalText = submitBtn.innerHTML;
+            const progressDiv = document.getElementById(`multiple-${type}-progress`);
+            const resultsDiv = document.getElementById(`multiple-${type}-results`);
+            const progressFill = progressDiv.querySelector('.progress-fill');
+            const progressText = progressDiv.querySelector('.progress-text');
+
+            // Reset UI
+            resultsDiv.style.display = 'none';
+            progressDiv.style.display = 'block';
+            progressFill.style.width = '0%';
+            progressText.textContent = 'Preparing upload...';
+
+            // Disable submit button
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+            submitBtn.disabled = true;
+
+            // Simulate progress animation
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) progress = 90;
+                progressFill.style.width = progress + '%';
+                progressText.textContent = `Uploading... ${Math.round(progress)}%`;
+            }, 200);
+
+            // Make the upload request
+            const apiEndpoint = type === 'frames' ? 'api/upload-multiple-frames.php' : 'api/upload-multiple-stickers.php';
+
+            fetch(apiEndpoint, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    clearInterval(progressInterval);
+                    progressFill.style.width = '100%';
+                    progressText.textContent = 'Upload complete!';
+
+                    setTimeout(() => {
+                        progressDiv.style.display = 'none';
+                        displayUploadResults(type, data);
+
+                        // Reset form if successful
+                        if (data.success) {
+                            form.reset();
+                            // Reload page after a delay to show new uploads
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 3000);
+                        }
+                    }, 1000);
+                })
+                .catch(error => {
+                    clearInterval(progressInterval);
+                    progressDiv.style.display = 'none';
+
+                    const errorData = {
+                        success: false,
+                        message: 'Network error occurred',
+                        uploaded: 0,
+                        failed: 0,
+                        details: []
+                    };
+                    displayUploadResults(type, errorData);
+                    console.error('Upload error:', error);
+                })
+                .finally(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                });
+        }
+
+        function displayUploadResults(type, data) {
+            const resultsDiv = document.getElementById(`multiple-${type}-results`);
+            const resultsContent = resultsDiv.querySelector('.results-content');
+
+            let html = '';
+
+            // Summary
+            html += '<div class="result-summary">';
+            html += '<h5>Upload Summary</h5>';
+            html += '<div class="summary-stats">';
+            html += `<div class="summary-stat success"><i class="fas fa-check-circle"></i> ${data.uploaded} successful</div>`;
+            html += `<div class="summary-stat error"><i class="fas fa-times-circle"></i> ${data.failed} failed</div>`;
+            html += '</div>';
+            html += `<p><strong>Message:</strong> ${data.message}</p>`;
+            html += '</div>';
+
+            // Individual file results
+            if (data.details && data.details.length > 0) {
+                html += '<div class="result-details">';
+                data.details.forEach(detail => {
+                    const cssClass = detail.success ? 'success' : 'error';
+                    const icon = detail.success ? 'fa-check-circle' : 'fa-times-circle';
+
+                    html += `<div class="result-item ${cssClass}">`;
+                    html += `<i class="fas ${icon}"></i>`;
+                    html += '<div>';
+                    html += `<strong>${detail.original_name}</strong><br>`;
+                    html += `${detail.message}`;
+                    if (detail.success && detail.frame_name) {
+                        html += `<br><small>Saved as: ${detail.frame_name}</small>`;
+                    }
+                    if (detail.success && detail.sticker_name) {
+                        html += `<br><small>Saved as: ${detail.sticker_name}</small>`;
+                        if (detail.layout_id) {
+                            html += ` (Layout ${detail.layout_id})`;
+                        } else {
+                            html += ' (Universal)';
+                        }
+                    }
+                    html += '</div>';
+                    html += '</div>';
+                });
+                html += '</div>';
+            }
+
+            resultsContent.innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
+
+        function handleMultipleLayoutUpload(layoutId, form) {
+            const formData = new FormData(form);
+            const submitBtn = form.querySelector('.upload-btn');
+            const originalText = submitBtn.innerHTML;
+            const progressDiv = document.getElementById(`multiple-layout-${layoutId}-frames-progress`);
+            const resultsDiv = document.getElementById(`multiple-layout-${layoutId}-frames-results`);
+            const progressFill = progressDiv.querySelector('.progress-fill');
+            const progressText = progressDiv.querySelector('.progress-text');
+
+            // Reset UI
+            resultsDiv.style.display = 'none';
+            progressDiv.style.display = 'block';
+            progressFill.style.width = '0%';
+            progressText.textContent = 'Preparing upload...';
+
+            // Disable submit button
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+            submitBtn.disabled = true;
+
+            // Simulate progress animation
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) progress = 90;
+                progressFill.style.width = progress + '%';
+                progressText.textContent = `Uploading to Layout ${layoutId}... ${Math.round(progress)}%`;
+            }, 200);
+
+            // Make the upload request
+            fetch('api/upload-multiple-layout-frames.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    clearInterval(progressInterval);
+                    progressFill.style.width = '100%';
+                    progressText.textContent = 'Upload complete!';
+
+                    setTimeout(() => {
+                        progressDiv.style.display = 'none';
+                        displayLayoutUploadResults(layoutId, data);
+
+                        // Reset form if successful
+                        if (data.success) {
+                            form.reset();
+                            form.querySelector('input[name="name_prefix"]').value = `Layout ${layoutId} Frame`;
+                            form.querySelector('input[name="default_color"]').value = '#FFFFFF';
+                            // Reload page after a delay to show new uploads
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 3000);
+                        }
+                    }, 1000);
+                })
+                .catch(error => {
+                    clearInterval(progressInterval);
+                    progressDiv.style.display = 'none';
+
+                    const errorData = {
+                        success: false,
+                        message: 'Network error occurred',
+                        uploaded: 0,
+                        failed: 0,
+                        details: []
+                    };
+                    displayLayoutUploadResults(layoutId, errorData);
+                    console.error('Upload error:', error);
+                })
+                .finally(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                });
+        }
+
+        function displayLayoutUploadResults(layoutId, data) {
+            const resultsDiv = document.getElementById(`multiple-layout-${layoutId}-frames-results`);
+            const resultsContent = resultsDiv.querySelector('.results-content');
+
+            let html = '';
+
+            // Summary
+            html += '<div class="result-summary">';
+            html += `<h5>Layout ${layoutId} Upload Summary</h5>`;
+            html += '<div class="summary-stats">';
+            html += `<div class="summary-stat success"><i class="fas fa-check-circle"></i> ${data.uploaded} successful</div>`;
+            html += `<div class="summary-stat error"><i class="fas fa-times-circle"></i> ${data.failed} failed</div>`;
+            html += '</div>';
+            html += `<p><strong>Message:</strong> ${data.message}</p>`;
+            html += '</div>';
+
+            // Individual file results
+            if (data.details && data.details.length > 0) {
+                html += '<div class="result-details">';
+                data.details.forEach(detail => {
+                    const cssClass = detail.success ? 'success' : 'error';
+                    const icon = detail.success ? 'fa-check-circle' : 'fa-times-circle';
+
+                    html += `<div class="result-item ${cssClass}">`;
+                    html += `<i class="fas ${icon}"></i>`;
+                    html += '<div>';
+                    html += `<strong>${detail.original_name}</strong><br>`;
+                    html += `${detail.message}`;
+                    if (detail.success && detail.frame_name) {
+                        html += `<br><small>Saved as: ${detail.frame_name}</small>`;
+                    }
+                    html += '</div>';
+                    html += '</div>';
+                });
+                html += '</div>';
+            }
+
+            resultsContent.innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
+
+        function handleMultipleComboUpload(layoutId, form) {
+            const formData = new FormData(form);
+
+            // Ensure layout_id is explicitly set
+            formData.set('layout_id', layoutId);
+
+            const submitBtn = form.querySelector('.upload-btn');
+            const originalText = submitBtn.innerHTML;
+            const progressDiv = document.getElementById(`multiple-combo-layout-${layoutId}-progress`);
+            const resultsDiv = document.getElementById(`multiple-combo-layout-${layoutId}-results`);
+            const progressFill = progressDiv.querySelector('.progress-fill');
+            const progressText = progressDiv.querySelector('.progress-text');
+
+            // Reset UI
+            resultsDiv.style.display = 'none';
+            progressDiv.style.display = 'block';
+            progressFill.style.width = '0%';
+            progressText.textContent = 'Preparing upload...';
+
+            // Disable submit button
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+            submitBtn.disabled = true;
+
+            // Simulate progress animation
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) progress = 90;
+                progressFill.style.width = progress + '%';
+                progressText.textContent = `Uploading combos to Layout ${layoutId}... ${Math.round(progress)}%`;
+            }, 200);
+
+            // Make the upload request
+            fetch('api/upload-multiple-frame-sticker-combos.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    clearInterval(progressInterval);
+                    progressFill.style.width = '100%';
+                    progressText.textContent = 'Upload complete!';
+
+                    setTimeout(() => {
+                        progressDiv.style.display = 'none';
+                        displayComboUploadResults(layoutId, data);
+
+                        // Reset form if successful
+                        if (data.success) {
+                            form.reset();
+                            form.querySelector('input[name="name_prefix"]').value = `Layout ${layoutId} Combo`;
+                            // Reload page after a delay to show new uploads
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 3000);
+                        }
+                    }, 1000);
+                })
+                .catch(error => {
+                    clearInterval(progressInterval);
+                    progressDiv.style.display = 'none';
+
+                    console.error('Upload error details:', error);
+
+                    const errorData = {
+                        success: false,
+                        message: 'Network error: ' + error.message,
+                        uploaded: 0,
+                        failed: 0,
+                        details: []
+                    };
+                    displayComboUploadResults(layoutId, errorData);
+                })
+                .finally(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                });
+        }
+
+        function displayComboUploadResults(layoutId, data) {
+            const resultsDiv = document.getElementById(`multiple-combo-layout-${layoutId}-results`);
+            const resultsContent = resultsDiv.querySelector('.results-content');
+
+            let html = '';
+
+            // Summary
+            html += '<div class="result-summary">';
+            html += `<h5>Layout ${layoutId} Frame-Sticker-Combos Upload Summary</h5>`;
+            html += '<div class="summary-stats">';
+            html += `<div class="summary-stat success"><i class="fas fa-check-circle"></i> ${data.uploaded} successful</div>`;
+            html += `<div class="summary-stat error"><i class="fas fa-times-circle"></i> ${data.failed} failed</div>`;
+            html += '</div>';
+            html += `<p><strong>Message:</strong> ${data.message}</p>`;
+            html += '</div>';
+
+            // Individual file results
+            if (data.details && data.details.length > 0) {
+                html += '<div class="result-details">';
+                data.details.forEach(detail => {
+                    const cssClass = detail.success ? 'success' : 'error';
+                    const icon = detail.success ? 'fa-check-circle' : 'fa-times-circle';
+
+                    html += `<div class="result-item ${cssClass}">`;
+                    html += `<i class="fas ${icon}"></i>`;
+                    html += '<div>';
+                    html += `<strong>${detail.original_name}</strong><br>`;
+                    html += `${detail.message}`;
+                    if (detail.success && detail.combo_name) {
+                        html += `<br><small>Saved as: ${detail.combo_name}</small>`;
+                    }
+                    html += '</div>';
+                    html += '</div>';
+                });
+                html += '</div>';
+            }
+
+            resultsContent.innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
     </script>
 </body>
 

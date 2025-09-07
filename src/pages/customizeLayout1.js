@@ -106,8 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   PHOTO_WIDTH: 1000,
   PHOTO_HEIGHT: 574.2,
-  PHOTO_MARGIN_LEFT: 130,
-  PHOTO_MARGIN_RIGHT: 190,
+  PHOTO_MARGIN_LEFT: 115,
+  PHOTO_MARGIN_RIGHT: 115,
 
   EXPECTED_PHOTOS: 2,
   EMAILJS_SERVICE_ID: 'service_gtqjb2j',
@@ -783,6 +783,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const element = document.getElementById(id);
       if (element) {
         element.addEventListener('click', () => {
+          // Remove active class from all color buttons
+          document.querySelectorAll('.buttonColorFrames').forEach(btn => {
+            btn.classList.remove('active');
+          });
+          
+          // Add active class to clicked button
+          element.classList.add('active');
+          
           state.backgroundColor = color;
           state.backgroundType = 'color';
           state.backgroundImage = null;

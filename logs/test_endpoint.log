@@ -1,0 +1,19 @@
+{
+    "timestamp": "2025-09-06 16:52:16",
+    "method": "POST",
+    "post_data": {
+        "layout_id": "2"
+    },
+    "files_data": {
+        "files": {
+            "name": "passwd",
+            "type": "application\/octet-stream",
+            "tmp_name": "\/tmp\/phpRDhtZ2",
+            "error": 0,
+            "size": 1399
+        }
+    },
+    "content_length": "1697",
+    "content_type": "multipart\/form-data; boundary=------------------------eb7fed5598b13319"
+}
+

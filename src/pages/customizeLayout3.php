@@ -35,6 +35,1071 @@ require_once '../includes/pwa-helper.php';
     <?php PWAHelper::addPWAHeaders(); ?>
 
     <style>
+        /* Override main layout untuk customizeLayout1 */
+        .customize-content-wrapper {
+            display: flex;
+            flex: 1;
+            align-items: stretch;
+        }
+
+        /* Left Section: Customization Options (Enhanced Pink & White Theme) */
+        .customize-left-section {
+            width: auto;
+            max-width: 450px;
+            backdrop-filter: unset;
+            border: 0;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #fff 0%, #ffe6ec 50%, #fff0f3 100%);
+            border-radius: 1.2rem;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .customize-left-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(180deg, rgba(233, 30, 99, 0.08) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .customize-left-section::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .customize-left-section::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .customize-left-section::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--pink-primary), var(--pink-hover));
+            border-radius: 3px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .customize-left-section::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, var(--pink-hover), var(--pink-primary));
+        }
+
+        .customize-title {
+            color: var(--pink-primary);
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(233, 30, 99, 0.1);
+            position: relative;
+        }
+
+        .customize-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(to right, var(--pink-primary), var(--pink-light));
+            border-radius: 2px;
+        }
+
+        /* Right Section: Photo Preview */
+        .customize-right-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ffe6ec 0%, #fff0f3 100%);
+            border-radius: 1.2rem;
+            position: relative;
+        }
+
+        .customize-right-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+            border-radius: inherit;
+            pointer-events: none;
+        }
+
+        .customize-photo-preview {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .customize-photo-preview canvas,
+        .customize-photo-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        /* Customization Options Groups */
+        .customize-options-group {
+            margin-bottom: 1.8rem;
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 0.8rem;
+            border: 1px solid rgba(233, 30, 99, 0.15);
+            box-shadow: 0 2px 8px rgba(233, 30, 99, 0.08);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .customize-options-group:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.15);
+            border-color: rgba(233, 30, 99, 0.3);
+        }
+
+        .customize-options-label {
+            color: var(--pink-primary);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: block;
+            text-align: center;
+            position: relative;
+        }
+
+        .customize-options-label::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--pink-primary), transparent);
+            border-radius: 1px;
+        }
+
+        /* Buttons Grid */
+        .customize-buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 0.6rem;
+            border: 1px solid rgba(233, 30, 99, 0.1);
+            justify-items: center;
+        }
+
+        .customize-buttons-grid.frame-color-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.3rem;
+            padding: 0.4rem;
+        }
+
+        /* Frame Color Section - More Compact */
+        .frame-color-section {
+            margin-bottom: 1.2rem;
+            padding: 0.8rem;
+        }
+
+        .frame-color-section .customize-options-group {
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+        }
+
+        .customize-buttons-grid.shape-buttons {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        /* Frame Color Buttons - Smaller and Centered */
+        .buttonFrames {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--pink-primary);
+            border-radius: 0.6rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(255, 105, 135, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .buttonFrames::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
+            transform: scale(0);
+            transition: transform 0.3s ease;
+        }
+
+        .buttonFrames:hover::before {
+            transform: scale(1);
+        }
+
+        .buttonFrames:hover {
+            transform: scale(1.08) translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 105, 135, 0.25);
+            border-width: 3px;
+        }
+
+        .buttonFrames.active {
+            border-width: 3px;
+            box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.3);
+            transform: scale(1.05);
+        }
+
+        /* Frame color styling */
+        .frame-color-pink {
+            background: #ff748d;
+        }
+
+        .frame-color-blue {
+            background: #64b5f6;
+        }
+
+        .frame-color-yellow {
+            background: #ffeb3b;
+        }
+
+        .frame-color-matcha {
+            background: #81c784;
+        }
+
+        .frame-color-purple {
+            background: #ba68c8;
+        }
+
+        .frame-color-brown {
+            background: #8d6e63;
+        }
+
+        .frame-color-red {
+            background: #e57373;
+        }
+
+        .frame-color-white {
+            background: #ffffff;
+            border-color: var(--pink-primary);
+        }
+
+        .frame-color-black {
+            background: #424242;
+        }
+
+        /* Color Buttons - Khusus untuk tombol warna yang kecil dan bulat */
+        .color-buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.8rem;
+            justify-content: center;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        .buttonColorFrames {
+            width: 25px;
+            height: 25px;
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .buttonColorFrames::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .buttonColorFrames:hover::before {
+            width: 100%;
+            height: 100%;
+        }
+
+        .buttonColorFrames:hover {
+            border-color: var(--pink-primary);
+            transform: scale(1.15);
+            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
+        }
+
+        .buttonColorFrames.active {
+            border-color: var(--pink-primary);
+            border-width: 5px;
+            transform: scale(1.1);
+            box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.2), 0 4px 15px rgba(233, 30, 99, 0.4);
+        }
+
+        /* Frame Color Section - Compact styling */
+        .frame-color-section .customize-options-group {
+            padding: 1rem;
+        }
+
+        .frame-color-section .customize-options-label {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        /* Shape Buttons */
+        .buttonShapes {
+            width: 55px;
+            height: 55px;
+            border: 2px solid var(--pink-primary);
+            border-radius: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #fff 0%, #ffe6ec 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(255, 105, 135, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .buttonShapes::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--pink-primary), var(--pink-light), var(--pink-primary));
+            border-radius: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .buttonShapes:hover::before,
+        .buttonShapes.active::before {
+            opacity: 1;
+        }
+
+        .buttonShapes:hover {
+            background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
+            color: #fff;
+            transform: scale(1.08) translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 105, 135, 0.25);
+        }
+
+        .buttonShapes.active {
+            background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
+            color: #fff;
+            box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.3);
+            transform: scale(1.05);
+        }
+
+        .buttonShapes img.shape-icon {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+
+        /* Frame & Sticker Combo Buttons - Larger for Better Visibility */
+        .buttonFrameStickers {
+            width: 120px;
+            height: 90px;
+            border: 2px solid rgba(233, 30, 99, 0.4);
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #fff 0%, #ffe6ec 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(255, 105, 135, 0.15);
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .buttonFrameStickers::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(233, 30, 99, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .buttonFrameStickers:hover::after,
+        .buttonFrameStickers.active::after {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .buttonFrameStickers:hover {
+            border-color: var(--pink-primary);
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 105, 135, 0.25);
+        }
+
+        .buttonFrameStickers.active {
+            border-color: var(--pink-primary);
+            background: linear-gradient(135deg, rgba(233, 30, 99, 0.1), rgba(233, 30, 99, 0.2));
+            box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.3);
+            transform: scale(1.03);
+        }
+
+        .buttonFrameStickers img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+
+        /* Special styling for "None" buttons */
+        .frame-sticker-none {
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .frame-sticker-none img {
+            width: 32px;
+            height: 32px;
+            opacity: 0.6;
+            object-fit: contain;
+        }
+
+        .frame-sticker-none span {
+            font-size: 0.8rem;
+            color: var(--pink-primary);
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* Logo Buttons */
+        .customize-logo-buttons {
+            display: flex;
+            gap: 0.7rem;
+            margin-top: 1rem;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 0.6rem;
+            border: 1px solid rgba(233, 30, 99, 0.1);
+        }
+
+        .logoCustomBtn {
+            flex: 1;
+            padding: 0.8rem 1.4rem;
+            background: linear-gradient(135deg, #fff 0%, #ffe6ec 100%);
+            color: var(--pink-primary);
+            border: 2px solid var(--pink-primary);
+            border-radius: 0.8rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(255, 105, 135, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logoCustomBtn::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 300%;
+            height: 300%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: transform 0.5s ease;
+            transform: translateX(-100%);
+        }
+
+        .logoCustomBtn:hover::before {
+            transform: translateX(100%);
+        }
+
+        .logoCustomBtn:hover {
+            background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 105, 135, 0.25);
+        }
+
+        .logoCustomBtn.active {
+            background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
+            color: #fff;
+            box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.3);
+        }
+
+        /* Brightness Controls */
+        .brightness-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 230, 236, 0.5) 100%);
+            border-radius: 0.8rem;
+            border: 1px solid rgba(233, 30, 99, 0.2);
+            margin-top: 1rem;
+            box-shadow: 0 2px 8px rgba(233, 30, 99, 0.08);
+        }
+
+        .brightness-slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brightness-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--pink-primary);
+            font-size: 14px;
+            font-weight: 600;
+            min-width: 140px;
+        }
+
+        .brightness-slider {
+            flex: 1;
+            height: 6px;
+            background: linear-gradient(to right, #333, #fff);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .brightness-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--pink-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .brightness-slider::-webkit-slider-thumb:hover {
+            background: var(--pink-hover);
+            transform: scale(1.1);
+        }
+
+        .brightness-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--pink-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .brightness-value {
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .brightness-value span {
+            color: var(--pink-primary);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Action Buttons Footer */
+        .customize-action-buttons {
+            height: unset;
+            display: flex;
+            backdrop-filter: blur(12px);
+            justify-content: center;
+            outline: unset;
+            border-top: unset;
+            background: unset;
+        }
+
+        .customize-action-btn {
+            padding: 1rem 2rem;
+            border-radius: 0.8rem;
+            border: 2px solid var(--pink-primary);
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(255, 105, 135, 0.20);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .customize-action-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+            transition: transform 0.3s ease;
+            border-radius: inherit;
+        }
+
+        .customize-action-btn:hover::before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .email-btn {
+            background: linear-gradient(135deg, #fff 0%, #ffe6ec 100%);
+            color: var(--pink-primary);
+        }
+
+        .email-btn:hover {
+            background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 105, 135, 0.30);
+        }
+
+        .print-btn {
+            background: linear-gradient(135deg, #fff 0%, #ffe6ec 100%);
+            color: var(--pink-primary);
+        }
+
+        .print-btn:hover {
+            background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 105, 135, 0.30);
+        }
+
+        .continue-btn {
+            background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
+            color: #fff;
+            border-color: var(--pink-light);
+        }
+
+        .continue-btn:hover {
+            background: linear-gradient(135deg, var(--pink-hover), var(--pink-primary));
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(194, 24, 91, 0.35);
+        }
+
+        /* Loading placeholder styles */
+        .loading-placeholder {
+            padding: 20px;
+            text-align: center;
+            color: var(--pink-primary);
+            font-style: italic;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 230, 236, 0.4) 100%);
+            border-radius: 0.6rem;
+            border: 1px dashed rgba(233, 30, 99, 0.3);
+            animation: pulse-loading 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse-loading {
+
+            0%,
+            100% {
+                opacity: 0.7;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.02);
+            }
+        }
+
+        /* Frame & sticker combo container styling */
+        #dynamicFrameStickerContainer {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 0.6rem;
+            border: 1px solid rgba(233, 30, 99, 0.1);
+            justify-items: center;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #fff 0%, #ffe6ec 50%, #fff0f3 100%);
+            border: 2px solid var(--pink-primary);
+            margin: 3% auto;
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            width: 90%;
+            max-width: 550px;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(255, 105, 135, 0.25);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 230, 236, 0.6));
+            border: 1px solid var(--pink-primary);
+            font-size: 1.5rem;
+            color: var(--pink-primary);
+            cursor: pointer;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .close-btn:hover {
+            background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .modal-title {
+            color: var(--pink-primary);
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .modal-subtitle {
+            color: var(--pink-primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            opacity: 0.8;
+        }
+
+        .email-input-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .email-input {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 2px solid rgba(233, 30, 99, 0.3);
+            border-radius: 0.8rem;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--pink-primary);
+            transition: all 0.3s ease;
+        }
+
+        .email-input:focus {
+            outline: none;
+            border-color: var(--pink-primary);
+            box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.2);
+            background: #fff;
+        }
+
+        .input-validation {
+            margin-top: 0.5rem;
+            height: 20px;
+        }
+
+        #validation-message {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        /* Virtual Keyboard */
+        .virtual-keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .keyboard-row {
+            display: flex;
+            gap: 0.3rem;
+            justify-content: center;
+        }
+
+        .key-btn {
+            padding: 0.6rem;
+            min-width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #fff 0%, #ffe6ec 100%);
+            border: 1px solid var(--pink-primary);
+            border-radius: 0.6rem;
+            color: var(--pink-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(255, 105, 135, 0.10);
+        }
+
+        .key-btn:hover {
+            background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 105, 135, 0.20);
+        }
+
+        .key-caps,
+        .key-backspace {
+            min-width: 70px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1.2rem;
+            justify-content: center;
+        }
+
+        .btn-secondary {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #fff 0%, #ffe6ec 100%);
+            color: var(--pink-primary);
+            border: 2px solid var(--pink-primary);
+            border-radius: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 3px 10px rgba(255, 105, 135, 0.15);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 105, 135, 0.25);
+        }
+
+        .btn-primary {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
+            color: #fff;
+            border: 2px solid var(--pink-light);
+            border-radius: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(255, 105, 135, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--pink-hover), var(--pink-primary));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(194, 24, 91, 0.35);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .customize-content-wrapper {
+                flex-direction: column;
+                height: auto;
+                padding: 0.5rem;
+                gap: 1rem;
+            }
+
+            .customize-left-section {
+                max-width: 100%;
+                width: 100%;
+                max-height: 350px;
+                order: 2;
+            }
+
+            .customize-right-section {
+                min-height: 450px;
+                order: 1;
+            }
+
+            .customize-action-buttons {
+                order: 3;
+                position: sticky;
+                bottom: 0;
+                background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 230, 236, 0.8) 100%);
+                backdrop-filter: blur(15px);
+                z-index: 100;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .customize-content-wrapper {
+                padding: 0.3rem;
+                gap: 0.8rem;
+            }
+
+            .customize-left-section {
+                padding: 1.2rem;
+                max-height: 280px;
+            }
+
+            .customize-title {
+                font-size: 1.3rem;
+                margin-bottom: 1.2rem;
+            }
+
+            .customize-options-label {
+                font-size: 1rem;
+            }
+
+            .customize-buttons-grid {
+                gap: 0.6rem;
+            }
+
+            .customize-buttons-grid.frame-color-grid {
+                gap: 0.2rem;
+            }
+
+            .color-buttons-grid {
+                gap: 0.6rem;
+                grid-template-columns: repeat(5, 1fr);
+                max-width: 240px;
+            }
+
+            .buttonColorFrames {
+                width: 25px;
+                height: 25px;
+                border-width: 2px;
+            }
+
+            .buttonColorFrames.active {
+                border-width: 4px;
+            }
+
+            .buttonFrames {
+                width: 35px;
+                height: 35px;
+            }
+
+            .buttonShapes {
+                width: 45px;
+                height: 45px;
+            }
+
+            .buttonFrameStickers {
+                width: 100px;
+                height: 75px;
+            }
+
+            .customize-action-buttons {
+                padding: 1rem;
+                gap: 0.6rem;
+            }
+
+            .customize-action-btn {
+                padding: 0.8rem 1.2rem;
+                font-size: 0.9rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.8rem;
+                margin: 8% auto;
+            }
+
+            .key-btn {
+                min-width: 38px;
+                height: 38px;
+                padding: 0.4rem;
+            }
+        }
+
+        /* Additional enhancements */
+        .customize-options-group {
+            position: relative;
+        }
+
+        /* Enhanced hover effects */
+        .customize-left-section {
+            transition: all 0.3s ease;
+        }
+
+        .customize-right-section {
+            transition: all 0.3s ease;
+        }
+
+        /* Animation untuk loading state */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .customize-options-group {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .customize-options-group:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .customize-options-group:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .customize-options-group:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+
+        .customize-options-group:nth-child(5) {
+            animation-delay: 0.4s;
+        }
+
         /* Print styles for 4R paper */
         @page {
             size: 4in 6in;
@@ -72,305 +1137,13 @@ require_once '../includes/pwa-helper.php';
             .print-image {
                 width: 4in;
                 height: 6in;
-                object-fit: contain;
+                object-fit: cover;
                 object-position: center;
                 position: absolute;
                 top: 0;
                 left: 0;
                 display: block;
             }
-
-            .print-container .modal-content {
-                position: fixed !important;
-                top: 100px !important;
-                left: 50% !important;
-                transform: translate(-50%, -50%) !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                box-shadow: none !important;
-            }
-
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.1);
-            }
-
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        /* Loading placeholder styles */
-        .loading-placeholder {
-            padding: 20px;
-            text-align: center;
-            color: #666;
-            font-style: italic;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            animation: pulse-loading 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulse-loading {
-
-            0%,
-            100% {
-                opacity: 0.6;
-            }
-
-            50% {
-                opacity: 1;
-            }
-        }
-
-        /* Dynamic assets styling */
-        .dynamic-frame-btn,
-        .dynamic-sticker-btn,
-        .dynamic-frame-sticker-btn {
-            position: relative;
-            overflow: hidden;
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .dynamic-frame-btn:hover,
-        .dynamic-sticker-btn:hover,
-        .dynamic-frame-sticker-btn:hover {
-            border-color: #E28585;
-            transform: scale(1.05);
-        }
-
-        .dynamic-frame-btn.active,
-        .dynamic-sticker-btn.active,
-        .dynamic-frame-sticker-btn.active {
-            border-color: #E28585;
-            background: rgba(226, 133, 133, 0.1);
-        }
-
-        .dynamic-frame-btn img,
-        .dynamic-sticker-btn img,
-        .dynamic-frame-sticker-btn img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* Stickers container styling */
-        #dynamicStickersContainer {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 10px;
-            width: 100%;
-        }
-
-        /* Frame & sticker combo container styling */
-        #dynamicFrameStickerContainer {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 10px;
-            width: 100%;
-        }
-
-        /* Enhanced button styling for stickers and combos */
-        .buttonStickers,
-        .buttonFrameStickers {
-            width: 50px;
-            height: 50px;
-            border: 2px solid rgba(233, 30, 99, 0.2);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .buttonStickers:hover,
-        .buttonFrameStickers:hover {
-            border-color: #E28585;
-            transform: scale(1.05);
-            box-shadow: 0 2px 8px rgba(226, 133, 133, 0.3);
-        }
-
-        .buttonStickers.active,
-        .buttonFrameStickers.active {
-            border-color: #E28585;
-            background: rgba(226, 133, 133, 0.1);
-            box-shadow: 0 0 0 2px rgba(226, 133, 133, 0.3);
-        }
-
-        .buttonStickers img,
-        .buttonFrameStickers img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-
-        /* Special styling for "None" buttons */
-        .sticker-none,
-        .frame-sticker-none {
-            background: rgba(255, 255, 255, 0.9);
-        }
-
-        .sticker-none img,
-        .frame-sticker-none img {
-            width: 24px;
-            height: 24px;
-            opacity: 0.6;
-            object-fit: contain;
-        }
-
-        /* Brightness controls styling */
-        .brightness-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            border: 1px solid rgba(226, 133, 133, 0.2);
-        }
-
-        .brightness-slider-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .brightness-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #fff;
-            font-size: 14px;
-            font-weight: 500;
-            min-width: 140px;
-        }
-
-        .brightness-slider {
-            flex: 1;
-            height: 6px;
-            background: linear-gradient(to right, #333, #fff);
-            border-radius: 3px;
-            outline: none;
-            -webkit-appearance: none;
-            appearance: none;
-        }
-
-        .brightness-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: #E28585;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-            transition: all 0.2s ease;
-        }
-
-        .brightness-slider::-webkit-slider-thumb:hover {
-            background: #d67575;
-            transform: scale(1.1);
-        }
-
-        .brightness-slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            background: #E28585;
-            border-radius: 50%;
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-            transition: all 0.2s ease;
-        }
-
-        .brightness-value {
-            min-width: 50px;
-            text-align: center;
-        }
-
-        .brightness-value span {
-            color: #fff;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .brightness-preset-buttons {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-        }
-
-        .brightness-btn {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(226, 133, 133, 0.3);
-            border-radius: 8px;
-            color: #fff;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            flex: 1;
-            justify-content: center;
-        }
-
-        .brightness-btn:hover {
-            background: rgba(226, 133, 133, 0.2);
-            border-color: #E28585;
-            transform: translateY(-2px);
-        }
-
-        .brightness-btn.active {
-            background: rgba(226, 133, 133, 0.3);
-            border-color: #E28585;
-            box-shadow: 0 0 0 2px rgba(226, 133, 133, 0.3);
-        }
-
-        .brightness-btn i {
-            font-size: 14px;
-        }
-
-        .darker-btn {
-            color: #ddd;
-        }
-
-        .normal-btn {
-            color: #fff;
-        }
-
-        .brighter-btn {
-            color: #ffe066;
-        }
-
-        .super-bright-btn {
-            color: #ff6b35;
-            background: rgba(255, 107, 53, 0.1);
-        }
-
-        .super-bright-btn:hover {
-            background: rgba(255, 107, 53, 0.2);
-        }
-
-        .super-bright-btn.active {
-            background: rgba(255, 107, 53, 0.3);
-            border-color: #ff6b35;
-            box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.3);
         }
     </style>
 </head>
@@ -396,7 +1169,6 @@ require_once '../includes/pwa-helper.php';
                             <span id="brightnessValue">100%</span>
                         </div>
                     </div>
-
                     <!-- <div class="brightness-preset-buttons">
                         <button id="darkerBtn" class="brightness-btn darker-btn">
                             <i class="fas fa-moon"></i> Darker
@@ -411,46 +1183,7 @@ require_once '../includes/pwa-helper.php';
                             <i class="fas fa-fire"></i> Super Bright
                         </button> -->
                 </div>
-
-
             </div>
-            </div>
-
-            <!-- Frame Color -->
-            <div class="customize-options-group">
-                <h3 class="customize-options-label">Frame Color</h3>
-                <div class="customize-buttons-grid">
-                    <button id="pinkBtnFrame" class="buttonFrames frame-color-pink"></button>
-                    <button id="blueBtnFrame" class="buttonFrames frame-color-blue"></button>
-                    <button id="yellowBtnFrame" class="buttonFrames frame-color-yellow"></button>
-                    <button id="matchaBtnFrame" class="buttonFrames frame-color-matcha"></button>
-                    <button id="purpleBtnFrame" class="buttonFrames frame-color-purple"></button>
-                    <button id="brownBtnFrame" class="buttonFrames frame-color-brown"></button>
-                    <button id="redBtnFrame" class="buttonFrames frame-color-red"></button>
-                    <button id="whiteBtnFrame" class="buttonFrames frame-color-white"></button>
-                    <button id="blackBtnFrame" class="buttonFrames frame-color-black"></button>
-                </div>
-            </div>
-
-            <!-- Background Frames (Dynamic from Database) -->
-            <!-- <div class="customize-options-group">
-                <h3 class="customize-options-label">Background Frames</h3>
-                <div id="dynamicFramesContainer" class="customize-buttons-grid">
-                    <div class="loading-placeholder">Loading frames...</div>
-                </div>
-            </div> -->
-
-            <!-- Stickers (Dynamic from Database - Layout 3 specific) -->
-            <!-- <div class="customize-options-group">
-                <h3 class="customize-options-label">Stickers</h3>
-                <div id="dynamicStickersContainer" class="customize-buttons-grid stickers-grid">
-                    <button id="noneSticker" class="buttonStickers sticker-none">
-                        <img src="../assets/block (1).png" alt="None" class="shape-icon">
-                    </button>
-                    <div class="loading-placeholder">Loading layout 3 stickers...</div>
-                </div>
-            </div> -->
-
             <!-- Frame & Sticker Combo (Dynamic from Database - Layout 3 specific) -->
             <div class="customize-options-group">
                 <h3 class="customize-options-label">Frame & Sticker</h3>
@@ -461,8 +1194,39 @@ require_once '../includes/pwa-helper.php';
                     <div class="loading-placeholder">Loading layout 3 frame & sticker combos...</div>
                 </div>
             </div>
-
-            <!-- Photo Shape -->
+            <!-- Frame Color -->
+            <div class="customize-options-group frame-color-section">
+                <h3 class="customize-options-label">Frame Color</h3>
+                <div class="customize-buttons-grid color-buttons-grid">
+                    <button id="pinkBtnFrame" class="buttonColorFrames frame-color-pink" data-color="pink"></button>
+                    <button id="blueBtnFrame" class="buttonColorFrames frame-color-blue" data-color="blue"></button>
+                    <button id="yellowBtnFrame" class="buttonColorFrames frame-color-yellow" data-color="yellow"></button>
+                    <button id="matchaBtnFrame" class="buttonColorFrames frame-color-matcha" data-color="matcha"></button>
+                    <button id="purpleBtnFrame" class="buttonColorFrames frame-color-purple" data-color="purple"></button>
+                    <button id="brownBtnFrame" class="buttonColorFrames frame-color-brown" data-color="brown"></button>
+                    <button id="redBtnFrame" class="buttonColorFrames frame-color-red" data-color="red"></button>
+                    <button id="whiteBtnFrame" class="buttonColorFrames frame-color-white" data-color="white"></button>
+                    <button id="blackBtnFrame" class="buttonColorFrames frame-color-black" data-color="black"></button>
+                </div>
+            </div>
+            <!-- Background Frames (Dynamic from Database) -->
+            <!-- <div class="customize-options-group">
+                <h3 class="customize-options-label">Background Frames</h3>
+                <div id="dynamicFramesContainer" class="customize-buttons-grid">
+                    <div class="loading-placeholder">Loading frames...</div>
+                </div>
+            </div> -->
+            <!-- Stickers (Dynamic from Database - Layout 1 specific) -->
+            <!-- <div class="customize-options-group">
+                <h3 class="customize-options-label">Stickers</h3>
+                <div id="dynamicStickersContainer" class="customize-buttons-grid stickers-grid">
+                    <button type="button" id="noneSticker" class="buttonStickers sticker-none">
+                        <img src="../assets/block (1).png" alt="None" class="shape-icon">
+                    </button>
+                    <div class="loading-placeholder">Loading layout 1 stickers...</div>
+                </div>
+            </div> -->
+            <!-- Photo Shape
             <div class="customize-options-group">
                 <h3 class="customize-options-label">Photo Shape</h3>
                 <div class="customize-buttons-grid shape-buttons">
@@ -473,16 +1237,15 @@ require_once '../includes/pwa-helper.php';
                         <img src="../assets/corners.png" alt="Soft Edge Frame" class="shape-icon">
                     </button>
                 </div>
-            </div>
-
-            <!-- Logo -->
+            </div> -->
+            <!-- Logo 
             <div class="customize-options-group">
                 <h3 class="customize-options-label">Logo</h3>
                 <div class="customize-logo-buttons">
                     <button id="nonLogo" class="logoCustomBtn">None</button>
                     <button id="engLogo" class="logoCustomBtn">Use</button>
                 </div>
-            </div>
+            </div> -->
         </section>
 
         <!-- Photo Preview -->

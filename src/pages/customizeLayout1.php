@@ -39,26 +39,19 @@ require_once '../includes/pwa-helper.php';
         .customize-content-wrapper {
             display: flex;
             flex: 1;
-            height: calc(100vh - 120px);
-            gap: 1.5rem;
-            padding: 0.5rem;
             align-items: stretch;
         }
 
         /* Left Section: Customization Options (Enhanced Pink & White Theme) */
         .customize-left-section {
             width: auto;
-            max-width: 380px;
-            min-width: 320px;
+            max-width: 450px;
+            backdrop-filter: unset;
+            border: 0;
             flex-shrink: 0;
             background: linear-gradient(135deg, #fff 0%, #ffe6ec 50%, #fff0f3 100%);
-            border: 2px solid var(--pink-primary);
             border-radius: 1.2rem;
-            box-shadow: 0 6px 30px rgba(255,105,135,0.25);
-            padding: 2rem 1.5rem 1.5rem 1.5rem;
             overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: var(--pink-primary) rgba(255, 255, 255, 0.3);
             position: relative;
         }
 
@@ -70,7 +63,6 @@ require_once '../includes/pwa-helper.php';
             right: 0;
             height: 60px;
             background: linear-gradient(180deg, rgba(233, 30, 99, 0.08) 0%, transparent 100%);
-            border-radius: 1.2rem 1.2rem 0 0;
             pointer-events: none;
         }
 
@@ -122,10 +114,7 @@ require_once '../includes/pwa-helper.php';
             align-items: center;
             justify-content: center;
             background: linear-gradient(135deg, #ffe6ec 0%, #fff0f3 100%);
-            border: 2px solid var(--pink-primary);
             border-radius: 1.2rem;
-            box-shadow: 0 6px 30px rgba(255,105,135,0.25);
-            padding: 1.5rem;
             position: relative;
         }
 
@@ -147,11 +136,7 @@ require_once '../includes/pwa-helper.php';
             justify-content: center;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 0.9rem;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(233, 30, 99, 0.15);
-            border: 3px solid var(--pink-primary);
         }
 
         .customize-photo-preview canvas,
@@ -204,28 +189,46 @@ require_once '../includes/pwa-helper.php';
         /* Buttons Grid */
         .customize-buttons-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.7rem;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1rem;
             margin-top: 1rem;
-            padding: 0.5rem;
+            padding: 0.8rem;
             background: rgba(255, 255, 255, 0.4);
             border-radius: 0.6rem;
             border: 1px solid rgba(233, 30, 99, 0.1);
+            justify-items: center;
+        }
+
+        .customize-buttons-grid.frame-color-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.3rem;
+            padding: 0.4rem;
+        }
+
+        /* Frame Color Section - More Compact */
+        .frame-color-section {
+            margin-bottom: 1.2rem;
+            padding: 0.8rem;
+        }
+
+        .frame-color-section .customize-options-group {
+            margin-bottom: 1rem;
+            padding: 0.8rem;
         }
 
         .customize-buttons-grid.shape-buttons {
             grid-template-columns: repeat(2, 1fr);
         }
 
-        /* Frame Color Buttons */
+        /* Frame Color Buttons - Smaller and Centered */
         .buttonFrames {
-            width: 55px;
-            height: 55px;
+            width: 40px;
+            height: 40px;
             border: 2px solid var(--pink-primary);
-            border-radius: 0.8rem;
+            border-radius: 0.6rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(255,105,135,0.15);
+            box-shadow: 0 3px 10px rgba(255, 105, 135, 0.15);
             position: relative;
             overflow: hidden;
         }
@@ -248,7 +251,7 @@ require_once '../includes/pwa-helper.php';
 
         .buttonFrames:hover {
             transform: scale(1.08) translateY(-3px);
-            box-shadow: 0 6px 20px rgba(255,105,135,0.25);
+            box-shadow: 0 6px 20px rgba(255, 105, 135, 0.25);
             border-width: 3px;
         }
 
@@ -259,15 +262,108 @@ require_once '../includes/pwa-helper.php';
         }
 
         /* Frame color styling */
-        .frame-color-pink { background: #ff748d; }
-        .frame-color-blue { background: #64b5f6; }
-        .frame-color-yellow { background: #ffeb3b; }
-        .frame-color-matcha { background: #81c784; }
-        .frame-color-purple { background: #ba68c8; }
-        .frame-color-brown { background: #8d6e63; }
-        .frame-color-red { background: #e57373; }
-        .frame-color-white { background: #ffffff; border-color: var(--pink-primary); }
-        .frame-color-black { background: #424242; }
+        .frame-color-pink {
+            background: #ff748d;
+        }
+
+        .frame-color-blue {
+            background: #64b5f6;
+        }
+
+        .frame-color-yellow {
+            background: #ffeb3b;
+        }
+
+        .frame-color-matcha {
+            background: #81c784;
+        }
+
+        .frame-color-purple {
+            background: #ba68c8;
+        }
+
+        .frame-color-brown {
+            background: #8d6e63;
+        }
+
+        .frame-color-red {
+            background: #e57373;
+        }
+
+        .frame-color-white {
+            background: #ffffff;
+            border-color: var(--pink-primary);
+        }
+
+        .frame-color-black {
+            background: #424242;
+        }
+
+        /* Color Buttons - Khusus untuk tombol warna yang kecil dan bulat */
+        .color-buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.8rem;
+            justify-content: center;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        .buttonColorFrames {
+            width: 25px;
+            height: 25px;
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .buttonColorFrames::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .buttonColorFrames:hover::before {
+            width: 100%;
+            height: 100%;
+        }
+
+        .buttonColorFrames:hover {
+            border-color: var(--pink-primary);
+            transform: scale(1.15);
+            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
+        }
+
+        .buttonColorFrames.active {
+            border-color: var(--pink-primary);
+            border-width: 5px;
+            transform: scale(1.1);
+            box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.2), 0 4px 15px rgba(233, 30, 99, 0.4);
+        }
+
+        /* Frame Color Section - Compact styling */
+        .frame-color-section .customize-options-group {
+            padding: 1rem;
+        }
+
+        .frame-color-section .customize-options-label {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
 
         /* Shape Buttons */
         .buttonShapes {
@@ -281,7 +377,7 @@ require_once '../includes/pwa-helper.php';
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 3px 10px rgba(255,105,135,0.15);
+            box-shadow: 0 3px 10px rgba(255, 105, 135, 0.15);
             position: relative;
             overflow: hidden;
         }
@@ -309,7 +405,7 @@ require_once '../includes/pwa-helper.php';
             background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
             color: #fff;
             transform: scale(1.08) translateY(-3px);
-            box-shadow: 0 6px 20px rgba(255,105,135,0.25);
+            box-shadow: 0 6px 20px rgba(255, 105, 135, 0.25);
         }
 
         .buttonShapes.active {
@@ -325,12 +421,12 @@ require_once '../includes/pwa-helper.php';
             object-fit: contain;
         }
 
-        /* Frame & Sticker Combo Buttons */
+        /* Frame & Sticker Combo Buttons - Larger for Better Visibility */
         .buttonFrameStickers {
-            width: 55px;
-            height: 55px;
+            width: 120px;
+            height: 90px;
             border: 2px solid rgba(233, 30, 99, 0.4);
-            border-radius: 0.8rem;
+            border-radius: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
             background: linear-gradient(135deg, #fff 0%, #ffe6ec 100%);
@@ -338,8 +434,9 @@ require_once '../includes/pwa-helper.php';
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            box-shadow: 0 3px 10px rgba(255,105,135,0.15);
+            box-shadow: 0 4px 15px rgba(255, 105, 135, 0.15);
             position: relative;
+            margin: 0 auto;
         }
 
         .buttonFrameStickers::after {
@@ -362,34 +459,46 @@ require_once '../includes/pwa-helper.php';
 
         .buttonFrameStickers:hover {
             border-color: var(--pink-primary);
-            transform: scale(1.08) translateY(-3px);
-            box-shadow: 0 6px 20px rgba(255,105,135,0.25);
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 105, 135, 0.25);
         }
 
         .buttonFrameStickers.active {
             border-color: var(--pink-primary);
             background: linear-gradient(135deg, rgba(233, 30, 99, 0.1), rgba(233, 30, 99, 0.2));
             box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.3);
-            transform: scale(1.05);
+            transform: scale(1.03);
         }
 
         .buttonFrameStickers img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            border-radius: 4px;
+            object-fit: contain;
+            border-radius: 6px;
         }
 
         /* Special styling for "None" buttons */
         .frame-sticker-none {
             background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
         .frame-sticker-none img {
-            width: 24px;
-            height: 24px;
+            width: 32px;
+            height: 32px;
             opacity: 0.6;
             object-fit: contain;
+        }
+
+        .frame-sticker-none span {
+            font-size: 0.8rem;
+            color: var(--pink-primary);
+            font-weight: 600;
+            text-align: center;
         }
 
         /* Logo Buttons */
@@ -415,7 +524,7 @@ require_once '../includes/pwa-helper.php';
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(255,105,135,0.15);
+            box-shadow: 0 3px 10px rgba(255, 105, 135, 0.15);
             position: relative;
             overflow: hidden;
         }
@@ -440,7 +549,7 @@ require_once '../includes/pwa-helper.php';
             background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
             color: #fff;
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(255,105,135,0.25);
+            box-shadow: 0 6px 15px rgba(255, 105, 135, 0.25);
         }
 
         .logoCustomBtn.active {
@@ -529,19 +638,19 @@ require_once '../includes/pwa-helper.php';
 
         /* Action Buttons Footer */
         .customize-action-buttons {
+            height: unset;
             display: flex;
-            gap: 1rem;
-            padding: 1rem 1.5rem;
-            background: rgba(255, 255, 255, 0.13);
-            backdrop-filter: blur(9px);
-            border-top: 1px solid rgba(233, 30, 99, 0.1);
+            backdrop-filter: blur(12px);
             justify-content: center;
+            outline: unset;
+            border-top: unset;
+            background: unset;
         }
 
         .customize-action-btn {
-            padding: 0.8rem 1.5rem;
-            border-radius: 0.7rem;
-            border: 1px solid var(--pink-primary);
+            padding: 1rem 2rem;
+            border-radius: 0.8rem;
+            border: 2px solid var(--pink-primary);
             font-family: inherit;
             font-size: 1rem;
             font-weight: 600;
@@ -549,37 +658,63 @@ require_once '../includes/pwa-helper.php';
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
-            box-shadow: 0 2px 8px rgba(255,105,135,0.10);
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(255, 105, 135, 0.20);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .customize-action-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+            transition: transform 0.3s ease;
+            border-radius: inherit;
+        }
+
+        .customize-action-btn:hover::before {
+            transform: translate(-50%, -50%) scale(1);
         }
 
         .email-btn {
-            background: #ffe6ec;
+            background: linear-gradient(135deg, #fff 0%, #ffe6ec 100%);
             color: var(--pink-primary);
         }
 
         .email-btn:hover {
-            background: var(--pink-primary);
+            background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
             color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 105, 135, 0.30);
         }
 
         .print-btn {
-            background: #ffe6ec;
+            background: linear-gradient(135deg, #fff 0%, #ffe6ec 100%);
             color: var(--pink-primary);
         }
 
         .print-btn:hover {
-            background: var(--pink-primary);
+            background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
             color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 105, 135, 0.30);
         }
 
         .continue-btn {
-            background: var(--pink-primary);
+            background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
             color: #fff;
+            border-color: var(--pink-light);
         }
 
         .continue-btn:hover {
-            background: var(--pink-hover);
+            background: linear-gradient(135deg, var(--pink-hover), var(--pink-primary));
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(194, 24, 91, 0.35);
         }
 
         /* Loading placeholder styles */
@@ -588,23 +723,37 @@ require_once '../includes/pwa-helper.php';
             text-align: center;
             color: var(--pink-primary);
             font-style: italic;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 230, 236, 0.4) 100%);
+            border-radius: 0.6rem;
+            border: 1px dashed rgba(233, 30, 99, 0.3);
             animation: pulse-loading 1.5s ease-in-out infinite;
         }
 
         @keyframes pulse-loading {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
+
+            0%,
+            100% {
+                opacity: 0.7;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.02);
+            }
         }
 
         /* Frame & sticker combo container styling */
         #dynamicFrameStickerContainer {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-            width: 100%;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 0.6rem;
+            border: 1px solid rgba(233, 30, 99, 0.1);
+            justify-items: center;
         }
 
         /* Modal Styles */
@@ -616,42 +765,45 @@ require_once '../includes/pwa-helper.php';
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
         }
 
         .modal-content {
-            background: #ffe6ec;
-            border: 1px solid #ff6699;
-            margin: 5% auto;
-            padding: 2rem;
-            border-radius: 1.2rem;
+            background: linear-gradient(135deg, #fff 0%, #ffe6ec 50%, #fff0f3 100%);
+            border: 2px solid var(--pink-primary);
+            margin: 3% auto;
+            padding: 2.5rem;
+            border-radius: 1.5rem;
             width: 90%;
-            max-width: 500px;
+            max-width: 550px;
             position: relative;
-            box-shadow: 0 4px 24px rgba(255,105,135,0.18);
+            box-shadow: 0 10px 40px rgba(255, 105, 135, 0.25);
         }
 
         .close-btn {
             position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 230, 236, 0.6));
+            border: 1px solid var(--pink-primary);
             font-size: 1.5rem;
             color: var(--pink-primary);
             cursor: pointer;
-            width: 30px;
-            height: 30px;
+            width: 35px;
+            height: 35px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
             transition: all 0.3s ease;
+            font-weight: bold;
         }
 
         .close-btn:hover {
-            background: rgba(233, 30, 99, 0.1);
+            background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
+            color: #fff;
+            transform: scale(1.1);
         }
 
         .modal-title {
@@ -675,18 +827,20 @@ require_once '../includes/pwa-helper.php';
 
         .email-input {
             width: 100%;
-            padding: 0.8rem 1rem;
-            border: 1px solid var(--pink-primary);
-            border-radius: 0.7rem;
+            padding: 1rem 1.2rem;
+            border: 2px solid rgba(233, 30, 99, 0.3);
+            border-radius: 0.8rem;
             font-size: 1rem;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             color: var(--pink-primary);
+            transition: all 0.3s ease;
         }
 
         .email-input:focus {
             outline: none;
             border-color: var(--pink-primary);
-            box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.2);
+            box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.2);
+            background: #fff;
         }
 
         .input-validation {
@@ -715,64 +869,75 @@ require_once '../includes/pwa-helper.php';
         }
 
         .key-btn {
-            padding: 0.5rem;
-            min-width: 40px;
-            height: 40px;
-            background: #ffe6ec;
+            padding: 0.6rem;
+            min-width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #fff 0%, #ffe6ec 100%);
             border: 1px solid var(--pink-primary);
-            border-radius: 0.5rem;
+            border-radius: 0.6rem;
             color: var(--pink-primary);
             cursor: pointer;
             transition: all 0.2s ease;
             font-weight: 600;
+            box-shadow: 0 2px 5px rgba(255, 105, 135, 0.10);
         }
 
         .key-btn:hover {
-            background: var(--pink-primary);
+            background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
             color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 105, 135, 0.20);
         }
 
         .key-caps,
         .key-backspace {
-            min-width: 60px;
+            min-width: 70px;
         }
 
         .modal-actions {
             display: flex;
-            gap: 1rem;
+            gap: 1.2rem;
             justify-content: center;
         }
 
         .btn-secondary {
-            padding: 0.8rem 1.5rem;
-            background: #ffe6ec;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #fff 0%, #ffe6ec 100%);
             color: var(--pink-primary);
-            border: 1px solid var(--pink-primary);
-            border-radius: 0.7rem;
+            border: 2px solid var(--pink-primary);
+            border-radius: 0.8rem;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 3px 10px rgba(255, 105, 135, 0.15);
         }
 
         .btn-secondary:hover {
-            background: var(--pink-primary);
+            background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
             color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 105, 135, 0.25);
         }
 
         .btn-primary {
-            padding: 0.8rem 1.5rem;
-            background: var(--pink-primary);
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
             color: #fff;
-            border: 1px solid var(--pink-primary);
-            border-radius: 0.7rem;
+            border: 2px solid var(--pink-light);
+            border-radius: 0.8rem;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.7rem;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(255, 105, 135, 0.25);
         }
 
         .btn-primary:hover {
-            background: var(--pink-hover);
+            background: linear-gradient(135deg, var(--pink-hover), var(--pink-primary));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(194, 24, 91, 0.35);
         }
 
         /* Responsive Design */
@@ -787,12 +952,12 @@ require_once '../includes/pwa-helper.php';
             .customize-left-section {
                 max-width: 100%;
                 width: 100%;
-                max-height: 300px;
+                max-height: 350px;
                 order: 2;
             }
 
             .customize-right-section {
-                min-height: 400px;
+                min-height: 450px;
                 order: 1;
             }
 
@@ -800,8 +965,9 @@ require_once '../includes/pwa-helper.php';
                 order: 3;
                 position: sticky;
                 bottom: 0;
-                background: rgba(255, 255, 255, 0.95);
-                backdrop-filter: blur(10px);
+                background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 230, 236, 0.8) 100%);
+                backdrop-filter: blur(15px);
+                z-index: 100;
             }
         }
 
@@ -812,13 +978,13 @@ require_once '../includes/pwa-helper.php';
             }
 
             .customize-left-section {
-                padding: 1rem;
-                max-height: 250px;
+                padding: 1.2rem;
+                max-height: 280px;
             }
 
             .customize-title {
-                font-size: 1.2rem;
-                margin-bottom: 1rem;
+                font-size: 1.3rem;
+                margin-bottom: 1.2rem;
             }
 
             .customize-options-label {
@@ -826,56 +992,70 @@ require_once '../includes/pwa-helper.php';
             }
 
             .customize-buttons-grid {
-                gap: 0.3rem;
+                gap: 0.6rem;
             }
 
-            .buttonFrames,
-            .buttonShapes,
+            .customize-buttons-grid.frame-color-grid {
+                gap: 0.2rem;
+            }
+
+            .color-buttons-grid {
+                gap: 0.6rem;
+                grid-template-columns: repeat(5, 1fr);
+                max-width: 240px;
+            }
+
+            .buttonColorFrames {
+                width: 25px;
+                height: 25px;
+                border-width: 2px;
+            }
+
+            .buttonColorFrames.active {
+                border-width: 4px;
+            }
+
+            .buttonFrames {
+                width: 35px;
+                height: 35px;
+            }
+
+            .buttonShapes {
+                width: 45px;
+                height: 45px;
+            }
+
             .buttonFrameStickers {
-                width: 40px;
-                height: 40px;
+                width: 100px;
+                height: 75px;
             }
 
             .customize-action-buttons {
-                padding: 0.8rem;
-                gap: 0.5rem;
+                padding: 1rem;
+                gap: 0.6rem;
             }
 
             .customize-action-btn {
-                padding: 0.6rem 1rem;
+                padding: 0.8rem 1.2rem;
                 font-size: 0.9rem;
             }
 
             .modal-content {
                 width: 95%;
-                padding: 1.5rem;
-                margin: 10% auto;
+                padding: 1.8rem;
+                margin: 8% auto;
             }
 
             .key-btn {
-                min-width: 35px;
-                height: 35px;
-                padding: 0.3rem;
+                min-width: 38px;
+                height: 38px;
+                padding: 0.4rem;
             }
         }
 
         /* Additional enhancements */
         .customize-options-group {
             position: relative;
-        }
-
-        .customize-options-group::after {
-            content: '';
-            position: absolute;
-            bottom: -0.8rem;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(to right, transparent, rgba(233, 30, 99, 0.2), transparent);
-        }
-
-        .customize-options-group:last-child::after {
-            display: none;
         }
 
         /* Enhanced hover effects */
@@ -893,6 +1073,7 @@ require_once '../includes/pwa-helper.php';
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -900,13 +1081,24 @@ require_once '../includes/pwa-helper.php';
         }
 
         .customize-options-group {
-            animation: fadeInUp 0.5s ease forwards;
+            animation: fadeInUp 0.6s ease forwards;
         }
 
-        .customize-options-group:nth-child(2) { animation-delay: 0.1s; }
-        .customize-options-group:nth-child(3) { animation-delay: 0.2s; }
-        .customize-options-group:nth-child(4) { animation-delay: 0.3s; }
-        .customize-options-group:nth-child(5) { animation-delay: 0.4s; }
+        .customize-options-group:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .customize-options-group:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .customize-options-group:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+
+        .customize-options-group:nth-child(5) {
+            animation-delay: 0.4s;
+        }
 
         /* Print styles for 4R paper */
         @page {
@@ -924,7 +1116,8 @@ require_once '../includes/pwa-helper.php';
                 box-sizing: border-box;
             }
 
-            html, body {
+            html,
+            body {
                 width: 4in;
                 height: 6in;
                 margin: 0;
@@ -992,26 +1185,32 @@ require_once '../includes/pwa-helper.php';
                             <i class="fas fa-fire"></i> Super Bright
                         </button> -->
                 </div>
-
             </div>
-            </div>
-
-            <!-- Frame Color -->
+            <!-- Frame & Sticker Combo (Dynamic from Database - Layout 1 specific) -->
             <div class="customize-options-group">
-                <h3 class="customize-options-label">Frame Color</h3>
-                <div class="customize-buttons-grid">
-                    <button id="pinkBtnFrame" class="buttonFrames frame-color-pink"></button>
-                    <button id="blueBtnFrame" class="buttonFrames frame-color-blue"></button>
-                    <button id="yellowBtnFrame" class="buttonFrames frame-color-yellow"></button>
-                    <button id="matchaBtnFrame" class="buttonFrames frame-color-matcha"></button>
-                    <button id="purpleBtnFrame" class="buttonFrames frame-color-purple"></button>
-                    <button id="brownBtnFrame" class="buttonFrames frame-color-brown"></button>
-                    <button id="redBtnFrame" class="buttonFrames frame-color-red"></button>
-                    <button id="whiteBtnFrame" class="buttonFrames frame-color-white"></button>
-                    <button id="blackBtnFrame" class="buttonFrames frame-color-black"></button>
+                <h3 class="customize-options-label">Frame & Sticker</h3>
+                <div id="dynamicFrameStickerContainer" class="customize-buttons-grid stickers-grid">
+                    <button type="button" id="noneFrameSticker" class="buttonFrameStickers frame-sticker-none">
+                        <img src="../assets/block (1).png" alt="None" class="shape-icon">
+                    </button>
+                    <div class="loading-placeholder">Loading layout 1 frame & sticker combos...</div>
                 </div>
             </div>
-
+            <!-- Frame Color -->
+            <div class="customize-options-group frame-color-section">
+                <h3 class="customize-options-label">Frame Color</h3>
+                <div class="customize-buttons-grid color-buttons-grid">
+                    <button id="pinkBtnFrame" class="buttonColorFrames frame-color-pink" data-color="pink"></button>
+                    <button id="blueBtnFrame" class="buttonColorFrames frame-color-blue" data-color="blue"></button>
+                    <button id="yellowBtnFrame" class="buttonColorFrames frame-color-yellow" data-color="yellow"></button>
+                    <button id="matchaBtnFrame" class="buttonColorFrames frame-color-matcha" data-color="matcha"></button>
+                    <button id="purpleBtnFrame" class="buttonColorFrames frame-color-purple" data-color="purple"></button>
+                    <button id="brownBtnFrame" class="buttonColorFrames frame-color-brown" data-color="brown"></button>
+                    <button id="redBtnFrame" class="buttonColorFrames frame-color-red" data-color="red"></button>
+                    <button id="whiteBtnFrame" class="buttonColorFrames frame-color-white" data-color="white"></button>
+                    <button id="blackBtnFrame" class="buttonColorFrames frame-color-black" data-color="black"></button>
+                </div>
+            </div>
             <!-- Background Frames (Dynamic from Database) -->
             <!-- <div class="customize-options-group">
                 <h3 class="customize-options-label">Background Frames</h3>
@@ -1031,18 +1230,7 @@ require_once '../includes/pwa-helper.php';
                 </div>
             </div> -->
 
-            <!-- Frame & Sticker Combo (Dynamic from Database - Layout 1 specific) -->
-            <div class="customize-options-group">
-                <h3 class="customize-options-label">Frame & Sticker</h3>
-                <div id="dynamicFrameStickerContainer" class="customize-buttons-grid stickers-grid">
-                    <button type="button" id="noneFrameSticker" class="buttonFrameStickers frame-sticker-none">
-                        <img src="../assets/block (1).png" alt="None" class="shape-icon">
-                    </button>
-                    <div class="loading-placeholder">Loading layout 1 frame & sticker combos...</div>
-                </div>
-            </div>
-
-            <!-- Photo Shape -->
+            <!-- Photo Shape
             <div class="customize-options-group">
                 <h3 class="customize-options-label">Photo Shape</h3>
                 <div class="customize-buttons-grid shape-buttons">
@@ -1053,16 +1241,16 @@ require_once '../includes/pwa-helper.php';
                         <img src="../assets/corners.png" alt="Soft Edge Frame" class="shape-icon">
                     </button>
                 </div>
-            </div>
+            </div> -->
 
-            <!-- Logo -->
+            <!-- Logo
             <div class="customize-options-group">
                 <h3 class="customize-options-label">Logo</h3>
                 <div class="customize-logo-buttons">
                     <button id="nonLogo" class="logoCustomBtn">None</button>
                     <button id="engLogo" class="logoCustomBtn">Use</button>
                 </div>
-            </div>
+            </div> -->
         </section>
 
         <!-- Photo Preview -->

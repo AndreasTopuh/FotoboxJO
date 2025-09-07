@@ -60,11 +60,11 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
 
         /* Adjustments to fit content within 1280x1024 viewport */
         #videoContainer {
-            height: 700px;
+            height: 660px;
         }
 
         .photo-preview-container {
-            padding: 0.5rem 0;
+            padding: 0.4rem 0;
         }
 
         /* Override .main-content-card styles for this page only */
@@ -78,7 +78,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             -webkit-backdrop-filter: unset !important;
             border-radius: unset !important;
             box-shadow: unset !important;
-            padding: unset !important;
+            padding: 1rem !important;
             position: unset !important;
             overflow: unset !important;
             display: unset !important;
@@ -94,19 +94,20 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             border: 1px solid #ff6699; /* matches dropzone accent in canvas.css */
             border-radius: 1.2rem;
             box-shadow: 0 4px 24px 0 rgba(255,105,135,0.18);
-            padding: 2rem 1.5rem 1.5rem 1.5rem;
+            padding: 1.5rem 1.2rem 1.2rem 1.2rem;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
-            min-width: 320px;
-            max-width: 350px;
+            gap: 1.2rem;
+            min-width: 280px;
+            max-width: 320px;
             align-items: stretch;
         }
 
         /* Layout spacing */
         .horizontal-layout {
-            gap: 1.5rem;
+            gap: 1.2rem;
             align-items: stretch;
+            padding: 0.5rem;
         }
 
         /* Camera Container Styling (Pink Pastel) */
@@ -115,10 +116,12 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             border: 1px solid #ff6699;
             border-radius: 1.2rem;
             box-shadow: 0 4px 24px rgba(255,105,135,0.18);
-            padding: 1rem 1rem 0.75rem;
+            padding: 0.8rem 0.8rem 0.6rem;
             display: flex;
             flex-direction: column;
             flex: 1 1 auto;
+            gap: 0;
+            height: 95%;
             min-width: 0; /* prevent overflow in flex */
         }
 
@@ -172,7 +175,10 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
         }
 
         /* Photo preview area under video */
-        .photo-preview-container { margin-top: 0.75rem; }
+        .photo-preview-container { 
+            margin: 0;
+            padding: 0;
+        }
         .photo-preview-grid .photo-preview-slot {
             background: #ffe6ec;
             border: 2px dashed var(--pink-primary);
@@ -205,11 +211,11 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             color: var(--pink-primary);
             border: 1px solid var(--pink-primary);
             border-radius: 0.7rem;
-            padding: 0.7rem 1.2rem;
+            padding: 0.6rem 1rem;
             font-family: inherit;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
-            margin: 0.2rem 0;
+            margin: 0.15rem 0;
             transition: background 0.2s, color 0.2s, box-shadow 0.2s;
             cursor: pointer;
             box-shadow: 0 2px 8px 0 rgba(255,105,135,0.10);
@@ -249,15 +255,15 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
 
         /* Filter Button Colors (outlined pink chips) */
         .controls-container .filterBtn {
-            width: 38px;
-            height: 38px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             padding: 0;
-            margin: 0 0.2rem 0.5rem 0;
+            margin: 0 0.15rem 0.4rem 0;
             border: 2px solid var(--pink-primary);
             background: #ffe6ec;
             color: var(--pink-primary);
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
         .controls-container .filterBtn#normalFilterId { background: #fff; border-color: var(--pink-primary); }
         .controls-container .filterBtn#vintageFilterId { background: #ffe0b2; border-color: var(--pink-primary); }
@@ -271,20 +277,20 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             background: #ffe6ec;
             border: 1px solid var(--pink-primary);
             border-radius: 0.5rem;
-            padding: 0.4rem 1rem;
-            font-size: 1rem;
+            padding: 0.35rem 0.8rem;
+            font-size: 0.9rem;
             color: var(--pink-primary);
         }
 
         /* Progress Counter */
         .controls-container .progress-display #progressCounter {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: var(--pink-primary);
             background: #ffe6ec;
             border: 1px solid var(--pink-primary);
             border-radius: 0.5rem;
-            padding: 0.3rem 0.8rem;
+            padding: 0.25rem 0.7rem;
             display: inline-block;
         }
 
@@ -293,7 +299,8 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
         .controls-container .filter-title {
             color: var(--pink-primary);
             font-weight: 700;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
+            font-size: 1rem;
         }
 
         /* Grid Toggle Button */
@@ -325,14 +332,258 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
 
         /* Adjustments to fit content within 1280x1024 viewport */
         #videoContainer {
-
-            height: 700px;
-
+            height: 660px;
         }
 
         .photo-preview-container {
+            padding: 0.4rem 0;
+        }
 
-            padding: 0.5rem 0;
+        /* Override .main-content-card styles for this page only */
+        .main-content-card {
+            width: unset !important;
+            min-width: unset !important;
+            max-width: unset !important;
+            height: calc(100vh - 1rem) !important;
+            background: unset !important;
+            backdrop-filter: unset !important;
+            -webkit-backdrop-filter: unset !important;
+            border-radius: unset !important;
+            box-shadow: unset !important;
+            padding: 1rem !important;
+            position: unset !important;
+            overflow: unset !important;
+            display: unset !important;
+            flex-direction: unset !important;
+            touch-action: unset !important;
+            overflow-x: unset !important;
+            overscroll-behavior-x: unset !important;
+        }
+
+        /* Control Panel Styling (Pink Pastel) */
+        .controls-container {
+            background: #ffe6ec; /* pastel pink from canvas.css */
+            border: 1px solid #ff6699; /* matches dropzone accent in canvas.css */
+            border-radius: 1.2rem;
+            box-shadow: 0 4px 24px 0 rgba(255,105,135,0.18);
+            padding: 1.5rem 1.2rem 1.2rem 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            min-width: 280px;
+            max-width: 320px;
+            align-items: stretch;
+        }
+
+        /* Layout spacing */
+        .horizontal-layout {
+            gap: 1.2rem;
+            align-items: stretch;
+            padding: 0.5rem;
+        }
+
+        /* Camera Container Styling (Pink Pastel) */
+        .camera-container {
+            background: #ffe6ec; /* pastel pink from canvas.css */
+            border: 1px solid #ff6699;
+            border-radius: 1.2rem;
+            box-shadow: 0 4px 24px rgba(255,105,135,0.18);
+            padding: 0.8rem 0.8rem 0.6rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 auto;
+            gap: 0;
+            height: 95%;
+            min-width: 0; /* prevent overflow in flex */
+        }
+
+        /* Video area */
+        #videoContainer {
+            background: #000;
+            border-radius: 0.9rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+            outline: 2px solid var(--pink-primary);
+        }
+        #videoContainer video,
+        #videoContainer canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        #videoContainer #gridOverlay,
+        #videoContainer #flash {
+            border-radius: inherit;
+        }
+
+        /* In-video messages */
+        #fullscreenMessage,
+        #filterMessage,
+        #blackScreen,
+        #countdownText {
+            color: #fff;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+            font-weight: 700;
+        }
+        #blackScreen {
+            background: linear-gradient(180deg, rgba(0,0,0,0.60), rgba(0,0,0,0.60));
+        }
+
+        /* Video overlay buttons */
+        #videoContainer #fullscreenBtn,
+        #videoContainer .retake-all-btn {
+            background: rgba(0,0,0,0.45);
+            border: 1px solid rgba(255,255,255,0.22);
+            color: #fff;
+            border-radius: 0.6rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.20);
+            backdrop-filter: blur(2px);
+        }
+        #videoContainer #fullscreenBtn:hover,
+        #videoContainer .retake-all-btn:hover {
+            background: rgba(0,0,0,0.6);
+        }
+
+        /* Photo preview area under video */
+        .photo-preview-container { 
+            margin: 0;
+            padding: 0;
+        }
+        .photo-preview-grid .photo-preview-slot {
+            background: #ffe6ec;
+            border: 2px dashed var(--pink-primary);
+            border-radius: 0.6rem;
+            position: relative;
+        }
+        .photo-preview-grid .photo-placeholder { color: #d16a8c; }
+        .photo-preview-grid .retake-photo-btn {
+            background: #ffe6ec;
+            color: var(--pink-primary);
+            border: 1px solid var(--pink-primary);
+            border-radius: 999px;
+            width: 32px;
+            height: 32px;
+            display: grid;
+            place-items: center;
+            font-weight: 800;
+        }
+        .photo-preview-grid .retake-photo-btn:hover {
+            background: var(--pink-primary);
+            color: #fff;
+        }
+
+        /* Button Styling (Pink Pastel) */
+        .controls-container button,
+        .controls-container .filterBtn,
+        .controls-container .retake-all-btn,
+        .controls-container .retake-photo-btn {
+            background: #ffe6ec;
+            color: var(--pink-primary);
+            border: 1px solid var(--pink-primary);
+            border-radius: 0.7rem;
+            padding: 0.6rem 1rem;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 0.15rem 0;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            box-shadow: 0 2px 8px 0 rgba(255,105,135,0.10);
+        }
+        .controls-container button:hover,
+        .controls-container .filterBtn:hover {
+            background: var(--pink-primary);
+            color: #fff;
+        }
+        .controls-container button:focus { outline: none; }
+        .controls-container button[disabled] {
+            background: #f5f5f5;
+            color: #bbb;
+            border-color: #e0e0e0;
+            cursor: not-allowed;
+        }
+
+        /* Action Buttons: use brand pink */
+        .controls-container .action-buttons #startBtn,
+        .controls-container .action-buttons #captureAllBtn,
+        .controls-container .action-buttons #doneBtn {
+            background: var(--pink-primary);
+            color: #fff;
+            border: 1px solid var(--pink-primary);
+            box-shadow: 0 2px 12px 0 rgba(255,105,135,0.20);
+        }
+        .controls-container .action-buttons #startBtn:hover,
+        .controls-container .action-buttons #captureAllBtn:hover,
+        .controls-container .action-buttons #doneBtn:hover {
+            background: var(--pink-hover);
+        }
+        .controls-container .action-buttons #retakeAllBtn {
+            background: #ffe6ec;
+            color: var(--pink-primary);
+            border: 1px solid var(--pink-primary);
+        }
+
+        /* Filter Button Colors (outlined pink chips) */
+        .controls-container .filterBtn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            padding: 0;
+            margin: 0 0.15rem 0.4rem 0;
+            border: 2px solid var(--pink-primary);
+            background: #ffe6ec;
+            color: var(--pink-primary);
+            font-size: 0.8rem;
+        }
+        .controls-container .filterBtn#normalFilterId { background: #fff; border-color: var(--pink-primary); }
+        .controls-container .filterBtn#vintageFilterId { background: #ffe0b2; border-color: var(--pink-primary); }
+        .controls-container .filterBtn#grayFilterId { background: #e0e0e0; border-color: var(--pink-primary); }
+        .controls-container .filterBtn#smoothFilterId { background: #e3f2fd; border-color: var(--pink-primary); }
+        .controls-container .filterBtn#bnwFilterId { background: #212121; border-color: var(--pink-primary); color: #fff; }
+        .controls-container .filterBtn#sepiaFilterId { background: #f4e2d8; border-color: var(--pink-primary); }
+
+        /* Timer select */
+        .controls-container .custom-select {
+            background: #ffe6ec;
+            border: 1px solid var(--pink-primary);
+            border-radius: 0.5rem;
+            padding: 0.35rem 0.8rem;
+            font-size: 0.9rem;
+            color: var(--pink-primary);
+        }
+
+        /* Progress Counter */
+        .controls-container .progress-display #progressCounter {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--pink-primary);
+            background: #ffe6ec;
+            border: 1px solid var(--pink-primary);
+            border-radius: 0.5rem;
+            padding: 0.25rem 0.7rem;
+            display: inline-block;
+        }
+
+        /* Section Titles */
+        .controls-container .settings-title,
+        .controls-container .filter-title {
+            color: var(--pink-primary);
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            font-size: 1rem;
+        }
+
+        /* Grid Toggle Button */
+        .controls-container .grid-toggle #gridToggleBtn {
+            background: #ffe6ec;
+            color: var(--pink-primary);
+            border: 1px solid var(--pink-primary);
+        }
+        .controls-container .grid-toggle #gridToggleBtn:hover {
+            background: var(--pink-primary);
+            color: #fff;
         }
     </style>
 </head>

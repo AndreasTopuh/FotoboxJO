@@ -775,6 +775,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const element = document.getElementById(id);
       if (element) {
         element.addEventListener('click', () => {
+          // Remove active class from all color buttons
+          document.querySelectorAll('.buttonColorFrames').forEach(btn => {
+            btn.classList.remove('active');
+          });
+          
+          // Add active class to clicked button
+          element.classList.add('active');
+          
           state.backgroundColor = color;
           state.backgroundType = 'color';
           state.backgroundImage = null;
