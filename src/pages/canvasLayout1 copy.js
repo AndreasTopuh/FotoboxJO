@@ -1,22 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 🚀 COMPRESSION CONFIGURATION - ENHANCED & SYNCHRONIZED Quality System for Layout 3
-    // ✅ SYNCHRONIZED dengan customizeLayout3.js untuk konsistensi kualitas end-to-end
-    // 📸 Layout 3: 6 photos - membutuhkan resolution tinggi untuk detail yang baik
+    // 🚀 COMPRESSION CONFIGURATION - ENHANCED & SYNCHRONIZED Quality System
+    // ✅ SYNCHRONIZED dengan customizeLayout1.js untuk konsistensi kualitas end-to-end
     const COMPRESSION_CONFIG = {
-        // Untuk session storage (temporary) - OPTIMIZED QUALITY untuk hasil yang konsisten
-        SESSION_QUALITY: 0.85,       // 85% - reduced for faster upload, still good quality
-        SESSION_MAX_WIDTH: 1800,     // Reduced slightly untuk ukuran file lebih kecil
-        SESSION_MAX_HEIGHT: 2200,    // Reduced slightly untuk ukuran file lebih kecil
+        // Untuk session storage (temporary) - HIGH QUALITY untuk hasil yang konsisten
+        SESSION_QUALITY: 0.9,        // 90% - selaras dengan customizeLayout1.js
+        SESSION_MAX_WIDTH: 2000,     // Naikan untuk preserve detail untuk customize
+        SESSION_MAX_HEIGHT: 2400,    // Naikan untuk preserve detail untuk customize
         
-        // Untuk download/print (high quality) - MAXIMUM QUALITY  
-        DOWNLOAD_QUALITY: 0.98,      // 98% - selaras dengan Layout 1 & 2 (FIXED: was 1.05!)
+        // Untuk download/print (high quality) - BEST QUALITY  
+        DOWNLOAD_QUALITY: 0.98,      // 98% - selaras dengan customizeLayout1.js
         DOWNLOAD_MAX_WIDTH: 3000,    // Full resolution untuk print berkualitas
-        DOWNLOAD_MAX_HEIGHT: 3600,   // Layout 3 dapat resolution tinggi seperti Layout 1 & 2
+        DOWNLOAD_MAX_HEIGHT: 3600,
         
         // Untuk preview thumbnail - BALANCED PREVIEW
         THUMB_QUALITY: 0.8,          // 80% - tetap bagus untuk preview
-        THUMB_MAX_WIDTH: 600,        // Naikan selaras dengan Layout 1 & 2
-        THUMB_MAX_HEIGHT: 800        // Naikan selaras dengan Layout 1 & 2
+        THUMB_MAX_WIDTH: 600,        // Naikan selaras dengan customizeLayout1.js
+        THUMB_MAX_HEIGHT: 800        // Naikan selaras dengan customizeLayout1.js
     };
 
     // 🚀 FAST COMPRESSION FUNCTION
@@ -62,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 img.src = imageData;
             } catch (error) {
                 reject(error);
-            }
+            }   
         });
     }
 
@@ -103,16 +102,52 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener("beforeunload", () => {
         let stream = document.querySelector("video")?.srcObject;
         if (stream) {
-            stream.getTracks().forEach((track) => track.stop());
+          stream.getTracks().forEach((track) => track.stop());
         }
     });
 
-    // 🎠 CAROUSEL MODAL FUNCTIONALITY
+    // 🧹 CLEAN UP OLD STORED DATA ON PAGE LOAD - Prevent old photos from interfering
+    (() => {
+        try {
+            // Clear any old localStorage data that might interfere
+            const oldKeys = ['fotobox_originals', 'fotobox_timestamp', 'temp_photos', 'cached_images'];
+            oldKeys.forEach(key => {
+                if (localStorage.getItem(key)) {
+                    localStorage.removeItem(key);
+                    console.log(`🧹 Cleared old localStorage: ${key}`);
+                }
+            });
+            
+            // Clear any old sessionStorage
+            if (sessionStorage.getItem('photo_session')) {
+                sessionStorage.removeItem('photo_session');
+                console.log('🧹 Cleared old sessionStorage: photo_session');
+            }
+            
+            console.log('✅ Storage cleanup completed - fresh start guaranteed');
+            
+            // 🧹 ADDITIONAL CLEANUP - Clear any cached images/blobs
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => {
+                        if (name.includes('photo') || name.includes('image')) {
+                            caches.delete(name);
+                            console.log(`🧹 Cleared cache: ${name}`);
+                        }
+                    });
+                });
+            }
+        } catch (error) {
+            console.warn('⚠️ Storage cleanup failed:', error);
+        }
+    })();
+
+    // Carousel Modal Functionality - Fixed and Enhanced
     const carouselModal = document.getElementById('carousel-modal');
     const carouselImage = document.getElementById('carousel-image');
-    const carouselCloseBtn = document.getElementById('carousel-close-btn');
     const carouselPrevBtn = document.getElementById('carousel-prev-btn');
     const carouselNextBtn = document.getElementById('carousel-next-btn');
+    const carouselCloseBtn = document.getElementById('carousel-close-btn');
     const carouselRetakeBtn = document.getElementById('carousel-retake-btn');
     const carouselIndicators = document.getElementById('carousel-indicators');
     let currentImageIndex = 0;
@@ -153,8 +188,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateCarousel() {
-        if (!carouselImage) return;
-
+        if (!carouselImage || !carouselIndicators) return;
+        
         // Update image with smooth transition
         carouselImage.style.opacity = '0';
         carouselImage.style.transform = 'scale(0.95)';
@@ -270,263 +305,263 @@ document.addEventListener('DOMContentLoaded', () => {
     // Global functions for modal
     window.openCarousel = openCarousel;
     window.closeCarousel = closeCarousel;
-
-    // Add enhanced CSS styles for modal and animations (same as Layout 1)
+    
+    // Add enhanced CSS styles for modal and animations
     const style = document.createElement('style');
     style.textContent = `
-        /* Modal Animations */
-        .modal.fade-in {
-            animation: modalFadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* Modal Animations */
+    .modal.fade-in {
+        animation: modalFadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .modal.fade-out {
+        animation: modalFadeOut 0.3s cubic-bezier(0.55, 0.06, 0.68, 0.19);
+    }
+    
+    @keyframes modalFadeIn {
+        from { 
+            opacity: 0; 
+            transform: scale(0.9);
+            backdrop-filter: blur(0px);
         }
-        .modal.fade-out {
-            animation: modalFadeOut 0.3s cubic-bezier(0.55, 0.06, 0.68, 0.19);
-        }
-        
-        @keyframes modalFadeIn {
-            from { 
-                opacity: 0; 
-                transform: scale(0.9);
-                backdrop-filter: blur(0px);
-            }
-            to { 
-                opacity: 1; 
-                transform: scale(1);
-                backdrop-filter: blur(10px);
-            }
-        }
-        
-        @keyframes modalFadeOut {
-            from { 
-                opacity: 1; 
-                transform: scale(1);
-                backdrop-filter: blur(10px);
-            }
-            to { 
-                opacity: 0; 
-                transform: scale(0.9);
-                backdrop-filter: blur(0px);
-            }
-        }
-        
-        /* Enhanced Photo Preview Slots */
-        .photo-preview-slot {
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .photo-preview-slot:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
-        }
-        
-        .photo-preview-slot.filled:hover {
-            transform: translateY(-6px) scale(1.05);
-            box-shadow: 0 12px 35px rgba(233, 30, 99, 0.4);
-        }
-        
-        .photo-preview-slot::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 1;
-            pointer-events: none;
-        }
-        
-        .photo-preview-slot:hover::before {
-            opacity: 1;
-        }
-        
-        .photo-preview-slot img {
-            transition: transform 0.3s ease;
-        }
-        
-        .photo-preview-slot:hover img {
-            transform: scale(1.05);
-        }
-        
-        /* Enhanced Carousel Image */
-        .carousel-image {
-            max-width: 90%;
-            max-height: 75vh;
-            object-fit: contain;
-            transition: opacity 0.4s ease, transform 0.4s ease;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-        }
-        
-        /* Enhanced Modal Styling */
-        .modal {
+        to { 
+            opacity: 1; 
+            transform: scale(1);
             backdrop-filter: blur(10px);
-            background: rgba(0, 0, 0, 0.8);
         }
-        
+    }
+    
+    @keyframes modalFadeOut {
+        from { 
+            opacity: 1; 
+            transform: scale(1);
+            backdrop-filter: blur(10px);
+        }
+        to { 
+            opacity: 0; 
+            transform: scale(0.9);
+            backdrop-filter: blur(0px);
+        }
+    }
+    
+    /* Enhanced Photo Preview Slots */
+    .photo-preview-slot {
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .photo-preview-slot:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
+    }
+    
+    .photo-preview-slot.filled:hover {
+        transform: translateY(-6px) scale(1.05);
+        box-shadow: 0 12px 35px rgba(233, 30, 99, 0.4);
+    }
+    
+    .photo-preview-slot::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 1;
+        pointer-events: none;
+    }
+    
+    .photo-preview-slot:hover::before {
+        opacity: 1;
+    }
+    
+    .photo-preview-slot img {
+        transition: transform 0.3s ease;
+    }
+    
+    .photo-preview-slot:hover img {
+        transform: scale(1.05);
+    }
+    
+    /* Enhanced Carousel Image */
+    .carousel-image {
+        max-width: 90%;
+        max-height: 75vh;
+        object-fit: contain;
+        transition: opacity 0.4s ease, transform 0.4s ease;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Enhanced Modal Styling */
+    .modal {
+        backdrop-filter: blur(10px);
+        background: rgba(0, 0, 0, 0.8);
+    }
+    
+    .carousel-container {
+        position: relative;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    /* Enhanced Navigation Buttons */
+    .carousel-nav-btn {
+        background: rgba(233, 30, 99, 0.9);
+        border: none;
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
+    }
+    
+    .carousel-nav-btn:hover:not(:disabled) {
+        background: rgba(233, 30, 99, 1);
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(233, 30, 99, 0.4);
+    }
+    
+    .carousel-nav-btn:disabled {
+        background: rgba(150, 150, 150, 0.5);
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    /* Enhanced Close Button */
+    .carousel-close-btn {
+        background: rgba(255, 59, 48, 0.9);
+        border: none;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 10;
+        backdrop-filter: blur(10px);
+    }
+    
+    .carousel-close-btn:hover {
+        background: rgba(255, 59, 48, 1);
+        transform: scale(1.1);
+        box-shadow: 0 4px 15px rgba(255, 59, 48, 0.4);
+    }
+    
+    /* Enhanced Retake Button */
+    .carousel-retake-btn {
+        background: linear-gradient(135deg, #FF6B35, #FF8E53);
+        border: none;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 14px;
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+    }
+    
+    .carousel-retake-btn:hover {
+        transform: translateX(-50%) translateY(-2px) scale(1.05);
+        box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+    }
+    
+    .carousel-retake-btn img {
+        width: 16px;
+        height: 16px;
+        filter: brightness(0) invert(1);
+    }
+    
+    /* Enhanced Indicators */
+    .carousel-indicators {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 20px;
+        position: absolute;
+        bottom: 70px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .carousel-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(150, 150, 150, 0.5);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    
+    .carousel-indicator:hover {
+        background: rgba(233, 30, 99, 0.7);
+        transform: scale(1.2);
+    }
+    
+    .carousel-indicator.active {
+        background: rgba(233, 30, 99, 1);
+        transform: scale(1.3);
+        border-color: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 2px 8px rgba(233, 30, 99, 0.4);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
         .carousel-container {
-            position: relative;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 10px;
+            padding: 15px;
         }
         
-        /* Enhanced Navigation Buttons */
+        .carousel-image {
+            max-height: 60vh;
+        }
+        
         .carousel-nav-btn {
-            background: rgba(233, 30, 99, 0.9);
-            border: none;
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
-        }
-        
-        .carousel-nav-btn:hover:not(:disabled) {
-            background: rgba(233, 30, 99, 1);
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(233, 30, 99, 0.4);
-        }
-        
-        .carousel-nav-btn:disabled {
-            background: rgba(150, 150, 150, 0.5);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        
-        /* Enhanced Close Button */
-        .carousel-close-btn {
-            background: rgba(255, 59, 48, 0.9);
-            border: none;
-            color: white;
             width: 40px;
             height: 40px;
-            border-radius: 50%;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            z-index: 10;
-            backdrop-filter: blur(10px);
+            font-size: 16px;
         }
         
-        .carousel-close-btn:hover {
-            background: rgba(255, 59, 48, 1);
-            transform: scale(1.1);
-            box-shadow: 0 4px 15px rgba(255, 59, 48, 0.4);
-        }
-        
-        /* Enhanced Retake Button */
         .carousel-retake-btn {
-            background: linear-gradient(135deg, #FF6B35, #FF8E53);
-            border: none;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 25px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 14px;
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+            padding: 10px 16px;
+            font-size: 13px;
         }
-        
-        .carousel-retake-btn:hover {
-            transform: translateX(-50%) translateY(-2px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
-        }
-        
-        .carousel-retake-btn img {
-            width: 16px;
-            height: 16px;
-            filter: brightness(0) invert(1);
-        }
-        
-        /* Enhanced Indicators */
-        .carousel-indicators {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-            margin-top: 20px;
-            position: absolute;
-            bottom: 70px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        
-        .carousel-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: rgba(150, 150, 150, 0.5);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-        
-        .carousel-indicator:hover {
-            background: rgba(233, 30, 99, 0.7);
-            transform: scale(1.2);
-        }
-        
-        .carousel-indicator.active {
-            background: rgba(233, 30, 99, 1);
-            transform: scale(1.3);
-            border-color: rgba(255, 255, 255, 0.8);
-            box-shadow: 0 2px 8px rgba(233, 30, 99, 0.4);
-        }
-        
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .carousel-container {
-                margin: 10px;
-                padding: 15px;
-            }
-            
-            .carousel-image {
-                max-height: 60vh;
-            }
-            
-            .carousel-nav-btn {
-                width: 40px;
-                height: 40px;
-                font-size: 16px;
-            }
-            
-            .carousel-retake-btn {
-                padding: 10px 16px;
-                font-size: 13px;
-            }
-        }
+    }
     `;
     document.head.appendChild(style);
 
@@ -613,6 +648,8 @@ document.addEventListener('DOMContentLoaded', () => {
         fullscreenBtn.addEventListener("click", toggleFullscreen);
     }
 
+
+    
     if(bnwFilter) {
         bnwFilter.addEventListener('click', () => {
             applyFilter("grayscale");
@@ -658,8 +695,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function applyFilter(filterClass) {
         if (!video) return;
         
-        // Remove existing filters
-        video.classList.remove("sepia", "grayscale","smooth","gray","vintage");
+        // Remove existing filters - TAMBAH "bnw" ke daftar
+        video.classList.remove("sepia", "grayscale", "smooth", "gray", "vintage", "bnw");
 
         // Apply new filter if not 'none'
         if (filterClass !== "none") {
@@ -680,8 +717,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let images = [];
     let currentPhotoIndex = 0;
-    const expectedPhotos = 6; // Layout 2 memiliki 6 foto
+    const expectedPhotos = 2; // Layout 1 has 2 photos
     let invertBtnState = false;
+
+    // 🧹 ENSURE FRESH START - Clear any residual images
+    (() => {
+        images = []; // Force fresh empty array
+        currentPhotoIndex = 0;
+        console.log('🔄 Images array initialized fresh for new session');
+    })();
 
     // Update UI state
     function updateUI() {
@@ -818,10 +862,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 imageData = await applyMirrorEffect(imageData);
             }
             
-            const compressedImage = await compressImage(imageData, 'session'); // Compress for preview
-            images.push(compressedImage);
+            // 🚀 DUAL QUALITY SYSTEM - High quality untuk storage, thumb untuk preview
+            const sessionImage = await compressImage(imageData, 'session'); // 90% quality, 2000x2400 untuk customize
+            const thumbImage = await compressImage(imageData, 'thumb');     // 80% quality, 600x800 untuk preview
             
-            updatePhotoPreview(images.length - 1, compressedImage);
+            images.push(sessionImage); // Store high quality untuk customize
+            
+            updatePhotoPreview(images.length - 1, thumbImage); // Preview dengan thumb quality
             updateUI();
             
         } catch (error) {
@@ -838,7 +885,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 🚀 AMBIL BERSAMAAN PHOTOS FUNCTION - Auto capture dengan interval untuk Layout 2
+    // 🚀 CAPTURE ALL PHOTOS FUNCTION - Auto capture dengan interval unutk layout 1
     async function captureAllPhotos() {
         if (images.length >= expectedPhotos) {
             return;
@@ -901,10 +948,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     imageData = await applyMirrorEffect(imageData);
                 }
                 
-                const compressedImage = await compressImage(imageData, 'session');
-                images.push(compressedImage);
+                // 🚀 DUAL QUALITY SYSTEM - High quality untuk storage, thumb untuk preview
+                const sessionImage = await compressImage(imageData, 'session'); // 90% quality untuk customize
+                const thumbImage = await compressImage(imageData, 'thumb');     // 80% quality untuk preview
                 
-                updatePhotoPreview(images.length - 1, compressedImage);
+                images.push(sessionImage); // Store high quality
+                
+                updatePhotoPreview(images.length - 1, thumbImage); // Preview dengan thumb
                 updateUI();
                 
                 console.log(`Auto Photo ${images.length}/${expectedPhotos} captured successfully`);
@@ -1018,13 +1068,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-        // Retake all photos function
+    // Retake all photos function
     function retakeAllPhotos() {
         const confirmReset = confirm("Are you sure you want to retake all photos?");
         if (!confirmReset) return;
         
-        // Clear all images
+        // 🧹 COMPREHENSIVE CLEANUP - Ensure completely fresh start
         images = [];
+        currentPhotoIndex = 0;
+        
+        // Clear localStorage backups
+        try {
+            localStorage.removeItem('fotobox_originals');
+            localStorage.removeItem('fotobox_timestamp');
+            console.log('🧹 Cleared localStorage backups');
+        } catch (e) {
+            console.warn('⚠️ Could not clear localStorage:', e);
+        }
         
         // Clear all photo previews
         for (let i = 0; i < expectedPhotos; i++) {
@@ -1034,7 +1094,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update UI
         updateUI();
         
-        console.log('All photos cleared for retake');
+        console.log('✅ All photos cleared for retake - completely fresh start');
     }
 
     // Global function for HTML onclick
@@ -1058,9 +1118,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 📹 CAMERA INITIALIZATION
+   // 📹 CAMERA INITIALIZATION
     async function startCamera() {
         try {
+            // 🧹 ADDITIONAL CLEANUP - Ensure completely fresh start
+            images = [];
+            currentPhotoIndex = 0;
+            console.log('🔄 Camera starting with fresh photo array');
+            
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: {
                     width: { ideal: 1920 },
@@ -1078,12 +1143,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (blackScreen) blackScreen.style.display = 'none';
                         }, 1000);
                     }
-                    
-                    // ✅ SHOW GRID AUTOMATICALLY when camera loads
-                    if (gridOverlay) {
-                        gridOverlay.style.display = 'grid';
-                        if (gridToggleBtn) gridToggleBtn.textContent = 'Sembunyikan Grid';
-                    }
                 });
             }
         } catch (error) {
@@ -1099,34 +1158,55 @@ document.addEventListener('DOMContentLoaded', () => {
             video.srcObject.getTracks().forEach(track => track.stop());
             video.srcObject = null;
         }
-        // Hide grid when camera stops
+        // 🎯 GRID PRESERVATION - Don't auto-hide grid, respect user choice
+        console.log('📷 Camera stream stopped - Grid state preserved');
+    }
+    
+    // Start camera if on canvasLayout1.php
+    if (window.location.pathname.endsWith("canvasLayout1.php") || window.location.pathname === "canvasLayout1.php") {
+        startCamera();
+    }
+
+    // 🎯 GRID STATE MANAGEMENT - Enhanced Control
+    let gridVisible = false; // Track grid state
+    
+    // Toggle grid visibility with persistent state
+    if (gridToggleBtn) {
+        // Initialize grid state
         if (gridOverlay) {
             gridOverlay.style.display = 'none';
-            if (gridToggleBtn) gridToggleBtn.textContent = 'Tampilkan Grid';
+            gridToggleBtn.textContent = 'Tampilkan Grid';
+            gridToggleBtn.classList.remove('grid-active');
+            gridVisible = false;
         }
-    }
-
-    // Start camera if on canvasLayout3.php
-    if (window.location.pathname.endsWith("canvasLayout3.php") || window.location.pathname === "canvasLayout3.php") {
-        startCamera();
         
-        // ✅ FALLBACK: Show grid immediately if gridOverlay exists
-        setTimeout(() => {
-            if (gridOverlay && gridOverlay.style.display !== 'grid') {
-                gridOverlay.style.display = 'grid';
-                if (gridToggleBtn) gridToggleBtn.textContent = 'Sembunyikan Grid';
-            }
-        }, 1000); // Wait 1 second for camera to load
-    }
-
-    // Toggle grid visibility
-    if (gridToggleBtn) {
         gridToggleBtn.addEventListener('click', () => {
             if (gridOverlay) {
-                gridOverlay.style.display = gridOverlay.style.display === 'grid' ? 'none' : 'grid';
-                gridToggleBtn.textContent = gridOverlay.style.display === 'grid' ? 'Sembunyikan Grid' : 'Tampilkan Grid';
+                gridVisible = !gridVisible;
+                gridOverlay.style.display = gridVisible ? 'grid' : 'none';
+                gridToggleBtn.textContent = gridVisible ? 'Sembunyikan Grid' : 'Tampilkan Grid';
+                
+                // Update visual state
+                if (gridVisible) {
+                    gridToggleBtn.classList.add('grid-active');
+                } else {
+                    gridToggleBtn.classList.remove('grid-active');
+                }
+                
+                // Store user preference
+                localStorage.setItem('fotobox_grid_preference', gridVisible.toString());
+                console.log(`📐 Grid ${gridVisible ? 'ditampilkan' : 'disembunyikan'}`);
             }
         });
+        
+        // Restore user preference on page load
+        const savedGridPref = localStorage.getItem('fotobox_grid_preference');
+        if (savedGridPref === 'true' && gridOverlay) {
+            gridVisible = true;
+            gridOverlay.style.display = 'grid';
+            gridToggleBtn.textContent = 'Sembunyikan Grid';
+            gridToggleBtn.classList.add('grid-active');
+        }
     }
 
     // Legacy function - not used in new single-capture system
@@ -1156,21 +1236,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         countdownText.style.display = "none";
         
-        // Show grid again after countdown
-        if (gridOverlay) {
-            gridOverlay.style.display = 'grid';
-            if (gridToggleBtn) gridToggleBtn.textContent = 'Sembunyikan Grid';
-        }
+        // 🎯 GRID PRESERVATION - Maintain user's grid preference, don't force show
+        console.log('⏰ Countdown completed - Grid state unchanged');
     }
     
     // Automatically trigger the countdown when option changes
     function updateCountdown() {
         showCountdown();
     }
+    
 
     // Update Image Upload for Users to choose multiple images at once
     function handleImageUpload(event) {
-        const photoCount = 6; // Layout 2 has 6 photos
+        const photoCount = 2; // Layout 1 has 2 photos
         const files = Array.from(event.target.files);
 
         if (files.length === 0) {
@@ -1200,15 +1278,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const reader = new FileReader();
             reader.onload = async function(e) {
                 const imageData = e.target.result;
-                const compressedImage = await compressImage(imageData, 'session'); // Compress for preview
+                
+                // 🚀 DUAL QUALITY SYSTEM - High quality untuk storage, thumb untuk preview
+                const sessionImage = await compressImage(imageData, 'session'); // 90% quality untuk customize
+                const thumbImage = await compressImage(imageData, 'thumb');     // 80% quality untuk preview
 
-                images.push(compressedImage);
+                images.push(sessionImage); // Store high quality
 
                 if (photoContainer) {
                     const container = document.createElement('div');
                     container.style.position = 'relative';
                     const imgElement = document.createElement('img');
-                    imgElement.src = compressedImage;
+                    imgElement.src = thumbImage; // Preview dengan thumb quality
                     imgElement.classList.add('photo');
                     imgElement.addEventListener('click', () => openCarousel(images.length - 1));
                     const retakeBtn = document.createElement('button');
@@ -1237,11 +1318,10 @@ document.addEventListener('DOMContentLoaded', () => {
         event.target.value = "";
 
     }
-
-
+    
     // 🚀 OPTIMIZED STORE IMAGE FUNCTION - 3x FASTER!
     async function storeImageArray() {
-        const photoCount = 6; // Layout 3 has 6 photos
+        const photoCount = 2; // Layout 1 has 2 photos
         const doneBtn = document.getElementById('doneBtn');
         const startTime = Date.now(); // Add timing
         
@@ -1284,192 +1364,107 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Keep original for download (HIGH QUALITY)
                 originalPhotos[index] = processedImage;
                 
-            console.log(`✅ Image ${index + 1} compressed: ${Math.round(compressedImage.length / 1024)}KB`);
-        }
-        
-        // Validate total data size and apply additional compression if needed
-        const totalDataSize = JSON.stringify(sessionPhotos).length;
-        const maxSafeSize = 10 * 1024 * 1024; // 10MB safe limit
-        
-        console.log(`📊 Total data size: ${Math.round(totalDataSize / 1024 / 1024 * 100) / 100}MB`);
-        
-        if (totalDataSize > maxSafeSize) {
-            console.warn('⚠️ Data size too large, applying extra compression...');
+                console.log(`✅ Image ${index + 1} compressed: ${Math.round(compressedImage.length / 1024)}KB`);
+            }
             
+            // Update progress
             if (doneBtn) {
-                doneBtn.textContent = 'Extra compression...';
+                doneBtn.textContent = 'Menyimpan foto...';
             }
             
-            // Apply extra compression with lower quality
-            for (let i = 0; i < sessionPhotos.length; i++) {
-                if (sessionPhotos[i]) {
-                    const extraCompressed = await compressImage(sessionPhotos[i], 'thumb'); // Use thumb quality (80%)
-                    sessionPhotos[i] = extraCompressed;
-                    console.log(`🔧 Extra compressed image ${i + 1}: ${Math.round(extraCompressed.length / 1024)}KB`);
-                }
+            console.log('💾 Saving compressed photos to server session...');
+            
+            // Save compressed photos to session (SUPER FAST)
+            const response = await fetch('../api-fetch/save_photos.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ photos: sessionPhotos }),
+                signal: AbortSignal.timeout(15000) // Reduced to 15s because smaller size
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
             
-            const newDataSize = JSON.stringify(sessionPhotos).length;
-            console.log(`✅ New data size after extra compression: ${Math.round(newDataSize / 1024 / 1024 * 100) / 100}MB`);
-        }
-        
-        // Update progress
-        if (doneBtn) {
-            doneBtn.textContent = 'Menyimpan foto...';
-        }        console.log('💾 Saving compressed photos to server session...');
-        
-        // Final validation before sending
-        console.log('🔍 Pre-send validation:');
-        sessionPhotos.forEach((photo, index) => {
-            if (!photo || typeof photo !== 'string') {
-                console.error(`❌ Invalid photo at index ${index}:`, typeof photo);
-                throw new Error(`Photo ${index + 1} is invalid or missing`);
-            }
-            if (!photo.startsWith('data:image/')) {
-                console.error(`❌ Photo ${index} is not a valid data URL`);
-                throw new Error(`Photo ${index + 1} is not a valid image`);
-            }
-            console.log(`✅ Photo ${index + 1}: ${Math.round(photo.length / 1024)}KB`);
-        });
-        
-        const totalDataString = JSON.stringify({ photos: sessionPhotos });
-        const totalSize = totalDataString.length;
-        console.log(`📊 Final payload size: ${Math.round(totalSize / 1024)}KB (${Math.round(totalSize / 1024 / 1024 * 100) / 100}MB)`);
-        
-        if (totalSize > 20 * 1024 * 1024) { // 20MB limit
-            throw new Error(`Data too large: ${Math.round(totalSize / 1024 / 1024)}MB. Maximum allowed: 20MB`);
-        }
-        
-        // Save compressed photos to session with retry mechanism
-        let saveSuccess = false;
-        let lastError = null;
-        
-        for (let attempt = 1; attempt <= 3; attempt++) {
-            try {
-                if (doneBtn) {
-                    doneBtn.textContent = `Menyimpan foto... (Attempt ${attempt}/3)`;
+            const data = await response.json();
+            
+            if (data.success) {
+                console.log(`🎉 SUCCESS! Photos saved in ${Date.now() - startTime}ms`);
+                console.log(`📊 Compressed size: ${data.data_size || 'unknown'}`);
+                
+                // Save originals to localStorage for download
+                try {
+                    localStorage.setItem('fotobox_originals', JSON.stringify(originalPhotos));
+                    localStorage.setItem('fotobox_timestamp', Date.now().toString());
+                    console.log('💾 Original photos backed up for download');
+                } catch (e) {
+                    console.warn('⚠️ Could not backup originals:', e.message);
                 }
                 
-                console.log(`🔄 Attempt ${attempt}/3 to save photos`);
-                console.log(`📊 Data being sent: ${sessionPhotos.length} photos, total size: ${Math.round(JSON.stringify(sessionPhotos).length / 1024)}KB`);
-                
-                const startFetchTime = Date.now();
-                console.log(`⏱️ Starting fetch at: ${new Date().toISOString()}`);
-                
-                // Check network connectivity before sending
-                if (!navigator.onLine) {
-                    throw new Error('No internet connection detected');
-                }
-                
-                const response = await fetch('../api-fetch/save_photos.php', {
+                // Create customize session
+                const sessionResponse = await fetch('../api-fetch/create_customize_session.php', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ photos: sessionPhotos }),
-                    signal: AbortSignal.timeout(30000) // Increased to 30s for Layout 3 (6 photos)
+                    signal: AbortSignal.timeout(5000)
                 });
                 
-                const fetchTime = Date.now() - startFetchTime;
-                console.log(`⏱️ Fetch completed in: ${fetchTime}ms`);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                if (sessionResponse.ok) {
+                    const sessionData = await sessionResponse.json();
+                    if (sessionData.success) {
+                        console.log('✅ Customize session created');
+                        
+                        // 🧹 FINAL CLEANUP - Clear session photos from memory before redirect
+                        try {
+                            // Clear the local images array (but keep originals in localStorage)
+                            images = [];
+                            currentPhotoIndex = 0;
+                            console.log('🧹 Session photos cleared from memory before redirect');
+                        } catch (e) {
+                            console.warn('⚠️ Final cleanup warning:', e);
+                        }
+                        
+                        window.location.href = 'customizeLayout1.php';
+                        return;
+                    }
                 }
                 
-                const data = await response.json();
-                console.log(`📊 Server response:`, data);
+                // Fallback redirect even if session creation fails  
+                console.log('⚠️ Session creation failed, but proceeding...');
                 
-                if (data.success) {
-                    console.log(`🎉 SUCCESS! Photos saved in ${Date.now() - startTime}ms on attempt ${attempt}`);
-                    console.log(`📊 Compressed size: ${data.data_size || 'unknown'}`);
-                    saveSuccess = true;
-                    break;
-                } else {
-                    throw new Error(data.error || 'Failed to save photos');
-                }
+                // Clear memory even on fallback
+                images = [];
+                currentPhotoIndex = 0;
                 
-            } catch (error) {
-                lastError = error;
-                console.error(`❌ Attempt ${attempt} failed:`, {
-                    name: error.name,
-                    message: error.message,
-                    stack: error.stack ? error.stack.substring(0, 200) : 'No stack',
-                    type: typeof error,
-                    attempt: attempt,
-                    timestamp: new Date().toISOString()
-                });
+                window.location.href = 'customizeLayout1.php';
                 
-                if (attempt < 3) {
-                    // Wait before retry (exponential backoff)
-                    const waitTime = 1000 * attempt;
-                    console.log(`⏳ Waiting ${waitTime}ms before retry...`);
-                    await new Promise(resolve => setTimeout(resolve, waitTime));
-                }
+            } else {
+                throw new Error(data.error || 'Failed to save photos');
             }
-        }
-        
-        if (!saveSuccess) {
-            throw lastError || new Error('Failed to save photos after 3 attempts');
-        }
-        
-        // Save originals to localStorage for download
-        try {
-            localStorage.setItem('fotobox_originals', JSON.stringify(originalPhotos));
-            localStorage.setItem('fotobox_timestamp', Date.now().toString());
-            console.log('💾 Original photos backed up for download');
-        } catch (e) {
-            console.warn('⚠️ Could not backup originals:', e.message);
-        }
-        
-        // Create customize session
-        const sessionResponse = await fetch('../api-fetch/create_customize_session.php', {
-            method: 'POST',
-            signal: AbortSignal.timeout(10000) // Increased from 5s to 10s
-        });
-        
-        if (sessionResponse.ok) {
-            const sessionData = await sessionResponse.json();
-            if (sessionData.success) {
-                console.log('✅ Customize session created');
-                window.location.href = 'customizeLayout3.php';
-                return;
+            
+        } catch (error) {
+            console.error('❌ Error in storeImageArray:', error);
+            
+            // Reset button state
+            if (doneBtn) {
+                doneBtn.textContent = 'Done';
+                doneBtn.disabled = false;
             }
+            
+            let errorMessage = 'Error saving photos: ';
+            if (error.name === 'TimeoutError') {
+                errorMessage += 'Request timeout. Please try again.';
+            } else if (error.message.includes('Failed to fetch')) {
+                errorMessage += 'Network error. Check your connection.';
+            } else {
+                errorMessage += error.message;
+            }
+            
+            alert(errorMessage);
         }
-        
-        // Fallback redirect even if session creation fails
-        console.log('⚠️ Session creation failed, but proceeding...');
-        window.location.href = 'customizeLayout3.php';
-        
-    } catch (error) {
-        console.error('❌ Error in storeImageArray:', error);
-        
-        // Reset button state
-        if (doneBtn) {
-            doneBtn.textContent = 'Done';
-            doneBtn.disabled = false;
-        }
-        
-        let errorMessage = 'Error saving photos: ';
-        if (error.name === 'TimeoutError' || error.name === 'AbortError') {
-            errorMessage += 'Request timeout. The upload took too long. Please check your internet connection and try again.';
-        } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-            errorMessage += 'Network error. Please check your internet connection and try again.';
-        } else if (error.message.includes('No internet connection')) {
-            errorMessage += 'No internet connection detected. Please check your connection and try again.';
-        } else if (error.message.includes('Data too large')) {
-            errorMessage += 'Photo data is too large. Please try taking photos with better lighting to reduce file size.';
-        } else if (error.message.includes('Invalid photo') || error.message.includes('not a valid image')) {
-            errorMessage += 'One or more photos are corrupted. Please try taking the photos again.';
-        } else {
-            errorMessage += error.message || 'Unknown error occurred.';
-        }
-        
-        alert(errorMessage);
     }
-}
-
-        // 🪞 HELPER FUNCTION - Apply Mirror Effect
+    
+    // 🪞 HELPER FUNCTION - Apply Mirror Effect
     function applyMirrorEffect(imgData) {
         return new Promise((resolve, reject) => {
             const img = new Image();
@@ -1491,7 +1486,7 @@ document.addEventListener('DOMContentLoaded', () => {
             img.src = imgData;
         });
     }
-
+    
     // Event Listeners
     if(startBtn) {
         startBtn.addEventListener('click', () => capturePhoto());
@@ -1508,8 +1503,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (retakeAllBtn) {
         retakeAllBtn.addEventListener('click', () => retakeAllPhotos());
     }
-
-
 
     if (doneBtn) {
         doneBtn.addEventListener('click', () => storeImageArray());
@@ -1561,133 +1554,4 @@ document.addEventListener('DOMContentLoaded', () => {
     if(uploadInput) {
         uploadInput.addEventListener('change', handleImageUpload);
     }
-
-    // Asset Loading - Layout 3 specific
-    async function loadAssetsFromDatabase() {
-        console.log('🔄 Loading Layout 3 frames and stickers from database...');
-        try {
-            const [framesResponse, stickersResponse, comboResponse] = await Promise.all([
-                fetch('../api-fetch/get-frames.php'), // Universal frames
-                fetch('../api-fetch/get-stickers-by-layout.php?layout_id=3'),
-                fetch('../api-fetch/get-frame-sticker-combo.php?layout_id=3')
-            ]);
-
-            const framesData = await framesResponse.json();
-            const stickersData = await stickersResponse.json();
-            const comboData = await comboResponse.json();
-
-            console.log('🔍 Debug - Frames Response:', framesData);
-            console.log('🔍 Debug - Stickers Response:', stickersData);
-            console.log('🔍 Debug - Combo Response:', comboData);
-
-            // Load frames (universal)
-            if (framesData.success && framesData.frames) {
-                loadDynamicFrames(framesData.frames);
-            }
-
-            // Load layout 3 specific stickers
-            if (stickersData.success && stickersData.data) {
-                loadDynamicStickers(stickersData.data);
-            }
-
-            // Load layout 3 specific frame & sticker combos
-            if (comboData.success && comboData.data) {
-                loadDynamicFrameStickerCombos(comboData.data);
-            }
-
-            console.log(`✅ Loaded Layout 3 assets successfully`);
-        } catch (error) {
-            console.error('❌ Error loading Layout 3 assets from database:', error);
-        }
-    }
-
-    // Dynamic frame loading (universal)
-    function loadDynamicFrames(frames) {
-        const container = document.getElementById('dynamicFramesContainer');
-        if (!container) return;
-
-        container.innerHTML = '';
-        frames.forEach(frame => {
-            const button = document.createElement('button');
-            button.id = `frame_${frame.id}`;
-            button.className = 'dynamic-frame-btn buttonBgFrames';
-            button.style.backgroundImage = `url('${frame.file_path}')`;
-            button.style.backgroundSize = 'cover';
-            button.style.backgroundPosition = 'center';
-            button.title = frame.nama;
-            button.setAttribute('data-frame-id', frame.id);
-            button.setAttribute('data-frame-path', frame.file_path);
-            container.appendChild(button);
-        });
-        console.log(`✅ Created ${frames.length} dynamic frame controls`);
-    }
-
-    // Dynamic sticker loading (layout 3 specific)
-    function loadDynamicStickers(stickers) {
-        const container = document.getElementById('dynamicStickersContainer');
-        if (!container) return;
-
-        // Keep the "None" button
-        const noneButton = document.getElementById('noneSticker');
-        container.innerHTML = '';
-        if (noneButton) {
-            container.appendChild(noneButton);
-        }
-
-        stickers.forEach(sticker => {
-            const button = document.createElement('button');
-            button.id = `sticker_${sticker.id}`;
-            button.className = 'dynamic-sticker-btn buttonStickers';
-            button.setAttribute('data-sticker-id', sticker.id);
-            button.setAttribute('data-sticker-path', sticker.file_path); // Fixed: use file_path
-
-            const img = document.createElement('img');
-            img.src = `../${sticker.file_path}`; // Fixed: use file_path
-            img.alt = sticker.nama; // Fixed: use nama
-            img.className = 'sticker-icon';
-            img.style.width = '40px';
-            img.style.height = '40px';
-            img.style.objectFit = 'contain';
-
-            button.appendChild(img);
-            container.appendChild(button);
-        });
-        console.log(`✅ Created ${stickers.length} dynamic sticker controls for Layout 3`);
-    }
-
-    // Dynamic frame & sticker combo loading (layout 3 specific)
-    function loadDynamicFrameStickerCombos(combos) {
-        const container = document.getElementById('dynamicFrameStickerContainer');
-        if (!container) return;
-
-        // Keep the "None" button
-        const noneButton = document.getElementById('noneFrameSticker');
-        container.innerHTML = '';
-        if (noneButton) {
-            container.appendChild(noneButton);
-        }
-
-        combos.forEach(combo => {
-            const button = document.createElement('button');
-            button.id = `frameSticker_${combo.id}`;
-            button.className = 'dynamic-frame-sticker-btn buttonFrameStickers';
-            button.setAttribute('data-frame-sticker-id', combo.id);
-            button.setAttribute('data-frame-sticker-path', combo.file_path); // Fixed: use file_path
-
-            const img = document.createElement('img');
-            img.src = `../${combo.file_path}`; // Fixed: use file_path
-            img.alt = combo.nama; // Fixed: use nama
-            img.className = 'frame-sticker-icon';
-            img.style.width = '40px';
-            img.style.height = '40px';
-            img.style.objectFit = 'contain';
-
-            button.appendChild(img);
-            container.appendChild(button);
-        });
-        console.log(`✅ Created ${combos.length} dynamic frame & sticker combo controls for Layout 3`);
-    }
-
-    // Initialize Layout 3 assets on page load
-    loadAssetsFromDatabase();
 });

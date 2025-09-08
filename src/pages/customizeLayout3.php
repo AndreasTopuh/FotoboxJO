@@ -67,22 +67,26 @@ require_once '../includes/pwa-helper.php';
         }
 
         .customize-left-section::-webkit-scrollbar {
-            width: 6px;
+            width: 20px;
         }
 
         .customize-left-section::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            border: 1px solid rgba(233, 30, 99, 0.1);
         }
 
         .customize-left-section::-webkit-scrollbar-thumb {
             background: linear-gradient(180deg, var(--pink-primary), var(--pink-hover));
-            border-radius: 3px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
         }
 
         .customize-left-section::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(180deg, var(--pink-hover), var(--pink-primary));
+            transform: scale(1.05);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
         }
 
         .customize-title {

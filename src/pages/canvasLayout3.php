@@ -60,7 +60,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
 
         /* Adjustments to fit content within 1280x1024 viewport */
         #videoContainer {
-            height: 660px;
+            height:750px;
         }
 
         .photo-preview-container {

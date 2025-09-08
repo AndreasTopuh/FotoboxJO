@@ -694,36 +694,41 @@ try {
                         Dashboard
                     </a>
                 </li>
-                <li>
+
+                <!-- <li>
                     <a href="?section=assets" class="<?= $currentSection === 'assets' ? 'active' : '' ?>">
                         <i class="fas fa-images"></i>
                         Manage Assets
                     </a>
-                </li>
-                <li>
+                </li> -->
+
+                <!-- <li>
                     <a href="?section=layout-frames" class="<?= $currentSection === 'layout-frames' ? 'active' : '' ?>">
                         <i class="fas fa-layer-group"></i>
                         Layout Frames
                     </a>
-                </li>
-                <li>
+                </li> -->
+
+                <!-- <li>
                     <a href="?section=layout-stickers" class="<?= $currentSection === 'layout-stickers' ? 'active' : '' ?>">
                         <i class="fas fa-smile"></i>
                         Layout Stickers
                     </a>
-                </li>
+                </li> -->
+
                 <li>
                     <a href="?section=frame-sticker-combos" class="<?= $currentSection === 'frame-sticker-combos' ? 'active' : '' ?>">
                         <i class="fas fa-object-group"></i>
                         Frame & Sticker Combos
                     </a>
                 </li>
-                <li>
+
+                <!-- <li>
                     <a href="../src/pages/admin-new.php" target="_blank" style="border-left: 3px solid #4CAF50;">
                         <i class="fas fa-money-bill-wave"></i>
                         Cash Code Generator
                     </a>
-                </li>
+                </li> -->
             </ul>
 
             <div style="margin-top: auto; padding-top: 20px;">
@@ -1354,9 +1359,34 @@ try {
                 color: getColorFromOnclick(img.getAttribute('onclick'))
             }));
 
-            // Find current image index
+            // Find current image index - improved matching
+            currentImageIndex = -1;
+
+            // Try exact URL match first
             currentImageIndex = currentGallery.findIndex(item => item.src === imageSrc);
+
+            // If not found, try filename match
+            if (currentImageIndex === -1) {
+                const targetFilename = imageSrc.split('/').pop();
+                currentImageIndex = currentGallery.findIndex(item => {
+                    const itemFilename = item.src.split('/').pop();
+                    return itemFilename === targetFilename;
+                });
+            }
+
+            // If still not found, try partial URL match
+            if (currentImageIndex === -1) {
+                currentImageIndex = currentGallery.findIndex(item => {
+                    return item.src.includes(imageSrc) || imageSrc.includes(item.src.split('/').pop());
+                });
+            }
+
+            // Fallback to first image
             if (currentImageIndex === -1) currentImageIndex = 0;
+
+            console.log('Looking for:', imageSrc);
+            console.log('Found at index:', currentImageIndex);
+            console.log('Gallery items:', currentGallery.map((item, idx) => `${idx}: ${item.src}`));
 
             // Show modal
             displayCurrentImage();
@@ -1415,13 +1445,14 @@ try {
 
         function getFilesizeFromOnclick(onclickStr) {
             if (!onclickStr) return '0';
-            const match = onclickStr.match(/'([^']*)',\s*'[^']*'\s*\)$/);
-            if (match && match[1]) {
-                const parts = onclickStr.split("'");
-                for (let i = 0; i < parts.length; i++) {
-                    if (parts[i].includes('.') && !isNaN(parseFloat(parts[i]))) {
-                        return parts[i];
-                    }
+
+            // Extract parameters from onclick string like: openImageModal('path', 'title', 'type', 'filename', '123.4', 'color')
+            const matches = onclickStr.match(/openImageModal\(([^)]+)\)/);
+            if (matches) {
+                const params = matches[1].split(',').map(p => p.trim().replace(/^['"]|['"]$/g, ''));
+                // Filesize is typically the 5th parameter (index 4)
+                if (params.length >= 5 && params[4] && !isNaN(parseFloat(params[4]))) {
+                    return params[4];
                 }
             }
             return '0';
@@ -1429,8 +1460,17 @@ try {
 
         function getColorFromOnclick(onclickStr) {
             if (!onclickStr) return '';
-            const parts = onclickStr.split("'");
-            return parts[parts.length - 2] || '';
+
+            // Extract parameters from onclick string
+            const matches = onclickStr.match(/openImageModal\(([^)]+)\)/);
+            if (matches) {
+                const params = matches[1].split(',').map(p => p.trim().replace(/^['"]|['"]$/g, ''));
+                // Color is typically the 6th parameter (index 5)
+                if (params.length >= 6) {
+                    return params[5] || '';
+                }
+            }
+            return '';
         }
 
         function closeImageModal() {

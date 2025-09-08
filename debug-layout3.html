@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Debug Layout 3 Save Issue</title>
+</head>
+
+<body>
+    <h1>Debug Layout 3 Save Issue</h1>
+    <button id="testSave">Test Save Photos</button>
+    <pre id="output"></pre>
+
+    <script>
+        const output = document.getElementById('output');
+
+        function log(message) {
+            output.textContent += new Date().toISOString() + ': ' + message + '\n';
+            console.log(message);
+        }
+
+        document.getElementById('testSave').onclick = async function () {
+            try {
+                output.textContent = '';
+                log('Starting test...');
+
+                // Create test data similar to Layout 3
+                const testPhotos = [];
+                for (let i = 0; i < 6; i++) {
+                    // Create a small test image (100x100 red square)
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 100;
+                    canvas.height = 100;
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = `hsl(${i * 60}, 70%, 50%)`;
+                    ctx.fillRect(0, 0, 100, 100);
+                    ctx.fillStyle = 'white';
+                    ctx.font = '20px Arial';
+                    ctx.fillText(`#${i + 1}`, 35, 55);
+                    testPhotos.push(canvas.toDataURL('image/jpeg', 0.85));
+                }
+
+                log(`Created ${testPhotos.length} test photos`);
+
+                const totalSize = JSON.stringify(testPhotos).length;
+                log(`Total data size: ${Math.round(totalSize / 1024)}KB`);
+
+                log('Sending to server...');
+                const startTime = Date.now();
+
+                const response = await fetch('/src/api-fetch/save_photos.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ photos: testPhotos }),
+                    signal: AbortSignal.timeout(30000)
+                });
+
+                const endTime = Date.now();
+                log(`Request completed in ${endTime - startTime}ms`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                log(`Server response: ${JSON.stringify(data, null, 2)}`);
+
+                if (data.success) {
+                    log('✅ SUCCESS! Test photos saved successfully');
+                } else {
+                    log('❌ Server returned error: ' + (data.error || 'Unknown error'));
+                }
+
+            } catch (error) {
+                log(`❌ Error: ${error.name} - ${error.message}`);
+                if (error.stack) {
+                    log(`Stack: ${error.stack.substring(0, 500)}`);
+                }
+            }
+        };
+    </script>
+</body>
+
+</html>
