@@ -709,6 +709,18 @@ require_once '../includes/pwa-helper.php';
             box-shadow: 0 6px 20px rgba(255, 105, 135, 0.30);
         }
 
+        .qr-btn {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #fff;
+            border-color: #6a11cb;
+        }
+
+        .qr-btn:hover {
+            background: linear-gradient(135deg, #5a0fb8 0%, #1e63d1 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(106, 17, 203, 0.35);
+        }
+
         .continue-btn {
             background: linear-gradient(135deg, var(--pink-primary), var(--pink-light));
             color: #fff;
@@ -902,6 +914,63 @@ require_once '../includes/pwa-helper.php';
             display: flex;
             gap: 1.2rem;
             justify-content: center;
+        }
+
+        /* QR Modal Specific Styles */
+        .qr-modal-content {
+            text-align: center;
+            max-width: 450px;
+        }
+
+        .qr-container {
+            background: #fff;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e3f2fd;
+        }
+
+        .qr-code-display {
+            max-width: 250px;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .qr-info {
+            background: #f3e5f5;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .qr-info p {
+            margin: 8px 0;
+            color: #5e35b1;
+            font-weight: 500;
+        }
+
+        .qr-info ul {
+            margin: 10px 0 0 20px;
+            color: #7e57c2;
+        }
+
+        .qr-info li {
+            margin: 5px 0;
+        }
+
+        .link-info {
+            background: #e8f5e8;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+
+        .link-info small {
+            color: #2e7d32;
+            font-family: monospace;
         }
 
         .btn-secondary {
@@ -1261,6 +1330,9 @@ require_once '../includes/pwa-helper.php';
 
     <!-- Action Buttons -->
     <footer class="customize-action-buttons">
+        <button type="button" class="customize-action-btn qr-btn" id="qrBtn">
+            <i class="fas fa-qrcode"></i> Scan QR Code
+        </button>
         <button class="customize-action-btn email-btn" id="emailBtn">
             <i class="fas fa-envelope"></i> Kirim ke Email
         </button>
@@ -1344,6 +1416,39 @@ require_once '../includes/pwa-helper.php';
                 <button id="cancelEmailBtn" class="btn-secondary">Batal</button>
                 <button id="sendEmailBtn" class="btn-primary">
                     <i class="fas fa-paper-plane"></i> Kirim
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Code Modal -->
+    <div id="qrModal" class="modal">
+        <div class="modal-content qr-modal-content">
+            <button id="closeQrModal" class="close-btn">&times;</button>
+            <div class="modal-header">
+                <h3 class="modal-title">Scan QR Code untuk Download</h3>
+                <p class="modal-subtitle">Scan kode QR ini dengan kamera HP untuk mengakses foto</p>
+            </div>
+            <div class="modal-body">
+                <div class="qr-container">
+                    <img id="qrCodeImage" src="" alt="QR Code" class="qr-code-display">
+                </div>
+                <div class="qr-info">
+                    <p><strong>Link akan aktif selama: 2 jam</strong></p>
+                    <p>Setelah scan, Anda bisa download:</p>
+                    <ul>
+                        <li>✅ 1 Foto Final (gabungan 6 foto)</li>
+                        <li>✅ 6 Foto Mentahan (individual)</li>
+                    </ul>
+                </div>
+                <div class="link-info">
+                    <small>Link: <span id="photoLinkText"></span></small>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="closeQrBtn" class="btn-secondary">Tutup</button>
+                <button id="copyLinkBtn" class="btn-primary">
+                    <i class="fas fa-copy"></i> Copy Link
                 </button>
             </div>
         </div>

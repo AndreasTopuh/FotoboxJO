@@ -13,9 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         unset($_SESSION['customize_start_time']);
         unset($_SESSION['customize_expired_time']);
         
-    // Set session photo dengan waktu expired 10 menit
+    // Set session photo dengan waktu expired 30 menit
         $_SESSION['photo_start_time'] = time();
-    $_SESSION['photo_expired_time'] = time() + (10 * 60); // 10 menit
+    $_SESSION['photo_expired_time'] = time() + (30 * 60); // 30 menit
         $_SESSION['session_type'] = 'photo';
         $_SESSION['selected_layout'] = $input['layout'];
         

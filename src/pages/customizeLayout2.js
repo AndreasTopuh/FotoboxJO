@@ -678,6 +678,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeLogoControls();
     initializeActionButtons();
     initializeEmailModal();
+    initializeQRModal();
     console.log('✅ Controls initialized');
   }
 
@@ -986,8 +987,150 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', escapeHandler);
   }
 
+  // QR Code Functions for Layout 2
+  async function generateQRCode() {
+    const qrBtn = document.getElementById('qrBtn');
+    const originalHtml = qrBtn.innerHTML;
+    qrBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating QR...';
+    qrBtn.disabled = true;
+
+    try {
+      console.log('📱 Starting QR code generation for Layout 2...');
+
+      // Generate high quality canvas
+      const highQualityCanvas = await generateHighQualityCanvas();
+      const highQualityDataUrl = highQualityCanvas.toDataURL('image/jpeg', 0.98);
+
+      // Get original photos from localStorage for raw photos (4 photos for Layout 2)
+      const originalPhotos = JSON.parse(localStorage.getItem('fotobox_originals') || '[]');
+
+      if (originalPhotos.length !== 4) {
+        throw new Error('Layout 2 requires 4 original photos');
+      }
+
+      qrBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving Photos...';
+
+      // Save final photo + raw photos to server
+      const response = await fetch('../api-fetch/save_final_photo_v2.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ 
+          image: highQualityDataUrl,
+          raw_photos: originalPhotos, // Send 4 raw photos
+          layout: 'layout2',
+          quality: 'high',
+          source: 'qr_generation_layout2'
+        }),
+      });
+
+      const text = await response.text();
+      if (text.trim().startsWith('<') || text.includes('<br />') || text.includes('<b>')) {
+        throw new Error('Server returned HTML error page');
+      }
+
+      const data = JSON.parse(text);
+      if (!data.success) {
+        throw new Error(data.message || 'Server error');
+      }
+
+      console.log('✅ Layout 2: QR Code generated successfully');
+
+      // Show QR Modal
+      showQRModal(data);
+
+      // Update button state
+      qrBtn.innerHTML = '✅ QR Generated';
+      qrBtn.disabled = true;
+      qrBtn.style.opacity = '0.7';
+
+    } catch (error) {
+      console.error('❌ Layout 2: QR generation error:', error);
+      handleError('Gagal generate QR code. Coba lagi.', 'alert');
+      qrBtn.innerHTML = originalHtml;
+      qrBtn.disabled = false;
+    }
+  }
+
+  function showQRModal(data) {
+    const qrModal = document.getElementById('qrModal');
+    const qrCodeImage = document.getElementById('qrCodeImage');
+    const photoLinkText = document.getElementById('photoLinkText');
+
+    if (qrModal && qrCodeImage && photoLinkText) {
+      // Set QR code image
+      if (data.qr_code_url) {
+        qrCodeImage.src = data.qr_code_url;
+      } else {
+        // Fallback: show a placeholder or hide QR
+        qrCodeImage.style.display = 'none';
+      }
+
+      // Set photo link text
+      photoLinkText.textContent = data.photo_url || data.url || 'Link not available';
+
+      // Show modal
+      qrModal.style.display = 'block';
+    } else {
+      console.error('❌ QR modal elements not found');
+    }
+  }
+
+  function initializeQRModal() {
+    const qrModal = document.getElementById('qrModal');
+    const closeQrModal = document.getElementById('closeQrModal');
+    const closeQrBtn = document.getElementById('closeQrBtn');
+    const copyLinkBtn = document.getElementById('copyLinkBtn');
+
+    const closeModal = () => {
+      if (qrModal) qrModal.style.display = 'none';
+    };
+
+    if (closeQrModal) closeQrModal.addEventListener('click', closeModal);
+    if (closeQrBtn) closeQrBtn.addEventListener('click', closeModal);
+    if (qrModal) {
+      qrModal.addEventListener('click', (e) => {
+        if (e.target === qrModal) closeModal();
+      });
+    }
+
+    if (copyLinkBtn) {
+      copyLinkBtn.addEventListener('click', async () => {
+        const photoLinkText = document.getElementById('photoLinkText');
+        if (photoLinkText && photoLinkText.textContent) {
+          try {
+            await navigator.clipboard.writeText(photoLinkText.textContent);
+            copyLinkBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => {
+              copyLinkBtn.innerHTML = '<i class="fas fa-copy"></i> Copy Link';
+            }, 2000);
+          } catch (error) {
+            console.error('Failed to copy link:', error);
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = photoLinkText.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            copyLinkBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => {
+              copyLinkBtn.innerHTML = '<i class="fas fa-copy"></i> Copy Link';
+            }, 2000);
+          }
+        }
+      });
+    }
+  }
+
   function initializeActionButtons() {
     const buttons = {
+      qrBtn: async () => {
+        if (state.finalCanvas) {
+          await generateQRCode();
+        } else {
+          handleError('Tidak ada gambar untuk generate QR code', 'alert');
+        }
+      },
       emailBtn: () => {
         if (state.emailSent) {
           handleError('Email sudah pernah dikirim!', 'alert');

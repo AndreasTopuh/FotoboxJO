@@ -1413,13 +1413,17 @@ document.addEventListener('DOMContentLoaded', () => {
             throw lastError || new Error('Failed to save photos after 3 attempts');
         }
         
-        // Save originals to localStorage for download
+        // Save originals to localStorage for download and QR generation
         try {
+            // Store both compressed session photos and original high-quality photos
             localStorage.setItem('fotobox_originals', JSON.stringify(originalPhotos));
+            localStorage.setItem('fotobox_session_photos', JSON.stringify(sessionPhotos));
             localStorage.setItem('fotobox_timestamp', Date.now().toString());
-            console.log('💾 Original photos backed up for download');
+            localStorage.setItem('fotobox_layout', 'layout3');
+            console.log('💾 Layout 3: Original and session photos backed up');
+            console.log(`📊 Layout 3: Originals: ${originalPhotos.length} photos, Session: ${sessionPhotos.length} photos`);
         } catch (e) {
-            console.warn('⚠️ Could not backup originals:', e.message);
+            console.warn('⚠️ Could not backup photos:', e.message);
         }
         
         // Create customize session

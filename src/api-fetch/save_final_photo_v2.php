@@ -7,6 +7,12 @@ date_default_timezone_set('Asia/Makassar');
 
 session_start();
 
+// Try to load QR code library if available
+$vendorPath = __DIR__ . '/../../vendor/autoload.php';
+if (file_exists($vendorPath)) {
+    require_once $vendorPath;
+}
+
 // Set headers first
 header('Content-Type: application/json');
 header('Cache-Control: no-cache, must-revalidate');
@@ -41,6 +47,10 @@ try {
 
     $imageData = $input['image'];
 
+    // NEW: Get raw photos if provided (4 foto mentahan)
+    $rawPhotos = $input['raw_photos'] ?? [];
+    $layoutType = $input['layout'] ?? 'unknown';
+
     // Validate base64 image data
     if (!preg_match('/^data:image\/(png|jpg|jpeg);base64,/', $imageData)) {
         throw new Exception('Invalid image data format');
@@ -59,9 +69,10 @@ try {
 
     $filename = "{$photoDir}/{$token}.png";
     $metaFile = "{$photoDir}/{$token}.meta"; // NEW: metadata file
+    $qrFile = "{$photoDir}/{$token}_qr.png"; // NEW: QR code file
     $expire = time() + (2 * 60 * 60); // 2 hours from now
 
-    // Save image
+    // Save final image
     $imageContent = base64_decode(preg_replace('/^data:image\/(png|jpg|jpeg);base64,/', '', $imageData));
     if ($imageContent === false) {
         throw new Exception('Failed to decode base64 image');
@@ -72,11 +83,65 @@ try {
         throw new Exception('Failed to save image to file system');
     }
 
+    // NEW: Save raw photos (4 foto mentahan)
+    $rawPhotoFiles = [];
+    foreach ($rawPhotos as $index => $rawPhotoData) {
+        if (!empty($rawPhotoData)) {
+            $rawFilename = "{$photoDir}/{$token}_raw_{$index}.png";
+            $rawContent = base64_decode(preg_replace('/^data:image\/(png|jpg|jpeg);base64,/', '', $rawPhotoData));
+            if ($rawContent !== false) {
+                $rawBytesWritten = @file_put_contents($rawFilename, $rawContent);
+                if ($rawBytesWritten !== false) {
+                    $rawPhotoFiles[] = [
+                        'index' => $index,
+                        'filename' => $rawFilename,
+                        'basename' => basename($rawFilename)
+                    ];
+                }
+            }
+        }
+    }
+
+    // NEW: Generate QR Code
+    $photoUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') .
+        "://{$_SERVER['HTTP_HOST']}/src/pages/yourphotos_v2.php?token={$token}";
+
+    // Check if QR code library is available
+    $qrGenerated = false;
+    if (class_exists('Endroid\QrCode\QrCode')) {
+        try {
+            $qrCode = new \Endroid\QrCode\QrCode($photoUrl);
+            $qrCode->setSize(300);
+            $qrCode->setMargin(10);
+
+            $writer = new \Endroid\QrCode\Writer\PngWriter();
+            $result = $writer->write($qrCode);
+
+            $qrBytesWritten = @file_put_contents($qrFile, $result->getString());
+            if ($qrBytesWritten !== false) {
+                $qrGenerated = true;
+            }
+        } catch (Exception $qrError) {
+            // QR generation failed, continue without it
+            error_log("QR generation failed: " . $qrError->getMessage());
+        }
+    }
+
     // NEW: Save metadata to file (more reliable than session)
     $metadata = [
         'token' => $token,
         'expire' => $expire,
-        'filename' => $filename,
+        'final_photo' => [
+            'filename' => $filename,
+            'basename' => basename($filename)
+        ],
+        'raw_photos' => $rawPhotoFiles,
+        'layout_type' => $layoutType,
+        'qr_code' => $qrGenerated ? [
+            'filename' => $qrFile,
+            'basename' => basename($qrFile)
+        ] : null,
+        'photo_url' => $photoUrl,
         'created' => time(),
         'timezone' => date_default_timezone_get()
     ];
@@ -102,7 +167,12 @@ try {
         'success' => true,
         'url' => "/src/pages/yourphotos_v2.php?token={$token}",
         'token' => $token,
+        'photo_url' => $photoUrl,
+        'qr_code_url' => $qrGenerated ? "/src/api-fetch/get_qr.php?token={$token}" : null,
         'expires_at' => date('Y-m-d H:i:s', $expire),
+        'final_photo_count' => 1,
+        'raw_photos_count' => count($rawPhotoFiles),
+        'layout_type' => $layoutType,
         'storage_method' => 'file_and_session'
     ];
 

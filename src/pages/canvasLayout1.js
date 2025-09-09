@@ -1394,13 +1394,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log(`🎉 SUCCESS! Photos saved in ${Date.now() - startTime}ms`);
                 console.log(`📊 Compressed size: ${data.data_size || 'unknown'}`);
                 
-                // Save originals to localStorage for download
+                // Save originals to localStorage for download and QR generation
                 try {
+                    // Store both compressed session photos and original high-quality photos
                     localStorage.setItem('fotobox_originals', JSON.stringify(originalPhotos));
+                    localStorage.setItem('fotobox_session_photos', JSON.stringify(sessionPhotos));
                     localStorage.setItem('fotobox_timestamp', Date.now().toString());
-                    console.log('💾 Original photos backed up for download');
+                    localStorage.setItem('fotobox_layout', 'layout1');
+                    console.log('💾 Original and session photos backed up');
+                    console.log(`📊 Originals: ${originalPhotos.length} photos, Session: ${sessionPhotos.length} photos`);
                 } catch (e) {
-                    console.warn('⚠️ Could not backup originals:', e.message);
+                    console.warn('⚠️ Could not backup photos:', e.message);
                 }
                 
                 // Create customize session
