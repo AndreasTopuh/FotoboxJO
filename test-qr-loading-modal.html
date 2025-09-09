@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test QR Loading Modal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .test-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .test-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #e91e63, #ad1457);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(233, 30, 99, 0.4);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(3px);
+        }
+
+        /* QR Loading Modal Styles */
+        .qr-loading-modal-content {
+            background: linear-gradient(135deg, #fff 0%, #ffe6ec 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            margin: 5% auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border: 3px solid #e91e63;
+        }
+
+        .qr-loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .qr-loading-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qr-loading-icon i {
+            color: #e91e63;
+            z-index: 2;
+        }
+
+        .loading-spinner {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border: 4px solid #ffe6ec;
+            border-top: 4px solid #e91e63;
+            border-radius: 50%;
+            animation: qr-spin 1s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes qr-spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .qr-loading-title {
+            color: #e91e63;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .qr-loading-subtitle {
+            color: #666;
+            font-size: 1rem;
+            margin: 0;
+            min-height: 1.2rem;
+        }
+
+        .qr-progress-container {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .qr-progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #ffe6ec;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #e91e63;
+        }
+
+        .qr-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e91e63, #f48fb1);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .qr-progress-text {
+            font-weight: 600;
+            color: #e91e63;
+            min-width: 40px;
+        }
+
+        .qr-loading-steps {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            opacity: 0.5;
+        }
+
+        .step-item i {
+            font-size: 1.2rem;
+            color: #ccc;
+            transition: color 0.3s ease;
+        }
+
+        .step-item span {
+            font-size: 0.8rem;
+            color: #666;
+            text-align: center;
+        }
+
+        .step-item.active {
+            opacity: 1;
+            background: #ffe6ec;
+        }
+
+        .step-item.active i {
+            color: #e91e63;
+            animation: pulse-step 1s ease-in-out infinite;
+        }
+
+        .step-item.completed {
+            opacity: 1;
+            background: #e8f5e8;
+        }
+
+        .step-item.completed i {
+            color: #4caf50;
+        }
+
+        @keyframes pulse-step {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="test-container">
+        <h1 style="text-align: center; color: #333; margin-bottom: 20px;">
+            <i class="fas fa-qrcode"></i> Test QR Loading Modal
+        </h1>
+
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">
+            Klik tombol di bawah untuk melihat modal loading QR Code yang baru dan lebih informatif.
+        </p>
+
+        <div class="test-buttons">
+            <button class="test-btn" onclick="testLayout1()">
+                <i class="fas fa-camera"></i> Test Layout 1 (2 Foto)
+            </button>
+            <button class="test-btn" onclick="testLayout2()">
+                <i class="fas fa-camera"></i> Test Layout 2 (4 Foto)
+            </button>
+            <button class="test-btn" onclick="testLayout3()">
+                <i class="fas fa-camera"></i> Test Layout 3 (6 Foto)
+            </button>
+        </div>
+
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 20px;">
+            <h3 style="color: #333; margin-top: 0;">📋 Fitur Modal Loading QR:</h3>
+            <ul style="color: #666;">
+                <li>✅ <strong>Visual Loading yang Jelas:</strong> Spinner + progress bar</li>
+                <li>✅ <strong>Step-by-Step Indicator:</strong> User tau proses apa yang sedang berjalan</li>
+                <li>✅ <strong>Progress Percentage:</strong> Progress yang terukur dengan persentase</li>
+                <li>✅ <strong>Layout-Specific Messages:</strong> Pesan disesuaikan jumlah foto per layout</li>
+                <li>✅ <strong>Modern Design:</strong> Pink gradient theme sesuai aplikasi</li>
+                <li>✅ <strong>Smooth Transitions:</strong> Animasi yang halus dan tidak mengganggu</li>
+            </ul>
+        </div>
+
+        <div
+            style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #2196f3;">
+            <h4 style="margin-top: 0; color: #1976d2;">💡 Perbandingan Before vs After:</h4>
+            <p style="color: #666; margin: 5px 0;"><strong>Before:</strong> Hanya spinner kecil di tombol</p>
+            <p style="color: #666; margin: 5px 0;"><strong>After:</strong> Modal besar dengan informasi lengkap progress
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function createLoadingModal(layoutNumber, photoCount) {
+            // Remove existing modal
+            const existingModal = document.getElementById('qrLoadingModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+
+            // Create new modal
+            const modal = document.createElement('div');
+            modal.id = 'qrLoadingModal';
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content qr-loading-modal-content">
+                    <button class="close-modal" onclick="hideModal()">&times;</button>
+                    <div class="qr-loading-container">
+                        <div class="qr-loading-icon">
+                            <i class="fas fa-qrcode fa-3x"></i>
+                            <div class="loading-spinner"></div>
+                        </div>
+                        <h3 class="qr-loading-title">Membuat QR Code</h3>
+                        <p class="qr-loading-subtitle" id="qrLoadingSubtitle">Memulai proses...</p>
+                        <div class="qr-progress-container">
+                            <div class="qr-progress-bar">
+                                <div class="qr-progress-fill" id="qrProgressFill"></div>
+                            </div>
+                            <span class="qr-progress-text" id="qrProgressText">0%</span>
+                        </div>
+                        <div class="qr-loading-steps">
+                            <div class="step-item">
+                                <i class="fas fa-camera"></i>
+                                <span>Menyiapkan ${photoCount} foto</span>
+                            </div>
+                            <div class="step-item">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Mengirim ke server</span>
+                            </div>
+                            <div class="step-item">
+                                <i class="fas fa-qrcode"></i>
+                                <span>Generate QR Code</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            return modal;
+        }
+
+        function showModal(modal) {
+            modal.style.display = 'block';
+        }
+
+        function hideModal() {
+            const modal = document.getElementById('qrLoadingModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function updateProgress(message, percentage) {
+            const subtitle = document.getElementById('qrLoadingSubtitle');
+            const progressFill = document.getElementById('qrProgressFill');
+            const progressText = document.getElementById('qrProgressText');
+
+            if (subtitle) subtitle.textContent = message;
+            if (progressFill) progressFill.style.width = `${percentage}%`;
+            if (progressText) progressText.textContent = `${percentage}%`;
+
+            // Update step indicators
+            const steps = document.querySelectorAll('.step-item');
+            steps.forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (percentage > (index + 1) * 33) {
+                    step.classList.add('completed');
+                } else if (percentage > index * 33) {
+                    step.classList.add('active');
+                }
+            });
+        }
+
+        async function simulateQRGeneration(layoutNumber, photoCount) {
+            const modal = createLoadingModal(layoutNumber, photoCount);
+            showModal(modal);
+
+            // Simulate QR generation process
+            const steps = [
+                { message: 'Memulai proses...', progress: 0, delay: 200 },
+                { message: `Menyiapkan ${photoCount} foto berkualitas tinggi...`, progress: 20, delay: 1000 },
+                { message: 'Mengumpulkan foto asli...', progress: 40, delay: 800 },
+                { message: 'Mengirim foto ke server...', progress: 60, delay: 1200 },
+                { message: 'Menerima respon dari server...', progress: 80, delay: 600 },
+                { message: 'Memproses respon server...', progress: 90, delay: 400 },
+                { message: 'QR Code berhasil dibuat!', progress: 100, delay: 500 }
+            ];
+
+            for (const step of steps) {
+                updateProgress(step.message, step.progress);
+                await new Promise(resolve => setTimeout(resolve, step.delay));
+            }
+
+            // Show completion message
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Hide modal
+            hideModal();
+
+            // Show success alert
+            alert(`🎉 QR Code untuk Layout ${layoutNumber} berhasil dibuat!\n\nModal loading yang baru memberikan informasi yang lebih jelas kepada user tentang progress pembuatan QR Code.`);
+        }
+
+        function testLayout1() {
+            simulateQRGeneration(1, 2);
+        }
+
+        function testLayout2() {
+            simulateQRGeneration(2, 4);
+        }
+
+        function testLayout3() {
+            simulateQRGeneration(3, 6);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function (event) {
+            const modal = document.getElementById('qrLoadingModal');
+            if (event.target === modal) {
+                hideModal();
+            }
+        }
+    </script>
+</body>
+
+</html>

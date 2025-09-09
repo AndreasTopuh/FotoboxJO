@@ -1013,6 +1013,164 @@ require_once '../includes/pwa-helper.php';
             box-shadow: 0 6px 20px rgba(194, 24, 91, 0.35);
         }
 
+        /* QR Loading Modal Styles */
+        .qr-loading-modal-content {
+            background: linear-gradient(135deg, #fff 0%, #ffe6ec 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            margin: 5% auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border: 3px solid var(--pink-primary);
+        }
+
+        .qr-loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .qr-loading-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qr-loading-icon i {
+            color: var(--pink-primary);
+            z-index: 2;
+        }
+
+        .loading-spinner {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border: 4px solid #ffe6ec;
+            border-top: 4px solid var(--pink-primary);
+            border-radius: 50%;
+            animation: qr-spin 1s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes qr-spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .qr-loading-title {
+            color: var(--pink-primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .qr-loading-subtitle {
+            color: #666;
+            font-size: 1rem;
+            margin: 0;
+            min-height: 1.2rem;
+        }
+
+        .qr-progress-container {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .qr-progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #ffe6ec;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--pink-primary);
+        }
+
+        .qr-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--pink-primary), var(--pink-light));
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .qr-progress-text {
+            font-weight: 600;
+            color: var(--pink-primary);
+            min-width: 40px;
+        }
+
+        .qr-loading-steps {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            opacity: 0.5;
+        }
+
+        .step-item i {
+            font-size: 1.2rem;
+            color: #ccc;
+            transition: color 0.3s ease;
+        }
+
+        .step-item span {
+            font-size: 0.8rem;
+            color: #666;
+            text-align: center;
+        }
+
+        .step-item.active {
+            opacity: 1;
+            background: #ffe6ec;
+        }
+
+        .step-item.active i {
+            color: var(--pink-primary);
+            animation: pulse-step 1s ease-in-out infinite;
+        }
+
+        .step-item.completed {
+            opacity: 1;
+            background: #e8f5e8;
+        }
+
+        .step-item.completed i {
+            color: #4caf50;
+        }
+
+        @keyframes pulse-step {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
         /* Responsive Design */
         @media (max-width: 1200px) {
             .customize-content-wrapper {

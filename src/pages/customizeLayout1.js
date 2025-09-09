@@ -129,6 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     availableFrameStickers: [],
     emailSent: false,
     printUsed: false,
+    qrGenerated: false,
     imageCache: new Map(),
     brightness: 1.0,
   };
@@ -993,22 +994,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // QR Code Functions
   async function generateQRCode() {
-    const qrBtn = document.getElementById('qrBtn');
-    const originalHtml = qrBtn.innerHTML;
-    qrBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating QR...';
-    qrBtn.disabled = true;
+    // Check if QR already generated
+    if (state.qrGenerated) {
+      handleError('QR Code sudah pernah dibuat!', 'alert');
+      return;
+    }
+
+    // Show loading modal instead of just button spinner
+    showQRLoadingModal();
 
     try {
       console.log('📱 Starting QR code generation...');
+      updateQRLoadingProgress('Menyiapkan foto berkualitas tinggi...', 20);
 
       // Generate high quality canvas
       const highQualityCanvas = await generateHighQualityCanvas();
       const highQualityDataUrl = highQualityCanvas.toDataURL('image/jpeg', 0.98);
+      updateQRLoadingProgress('Mengumpulkan foto asli...', 40);
 
       // Get original photos from localStorage for raw photos
       const originalPhotos = JSON.parse(localStorage.getItem('fotobox_originals') || '[]');
 
-      qrBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving Photos...';
+      updateQRLoadingProgress('Mengirim foto ke server...', 60);
 
       // Save final photo + raw photos to server
       const response = await fetch('../api-fetch/save_final_photo_v2.php', {
@@ -1016,37 +1023,51 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ 
           image: highQualityDataUrl,
-          raw_photos: originalPhotos, // Send 4 raw photos
+          raw_photos: originalPhotos, // Send 2 raw photos for Layout 1
           layout: 'layout1',
           quality: 'high',
           source: 'qr_generation'
         }),
       });
 
+      updateQRLoadingProgress('Menerima respon dari server...', 80);
       const text = await response.text();
       if (text.trim().startsWith('<') || text.includes('<br />') || text.includes('<b>')) {
         throw new Error('Server returned HTML error page');
       }
 
+      updateQRLoadingProgress('Memproses respon server...', 90);
       const data = JSON.parse(text);
       if (!data.success) {
         throw new Error(data.message || 'Server error');
       }
 
+      updateQRLoadingProgress('QR Code berhasil dibuat!', 100);
       console.log('✅ QR Code generated successfully');
 
-      // Show QR Modal
-      showQRModal(data);
-
-      // Update button state
-      qrBtn.innerHTML = '✅ QR Generated';
-      qrBtn.disabled = true;
-      qrBtn.style.opacity = '0.7';
+      // Hide loading modal and show QR result modal
+      setTimeout(() => {
+        hideQRLoadingModal();
+        showQRModal(data);
+        
+        // Mark QR as generated and disable button permanently
+        state.qrGenerated = true;
+        const qrBtn = document.getElementById('qrBtn');
+        if (qrBtn) {
+          qrBtn.innerHTML = '<i class="fas fa-check"></i> QR Sudah Dibuat';
+          qrBtn.disabled = true;
+          qrBtn.style.opacity = '0.6';
+          qrBtn.style.cursor = 'not-allowed';
+        }
+      }, 500);
 
     } catch (error) {
       console.error('❌ QR generation error:', error);
+      hideQRLoadingModal();
       handleError('Gagal generate QR code. Coba lagi.', 'alert');
-      qrBtn.innerHTML = originalHtml;
+      // Reset button state
+      const qrBtn = document.getElementById('qrBtn');
+      qrBtn.innerHTML = '<i class="fas fa-qrcode"></i> Generate QR Code';
       qrBtn.disabled = false;
     }
   }
@@ -1120,6 +1141,83 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     }
+  }
+
+  // QR Loading Modal Functions
+  function showQRLoadingModal() {
+    // Create loading modal if not exists
+    let loadingModal = document.getElementById('qrLoadingModal');
+    if (!loadingModal) {
+      loadingModal = document.createElement('div');
+      loadingModal.id = 'qrLoadingModal';
+      loadingModal.className = 'modal';
+      loadingModal.innerHTML = `
+        <div class="modal-content qr-loading-modal-content">
+          <div class="qr-loading-container">
+            <div class="qr-loading-icon">
+              <i class="fas fa-qrcode fa-3x"></i>
+              <div class="loading-spinner"></div>
+            </div>
+            <h3 class="qr-loading-title">Membuat QR Code</h3>
+            <p class="qr-loading-subtitle" id="qrLoadingSubtitle">Memulai proses...</p>
+            <div class="qr-progress-container">
+              <div class="qr-progress-bar">
+                <div class="qr-progress-fill" id="qrProgressFill"></div>
+              </div>
+              <span class="qr-progress-text" id="qrProgressText">0%</span>
+            </div>
+            <div class="qr-loading-steps">
+              <div class="step-item">
+                <i class="fas fa-camera"></i>
+                <span>Menyiapkan foto</span>
+              </div>
+              <div class="step-item">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>Mengirim ke server</span>
+              </div>
+              <div class="step-item">
+                <i class="fas fa-qrcode"></i>
+                <span>Generate QR Code</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(loadingModal);
+    }
+    
+    loadingModal.style.display = 'block';
+    // Reset progress
+    updateQRLoadingProgress('Memulai proses...', 0);
+  }
+
+  function hideQRLoadingModal() {
+    const loadingModal = document.getElementById('qrLoadingModal');
+    if (loadingModal) {
+      loadingModal.style.display = 'none';
+    }
+  }
+
+  function updateQRLoadingProgress(message, percentage) {
+    const subtitle = document.getElementById('qrLoadingSubtitle');
+    const progressFill = document.getElementById('qrProgressFill');
+    const progressText = document.getElementById('qrProgressText');
+    
+    if (subtitle) subtitle.textContent = message;
+    if (progressFill) progressFill.style.width = `${percentage}%`;
+    if (progressText) progressText.textContent = `${percentage}%`;
+    
+    // Update step indicators
+    const steps = document.querySelectorAll('.step-item');
+    steps.forEach((step, index) => {
+      if (percentage > (index + 1) * 33) {
+        step.classList.add('completed');
+      } else if (percentage > index * 33) {
+        step.classList.add('active');
+      } else {
+        step.classList.remove('active', 'completed');
+      }
+    });
   }
 
   function initializeActionButtons() {
