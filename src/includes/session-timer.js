@@ -11,10 +11,13 @@ class SessionTimer {
         this.intervalId = null;
         this.onExpired = options.onExpired || this.defaultExpiredHandler;
         this.onUpdate = options.onUpdate || null;
+        this.onWarning = options.onWarning || null; // New: Warning callback
+        this.onTick = options.onTick || null; // New: Tick callback
         this.checkInterval = options.checkInterval || 1000; // Check every second
         this.serverSyncInterval = options.serverSyncInterval || 30000; // Sync with server every 30 seconds
         this.syncIntervalId = null;
         this.currentPage = options.currentPage || 'unknown';
+        this.lastWarningTime = 0; // Track when we last showed warning
         
         this.init();
     }
@@ -110,6 +113,21 @@ class SessionTimer {
         this.intervalId = setInterval(() => {
             this.timeRemaining = Math.max(0, this.timeRemaining - 1);
             this.updateDisplay();
+
+            // Call onTick callback if available
+            if (this.onTick && typeof this.onTick === 'function') {
+                this.onTick(this.timeRemaining);
+            }
+
+            // Call onWarning callback if available (for warning thresholds)
+            if (this.onWarning && typeof this.onWarning === 'function') {
+                // Only call warning once per threshold to avoid spam
+                const now = Date.now();
+                if (now - this.lastWarningTime >= 10000) { // Minimum 10 seconds between warnings
+                    this.onWarning(this.timeRemaining);
+                    this.lastWarningTime = now;
+                }
+            }
 
             if (this.timeRemaining <= 0) {
                 this.handleExpired();

@@ -1558,4 +1558,133 @@ document.addEventListener('DOMContentLoaded', () => {
     if(uploadInput) {
         uploadInput.addEventListener('change', handleImageUpload);
     }
+
+    // 🕐 SESSION TIMEOUT HANDLER - Enhanced for 10 minute photo session
+    if (window.sessionTimer) {
+        console.log('⏰ Session timer initialized for Canvas Layout 1');
+        
+        // Warning 2 minutes before timeout (at 8 minutes)
+        window.sessionTimer.onWarning = function(timeLeft) {
+            if (timeLeft <= 120 && timeLeft > 110) { // Show warning once at ~2 minutes left
+                const photoElements = document.querySelectorAll('.photo-preview-slot.filled img, #photoContainer img');
+                const photoCount = photoElements.length;
+                
+                let message = `⚠️ Waktu tersisa: ${Math.floor(timeLeft / 60)} menit ${timeLeft % 60} detik\n\n`;
+                
+                if (photoCount > 0) {
+                    message += `Anda memiliki ${photoCount} foto.\nKlik "Selesai" sekarang untuk melanjutkan ke editing!`;
+                } else {
+                    message += `Segera ambil foto Anda!\nSesi akan berakhir otomatis dalam 2 menit.`;
+                }
+                
+                alert(message);
+                
+                // Auto-click done button if has photos
+                if (photoCount > 0) {
+                    const doneBtn = document.getElementById('doneBtn');
+                    if (doneBtn && !doneBtn.disabled) {
+                        const autoRedirect = confirm('Mau langsung lanjut ke editing foto sekarang?');
+                        if (autoRedirect) {
+                            doneBtn.click();
+                        }
+                    }
+                }
+            }
+        };
+        
+        // Session expired handler
+        window.sessionTimer.onExpired = function(page) {
+            console.log('⏰ Session expired on Canvas Layout 1');
+            
+            // Check if user has taken any photos
+            const photoElements = document.querySelectorAll('.photo-preview-slot.filled img, #photoContainer img');
+            const photoCount = photoElements.length;
+            
+            if (photoCount > 0) {
+                console.log(`⏰ Found ${photoCount} photos, auto-saving and redirecting to customize...`);
+                
+                try {
+                    // Try to auto-save photos before redirect
+                    if (typeof storeImageArray === 'function') {
+                        storeImageArray();
+                        console.log('✅ Photos auto-saved before session timeout');
+                    }
+                    
+                    // Show timeout message with photo count
+                    alert(`⏰ Waktu sesi habis!\n\n${photoCount} foto Anda telah disimpan.\nMelanjutkan ke halaman editing...`);
+                    
+                    // Redirect to customize page
+                    window.location.href = 'customizeLayout1.php';
+                    
+                } catch (error) {
+                    console.error('❌ Auto-save failed on timeout:', error);
+                    alert(`⏰ Waktu sesi habis!\n\nAnda memiliki ${photoCount} foto.\nMelanjutkan ke halaman editing...`);
+                    window.location.href = 'customizeLayout1.php';
+                }
+            } else {
+                console.log('⏰ No photos taken, redirecting to home...');
+                alert('⏰ Waktu sesi habis!\n\nAnda belum mengambil foto.\nKembali ke halaman utama...');
+                
+                // Clear any stored data
+                try {
+                    if (sessionStorage.getItem('photo_session')) {
+                        sessionStorage.removeItem('photo_session');
+                    }
+                    localStorage.removeItem('tempImages');
+                } catch (error) {
+                    console.error('Error clearing storage:', error);
+                }
+                
+                // Redirect to home
+                window.location.href = '/';
+            }
+        };
+        
+        // Add visual timer indicator
+        const timerIndicator = document.createElement('div');
+        timerIndicator.id = 'session-timer-indicator';
+        timerIndicator.style.cssText = `
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 9999;
+            display: none;
+        `;
+        document.body.appendChild(timerIndicator);
+        
+        // Update timer display every 30 seconds
+        let lastUpdate = 0;
+        window.sessionTimer.onTick = function(timeLeft) {
+            const now = Date.now();
+            if (now - lastUpdate >= 30000) { // Update every 30 seconds
+                lastUpdate = now;
+                
+                if (timeLeft <= 300) { // Show timer in last 5 minutes
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    timerIndicator.textContent = `⏰ ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    timerIndicator.style.display = 'block';
+                    
+                    // Change color as time runs out
+                    if (timeLeft <= 120) {
+                        timerIndicator.style.background = 'rgba(220, 53, 69, 0.9)'; // Red for last 2 minutes
+                    } else if (timeLeft <= 300) {
+                        timerIndicator.style.background = 'rgba(255, 193, 7, 0.9)'; // Yellow for last 5 minutes
+                    }
+                } else {
+                    timerIndicator.style.display = 'none';
+                }
+            }
+        };
+        
+        console.log('✅ Enhanced session timeout handler configured');
+    } else {
+        console.warn('⚠️ Session timer not available');
+    }
 });

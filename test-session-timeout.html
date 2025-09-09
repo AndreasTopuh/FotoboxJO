@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test Session Timeout - Canvas Layout 1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f0f0f0;
+        }
+
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+
+        .mock-photos {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .mock-photo {
+            width: 100px;
+            height: 100px;
+            background: #ddd;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .mock-photo.filled {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: white;
+            border-color: #007bff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="test-container">
+        <h1>🧪 Test Session Timeout - Canvas Layout 1</h1>
+
+        <div class="status info">
+            <strong>Info:</strong> Simulasi session timeout untuk Canvas Layout 1 (10 menit)
+        </div>
+
+        <h3>Mock Photo Container:</h3>
+        <div id="photoContainer" class="mock-photos">
+            <div class="photo-preview-slot mock-photo" id="slot1">Empty</div>
+            <div class="photo-preview-slot mock-photo" id="slot2">Empty</div>
+        </div>
+
+        <h3>Test Controls:</h3>
+        <button onclick="addMockPhoto()">📸 Add Mock Photo</button>
+        <button onclick="clearMockPhotos()">🗑️ Clear Photos</button>
+        <button onclick="simulateTimeout()">⏰ Simulate Timeout</button>
+        <button onclick="simulateWarning()">⚠️ Simulate Warning</button>
+
+        <h3>Session Status:</h3>
+        <div id="sessionStatus" class="status info">
+            Session timer initializing...
+        </div>
+
+        <h3>Event Log:</h3>
+        <div id="eventLog" class="log">Waiting for events...\n</div>
+    </div>
+
+    <!-- Mock canvas layout 1 environment -->
+    <div style="display: none;">
+        <div id="doneBtn">Done Button</div>
+    </div>
+
+    <!-- Include the session timer -->
+    <script src="/var/www/html/FotoboxJO/src/includes/session-timer.js"></script>
+
+    <script>
+        let photoCount = 0;
+        let mockSessionTimer = null;
+
+        function log(message) {
+            const logElement = document.getElementById('eventLog');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.textContent += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(`[SESSION TEST] ${message}`);
+        }
+
+        function updateStatus(message, type = 'info') {
+            const statusElement = document.getElementById('sessionStatus');
+            statusElement.className = `status ${type}`;
+            statusElement.textContent = message;
+            log(`STATUS: ${message}`);
+        }
+
+        function addMockPhoto() {
+            if (photoCount < 2) {
+                photoCount++;
+                const slot = document.getElementById(`slot${photoCount}`);
+                if (slot) {
+                    slot.classList.add('filled');
+                    slot.textContent = `Photo ${photoCount}`;
+
+                    // Add mock img element for selector testing
+                    const img = document.createElement('img');
+                    img.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"><rect width="1" height="1" fill="blue"/></svg>';
+                    img.style.display = 'none';
+                    slot.appendChild(img);
+
+                    log(`Added mock photo ${photoCount}`);
+                    updateStatus(`${photoCount} photo(s) available`, 'success');
+                }
+            } else {
+                log('Maximum photos reached (2)');
+                updateStatus('Maximum photos reached', 'warning');
+            }
+        }
+
+        function clearMockPhotos() {
+            photoCount = 0;
+            for (let i = 1; i <= 2; i++) {
+                const slot = document.getElementById(`slot${i}`);
+                if (slot) {
+                    slot.classList.remove('filled');
+                    slot.textContent = 'Empty';
+                    // Remove mock img
+                    const img = slot.querySelector('img');
+                    if (img) img.remove();
+                }
+            }
+            log('Cleared all mock photos');
+            updateStatus('No photos available', 'info');
+        }
+
+        function simulateTimeout() {
+            log('Simulating session timeout...');
+
+            // Check photos using same selector as canvasLayout1.js
+            const photoElements = document.querySelectorAll('.photo-preview-slot.filled img, #photoContainer img');
+            const photoCount = photoElements.length;
+
+            log(`Found ${photoCount} photos with selector`);
+
+            if (photoCount > 0) {
+                updateStatus(`Timeout with ${photoCount} photos -> Redirect to customize`, 'warning');
+                log('Would redirect to: customizeLayout1.php');
+
+                // Simulate the actual timeout handler
+                try {
+                    // Mock storeImageArray function
+                    window.storeImageArray = function () {
+                        log('Mock storeImageArray() called - photos saved');
+                        return Promise.resolve();
+                    };
+
+                    if (typeof storeImageArray === 'function') {
+                        storeImageArray();
+                        log('✅ Photos auto-saved before session timeout');
+                    }
+
+                    alert(`⏰ Waktu sesi habis!\n\n${photoCount} foto Anda telah disimpan.\nMelanjutkan ke halaman editing...`);
+
+                } catch (error) {
+                    log(`❌ Auto-save failed: ${error.message}`);
+                    alert(`⏰ Waktu sesi habis!\n\nAnda memiliki ${photoCount} foto.\nMelanjutkan ke halaman editing...`);
+                }
+            } else {
+                updateStatus('Timeout with no photos -> Redirect to home', 'error');
+                log('Would redirect to: /');
+                alert('⏰ Waktu sesi habis!\n\nAnda belum mengambil foto.\nKembali ke halaman utama...');
+            }
+        }
+
+        function simulateWarning() {
+            log('Simulating session warning (2 minutes left)...');
+
+            const photoElements = document.querySelectorAll('.photo-preview-slot.filled img, #photoContainer img');
+            const photoCount = photoElements.length;
+            const timeLeft = 120; // 2 minutes
+
+            let message = `⚠️ Waktu tersisa: ${Math.floor(timeLeft / 60)} menit ${timeLeft % 60} detik\n\n`;
+
+            if (photoCount > 0) {
+                message += `Anda memiliki ${photoCount} foto.\nKlik "Selesai" sekarang untuk melanjutkan ke editing!`;
+                updateStatus(`Warning: ${photoCount} photos, 2 minutes left`, 'warning');
+            } else {
+                message += `Segera ambil foto Anda!\nSesi akan berakhir otomatis dalam 2 menit.`;
+                updateStatus('Warning: No photos, 2 minutes left', 'error');
+            }
+
+            alert(message);
+            log(`Warning shown for ${photoCount} photos`);
+
+            // Simulate auto-redirect offer
+            if (photoCount > 0) {
+                const autoRedirect = confirm('Mau langsung lanjut ke editing foto sekarang?');
+                if (autoRedirect) {
+                    log('User accepted auto-redirect');
+                    updateStatus('Auto-redirect accepted', 'success');
+                } else {
+                    log('User declined auto-redirect');
+                }
+            }
+        }
+
+        // Initialize mock session timer
+        document.addEventListener('DOMContentLoaded', function () {
+            log('DOM loaded, initializing test environment...');
+
+            // Mock the session timer functionality
+            if (window.sessionTimer) {
+                log('Real session timer detected');
+
+                // Override handlers for testing
+                const originalOnExpired = window.sessionTimer.onExpired;
+                const originalOnWarning = window.sessionTimer.onWarning;
+
+                window.sessionTimer.onExpired = function (page) {
+                    log('Real session timer expired');
+                    simulateTimeout();
+                };
+
+                window.sessionTimer.onWarning = function (timeLeft) {
+                    log(`Real session timer warning: ${timeLeft}s left`);
+                    if (timeLeft <= 120 && timeLeft > 110) {
+                        simulateWarning();
+                    }
+                };
+
+                updateStatus('Real session timer active', 'success');
+            } else {
+                log('No session timer detected - using mock');
+                updateStatus('Mock mode - session timer not available', 'warning');
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1172,24 +1172,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const continueBtn = document.getElementById('continueBtn');
     if (!continueBtn) return;
 
-    // New logic: Only print is required, email is optional
-    const canContinue = state.printUsed;
+    // New logic: Print + (Email OR QR) required
+    const canContinue = state.printUsed && (state.emailSent || state.qrGenerated);
     
     if (canContinue) {
       continueBtn.disabled = false;
       continueBtn.style.opacity = '1';
       continueBtn.style.cursor = 'pointer';
-      
-      if (state.emailSent) {
-        continueBtn.innerHTML = '🎉 Lanjut ke Terima Kasih';
-      } else {
-        continueBtn.innerHTML = '📧 Lanjut (Opsional: Email)';
-      }
-    } else {
+      continueBtn.innerHTML = '🎉 Lanjutkan';
+    } else if (state.printUsed) {
+      // Print done, waiting for Email or QR
       continueBtn.disabled = true;
       continueBtn.style.opacity = '0.5';
       continueBtn.style.cursor = 'not-allowed';
-      continueBtn.innerHTML = '⏳ Print Foto Dulu';
+      continueBtn.innerHTML = '📧 Email atau QR dulu';
+    } else {
+      // Print not done yet
+      continueBtn.disabled = true;
+      continueBtn.style.opacity = '0.5';
+      continueBtn.style.cursor = 'not-allowed';
+      continueBtn.innerHTML = '⏳ Print Dulu';
     }
   }
 
@@ -1259,6 +1261,9 @@ document.addEventListener('DOMContentLoaded', () => {
       qrBtn.innerHTML = '<i class="fas fa-check"></i> QR Code Generated';
       qrBtn.style.opacity = '0.6';
       qrBtn.style.cursor = 'not-allowed';
+
+      // Update continue button state after QR generated
+      updateContinueButtonState();
 
       // Hide loading modal and show QR result modal
       setTimeout(() => {
@@ -1462,17 +1467,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       },
       continueBtn: () => {
-        // New logic: Only require print completion, email is optional
-        if (state.printUsed) {
-          // If email not sent, show confirmation dialog
-          if (!state.emailSent) {
-            showEmailConfirmationDialog();
-          } else {
-            // Both completed, go to thank you
-            window.location.href = 'thankyou.php';
-          }
-        } else {
+        console.log('🚀 Continue button clicked');
+        
+        // Prevent multiple clicks
+        const continueBtn = document.getElementById('continueBtn');
+        if (!continueBtn || continueBtn.disabled) {
+          console.log('⚠️ Continue button already disabled or processing');
+          return;
+        }
+        
+        // New logic: Print + (Email OR QR) required
+        if (state.printUsed && (state.emailSent || state.qrGenerated)) {
+          console.log('✅ Print and (Email or QR) completed, redirecting to thank you page...');
+          
+          // Show loading state immediately
+          continueBtn.disabled = true;
+          continueBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Redirecting...';
+          
+          // Redirect immediately with full path
+          window.location.href = '/src/pages/thankyou.php';
+        } else if (!state.printUsed) {
           handleError('Silakan Print foto terlebih dahulu!', 'alert');
+        } else {
+          handleError('Silakan Email atau Generate QR Code terlebih dahulu!', 'alert');
         }
       },
     };
@@ -1835,11 +1852,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
       sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving High Quality Photo...';
 
+      // Get original photos from localStorage for raw photos (same as QR code)
+      const originalPhotos = JSON.parse(localStorage.getItem('fotobox_originals') || '[]');
+
       const response = await fetch('../api-fetch/save_final_photo_v2.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ 
           image: base64data,
+          raw_photos: originalPhotos, // Send raw photos for email too
+          layout: 'layout3',
           quality: 'high',
           source: 'customize_high_quality'
         }),
@@ -1904,31 +1926,81 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Print Functionality
   /**
-   * Shows print notification dialog with loading animation and countdown
+   * Shows quick print success notification (2 seconds)
+   */
+  function showQuickPrintNotification() {
+    const existingNotification = document.getElementById('quickPrintNotification');
+    if (existingNotification) existingNotification.remove();
+
+    // Add CSS animations if not already present
+    if (!document.getElementById('quickNotificationStyles')) {
+      const style = document.createElement('style');
+      style.id = 'quickNotificationStyles';
+      style.textContent = `
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translate(-50%, -40%); }
+          to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+        @keyframes fadeOut {
+          from { opacity: 1; transform: translate(-50%, -50%); }
+          to { opacity: 0; transform: translate(-50%, -60%); }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    const notification = document.createElement('div');
+    notification.id = 'quickPrintNotification';
+    Object.assign(notification.style, {
+      position: 'fixed',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      background: 'linear-gradient(135deg, #28a745, #20c997)',
+      color: 'white',
+      padding: '20px 30px',
+      borderRadius: '15px',
+      textAlign: 'center',
+      zIndex: '10000',
+      boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+      animation: 'fadeInUp 0.8s ease-out',
+      minWidth: '300px'
+    });
+
+    notification.innerHTML = `
+      <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+        <i class="fas fa-check-circle" style="font-size: 24px;"></i>
+        <div>
+          <div style="font-size: 18px; font-weight: 600; margin-bottom: 5px;">Print Berhasil!</div>
+          <div style="font-size: 14px; opacity: 0.9;">Hasil frame sedang di print</div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(notification);
+
+    // Auto remove after 2 seconds
+    setTimeout(() => {
+      notification.style.animation = 'fadeOut 0.3s ease-in';
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.remove();
+        }
+      }, 300);
+    }, 2000);
+  }
+
+  /**
+   * Shows print notification dialog with loading animation and countdown (OLD - DISABLED)
    */
   function showPrintNotificationDialog() {
+    // This function is no longer used in the new efficient flow
+    console.log('📝 Print notification dialog skipped for better UX');
+    return; // Exit early - old dialog disabled for better UX
+    
+    // OLD DIALOG CODE DISABLED - keeping for reference but not used
     const existingDialog = document.getElementById('printNotificationDialog');
     if (existingDialog) existingDialog.remove();
-
-    // 🔒 ADDITIONAL BACKUP: Extend session saat print notification dimulai
-    fetch('/src/api-fetch/set_session.php', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache'
-      },
-      body: JSON.stringify({ 
-        action: 'extend',
-        extend_minutes: 3,
-        reason: 'print_notification_backup'
-      })
-    }).then(response => {
-      if (response.ok) {
-        console.log('⏰ Additional session extension for print notification backup');
-      }
-    }).catch(error => {
-      console.warn('⚠️ Backup session extension failed:', error);
-    });
 
     const dialog = document.createElement('div');
     dialog.id = 'printNotificationDialog';
@@ -2307,15 +2379,9 @@ document.addEventListener('DOMContentLoaded', () => {
             printWindow.print();
             printWindow.close();
             
-            // Mark as used and update UI
+            // Mark as used but don't change print button styling
             state.printUsed = true;
-            const printBtn = document.getElementById('printBtn');
-            if (printBtn) {
-              printBtn.disabled = true;
-              printBtn.style.opacity = '0.5';
-              printBtn.style.cursor = 'not-allowed';
-              printBtn.innerHTML = '✅ Sudah Print (HQ)';
-            }
+            // Don't change print button styling - keep it as is
             
             // Update continue button state
             updateContinueButtonState();
@@ -2323,10 +2389,8 @@ document.addEventListener('DOMContentLoaded', () => {
             popup.remove();
             console.log('✅ High quality print completed');
             
-            // Show print notification dialog
-            setTimeout(() => {
-              showPrintNotificationDialog();
-            }, 500);
+            // Show quick print success notification (2 seconds only)
+            showQuickPrintNotification();
           }, 500);
         };
         

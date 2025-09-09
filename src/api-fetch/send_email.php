@@ -5,28 +5,51 @@ header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
-    
+
     if (!isset($input['email']) || !isset($input['customized_image'])) {
         echo json_encode(['error' => 'Email and customized image are required']);
         exit;
     }
-    
+
     $email = $input['email'];
     $customizedImage = $input['customized_image'];
-    
-    // Get original photos from session
-    $originalPhotos = isset($_SESSION['captured_photos']) ? $_SESSION['captured_photos'] : [];
-    
-    // Get layout info to determine email content
-    $selectedLayout = isset($_SESSION['selected_layout']) ? $_SESSION['selected_layout'] : 'canvas';
-    
+    $token = $input['token'] ?? '';
+
+    // Get photos from token metadata (same as QR code method)
+    $originalPhotos = [];
+    $selectedLayout = 'canvas';
+
+    if (!empty($token)) {
+        $photoDir = '/tmp/photobooth-photos';
+        $metaFile = "{$photoDir}/{$token}.meta";
+
+        if (file_exists($metaFile)) {
+            $metadata = json_decode(file_get_contents($metaFile), true);
+            if ($metadata && isset($metadata['raw_photos'])) {
+                // Convert raw photos file paths to base64 data for email attachment
+                foreach ($metadata['raw_photos'] as $rawPhoto) {
+                    if (file_exists($rawPhoto['filename'])) {
+                        $originalPhotos[] = 'data:image/png;base64,' . base64_encode(file_get_contents($rawPhoto['filename']));
+                    }
+                }
+                $selectedLayout = $metadata['layout_type'] ?? 'canvas';
+            }
+        }
+    }
+
+    // Fallback to session if token method fails
+    if (empty($originalPhotos)) {
+        $originalPhotos = isset($_SESSION['captured_photos']) ? $_SESSION['captured_photos'] : [];
+        $selectedLayout = isset($_SESSION['selected_layout']) ? $_SESSION['selected_layout'] : 'canvas';
+    }
+
     try {
         // Prepare email content
         $subject = "GoFotobox - Foto Hasil Photobooth Anda";
-        
+
         $photosCount = count($originalPhotos);
         $layoutText = getLayoutDescription($selectedLayout);
-        
+
         $emailBody = "
         <html>
         <head>
@@ -62,17 +85,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </body>
         </html>
         ";
-        
+
         // Create email headers
         $headers = "MIME-Version: 1.0\r\n";
         $headers .= "Content-Type: multipart/mixed; boundary=\"boundary\"\r\n";
         $headers .= "From: noreply@gofotobox.com\r\n";
-        
+
         // Email body with attachments
         $emailContent = "--boundary\r\n";
         $emailContent .= "Content-Type: text/html; charset=UTF-8\r\n\r\n";
         $emailContent .= $emailBody . "\r\n\r\n";
-        
+
         // Attach customized image
         $customizedImageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $customizedImage));
         $emailContent .= "--boundary\r\n";
@@ -80,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $emailContent .= "Content-Disposition: attachment; filename=\"gofotobox-customized.png\"\r\n";
         $emailContent .= "Content-Transfer-Encoding: base64\r\n\r\n";
         $emailContent .= base64_encode($customizedImageData) . "\r\n\r\n";
-        
+
         // Attach original photos
         foreach ($originalPhotos as $index => $photoData) {
             $photoImageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $photoData));
@@ -90,39 +113,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $emailContent .= "Content-Transfer-Encoding: base64\r\n\r\n";
             $emailContent .= base64_encode($photoImageData) . "\r\n\r\n";
         }
-        
+
         $emailContent .= "--boundary--";
-        
+
         // Send email
         $result = mail($email, $subject, $emailContent, $headers);
-        
+
         if ($result) {
             echo json_encode(['success' => true]);
         } else {
             echo json_encode(['error' => 'Failed to send email']);
         }
-        
     } catch (Exception $e) {
         echo json_encode(['error' => 'Email sending failed: ' . $e->getMessage()]);
     }
-    
 } else {
     echo json_encode(['error' => 'Invalid request method']);
 }
 
-function getLayoutDescription($layout) {
+function getLayoutDescription($layout)
+{
     switch ($layout) {
-        case 'layout1': return 'Layout 1 - Photo Strip (2 Photos)';
-        case 'layout2': return 'Layout 2 - Photo Grid (4 Photos)';
-        case 'layout3': return 'Layout 3 - Photo Grid (6 Photos)';
-        case 'layout4': return 'Layout 4 - Photo Grid (8 Photos)';
-        case 'layout5': return 'Layout 5 - Photo Grid (6 Photos)';
-        case 'layout6': return 'Layout 6 - Photo Grid (4 Photos)';
-        case 'canvas': return 'Canvas - Original Frame (1 Photo)';
-        case 'canvas2': return 'Canvas 2 - Original Frame (2 Photos)';
-        case 'canvas4': return 'Canvas 4 - Original Frame (4 Photos)';
-        case 'canvas6': return 'Canvas 6 - Original Frame (6 Photos)';
-        default: return 'Canvas - Original Frame';
+        case 'layout1':
+            return 'Layout 1 - Photo Strip (2 Photos)';
+        case 'layout2':
+            return 'Layout 2 - Photo Grid (4 Photos)';
+        case 'layout3':
+            return 'Layout 3 - Photo Grid (6 Photos)';
+        case 'layout4':
+            return 'Layout 4 - Photo Grid (8 Photos)';
+        case 'layout5':
+            return 'Layout 5 - Photo Grid (6 Photos)';
+        case 'layout6':
+            return 'Layout 6 - Photo Grid (4 Photos)';
+        case 'canvas':
+            return 'Canvas - Original Frame (1 Photo)';
+        case 'canvas2':
+            return 'Canvas 2 - Original Frame (2 Photos)';
+        case 'canvas4':
+            return 'Canvas 4 - Original Frame (4 Photos)';
+        case 'canvas6':
+            return 'Canvas 6 - Original Frame (6 Photos)';
+        default:
+            return 'Canvas - Original Frame';
     }
 }
-?>
