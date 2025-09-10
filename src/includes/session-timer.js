@@ -50,26 +50,28 @@ class SessionTimer {
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: linear-gradient(135deg, #980000ff, #460801ff);
+            background: linear-gradient(135deg, #FF6B00, #FF2D00);
             color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
+            padding: 12px 30px; 
+            border-radius: 30px; 
             font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            font-size: 14px;
+            font-weight: 700;
+            font-size: 24px; 
             z-index: 9999;
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+            box-shadow: 0 4px 15px rgba(255, 45, 0, 0.5);
             display: flex;
             align-items: center;
-            gap: 8px;
-            min-width: 140px;
+            gap: 10px; 
+            min-width: 180px; 
             justify-content: center;
+            border: 2px solid #FFF;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         `;
 
         // Add timer icon and text
         timerContainer.innerHTML = `
-            <span style="font-size: 16px;">⏰</span>
-            <span id="timer-text">--:--</span>
+            <span style="font-size: 26px;">⏰</span>
+            <span id="timer-text" style="letter-spacing: 1px;">--:--</span>
         `;
 
         document.body.appendChild(timerContainer);
@@ -167,11 +169,32 @@ class SessionTimer {
             timerText.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
 
-        // Change color when time is running low
+        // Change color when time is running low with high contrast colors
         if (this.timeRemaining <= 300) { // 5 minutes or less
-            this.timerElement.style.background = 'linear-gradient(135deg, #FF4757, #FF3742)';
+            this.timerElement.style.background = 'linear-gradient(135deg, #FF0000, #CC0000)';
+            this.timerElement.style.boxShadow = '0 4px 15px rgba(255, 0, 0, 0.6)';
+            // Make it pulse when very low on time
+            if (this.timeRemaining <= 120) { // 2 minutes or less
+                this.timerElement.style.animation = 'pulse 1s infinite';
+                if (!document.getElementById('timer-pulse-animation')) {
+                    // Add keyframes if not already present
+                    const style = document.createElement('style');
+                    style.id = 'timer-pulse-animation';
+                    style.innerHTML = `
+                        @keyframes pulse {
+                            0% { transform: translateX(-50%) scale(1); }
+                            50% { transform: translateX(-50%) scale(1.05); }
+                            100% { transform: translateX(-50%) scale(1); }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            }
         } else if (this.timeRemaining <= 900) { // 15 minutes or less
-            this.timerElement.style.background = 'linear-gradient(135deg, #FFA726, #FF9800)';
+            this.timerElement.style.background = 'linear-gradient(135deg, #FF9500, #FF6200)';
+            this.timerElement.style.boxShadow = '0 4px 15px rgba(255, 149, 0, 0.5)';
+            // Remove animation if previously set
+            this.timerElement.style.animation = '';
         }
 
         // Call custom update handler if provided
