@@ -1559,7 +1559,7 @@ document.addEventListener('DOMContentLoaded', () => {
         uploadInput.addEventListener('change', handleImageUpload);
     }
 
-    // 🕐 SESSION TIMEOUT HANDLER - Enhanced for 10 minute photo session
+    // 🕐 SESSION TIMEOUT HANDLER - Enhanced for 15 minute photo session
     if (window.sessionTimer) {
         console.log('⏰ Session timer initialized for Canvas Layout 1');
         

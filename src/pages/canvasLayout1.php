@@ -5,10 +5,10 @@ require_once '../includes/session-protection.php';
 // Include PWA helper
 require_once '../includes/pwa-helper.php';
 
-// Set photo session timing - 10 menit untuk foto
+// Set photo session timing - 15 menit untuk foto
 if (!isset($_SESSION["photo_start_time"])) {
     $_SESSION["photo_start_time"] = time();
-    $_SESSION["photo_expired_time"] = time() + (10 * 60); // 10 menit untuk foto
+    $_SESSION["photo_expired_time"] = time() + (15 * 60); // 15 menit untuk foto
 }
 
 // Hitung waktu tersisa
@@ -91,10 +91,12 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
 
         /* Control Panel Styling (Pink Pastel) */
         .controls-container {
-            background: #ffe6ec; /* pastel pink from canvas.css */
-            border: 1px solid #ff6699; /* matches dropzone accent in canvas.css */
+            background: #ffe6ec;
+            /* pastel pink from canvas.css */
+            border: 1px solid #ff6699;
+            /* matches dropzone accent in canvas.css */
             border-radius: 1.2rem;
-            box-shadow: 0 4px 24px 0 rgba(255,105,135,0.18);
+            box-shadow: 0 4px 24px 0 rgba(255, 105, 135, 0.18);
             padding: 1.5rem 1.2rem 1.2rem 1.2rem;
             display: flex;
             flex-direction: column;
@@ -133,6 +135,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             position: relative;
             overflow: hidden;
         }
+
         #videoContainer video,
         #videoContainer canvas {
             width: 100%;
@@ -140,6 +143,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             object-fit: cover;
             display: block;
         }
+
         #videoContainer #gridOverlay,
         #videoContainer #flash {
             border-radius: inherit;
@@ -151,40 +155,47 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
         #blackScreen,
         #countdownText {
             color: #fff;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
             font-weight: 700;
         }
+
         #blackScreen {
-            background: linear-gradient(180deg, rgba(0,0,0,0.60), rgba(0,0,0,0.60));
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.60), rgba(0, 0, 0, 0.60));
         }
 
         /* Video overlay buttons */
         #videoContainer #fullscreenBtn,
         #videoContainer .retake-all-btn {
-            background: rgba(0,0,0,0.45);
-            border: 1px solid rgba(255,255,255,0.22);
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.22);
             color: #fff;
             border-radius: 0.6rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.20);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.20);
             backdrop-filter: blur(2px);
         }
+
         #videoContainer #fullscreenBtn:hover,
         #videoContainer .retake-all-btn:hover {
-            background: rgba(0,0,0,0.6);
+            background: rgba(0, 0, 0, 0.6);
         }
 
         /* Photo preview area under video */
-        .photo-preview-container { 
+        .photo-preview-container {
             margin: 0;
             padding: 0;
         }
+
         .photo-preview-grid .photo-preview-slot {
             background: #ffe6ec;
             border: 2px dashed var(--pink-primary);
             border-radius: 0.6rem;
             position: relative;
         }
-        .photo-preview-grid .photo-placeholder { color: #d16a8c; }
+
+        .photo-preview-grid .photo-placeholder {
+            color: #d16a8c;
+        }
+
         .photo-preview-grid .retake-photo-btn {
             background: #ffe6ec;
             color: var(--pink-primary);
@@ -196,6 +207,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             place-items: center;
             font-weight: 800;
         }
+
         .photo-preview-grid .retake-photo-btn:hover {
             background: var(--pink-primary);
             color: #fff;
@@ -217,14 +229,19 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             margin: 0.15rem 0;
             transition: background 0.2s, color 0.2s, box-shadow 0.2s;
             cursor: pointer;
-            box-shadow: 0 2px 8px 0 rgba(255,105,135,0.10);
+            box-shadow: 0 2px 8px 0 rgba(255, 105, 135, 0.10);
         }
+
         .controls-container button:hover,
         .controls-container .filterBtn:hover {
             background: var(--pink-primary);
             color: #fff;
         }
-        .controls-container button:focus { outline: none; }
+
+        .controls-container button:focus {
+            outline: none;
+        }
+
         .controls-container button[disabled] {
             background: #f5f5f5;
             color: #bbb;
@@ -239,13 +256,15 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             background: var(--pink-primary);
             color: #fff;
             border: 1px solid var(--pink-primary);
-            box-shadow: 0 2px 12px 0 rgba(255,105,135,0.20);
+            box-shadow: 0 2px 12px 0 rgba(255, 105, 135, 0.20);
         }
+
         .controls-container .action-buttons #startBtn:hover,
         .controls-container .action-buttons #captureAllBtn:hover,
         .controls-container .action-buttons #doneBtn:hover {
             background: var(--pink-hover);
         }
+
         .controls-container .action-buttons #retakeAllBtn {
             background: #ffe6ec;
             color: var(--pink-primary);
@@ -264,12 +283,37 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             color: var(--pink-primary);
             font-size: 0.8rem;
         }
-        .controls-container .filterBtn#normalFilterId { background: #fff; border-color: var(--pink-primary); }
-        .controls-container .filterBtn#vintageFilterId { background: #ffe0b2; border-color: var(--pink-primary); }
-        .controls-container .filterBtn#grayFilterId { background: #e0e0e0; border-color: var(--pink-primary); }
-        .controls-container .filterBtn#smoothFilterId { background: #e3f2fd; border-color: var(--pink-primary); }
-        .controls-container .filterBtn#bnwFilterId { background: #212121; border-color: var(--pink-primary); color: #fff; }
-        .controls-container .filterBtn#sepiaFilterId { background: #f4e2d8; border-color: var(--pink-primary); }
+
+        .controls-container .filterBtn#normalFilterId {
+            background: #fff;
+            border-color: var(--pink-primary);
+        }
+
+        .controls-container .filterBtn#vintageFilterId {
+            background: #ffe0b2;
+            border-color: var(--pink-primary);
+        }
+
+        .controls-container .filterBtn#grayFilterId {
+            background: #e0e0e0;
+            border-color: var(--pink-primary);
+        }
+
+        .controls-container .filterBtn#smoothFilterId {
+            background: #e3f2fd;
+            border-color: var(--pink-primary);
+        }
+
+        .controls-container .filterBtn#bnwFilterId {
+            background: #212121;
+            border-color: var(--pink-primary);
+            color: #fff;
+        }
+
+        .controls-container .filterBtn#sepiaFilterId {
+            background: #f4e2d8;
+            border-color: var(--pink-primary);
+        }
 
         /* Timer select */
         .controls-container .custom-select {
@@ -381,6 +425,7 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             color: var(--pink-primary);
             border: 1px solid var(--pink-primary);
         }
+
         .controls-container .grid-toggle #gridToggleBtn:hover {
             background: var(--pink-primary);
             color: #fff;
@@ -555,4 +600,4 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
     <?php PWAHelper::addPWAScript(); ?>
 </body>
 
-</html> 
+</html>
