@@ -698,7 +698,7 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
         return;
       }
 
-      if (code === '00000') {
+      if (code === '09876') {
         try {
           // Start developer session dengan timer 20 menit tapi skip payment
           const response = await fetch('../api-fetch/set_session.php', {
@@ -724,7 +724,7 @@ if ($currentState === SessionManager::STATE_PAYMENT_COMPLETED) {
           alert('Terjadi kesalahan. Silakan coba lagi.');
         }
       } else {
-        alert('Kode akses salah!');
+        alert('Kode akses salah!,  silahkan hubungi langusng pemilik gofotobox');
         clearInput();
       }
     }

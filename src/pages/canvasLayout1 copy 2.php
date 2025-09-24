@@ -340,28 +340,6 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
             display: inline-block;
         }
 
-        /* Info Section */
-        .controls-container .info-section {
-            background: #fff3f5;
-            border: 1px solid #ffb3c1;
-            border-radius: 0.7rem;
-            padding: 1rem;
-            margin-top: 0.5rem;
-        }
-
-        .controls-container .info-section .info-item {
-            color: var(--pink-primary);
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 0.7rem;
-            line-height: 1.4;
-            text-align: center;
-        }
-
-        .controls-container .info-section .info-item:last-child {
-            margin-bottom: 0;
-        }
-
         /* Section Titles */
         .controls-container .settings-title,
         .controls-container .filter-title {
@@ -587,16 +565,6 @@ $timeLeft = $_SESSION['photo_expired_time'] - time();
                         </div>
                         <div class="progress-display">
                             <div id="progressCounter">0/2</div>
-                        </div>
-
-                        <!-- Informasi Penting untuk Pengguna -->
-                        <div class="info-section">
-                            <div class="info-item">
-                                <strong>⏰ Waktu foto diperhatikan</strong>
-                            </div>
-                            <div class="info-item">
-                                <strong>📍 Posisi foto harus di kotak/lebih di dekat kamera. Jangan di belakang.</strong>
-                            </div>
                         </div>
 
                     </div>
